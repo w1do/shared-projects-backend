@@ -16,27 +16,4 @@ final class UpsertCategoryDTO extends Data
         public int|Optional|null $parent_id,
         public bool|Optional $is_index,
     ) {}
-
-    /** @return array<string, list<mixed>> */
-    public static function rules(): array
-    {
-        return [
-            // Имя переводимо: строка (совместимость) или {locale: value}
-            'name' => ['required'],
-            'name.*' => ['sometimes', 'string', 'max:255'],
-            'slug' => ['sometimes', 'string', 'max:255', 'alpha_dash'],
-            'parent_id' => ['sometimes', 'nullable', 'integer'],
-            'is_index' => ['sometimes', 'boolean'],
-        ];
-    }
-
-    /** Значение локали по умолчанию — для генерации slug. */
-    public function defaultName(string $defaultLocale = 'en'): string
-    {
-        if (is_string($this->name)) {
-            return $this->name;
-        }
-
-        return (string) ($this->name[$defaultLocale] ?? (reset($this->name) ?: ''));
-    }
 }

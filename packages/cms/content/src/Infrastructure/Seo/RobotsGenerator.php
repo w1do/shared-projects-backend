@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Cms\Content\Infrastructure\Support;
+namespace Cms\Content\Infrastructure\Seo;
 
 use Cms\Content\Domain\Models\Category;
 use Cms\Content\Domain\Models\Page;

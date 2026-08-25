@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Cms\Content\Infrastructure\Jobs;
 
 use Cms\Content\Application\Commands\ChangeStatusCommand;
-use Cms\Content\Application\DTOs\Content\ChangeStatusDTO;
+use Cms\Content\Application\DTOs\Status\ChangeStatusDTO;
 use Cms\Content\Application\Handlers\ChangeStatusHandler;
 use Cms\Content\Domain\Enums\ContentStatus;
 use Cms\Content\Domain\Models\Post;

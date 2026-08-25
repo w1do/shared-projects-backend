@@ -8,7 +8,7 @@ use Cms\Content\Application\DTOs\Category\CategoryDTO;
 use Cms\Content\Domain\Models\Category;
 use Kalnoy\Nestedset\Collection;
 
-final class CategoryTree
+final class CategoryTreeQuery
 {
     /** @return list<CategoryDTO> */
     public function handle(): array

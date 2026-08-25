@@ -8,12 +8,16 @@ use Cms\Content\Application\Commands\UpsertCategoryCommand;
 use Cms\Content\Domain\Models\Category;
 use Cms\Content\Infrastructure\Jobs\RegenerateSitemapJob;
 use Cms\Shared\Tenant\ProjectContext;
+use Illuminate\Contracts\Translation\Translator;
 use Illuminate\Support\Str;
 use Spatie\LaravelData\Optional;
 
 final class UpsertCategoryHandler
 {
-    public function __construct(private readonly ProjectContext $context) {}
+    public function __construct(
+        private readonly ProjectContext $context,
+        private readonly Translator $translator,
+    ) {}
 
     public function handle(UpsertCategoryCommand $command): Category
     {
@@ -31,12 +35,14 @@ final class UpsertCategoryHandler
         } else {
             // Локаль запроса ставится middleware'ом из introspection: строка
             // попадает в локаль проекта по умолчанию, а не в жёсткий 'en'.
-            $locale = app()->getLocale();
+            // Смена локали приложения переставляет локаль этого же транслятора,
+            // поэтому значение совпадает с прежним значением локали приложения.
+            $locale = $this->translator->getLocale();
             $category->setTranslation('name', $locale, $command->data->name);
             unset($machine[$locale]);
         }
         $category->name_machine = $machine;
-        $category->slug = $command->data->slug instanceof Optional ? ($category->slug ?? Str::slug($command->data->defaultName())) : $command->data->slug;
+        $category->slug = $command->data->slug instanceof Optional ? ($category->slug ?? Str::slug($this->defaultName($command->data->name))) : $command->data->slug;
         if (! $command->data->is_index instanceof Optional) {
             $category->is_index = $command->data->is_index;
         }
@@ -51,5 +57,22 @@ final class UpsertCategoryHandler
         RegenerateSitemapJob::dispatch($this->context->required());
 
         return $category;
+    }
+
+    /**
+     * Имя для генерации слага: строка — как есть, набор по локалям — значение
+     * локали по умолчанию, иначе первое непустое. Логика переехала из
+     * `UpsertCategoryDTO::defaultName()` дословно (задача 5.9): DTO — структура
+     * между слоями, поведение живёт в handler.
+     *
+     * @param  string|array<string, string>  $name
+     */
+    private function defaultName(string|array $name, string $defaultLocale = 'en'): string
+    {
+        if (is_string($name)) {
+            return $name;
+        }
+
+        return (string) ($name[$defaultLocale] ?? (reset($name) ?: ''));
     }
 }

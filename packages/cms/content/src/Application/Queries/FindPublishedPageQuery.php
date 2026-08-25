@@ -6,10 +6,11 @@ namespace Cms\Content\Application\Queries;
 
 use Cms\Content\Domain\Models\Page;
 
-final class FindPublishedPage
+final class FindPublishedPageQuery
 {
-    public function handle(string $slug): ?Page
+    /** Неопубликованная или чужая страница даёт 404, а не 403 (Safety Protocol, И11). */
+    public function handle(string $slug): Page
     {
-        return Page::query()->published()->where('slug', $slug)->with('seo')->first();
+        return Page::query()->published()->where('slug', $slug)->with('seo')->firstOrFail();
     }
 }

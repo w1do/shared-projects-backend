@@ -13,13 +13,4 @@ final class MoveCategoryDTO extends Data
         public int|Optional|null $parent_id,
         public int|Optional $position,
     ) {}
-
-    /** @return array<string, list<mixed>> */
-    public static function rules(): array
-    {
-        return [
-            'parent_id' => ['sometimes', 'nullable', 'integer'],
-            'position' => ['sometimes', 'integer', 'min:0'],
-        ];
-    }
 }

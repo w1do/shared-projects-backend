@@ -55,6 +55,15 @@ class Category extends Model
         return ['project_id'];
     }
 
+    /**
+     * Перемещение под указанный узел замкнуло бы дерево: это сам узел или
+     * его собственный потомок.
+     */
+    public function wouldCycleUnder(self $parent): bool
+    {
+        return $parent->getKey() === $this->getKey() || $parent->isDescendantOf($this);
+    }
+
     /** @return BelongsToMany<Post, $this> */
     public function posts(): BelongsToMany
     {
