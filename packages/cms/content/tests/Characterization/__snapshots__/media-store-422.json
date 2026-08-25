@@ -1,0 +1,19 @@
+{
+    "status": 422,
+    "content_type": "application/json",
+    "body": {
+        "error": {
+            "code": "validation_failed",
+            "message": "The given data was invalid.",
+            "details": {
+                "file": [
+                    "The file field is required."
+                ],
+                "alt": [
+                    "The alt field must not be greater than 255 characters."
+                ]
+            },
+            "trace_id": "<string>"
+        }
+    }
+}

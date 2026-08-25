@@ -1,0 +1,34 @@
+{
+    "status": 200,
+    "content_type": "application/json",
+    "body": {
+        "data": [
+            {
+                "id": "<int>",
+                "code": "legacy",
+                "name": "Legacy",
+                "price_minor": 4900,
+                "currency": "RUB",
+                "interval": "month",
+                "archived": true,
+                "options": [],
+                "features": []
+            },
+            {
+                "id": "<int>",
+                "code": "basic",
+                "name": "Basic",
+                "price_minor": 9900,
+                "currency": "RUB",
+                "interval": "month",
+                "archived": false,
+                "options": {
+                    "projects": "3"
+                },
+                "features": [
+                    "api-access"
+                ]
+            }
+        ]
+    }
+}

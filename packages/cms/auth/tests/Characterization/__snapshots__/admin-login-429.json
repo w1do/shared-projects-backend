@@ -1,0 +1,12 @@
+{
+    "status": 429,
+    "content_type": "application/json",
+    "body": {
+        "error": {
+            "code": "too_many_attempts",
+            "message": "Too many attempts.",
+            "details": {},
+            "trace_id": "<string>"
+        }
+    }
+}

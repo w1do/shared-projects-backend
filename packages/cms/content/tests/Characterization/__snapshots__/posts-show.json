@@ -1,0 +1,33 @@
+{
+    "status": 200,
+    "content_type": "application/json",
+    "body": {
+        "data": {
+            "id": "<int>",
+            "title": "Hello world",
+            "slug": "hello-world",
+            "body": "Body text",
+            "locale": "ru",
+            "translation_group": null,
+            "status": "draft",
+            "scheduled_at": null,
+            "published_at": null,
+            "is_index": true,
+            "categories": [
+                1
+            ],
+            "seo": {
+                "title": "Hello — seo",
+                "description": "Seo description",
+                "keywords": null,
+                "canonical": "https://site.test/hello-world",
+                "robots": null,
+                "og_title": null,
+                "og_description": null,
+                "og_image": null,
+                "twitter_card": "summary",
+                "json_ld": null
+            }
+        }
+    }
+}

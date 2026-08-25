@@ -1,0 +1,32 @@
+{
+    "status": 200,
+    "content_type": "application/json",
+    "body": {
+        "data": [
+            {
+                "id": "<int>",
+                "snapshot": {
+                    "title": "About us",
+                    "slug": "about-us",
+                    "body": "v2",
+                    "locale": "ru",
+                    "status": "draft"
+                },
+                "author_id": null,
+                "created_at": "<string>"
+            },
+            {
+                "id": "<int>",
+                "snapshot": {
+                    "title": "About us",
+                    "slug": "about-us",
+                    "body": "v1",
+                    "locale": "ru",
+                    "status": "draft"
+                },
+                "author_id": null,
+                "created_at": "<string>"
+            }
+        ]
+    }
+}

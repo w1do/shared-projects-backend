@@ -1,0 +1,12 @@
+{
+    "status": 403,
+    "content_type": "application/json",
+    "body": {
+        "error": {
+            "code": "forbidden",
+            "message": "API key is missing the required scope.",
+            "details": {},
+            "trace_id": "<string>"
+        }
+    }
+}

@@ -1,0 +1,9 @@
+{
+    "status": 207,
+    "content_type": "application/json",
+    "body": {
+        "data": {
+            "state": "partial"
+        }
+    }
+}

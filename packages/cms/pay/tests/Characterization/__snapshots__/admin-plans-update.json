@@ -1,0 +1,21 @@
+{
+    "status": 200,
+    "content_type": "application/json",
+    "body": {
+        "data": {
+            "id": "<int>",
+            "code": "basic",
+            "name": "Basic Plus",
+            "price_minor": 12900,
+            "currency": "EUR",
+            "interval": "year",
+            "archived": false,
+            "options": {
+                "projects": "5"
+            },
+            "features": [
+                "api-access"
+            ]
+        }
+    }
+}

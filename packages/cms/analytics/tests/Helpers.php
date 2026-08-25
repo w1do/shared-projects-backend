@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 use Cms\Contracts\Introspection\IntrospectionResult;
 use Cms\Contracts\Introspection\Subject;
-use Cms\Shared\AuthClient\CachedIntrospector;
+use Cms\Shared\AuthClient\Introspector;
 
-class FakeAnalyticsIntrospector extends CachedIntrospector
+class FakeAnalyticsIntrospector implements Introspector
 {
     public function __construct(
         private readonly IntrospectionResult $tokenResult,
@@ -32,7 +32,7 @@ function actingAsAnalyticsOperator(string $projectId = 'proj-1', array $permissi
         userId: '1', permissions: $permissions, enabledServices: $services);
     $key = new IntrospectionResult(subject: Subject::ApiKey, active: true, projectId: $projectId,
         keyType: 'public', scopes: $scopes, enabledServices: $services);
-    app()->instance(CachedIntrospector::class, new FakeAnalyticsIntrospector($token, $key));
+    app()->instance(Introspector::class, new FakeAnalyticsIntrospector($token, $key));
 
     return ['Authorization' => 'Bearer test-token'];
 }

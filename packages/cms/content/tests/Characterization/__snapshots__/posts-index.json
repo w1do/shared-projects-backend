@@ -1,0 +1,54 @@
+{
+    "status": 200,
+    "content_type": "application/json",
+    "body": {
+        "data": [
+            {
+                "id": "<int>",
+                "title": "Second post",
+                "slug": "second-post",
+                "body": "Second body",
+                "locale": "en",
+                "translation_group": "group-a",
+                "status": "draft",
+                "scheduled_at": null,
+                "published_at": null,
+                "is_index": false,
+                "categories": [],
+                "seo": null
+            },
+            {
+                "id": "<int>",
+                "title": "First post",
+                "slug": "first-post",
+                "body": "First body",
+                "locale": "ru",
+                "translation_group": null,
+                "status": "draft",
+                "scheduled_at": null,
+                "published_at": null,
+                "is_index": true,
+                "categories": [
+                    1
+                ],
+                "seo": {
+                    "title": "First post — seo",
+                    "description": null,
+                    "keywords": null,
+                    "canonical": null,
+                    "robots": "index,follow",
+                    "og_title": null,
+                    "og_description": null,
+                    "og_image": null,
+                    "twitter_card": null,
+                    "json_ld": null
+                }
+            }
+        ],
+        "meta": {
+            "per_page": 25,
+            "next_cursor": null,
+            "prev_cursor": null
+        }
+    }
+}

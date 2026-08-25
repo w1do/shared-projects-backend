@@ -1,0 +1,17 @@
+{
+    "status": 201,
+    "content_type": "application/json",
+    "body": {
+        "data": {
+            "id": "<string>",
+            "type": "public",
+            "prefix": "pk_live_r4ab",
+            "scopes": [
+                "collect"
+            ],
+            "last_used_at": null,
+            "revoked_at": null,
+            "key": "<string>"
+        }
+    }
+}

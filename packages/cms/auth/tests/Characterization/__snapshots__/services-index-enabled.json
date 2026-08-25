@@ -1,0 +1,20 @@
+{
+    "status": 200,
+    "content_type": "application/json",
+    "body": {
+        "data": [
+            {
+                "service": "content",
+                "enabled": true
+            },
+            {
+                "service": "analytics",
+                "enabled": false
+            },
+            {
+                "service": "pay",
+                "enabled": false
+            }
+        ]
+    }
+}

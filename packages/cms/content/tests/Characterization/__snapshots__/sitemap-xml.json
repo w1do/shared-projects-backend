@@ -1,0 +1,5 @@
+{
+    "status": 200,
+    "content_type": "application/xml",
+    "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">\n  <url><loc>https://site.test/posts/live-post</loc><lastmod><datetime></lastmod></url>\n  <url><loc>https://site.test/about-us</loc><lastmod><datetime></lastmod></url>\n  <url><loc>https://site.test/categories/news</loc><lastmod><datetime></lastmod></url>\n</urlset>"
+}

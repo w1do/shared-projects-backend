@@ -1,0 +1,16 @@
+{
+    "status": 200,
+    "content_type": "application/json",
+    "body": {
+        "data": {
+            "id": "<string>",
+            "key": "site-a",
+            "name": "Renamed Site",
+            "locales": [
+                "ru",
+                "en"
+            ],
+            "archived_at": null
+        }
+    }
+}

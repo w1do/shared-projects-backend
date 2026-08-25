@@ -1,0 +1,19 @@
+{
+    "status": 422,
+    "content_type": "application/json",
+    "body": {
+        "error": {
+            "code": "validation_failed",
+            "message": "The given data was invalid.",
+            "details": {
+                "name": [
+                    "The name field must only contain letters, numbers, dashes, and underscores."
+                ],
+                "permissions.0": [
+                    "The selected permissions.0 is invalid."
+                ]
+            },
+            "trace_id": "<string>"
+        }
+    }
+}

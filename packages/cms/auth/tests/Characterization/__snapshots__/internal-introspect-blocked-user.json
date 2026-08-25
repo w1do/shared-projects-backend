@@ -1,0 +1,16 @@
+{
+    "status": 200,
+    "content_type": "application/json",
+    "body": {
+        "subject": "invalid",
+        "active": false,
+        "project_id": null,
+        "user_id": null,
+        "super_admin": false,
+        "permissions": [],
+        "key_type": null,
+        "scopes": [],
+        "enabled_services": [],
+        "locales": []
+    }
+}

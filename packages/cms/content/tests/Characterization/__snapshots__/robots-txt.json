@@ -1,0 +1,5 @@
+{
+    "status": 200,
+    "content_type": "text/plain",
+    "body": "User-agent: *\nDisallow: /api/\nDisallow: /admin/\nDisallow: /secret\nDisallow: /categories/hidden\n\nSitemap: https://site.test/sitemap.xml"
+}

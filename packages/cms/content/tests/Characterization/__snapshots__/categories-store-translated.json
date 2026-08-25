@@ -1,0 +1,19 @@
+{
+    "status": 201,
+    "content_type": "application/json",
+    "body": {
+        "data": {
+            "id": "<int>",
+            "name": "News",
+            "name_translations": {
+                "en": "News",
+                "ru": "Новости"
+            },
+            "slug": "news",
+            "parent_id": null,
+            "is_index": true,
+            "seo": null,
+            "children": []
+        }
+    }
+}

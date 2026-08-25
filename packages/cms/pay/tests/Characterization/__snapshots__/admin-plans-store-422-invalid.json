@@ -1,0 +1,31 @@
+{
+    "status": 422,
+    "content_type": "application/json",
+    "body": {
+        "error": {
+            "code": "validation_failed",
+            "message": "The given data was invalid.",
+            "details": {
+                "code": [
+                    "The code field must only contain letters, numbers, dashes, and underscores."
+                ],
+                "price_minor": [
+                    "The price minor field must be at least 0."
+                ],
+                "currency": [
+                    "The currency field must be 3 characters."
+                ],
+                "interval": [
+                    "The selected interval is invalid."
+                ],
+                "options": [
+                    "The options field must be an array."
+                ],
+                "features.0": [
+                    "The features.0 field must be a string."
+                ]
+            },
+            "trace_id": "<string>"
+        }
+    }
+}

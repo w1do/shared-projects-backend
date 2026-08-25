@@ -1,0 +1,21 @@
+{
+    "status": 200,
+    "content_type": "application/json",
+    "body": {
+        "data": [
+            {
+                "id": "<int>",
+                "title": "Alpha"
+            },
+            {
+                "id": "<int>",
+                "title": "Beta"
+            }
+        ],
+        "meta": {
+            "per_page": 2,
+            "next_cursor": "<string>",
+            "prev_cursor": "<string>"
+        }
+    }
+}

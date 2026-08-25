@@ -1,0 +1,17 @@
+{
+    "status": 200,
+    "content_type": "application/json",
+    "body": {
+        "data": {
+            "id": "<int>",
+            "title": "About us v2",
+            "slug": "about-us",
+            "body": "v2",
+            "locale": "ru",
+            "status": "draft",
+            "published_at": null,
+            "is_index": true,
+            "seo": null
+        }
+    }
+}

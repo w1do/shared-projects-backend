@@ -1,0 +1,27 @@
+{
+    "status": 200,
+    "content_type": "application/json",
+    "body": {
+        "data": [
+            {
+                "id": "<int>",
+                "title": "Post 01",
+                "slug": "post-01",
+                "body": "Body 01",
+                "locale": "ru",
+                "translation_group": null,
+                "status": "draft",
+                "scheduled_at": null,
+                "published_at": null,
+                "is_index": true,
+                "categories": [],
+                "seo": null
+            }
+        ],
+        "meta": {
+            "per_page": 25,
+            "next_cursor": null,
+            "prev_cursor": "<string>"
+        }
+    }
+}

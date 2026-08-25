@@ -1,0 +1,11 @@
+{
+    "status": 201,
+    "content_type": "application/json",
+    "body": {
+        "data": {
+            "id": "<int>",
+            "key": "site-b",
+            "name": "Site B"
+        }
+    }
+}

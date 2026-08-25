@@ -1,0 +1,45 @@
+{
+    "status": 200,
+    "content_type": "application/json",
+    "body": {
+        "data": {
+            "user": {
+                "id": "<int>",
+                "name": "Operator",
+                "email": "op@example.com",
+                "locale": "ru",
+                "is_super_admin": false
+            },
+            "projects": [
+                {
+                    "id": "<string>",
+                    "key": "site-a",
+                    "name": "SITE-A",
+                    "locales": [
+                        "ru"
+                    ]
+                }
+            ],
+            "current_project": "site-a",
+            "services": [],
+            "permissions": [
+                "auth.projects.view",
+                "auth.projects.manage",
+                "auth.members.view",
+                "auth.members.manage",
+                "auth.roles.view",
+                "auth.roles.manage",
+                "auth.keys.view",
+                "auth.keys.manage",
+                "auth.services.manage",
+                "auth.settings.view",
+                "auth.settings.manage",
+                "auth.audit.view",
+                "auth.users.view",
+                "auth.users.manage"
+            ],
+            "translations_version": "1",
+            "server_time": "<string>"
+        }
+    }
+}

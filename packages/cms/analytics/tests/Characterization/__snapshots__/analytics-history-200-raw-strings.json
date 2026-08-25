@@ -1,0 +1,18 @@
+{
+    "status": 200,
+    "content_type": "application/json",
+    "body": {
+        "data": [
+            {
+                "event_id": "<string>",
+                "occurred_at": "<string>",
+                "name": "purchase",
+                "source": "site",
+                "path": "/checkout",
+                "value_minor": "4900",
+                "currency": "RUB",
+                "props": "{\"plan\":\"pro\"}"
+            }
+        ]
+    }
+}

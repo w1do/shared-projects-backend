@@ -1,0 +1,13 @@
+{
+    "status": 200,
+    "content_type": "application/json",
+    "body": {
+        "data": {
+            "id": "<int>",
+            "name": "Renamed User",
+            "email": "u@example.com",
+            "project_id": "<string>",
+            "blocked": false
+        }
+    }
+}

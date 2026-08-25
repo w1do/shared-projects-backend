@@ -1,0 +1,28 @@
+{
+    "status": 200,
+    "content_type": "application/json",
+    "body": {
+        "data": {
+            "id": "<int>",
+            "title": "About us",
+            "slug": "about-us",
+            "body": "About body",
+            "locale": "ru",
+            "status": "published",
+            "published_at": "<string>",
+            "is_index": true,
+            "seo": {
+                "title": "About — seo",
+                "description": null,
+                "keywords": null,
+                "canonical": null,
+                "robots": null,
+                "og_title": null,
+                "og_description": null,
+                "og_image": null,
+                "twitter_card": null,
+                "json_ld": null
+            }
+        }
+    }
+}

@@ -1,0 +1,12 @@
+{
+    "status": 401,
+    "content_type": "application/json",
+    "body": {
+        "error": {
+            "code": "unauthenticated",
+            "message": "Invalid webhook signature.",
+            "details": {},
+            "trace_id": "<string>"
+        }
+    }
+}

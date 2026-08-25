@@ -1,0 +1,23 @@
+{
+    "status": 201,
+    "content_type": "application/json",
+    "body": {
+        "data": {
+            "id": "<int>",
+            "code": "pro",
+            "name": "Pro",
+            "price_minor": 19900,
+            "currency": "RUB",
+            "interval": "month",
+            "archived": false,
+            "options": {
+                "projects": "10",
+                "storage_gb": "50"
+            },
+            "features": [
+                "api-access",
+                "priority-support"
+            ]
+        }
+    }
+}

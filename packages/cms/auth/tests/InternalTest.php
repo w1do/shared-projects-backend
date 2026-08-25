@@ -9,7 +9,7 @@ use Cms\Auth\Application\Handlers\ToggleServiceHandler;
 use Cms\Auth\Domain\Models\Admin;
 use Cms\Auth\Domain\Models\ProjectApiKey;
 use Cms\Auth\Domain\Models\User;
-use Cms\Auth\Infrastructure\Support\PermissionSyncer;
+use Cms\Auth\Infrastructure\Persistence\PermissionSyncer;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\PermissionRegistrar;
 

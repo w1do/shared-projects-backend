@@ -15,6 +15,7 @@
             <directory>../../packages/cms/shared/tests</directory>
             <directory>../../packages/cms/contracts/tests</directory>
             <directory>../../packages/cms/auth/tests</directory>
+            <directory>../../packages/cms/generators/tests</directory>
         </testsuite>
     </testsuites>
     <source>

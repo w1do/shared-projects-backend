@@ -1,0 +1,25 @@
+{
+    "status": 422,
+    "content_type": "application/json",
+    "body": {
+        "error": {
+            "code": "validation_failed",
+            "message": "The given data was invalid.",
+            "details": {
+                "name": [
+                    "The name field is required."
+                ],
+                "slug": [
+                    "The slug field must only contain letters, numbers, dashes, and underscores."
+                ],
+                "parent_id": [
+                    "<string>"
+                ],
+                "is_index": [
+                    "The is index field must be true or false."
+                ]
+            },
+            "trace_id": "<string>"
+        }
+    }
+}

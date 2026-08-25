@@ -1,0 +1,12 @@
+{
+    "status": 403,
+    "content_type": "application/json",
+    "body": {
+        "error": {
+            "code": "forbidden",
+            "message": "Forbidden.",
+            "details": {},
+            "trace_id": "<string>"
+        }
+    }
+}

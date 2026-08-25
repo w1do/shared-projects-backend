@@ -1,0 +1,10 @@
+{
+    "status": 200,
+    "content_type": "application/json",
+    "body": {
+        "data": {
+            "key": "content",
+            "version": "1.2.3"
+        }
+    }
+}

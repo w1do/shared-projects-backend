@@ -1,0 +1,20 @@
+{
+    "status": 200,
+    "content_type": "application/json",
+    "body": {
+        "data": {
+            "id": "<int>",
+            "title": "Later",
+            "slug": "later",
+            "body": null,
+            "locale": "ru",
+            "translation_group": null,
+            "status": "scheduled",
+            "scheduled_at": "<string>",
+            "published_at": null,
+            "is_index": true,
+            "categories": [],
+            "seo": null
+        }
+    }
+}

@@ -1,0 +1,76 @@
+{
+    "status": 200,
+    "content_type": "application/json",
+    "body": {
+        "data": [
+            {
+                "id": "<int>",
+                "name": "owner",
+                "system": true,
+                "permissions": [
+                    "auth.audit.view",
+                    "auth.keys.manage",
+                    "auth.keys.view",
+                    "auth.members.manage",
+                    "auth.members.view",
+                    "auth.projects.manage",
+                    "auth.projects.view",
+                    "auth.roles.manage",
+                    "auth.roles.view",
+                    "auth.services.manage",
+                    "auth.settings.manage",
+                    "auth.settings.view",
+                    "auth.users.manage",
+                    "auth.users.view"
+                ]
+            },
+            {
+                "id": "<int>",
+                "name": "admin",
+                "system": true,
+                "permissions": [
+                    "auth.audit.view",
+                    "auth.keys.manage",
+                    "auth.keys.view",
+                    "auth.members.manage",
+                    "auth.members.view",
+                    "auth.projects.manage",
+                    "auth.projects.view",
+                    "auth.roles.manage",
+                    "auth.roles.view",
+                    "auth.services.manage",
+                    "auth.settings.manage",
+                    "auth.settings.view",
+                    "auth.users.manage",
+                    "auth.users.view"
+                ]
+            },
+            {
+                "id": "<int>",
+                "name": "editor",
+                "system": true,
+                "permissions": []
+            },
+            {
+                "id": "<int>",
+                "name": "analyst",
+                "system": true,
+                "permissions": []
+            },
+            {
+                "id": "<int>",
+                "name": "viewer",
+                "system": true,
+                "permissions": [
+                    "auth.audit.view",
+                    "auth.keys.view",
+                    "auth.members.view",
+                    "auth.projects.view",
+                    "auth.roles.view",
+                    "auth.settings.view",
+                    "auth.users.view"
+                ]
+            }
+        ]
+    }
+}

@@ -1,0 +1,19 @@
+{
+    "status": 422,
+    "content_type": "application/json",
+    "body": {
+        "error": {
+            "code": "validation_failed",
+            "message": "The given data was invalid.",
+            "details": {
+                "parent_id": [
+                    "<string>"
+                ],
+                "position": [
+                    "The position field must be at least 0."
+                ]
+            },
+            "trace_id": "<string>"
+        }
+    }
+}
