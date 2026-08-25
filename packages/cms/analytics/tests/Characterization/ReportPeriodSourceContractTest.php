@@ -9,12 +9,12 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Queue;
 
 /**
- * Задача 0.9 — источник дат отчётов (инвариант И6 из design.md).
+ * Задача 0.9 — источник дат отчётов.
  *
- * ReportsController::period() валидирует ВСЁ тело запроса ($request->validate()
- * читает $request->all() = query + JSON body), но значения берёт только из
- * query-string ($request->query()). Отсюда асимметрия, которую фиксируют тесты:
- * невалидная дата в теле даёт 422, валидная дата в теле молча игнорируется.
+ * Канон (Д12, change fix-known-behavioral-defects): период берётся ТОЛЬКО из
+ * query-string — `ReportPeriodRequest` и валидирует, и читает `query()`.
+ * Тело запроса игнорируется целиком: даты в теле (валидные или нет) не влияют
+ * ни на статус, ни на окно джобы — экспорт ставится с дефолтным окном.
  *
  * Дефолтное окно — [now()-30d; now()] в формате Y-m-d, без учёта времени суток.
  * Время фиксируется Carbon::setTestNow, чтобы дефолт был литералом, а не «сегодня».
@@ -120,22 +120,20 @@ test('guard: 0.9 export query string wins over json body for the same keys', fun
         ->and($job->to)->toBe('2026-03-31');
 });
 
-test('guard: 0.9 export validates the json body it never reads', function () {
-    // Асимметрия: значение из тела не используется, но валидируется — 422 и джоба не ставится.
+test('guard: 0.9 export ignores the json body entirely', function () {
+    // Канон — query-string (Д12): тело не валидируется и не читается,
+    // невалидная дата в теле — 202 и джоба с дефолтным окном.
     Queue::fake([ExportReportJob::class]);
     $headers = actingAsAnalyticsOperator();
 
-    $response = $this->postJson('/api/admin/v1/projects/proj-1/analytics/export', [
+    $this->postJson('/api/admin/v1/projects/proj-1/analytics/export', [
         'from' => 'not-a-date',
-    ], $headers);
+    ], $headers)->assertStatus(202);
 
-    $response->assertStatus(422);
+    $job = pushedExportJob();
 
-    expect($response->json('error.code'))->toBe('validation_failed')
-        ->and(array_keys((array) $response->json('error.details')))->toBe(['from'])
-        ->and($response->json('error.details.from'))->toBe(['The from field must match the format Y-m-d.']);
-
-    Queue::assertNotPushed(ExportReportJob::class);
+    expect($job->from)->toBe(PERIOD_DEFAULT_FROM)
+        ->and($job->to)->toBe(PERIOD_DEFAULT_TO);
 });
 
 test('guard: 0.9 overview without dates queries clickhouse for the default window', function () {

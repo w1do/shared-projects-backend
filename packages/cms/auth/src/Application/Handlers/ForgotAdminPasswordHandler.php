@@ -27,6 +27,7 @@ final class ForgotAdminPasswordHandler
             return; // ответ одинаковый вне зависимости от существования аккаунта
         }
 
+        // Admin-ветка: доставка токена — почтовым каналом окружения (нотификации), вне MVP-кода.
         $this->tokens->issue($command->data->email, Guard::Admin, null);
     }
 }

@@ -366,13 +366,14 @@ test('contract: analytics export accepted with default period', function () {
     ResponseSnapshot::assertMatches($response, 'analytics-export-202-default-period');
 });
 
-test('contract: analytics export invalid period', function () {
+test('contract: analytics export invalid period in query', function () {
+    // Канон — query-string (Д12): невалидный период в query даёт 422, как и раньше.
     Queue::fake([ExportReportJob::class]);
     $headers = actingAsAnalyticsOperator();
 
     $response = $this->postJson(
-        '/api/admin/v1/projects/proj-1/analytics/export',
-        ['from' => '2026/08/01', 'to' => ''],
+        '/api/admin/v1/projects/proj-1/analytics/export?from=2026/08/01&to=',
+        [],
         $headers,
     );
 

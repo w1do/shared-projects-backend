@@ -6,6 +6,7 @@ namespace Cms\Pay\Domain\Models;
 
 use Cms\Pay\Database\Factories\PlanFactory;
 use Cms\Shared\Tenant\BelongsToProject;
+use Cms\Shared\Values\Money;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -50,6 +51,15 @@ class Plan extends Model
     public function subscriptions(): HasMany
     {
         return $this->hasMany(Subscription::class);
+    }
+
+    /**
+     * Цена периода строгим Money. Валюта в БД всегда в верхнем регистре
+     * (нормализация на записи + бэкфилл, Д11) — VO Currency это гарантирует.
+     */
+    public function price(): Money
+    {
+        return Money::of($this->price_minor, $this->currency);
     }
 
     public function isArchived(): bool

@@ -19,13 +19,12 @@ final class PushPaymentStatusEvent
     {
         $payment = $event->payment;
         $status = $event->status;
+        $amount = $payment->amount();
 
-        // Сырые поля платежа, не Money: в аналитику уходит валюта как есть,
-        // строгий VO отверг бы значения не в верхнем регистре (Б-список).
         Analytics::push($payment->user_key, [
             'name' => $status === PaymentStatus::Succeeded ? 'payment.succeeded' : "payment.{$status->value}",
-            'value_minor' => $status === PaymentStatus::Succeeded ? $payment->amount_minor : 0,
-            'currency' => $payment->currency,
+            'value_minor' => $status === PaymentStatus::Succeeded ? $amount->amountMinor : 0,
+            'currency' => $amount->currency->code,
             'props' => ['payment_id' => $payment->id],
         ], $payment->project_id);
     }

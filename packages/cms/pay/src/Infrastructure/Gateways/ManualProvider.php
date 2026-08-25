@@ -20,6 +20,12 @@ final class ManualProvider implements PaymentProvider
         return 'manual';
     }
 
+    public function configure(array $credentials): static
+    {
+        // Ручному провайдеру внешний конфиг не нужен
+        return $this;
+    }
+
     public function createPayment(Payment $payment): array
     {
         return ['external_id' => 'manual-'.$payment->id, 'redirect_url' => null, 'status' => 'pending'];

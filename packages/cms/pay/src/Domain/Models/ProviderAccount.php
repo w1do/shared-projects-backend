@@ -7,6 +7,16 @@ namespace Cms\Pay\Domain\Models;
 use Cms\Shared\Tenant\BelongsToProject;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * Пер-проектный конфиг платёжного провайдера: `ProviderRegistry::for()`
+ * передаёт расшифрованные credentials адаптеру через `configure()`.
+ *
+ * @property int $id
+ * @property string $project_id
+ * @property string $provider
+ * @property ?array<string, mixed> $credentials
+ * @property bool $enabled
+ */
 class ProviderAccount extends Model
 {
     use BelongsToProject;

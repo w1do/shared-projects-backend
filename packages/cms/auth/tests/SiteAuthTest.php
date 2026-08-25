@@ -7,7 +7,9 @@ use Cms\Auth\Application\Handlers\BlockUserHandler;
 use Cms\Auth\Domain\Models\Admin;
 use Cms\Auth\Domain\Models\ProjectApiKey;
 use Cms\Auth\Domain\Models\User;
+use Cms\Auth\Infrastructure\Notifications\SitePasswordResetNotification;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Notification;
 
 function siteKeys(): array
 {
@@ -111,6 +113,54 @@ test('site password reset invalidates tokens and is single use', function () {
     $this->postJson('/api/v1/auth/reset-password', [
         'email' => 's@example.com', 'token' => 'site-reset-1', 'password' => 'zzz-secret',
     ], ['X-Api-Key' => $keys['a']])->assertStatus(422);
+});
+
+test('site forgot password emails a working reset token', function () {
+    Notification::fake();
+    $keys = siteKeys();
+
+    $this->postJson('/api/v1/auth/register', ['email' => 'n@example.com', 'password' => 'secret-123'], ['X-Api-Key' => $keys['a']])
+        ->assertCreated();
+
+    // Ответ прежний: существование email не раскрывается.
+    $this->postJson('/api/v1/auth/forgot-password', ['email' => 'n@example.com'], ['X-Api-Key' => $keys['a']])
+        ->assertOk()
+        ->assertExactJson(['data' => ['sent' => true]]);
+
+    $user = User::acrossProjects()->where('email', 'n@example.com')->firstOrFail();
+
+    $plain = null;
+    Notification::assertSentTo(
+        $user,
+        SitePasswordResetNotification::class,
+        function (SitePasswordResetNotification $notification) use (&$plain) {
+            $plain = $notification->plainToken;
+
+            return true;
+        },
+    );
+
+    expect($plain)->toBeString()->not->toBe('');
+
+    // Доставленный токен — рабочий: полный цикл сброса завершается новым паролем.
+    $this->postJson('/api/v1/auth/reset-password', [
+        'email' => 'n@example.com', 'token' => $plain, 'password' => 'brand-new-77',
+    ], ['X-Api-Key' => $keys['a']])->assertOk();
+
+    $this->postJson('/api/v1/auth/login', ['email' => 'n@example.com', 'password' => 'brand-new-77'], ['X-Api-Key' => $keys['a']])
+        ->assertOk();
+});
+
+test('site forgot password for unknown email sends nothing', function () {
+    Notification::fake();
+    $keys = siteKeys();
+
+    // Ответ неотличим от успешного, но уведомление не уходит.
+    $this->postJson('/api/v1/auth/forgot-password', ['email' => 'ghost@example.com'], ['X-Api-Key' => $keys['a']])
+        ->assertOk()
+        ->assertExactJson(['data' => ['sent' => true]]);
+
+    Notification::assertNothingSent();
 });
 
 test('blocked user cannot log in and loses tokens', function () {

@@ -9,8 +9,9 @@ use Spatie\Permission\PermissionRegistrar;
 
 /**
  * Единственное место, где переключается team-контекст spatie (team_id = project_id).
- * Раньше swap был скопирован в пяти местах, и каждая копия сама решала, что делать
- * с предыдущим значением — отсюда две разные семантики восстановления.
+ * Раньше swap был скопирован в пяти местах с двумя разными семантиками восстановления;
+ * с закрытием дефекта Д6 семантика одна: контекст всегда возвращается к предыдущему
+ * значению, вложенные свопы не затирают внешний.
  *
  * Сброс кэша прав (`forgetCachedPermissions()`) в резолвер НЕ входит: это отдельный
  * эффект с другим сроком жизни (в проде store прав — redis с TTL 24 ч), его вызовы
@@ -37,31 +38,6 @@ final class AdminPermissionResolver
             return $body();
         } finally {
             $this->registrar->setPermissionsTeamId($previous);
-        }
-    }
-
-    /**
-     * То же, но контекст сбрасывается в null, а не восстанавливается.
-     *
-     * Отдельный метод, потому что это не «более простая» форма withTeam(), а другое
-     * наблюдаемое поведение: вложенный вызов потерял бы внешний team-контекст.
-     * Используется там, где так было и до рефакторинга (CreateProjectHandler,
-     * ResolveProject) — расхождение зафиксировано как дефект в задаче 9.2 и здесь
-     * сохраняется дословно.
-     *
-     * @template TReturn
-     *
-     * @param  Closure(): TReturn  $body
-     * @return TReturn
-     */
-    public function withTeamThenClear(string $projectId, Closure $body): mixed
-    {
-        $this->registrar->setPermissionsTeamId($projectId);
-
-        try {
-            return $body();
-        } finally {
-            $this->registrar->setPermissionsTeamId(null);
         }
     }
 }

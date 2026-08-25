@@ -7,6 +7,7 @@ namespace Cms\Auth\Application\Handlers;
 use Cms\Auth\Application\Commands\ForgotSitePasswordCommand;
 use Cms\Auth\Domain\Enums\Guard;
 use Cms\Auth\Domain\Models\User;
+use Cms\Auth\Infrastructure\Notifications\SitePasswordResetNotification;
 use Cms\Auth\Infrastructure\Persistence\AttemptThrottle;
 use Cms\Auth\Infrastructure\Persistence\PasswordResetTokens;
 
@@ -23,15 +24,17 @@ final class ForgotSitePasswordHandler
         $this->throttle->ensureNotExceeded($throttleKey, 3);
         $this->throttle->hit($throttleKey, 300);
 
-        $exists = User::acrossProjects()
+        $user = User::acrossProjects()
             ->where('project_id', $command->projectId)
             ->where('email', $command->data->email)
-            ->exists();
+            ->first();
 
-        if (! $exists) {
-            return;
+        if ($user === null) {
+            return; // ответ одинаковый вне зависимости от существования аккаунта
         }
 
-        $this->tokens->issue($command->data->email, Guard::Web, $command->projectId);
+        $plain = $this->tokens->issue($command->data->email, Guard::Web, $command->projectId);
+
+        $user->notify(new SitePasswordResetNotification($plain));
     }
 }

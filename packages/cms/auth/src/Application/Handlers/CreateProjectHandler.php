@@ -36,7 +36,7 @@ final class CreateProjectHandler
             $this->syncer->syncSystemRoles($project);
 
             // Сброс в null, а не восстановление предыдущего — поведение сохранено дословно (9.2).
-            $this->permissions->withTeamThenClear($project->id, function () use ($command): void {
+            $this->permissions->withTeam($project->id, function () use ($command): void {
                 $command->creator->assignRole(SystemRole::Owner->value);
             });
 

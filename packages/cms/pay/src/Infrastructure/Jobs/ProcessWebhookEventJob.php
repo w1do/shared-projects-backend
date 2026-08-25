@@ -22,14 +22,12 @@ use Illuminate\Support\Facades\Log;
  * Обработка вебхука в очереди: идемпотентно, с ретраями; HTTP уже ответил 200.
  *
  * Джоба НЕ наследует общий `Cms\Shared\Jobs\ProjectAwareJob` (задача 7.8) —
- * это невозможно по трём причинам сразу:
+ * это невозможно по двум причинам сразу:
  *  1. `ProjectAwareJob` требует `__construct(string $projectId)`, а проект
- *     вебхука на момент диспатча неизвестен: его источника сегодня нет вовсе
- *     (`ProviderRegistry::for()` игнорирует `$projectId`, в контроллере
- *     хардкод '-') — это и есть блокировка 7.9 задачей 9.2;
- *  2. проект определяется только ПОСЛЕ загрузки платежа по payload'у,
- *     то есть внутри handle(), а не до постановки в очередь;
- *  3. `ProjectAwareJob::handle()` объявлен final и без аргументов, что
+ *     вебхука определяется только ПОСЛЕ загрузки платежа по payload'у,
+ *     то есть внутри handle(), а не до постановки в очередь: регистрация
+ *     могла его не зарезолвить (`WebhookEvent.project_id` nullable, Д4);
+ *  2. `ProjectAwareJob::handle()` объявлен final и без аргументов, что
  *     несовместимо с инъекцией `ProviderRegistry`/`ApplyPaymentStatusHandler`.
  * Решение зеркалит `ExportReportJob` в analytics (задача 2.7).
  */
@@ -68,10 +66,15 @@ final class ProcessWebhookEventJob implements ShouldBeUnique, ShouldQueue
         }
 
         if ($payment === null) {
+            // Платёж не зарезолвился — project_id события остаётся NULL
             $event->forceFill(['status' => 'failed'])->save();
 
             return;
         }
+
+        // Тенант-колонка проставляется при обработке: регистрация могла
+        // не увидеть платёж (сохранится вместе с финальным статусом)
+        $event->forceFill(['project_id' => $payment->project_id]);
 
         $status = PaymentStatus::tryFrom((string) $parsed['status']);
         if ($status !== null) {

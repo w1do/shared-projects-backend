@@ -46,7 +46,7 @@ services:
   # Воркер очередей контента: автоперевод, sitemap и прочие фоновые задачи.
   content-worker:
     <<: *php-service
-    command: ["php", "artisan", "queue:work", "--sleep=2", "--tries=2", "--timeout=120"]
+    command: ["php", "artisan", "queue:work", "--queue=default,media", "--sleep=2", "--tries=2", "--timeout=120"]
     environment:
       APP_SERVICE: content-service
     env_file:

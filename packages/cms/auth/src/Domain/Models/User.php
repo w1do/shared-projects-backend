@@ -8,6 +8,7 @@ use Cms\Auth\Database\Factories\UserFactory;
 use Cms\Shared\Tenant\BelongsToProject;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
 use Laravel\Sanctum\HasApiTokens;
 
@@ -26,6 +27,7 @@ class User extends Authenticatable
     use BelongsToProject;
     use HasApiTokens;
     use HasFactory;
+    use Notifiable;
 
     protected $fillable = ['project_id', 'name', 'email', 'password'];
 

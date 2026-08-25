@@ -17,6 +17,12 @@ final class NullProvider implements PaymentProvider
         return 'null';
     }
 
+    public function configure(array $credentials): static
+    {
+        // Тестовому провайдеру внешний конфиг не нужен
+        return $this;
+    }
+
     public function createPayment(Payment $payment): array
     {
         return ['external_id' => 'null-'.$payment->id, 'redirect_url' => null, 'status' => 'pending'];

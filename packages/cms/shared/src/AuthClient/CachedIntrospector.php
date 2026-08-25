@@ -10,6 +10,10 @@ use Illuminate\Contracts\Cache\Repository as Cache;
 /**
  * Introspection с кэшем в Redis: TTL ограничен (секунды–минуты),
  * при недоступности auth-service валидный кэш продолжает работать до TTL.
+ *
+ * Точечной инвалидации нет намеренно: ключ записи включает project-суффикс,
+ * который на стороне отзыва неизвестен. Единственный механизм инвалидации —
+ * полный flush по сигналу auth-service (`POST /internal/cache-bust`).
  */
 class CachedIntrospector implements Introspector
 {
@@ -29,11 +33,6 @@ class CachedIntrospector implements Introspector
     public function apiKey(string $apiKey): IntrospectionResult
     {
         return $this->remember('key:'.hash('sha256', $apiKey), fn () => $this->client->introspectApiKey($apiKey));
-    }
-
-    public function forgetToken(string $bearerToken): void
-    {
-        $this->cache->forget('introspect:tok:'.hash('sha256', $bearerToken));
     }
 
     /** @param callable(): IntrospectionResult $resolve */

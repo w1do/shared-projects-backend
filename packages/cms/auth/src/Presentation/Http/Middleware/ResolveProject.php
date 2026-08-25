@@ -50,6 +50,6 @@ final class ResolveProject
 
         // Swap обязан пережить $next(): оборачивается весь конвейер запроса.
         // Octane: team-контекст не должен пережить запрос — отсюда сброс в null.
-        return $this->permissions->withTeamThenClear($project->id, fn (): Response => $next($request));
+        return $this->permissions->withTeam($project->id, fn (): Response => $next($request));
     }
 }

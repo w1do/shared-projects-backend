@@ -14,6 +14,7 @@ use Cms\Pay\Infrastructure\Gateways\ProviderRegistry;
 use Cms\Shared\Values\Money;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Support\Facades\DB;
+use Psr\Log\LoggerInterface;
 use Spatie\LaravelData\Optional;
 
 /**
@@ -21,15 +22,18 @@ use Spatie\LaravelData\Optional;
  * запись возврата. Проводка леджера и событие аналитики — синхронные
  * листенеры `PaymentRefunded` (И8).
  *
- * Вызов провайдера сознательно оставлен ВНЕ транзакции — это известный
- * дефект, зафиксированный списком 9.2; чинить его здесь запрещено, иначе
- * дифф рефакторинга перестанет быть проверяемым.
+ * Вызов провайдера сознательно ВНЕ транзакции: держать блокировки БД на
+ * время внешнего HTTP-вызова нельзя. Дефект «возврат у провайдера сделан,
+ * а запись упала» (Д2) закрыт восстановимостью: транзакция ретраится
+ * (attempts: 3), а её падение после успешного возврата оставляет критический
+ * лог с полным контекстом для ручной сверки — молча факт возврата не теряется.
  */
 final class RefundPaymentHandler
 {
     public function __construct(
         private readonly ProviderRegistry $providers,
         private readonly Dispatcher $events,
+        private readonly LoggerInterface $logger,
     ) {}
 
     public function handle(RefundPaymentCommand $command): Payment
@@ -52,17 +56,30 @@ final class RefundPaymentHandler
 
         $this->providers->for($payment->project_id, $payment->provider)->refund($payment, $amount);
 
-        return DB::transaction(function () use ($payment, $amount) {
-            $payment->refunded_minor += $amount->amountMinor;
-            // Возвращено всё — RefundedFull; остаток положительный — RefundedPartial.
-            $payment->status = $payment->refundable()->isNegative() || $payment->refundable()->isZero()
-                ? PaymentStatus::RefundedFull
-                : PaymentStatus::RefundedPartial;
-            $payment->save();
+        try {
+            return DB::transaction(function () use ($payment, $amount) {
+                $payment->refunded_minor += $amount->amountMinor;
+                // Возвращено всё — RefundedFull; остаток положительный — RefundedPartial.
+                $payment->status = $payment->refundable()->isNegative() || $payment->refundable()->isZero()
+                    ? PaymentStatus::RefundedFull
+                    : PaymentStatus::RefundedPartial;
+                $payment->save();
 
-            $this->events->dispatch(new PaymentRefunded($payment, $amount));
+                $this->events->dispatch(new PaymentRefunded($payment, $amount));
 
-            return $payment;
-        });
+                return $payment;
+            }, 3);
+        } catch (\Throwable $e) {
+            // Деньги у провайдера уже возвращены, а запись не сохранилась даже
+            // с ретраями — след для ручной сверки, затем исключение наружу.
+            $this->logger->critical('pay.refund.persist_failed', [
+                'payment_id' => $payment->id,
+                'provider' => $payment->provider,
+                'amount_minor' => $amount->amountMinor,
+                'currency' => $amount->currency->code,
+            ]);
+
+            throw $e;
+        }
     }
 }
