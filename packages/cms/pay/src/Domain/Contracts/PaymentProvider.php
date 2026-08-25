@@ -13,6 +13,15 @@ interface PaymentProvider
 {
     public function key(): string;
 
+    /**
+     * Пер-проектные креденшалы из `provider_accounts` (расшифрованные).
+     * Адаптеры без внешнего конфига (manual, null) реализуют no-op;
+     * реальные провайдеры берут отсюда ключи API и секреты подписи.
+     *
+     * @param  array<string, mixed>  $credentials
+     */
+    public function configure(array $credentials): static;
+
     /** @return array{external_id: ?string, redirect_url: ?string, status: string} */
     public function createPayment(Payment $payment): array;
 

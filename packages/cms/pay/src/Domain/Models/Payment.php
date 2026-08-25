@@ -58,6 +58,15 @@ class Payment extends Model
         return $this->hasMany(PaymentTransaction::class);
     }
 
+    /**
+     * Сумма платежа строгим Money. Валюта в БД всегда в верхнем регистре
+     * (нормализация на записи + бэкфилл, Д11) — VO Currency это гарантирует.
+     */
+    public function amount(): Money
+    {
+        return Money::of($this->amount_minor, $this->currency);
+    }
+
     public function refundableMinor(): int
     {
         return $this->amount_minor - $this->refunded_minor;

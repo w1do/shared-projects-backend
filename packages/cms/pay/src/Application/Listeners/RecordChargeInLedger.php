@@ -16,14 +16,13 @@ final class RecordChargeInLedger
     public function handle(PaymentSucceeded $event): void
     {
         $payment = $event->payment;
+        $amount = $payment->amount();
 
-        // Сырые поля платежа, не Money: леджер обязан принять ту же валюту,
-        // что записана в платеже, включая некорректный регистр (Б-список).
         $payment->transactions()->create([
             'project_id' => $payment->project_id,
             'type' => TransactionType::Charge,
-            'amount_minor' => $payment->amount_minor,
-            'currency' => $payment->currency,
+            'amount_minor' => $amount->amountMinor,
+            'currency' => $amount->currency->code,
             'created_at' => now(),
         ]);
     }

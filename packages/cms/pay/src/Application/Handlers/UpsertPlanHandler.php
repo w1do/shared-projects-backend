@@ -24,7 +24,11 @@ final class UpsertPlanHandler
             // дублирующий max(0, ...) снят.
             $plan->price_minor = $data->price_minor;
             if (! $data->currency instanceof Optional) {
-                $plan->currency = $data->currency;
+                // Валюта нормализуется к верхнему регистру на записи (Д11):
+                // приём не ужесточается (201 остаётся 201), но в БД попадает
+                // только ISO 4217 alpha-3 в верхнем регистре — строгий VO
+                // Currency на путях чтения полагается на это.
+                $plan->currency = strtoupper($data->currency);
             }
             if (! $data->interval instanceof Optional) {
                 $plan->interval = $data->interval;

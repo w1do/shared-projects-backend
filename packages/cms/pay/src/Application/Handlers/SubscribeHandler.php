@@ -41,13 +41,12 @@ final class SubscribeHandler
             'current_period_ends_at' => now()->add($plan->periodInterval()),
         ]);
 
-        // Сырые поля плана, не Money: строгий VO Currency отверг бы валюту
-        // в нижнем регистре, которая сейчас проходит весь цикл (Б-список).
+        $price = $plan->price();
         $payment = $this->createPayment->handle(new CreatePaymentCommand(
             userKey: $command->userKey->value,
             data: CreatePaymentDTO::from([
-                'amount_minor' => $plan->price_minor,
-                'currency' => $plan->currency,
+                'amount_minor' => $price->amountMinor,
+                'currency' => $price->currency->code,
                 'description' => "Subscription {$plan->code}",
             ]),
             idempotencyKey: "sub:{$subscription->id}:initial",

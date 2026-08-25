@@ -13,15 +13,13 @@ use Illuminate\Http\Request;
  * разговор с внешним миром, поэтому класс живёт в Infrastructure, а не в
  * Application (порт `PaymentProvider` работает с `Request`).
  *
- * Идентификатор проекта для фабрики адаптеров захардкожен как '-': маршрут
- * `/webhooks/{provider}` идёт без auth и без `ProjectContext`, а
- * `ProviderRegistry::for()` свой `$projectId` игнорирует. Это известный
- * дефект из списка 9.2 — сохраняется дословно до его решения (Б7).
+ * Verify-фаза идёт с `ProviderRegistry::WITHOUT_PROJECT`: маршрут
+ * `/webhooks/{provider}` без auth и без `ProjectContext`, проект известен
+ * только после резолва платежа из payload — пер-проектный конфиг адаптера
+ * на этой фазе сознательно не применяется.
  */
 final class ProviderWebhookGateway
 {
-    private const PROJECT_ID_PLACEHOLDER = '-';
-
     public function __construct(private readonly ProviderRegistry $providers) {}
 
     public function supports(string $provider): bool
@@ -45,6 +43,6 @@ final class ProviderWebhookGateway
 
     private function adapter(string $provider): PaymentProvider
     {
-        return $this->providers->for(self::PROJECT_ID_PLACEHOLDER, $provider);
+        return $this->providers->for(ProviderRegistry::WITHOUT_PROJECT, $provider);
     }
 }
