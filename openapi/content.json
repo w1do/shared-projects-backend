@@ -1,0 +1,539 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Platform Content API",
+        "description": "API сервиса content платформы",
+        "version": "0.1.0"
+    },
+    "paths": {
+        "/api/admin/v1/projects/{project}/content/categories": {
+            "get": {
+                "tags": [
+                    "content"
+                ],
+                "summary": "GET /api/admin/v1/projects/{project}/content/categories",
+                "operationId": "content_index_api_admin_v1_projects_project_content_categories",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                }
+            }
+        },
+        "/api/admin/v1/projects/{project}/content/categories/{category}": {
+            "put": {
+                "tags": [
+                    "content"
+                ],
+                "summary": "PUT /api/admin/v1/projects/{project}/content/categories/{category}",
+                "operationId": "content_update_api_admin_v1_projects_project_content_categories_category",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                }
+            }
+        },
+        "/api/admin/v1/projects/{project}/content/categories/{category}/move": {
+            "post": {
+                "tags": [
+                    "content"
+                ],
+                "summary": "POST /api/admin/v1/projects/{project}/content/categories/{category}/move",
+                "operationId": "content_move_api_admin_v1_projects_project_content_categories_category_move",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                }
+            }
+        },
+        "/api/admin/v1/projects/{project}/content/media": {
+            "get": {
+                "tags": [
+                    "content"
+                ],
+                "summary": "GET /api/admin/v1/projects/{project}/content/media",
+                "operationId": "content_index_api_admin_v1_projects_project_content_media",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                }
+            }
+        },
+        "/api/admin/v1/projects/{project}/content/pages": {
+            "get": {
+                "tags": [
+                    "content"
+                ],
+                "summary": "GET /api/admin/v1/projects/{project}/content/pages",
+                "operationId": "content_index_api_admin_v1_projects_project_content_pages",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                }
+            }
+        },
+        "/api/admin/v1/projects/{project}/content/pages/{page}": {
+            "put": {
+                "tags": [
+                    "content"
+                ],
+                "summary": "PUT /api/admin/v1/projects/{project}/content/pages/{page}",
+                "operationId": "content_update_api_admin_v1_projects_project_content_pages_page",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                }
+            }
+        },
+        "/api/admin/v1/projects/{project}/content/pages/{page}/status": {
+            "post": {
+                "tags": [
+                    "content"
+                ],
+                "summary": "POST /api/admin/v1/projects/{project}/content/pages/{page}/status",
+                "operationId": "content_changeStatus_api_admin_v1_projects_project_content_pages_page_status",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                }
+            }
+        },
+        "/api/admin/v1/projects/{project}/content/pages/{page}/revisions": {
+            "get": {
+                "tags": [
+                    "content"
+                ],
+                "summary": "GET /api/admin/v1/projects/{project}/content/pages/{page}/revisions",
+                "operationId": "content_revisions_api_admin_v1_projects_project_content_pages_page_revisions",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                }
+            }
+        },
+        "/api/admin/v1/projects/{project}/content/pages/{page}/revisions/{revision}/restore": {
+            "post": {
+                "tags": [
+                    "content"
+                ],
+                "summary": "POST /api/admin/v1/projects/{project}/content/pages/{page}/revisions/{revision}/restore",
+                "operationId": "content_restore_api_admin_v1_projects_project_content_pages_page_revisions_revision_restore",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                }
+            }
+        },
+        "/api/admin/v1/projects/{project}/content/posts": {
+            "get": {
+                "tags": [
+                    "content"
+                ],
+                "summary": "GET /api/admin/v1/projects/{project}/content/posts",
+                "operationId": "content_index_api_admin_v1_projects_project_content_posts",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                }
+            }
+        },
+        "/api/admin/v1/projects/{project}/content/posts/{post}": {
+            "get": {
+                "tags": [
+                    "content"
+                ],
+                "summary": "GET /api/admin/v1/projects/{project}/content/posts/{post}",
+                "operationId": "content_show_api_admin_v1_projects_project_content_posts_post",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                }
+            }
+        },
+        "/api/admin/v1/projects/{project}/content/posts/{post}/status": {
+            "post": {
+                "tags": [
+                    "content"
+                ],
+                "summary": "POST /api/admin/v1/projects/{project}/content/posts/{post}/status",
+                "operationId": "content_changeStatus_api_admin_v1_projects_project_content_posts_post_status",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                }
+            }
+        },
+        "/api/admin/v1/projects/{project}/content/posts/{post}/revisions": {
+            "get": {
+                "tags": [
+                    "content"
+                ],
+                "summary": "GET /api/admin/v1/projects/{project}/content/posts/{post}/revisions",
+                "operationId": "content_revisions_api_admin_v1_projects_project_content_posts_post_revisions",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                }
+            }
+        },
+        "/api/admin/v1/projects/{project}/content/posts/{post}/revisions/{revision}/restore": {
+            "post": {
+                "tags": [
+                    "content"
+                ],
+                "summary": "POST /api/admin/v1/projects/{project}/content/posts/{post}/revisions/{revision}/restore",
+                "operationId": "content_restore_api_admin_v1_projects_project_content_posts_post_revisions_revision_restore",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                }
+            }
+        },
+        "/api/admin/v1/projects/{project}/content/seo/{type}/{id}": {
+            "get": {
+                "tags": [
+                    "content"
+                ],
+                "summary": "GET /api/admin/v1/projects/{project}/content/seo/{type}/{id}",
+                "operationId": "content_show_api_admin_v1_projects_project_content_seo_type_id",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                }
+            }
+        },
+        "/api/v1/content/posts": {
+            "get": {
+                "tags": [
+                    "content"
+                ],
+                "summary": "GET /api/v1/content/posts",
+                "operationId": "content_posts_api_v1_content_posts",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                }
+            }
+        },
+        "/api/v1/content/posts/{slug}": {
+            "get": {
+                "tags": [
+                    "content"
+                ],
+                "summary": "GET /api/v1/content/posts/{slug}",
+                "operationId": "content_post_api_v1_content_posts_slug",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                }
+            }
+        },
+        "/api/v1/content/pages/{slug}": {
+            "get": {
+                "tags": [
+                    "content"
+                ],
+                "summary": "GET /api/v1/content/pages/{slug}",
+                "operationId": "content_page_api_v1_content_pages_slug",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                }
+            }
+        },
+        "/api/v1/content/categories": {
+            "get": {
+                "tags": [
+                    "content"
+                ],
+                "summary": "GET /api/v1/content/categories",
+                "operationId": "content_categories_api_v1_content_categories",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                }
+            }
+        },
+        "/sitemap.xml": {
+            "get": {
+                "tags": [
+                    "content"
+                ],
+                "summary": "GET /sitemap.xml",
+                "operationId": "content_sitemap_sitemap_xml",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                }
+            }
+        },
+        "/robots.txt": {
+            "get": {
+                "tags": [
+                    "content"
+                ],
+                "summary": "GET /robots.txt",
+                "operationId": "content_robots_robots_txt",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                }
+            }
+        },
+        "/api/admin/v1/projects/{project}/content/translations": {
+            "get": {
+                "tags": [
+                    "content"
+                ],
+                "summary": "GET /api/admin/v1/projects/{project}/content/translations",
+                "operationId": "content_index_api_admin_v1_projects_project_content_translations",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "content"
+                ],
+                "summary": "POST /api/admin/v1/projects/{project}/content/translations",
+                "operationId": "content_store_api_admin_v1_projects_project_content_translations",
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                }
+            }
+        },
+        "/api/admin/v1/projects/{project}/content/translations/{translation}": {
+            "put": {
+                "tags": [
+                    "content"
+                ],
+                "summary": "PUT /api/admin/v1/projects/{project}/content/translations/{translation}",
+                "operationId": "content_update_api_admin_v1_projects_project_content_translations_translation",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "content"
+                ],
+                "summary": "DELETE /api/admin/v1/projects/{project}/content/translations/{translation}",
+                "operationId": "content_destroy_api_admin_v1_projects_project_content_translations_translation",
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    }
+                }
+            }
+        },
+        "/api/admin/v1/projects/{project}/content/translations/translate-missing": {
+            "post": {
+                "tags": [
+                    "content"
+                ],
+                "summary": "POST /api/admin/v1/projects/{project}/content/translations/translate-missing",
+                "operationId": "content_translateMissing_api_admin_v1_projects_project_content_translations",
+                "responses": {
+                    "202": {
+                        "description": "Accepted"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "scheme": "bearer"
+            },
+            "apiKey": {
+                "type": "apiKey",
+                "name": "X-Api-Key",
+                "in": "header"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "content",
+            "description": "content"
+        }
+    ]
+}

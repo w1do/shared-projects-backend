@@ -1,0 +1,19 @@
+{
+    "name": "platform/self-hosted",
+    "description": "Shared multi-tenant backend platform: auth, content, analytics, pay services",
+    "type": "project",
+    "license": "proprietary",
+    "require": {
+        "php": "^8.3"
+    },
+    "scripts": {
+        "lint": "for d in apps/*; do (cd $d && ./vendor/bin/pint --test ../../packages/cms app) || exit 1; done",
+        "lint:fix": "for d in apps/*; do (cd $d && ./vendor/bin/pint ../../packages/cms app) || exit 1; done",
+        "stan": "for d in apps/*; do (cd $d && ./vendor/bin/phpstan analyse --memory-limit=1G) || exit 1; done",
+        "test": "for d in apps/*; do (cd $d && ./vendor/bin/pest) || exit 1; done",
+        "api": "./tools/cms api"
+    },
+    "config": {
+        "allow-plugins": false
+    }
+}

@@ -1,0 +1,80 @@
+#!/usr/bin/env bash
+# cms — единая точка управления платформой.
+#   ./tools/cms up|down|restart [service]     поднять/остановить стек или один сервис
+#   ./tools/cms migrate [service]             миграции всех сервисов или одного
+#   ./tools/cms test [service]                тесты всех сервисов или одного
+#   ./tools/cms artisan <service> <args...>   artisan внутри контейнера сервиса
+#   ./tools/cms api                           собрать единый swagger из всех сервисов
+#   ./tools/cms e2e [--headed] [args...]      сценарии панели (Playwright) против поднятого стека
+#   ./tools/cms seed-demo [project]           демо-контент в проект (по умолчанию demo)
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+COMPOSE="docker compose -f $ROOT/infra/compose/compose.yaml --project-directory $ROOT"
+SERVICES=(auth-service content-service analytics-service pay-service)
+
+usage() { grep '^#   ' "$0" | sed 's/^#   //'; exit 1; }
+
+cmd="${1:-}"; shift || true
+case "$cmd" in
+    up)       $COMPOSE up -d --build "${@}" ;;
+    down)     $COMPOSE down "${@}" ;;
+    restart)  $COMPOSE restart "${@}" ;;
+    ps)       $COMPOSE ps ;;
+    logs)     $COMPOSE logs -f "${@}" ;;
+    migrate)
+        targets=("${@:-${SERVICES[@]}}")
+        [ $# -gt 0 ] && targets=("$@")
+        for s in "${targets[@]}"; do
+            echo "==> migrate $s"
+            $COMPOSE exec -T -w "/var/www/apps/$s" "$s" php artisan migrate --force
+        done
+        ;;
+    test)
+        targets=("${SERVICES[@]}")
+        [ $# -gt 0 ] && targets=("$@")
+        for s in "${targets[@]}"; do
+            echo "==> test $s"
+            (cd "$ROOT/apps/$s" && php artisan test)
+        done
+        ;;
+    artisan)
+        s="$1"; shift
+        $COMPOSE exec -T -w "/var/www/apps/$s" "$s" php artisan "$@"
+        ;;
+    api)
+        exec "$ROOT/tools/build-openapi.sh"
+        ;;
+    seed-demo)
+        # Идентификатор берётся из auth-service: сидер не должен угадывать проект —
+        # в базе контента остаются записи прежних проектов после пересоздания.
+        key="${1:-demo}"
+        pid=$($COMPOSE exec -T -w /var/www/apps/auth-service auth-service php artisan tinker --execute="
+\$p = Cms\Auth\Domain\Models\Project::query()->where('key', '${key}')->first();
+echo \$p ? \$p->id : '';" 2>/dev/null | tr -d '\r\n ')
+        if [ -z "$pid" ]; then
+            echo "Проект '${key}' не найден в auth-service." >&2
+            exit 1
+        fi
+        echo "==> seed-demo: проект ${key} (${pid})"
+        $COMPOSE exec -T -e "DEMO_PROJECT_ID=$pid" -w /var/www/apps/content-service content-service \
+            php artisan db:seed --class="Database\Seeders\DemoContentSeeder" --force
+        ;;
+    e2e)
+        # Сценарии идут против стека, поднятого `up`: панель внутри контейнера
+        # собрана в production-режиме, поэтому после правок в frontends/admin
+        # её нужно перезапустить — иначе проверяется прежняя сборка.
+        echo "==> e2e: панель проверяется как есть в контейнере."
+        echo "    После правок в frontends/admin: docker restart platform-admin-front-1"
+        if [ "${1:-}" = "--headed" ]; then
+            shift
+            export E2E_HEADED=1
+            : "${DISPLAY:=:0}"; export DISPLAY
+        fi
+        # Библиотеки браузера, распакованные без root (см. docs/admin-console.md).
+        deps="$HOME/.local/lib/playwright-deps"
+        [ -d "$deps" ] && export LD_LIBRARY_PATH="$deps${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+        (cd "$ROOT/e2e" && npx playwright test "$@")
+        ;;
+    *) usage ;;
+esac

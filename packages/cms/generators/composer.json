@@ -1,0 +1,32 @@
+{
+    "name": "cms/generators",
+    "description": "CMS platform package: generators",
+    "type": "library",
+    "license": "proprietary",
+    "require": {
+        "php": "^8.3",
+        "cms/shared": "*",
+        "illuminate/support": "^13.0",
+        "illuminate/console": "^13.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Cms\\Generators\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Cms\\Generators\\Tests\\": "tests/"
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "version": "0.1.0",
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Cms\\Generators\\GeneratorsServiceProvider"
+            ]
+        }
+    }
+}

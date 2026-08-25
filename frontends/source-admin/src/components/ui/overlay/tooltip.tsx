@@ -1,0 +1,93 @@
+"use client";
+
+import * as React from "react";
+import * as TooltipPrimitive from "@radix-ui/react-tooltip";
+
+import { cn } from "@/lib/utils";
+
+const TooltipProvider = TooltipPrimitive.Provider;
+
+const TooltipRoot = TooltipPrimitive.Root;
+
+const TooltipTrigger = TooltipPrimitive.Trigger;
+
+const TooltipContent = React.forwardRef<
+  React.ElementRef<typeof TooltipPrimitive.Content>,
+  React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Content>
+>(({ className, sideOffset = 4, ...props }, ref) => (
+  <TooltipPrimitive.Portal>
+    <TooltipPrimitive.Content
+      ref={ref}
+      sideOffset={sideOffset}
+      className={cn(
+        "z-50 overflow-hidden rounded-(--radius-lg) bg-primary px-1 py-2 text-xs text-primary-foreground animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 origin-(--radix-tooltip-content-transform-origin)",
+        className,
+      )}
+      {...props}
+    />
+  </TooltipPrimitive.Portal>
+));
+TooltipContent.displayName = TooltipPrimitive.Content.displayName;
+
+type TooltipSide = TooltipPrimitive.TooltipContentProps["side"];
+type TooltipAlign = TooltipPrimitive.TooltipContentProps["align"];
+
+export interface TooltipProps {
+  /** Tooltip body. Accepts plain text or rich nodes. When empty, the trigger renders without a tooltip. */
+  title?: React.ReactNode;
+  /** Single element the tooltip is attached to. */
+  children: React.ReactElement;
+  side?: TooltipSide;
+  align?: TooltipAlign;
+  sideOffset?: number;
+  /** Delay before the tooltip opens, in ms. */
+  delayDuration?: number;
+  /** Visual treatment of the floating panel. */
+  variant?: "default" | "rich";
+  open?: boolean;
+  defaultOpen?: boolean;
+  onOpenChange?: (open: boolean) => void;
+}
+
+/**
+ * Lightweight, MUI-style tooltip wrapper.
+ *
+ * @example
+ * <Tooltip title="Delete">
+ *   <IconButton><Trash2 /></IconButton>
+ * </Tooltip>
+ */
+function Tooltip({
+  title,
+  children,
+  side = "top",
+  align = "center",
+  sideOffset,
+  delayDuration = 200,
+  variant = "default",
+  open,
+  defaultOpen,
+  onOpenChange,
+}: TooltipProps) {
+  if (title === null || title === undefined || title === "") {
+    return children;
+  }
+
+  return (
+    <TooltipProvider delayDuration={delayDuration}>
+      <TooltipRoot open={open} defaultOpen={defaultOpen} onOpenChange={onOpenChange}>
+        <TooltipTrigger asChild>{children}</TooltipTrigger>
+        <TooltipContent
+          side={side}
+          align={align}
+          sideOffset={sideOffset}
+          className={cn(variant === "rich" && "flex flex-col border border-border/10 shadow-md")}
+        >
+          {title}
+        </TooltipContent>
+      </TooltipRoot>
+    </TooltipProvider>
+  );
+}
+
+export { Tooltip, TooltipRoot, TooltipTrigger, TooltipContent, TooltipProvider };

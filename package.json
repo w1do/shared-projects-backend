@@ -1,0 +1,10 @@
+{
+  "name": "platform-self-hosted",
+  "private": true,
+  "workspaces": [
+    "packages/frontend/*"
+  ],
+  "scripts": {
+    "build": "npm run build --workspaces --if-present"
+  }
+}

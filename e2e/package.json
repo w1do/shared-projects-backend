@@ -1,0 +1,12 @@
+{
+  "name": "platform-e2e",
+  "private": true,
+  "description": "Сценарии Playwright: панель управления через gateway.",
+  "scripts": {
+    "test": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.62.1",
+    "@types/node": "^26.2.0"
+  }
+}

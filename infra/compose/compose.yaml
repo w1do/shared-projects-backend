@@ -1,0 +1,156 @@
+name: platform
+
+x-php-service: &php-service
+  build:
+    context: .
+    dockerfile: infra/docker/Dockerfile
+  restart: unless-stopped
+  volumes:
+    - .:/var/www
+  depends_on:
+    postgres:
+      condition: service_healthy
+    redis:
+      condition: service_started
+  networks: [platform]
+
+services:
+  gateway:
+    image: caddy:2
+    restart: unless-stopped
+    ports:
+      - "${GATEWAY_PORT:-8080}:80"
+    volumes:
+      - ./infra/gateway/Caddyfile:/etc/caddy/Caddyfile:ro
+    depends_on: [auth-service, content-service, analytics-service, pay-service, admin-front]
+    networks: [platform]
+
+  auth-service:
+    <<: *php-service
+    environment:
+      APP_SERVICE: auth-service
+      AUTO_MIGRATE: "1"
+    env_file: [./infra/services/auth-service/.env]
+
+  content-service:
+    <<: *php-service
+    environment:
+      APP_SERVICE: content-service
+      AUTO_MIGRATE: "1"
+    env_file:
+      - ./infra/services/content-service/.env
+      # локальные секреты (OPENAI_API_KEY и т.п.) — файл не в репозитории
+      - path: ./infra/services/content-service/.env.local
+        required: false
+
+  # Воркер очередей контента: автоперевод, sitemap и прочие фоновые задачи.
+  content-worker:
+    <<: *php-service
+    command: ["php", "artisan", "queue:work", "--sleep=2", "--tries=2", "--timeout=120"]
+    environment:
+      APP_SERVICE: content-service
+    env_file:
+      - ./infra/services/content-service/.env
+      - path: ./infra/services/content-service/.env.local
+        required: false
+
+  analytics-service:
+    <<: *php-service
+    environment:
+      APP_SERVICE: analytics-service
+      AUTO_MIGRATE: "1"
+    env_file: [./infra/services/analytics-service/.env]
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      clickhouse:
+        condition: service_started
+
+  pay-service:
+    <<: *php-service
+    environment:
+      APP_SERVICE: pay-service
+      AUTO_MIGRATE: "1"
+    env_file: [./infra/services/pay-service/.env]
+
+  admin-front:
+    image: oven/bun:1.2.21-alpine
+    restart: unless-stopped
+    working_dir: /app
+    command: sh -c "bun install --frozen-lockfile && bun run build && bun run start"
+    environment:
+      PORT: "3000"
+      HOSTNAME: "0.0.0.0"
+    env_file: [./infra/services/admin-front/.env]
+    volumes:
+      - ./frontends/admin:/app
+    expose:
+      - "3000"
+    networks: [platform]
+
+  minio:
+    image: minio/minio:latest
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: platform
+      MINIO_ROOT_PASSWORD: platform-secret
+    volumes:
+      - minio-data:/data
+    networks: [platform]
+
+  minio-init:
+    image: minio/mc:latest
+    depends_on: [minio]
+    entrypoint: >
+      sh -c "sleep 3 && mc alias set local http://minio:9000 platform platform-secret &&
+             mc mb -p local/media && mc anonymous set download local/media"
+    networks: [platform]
+
+  postgres:
+    image: postgres:17
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: platform
+      POSTGRES_PASSWORD: platform
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./infra/compose/init-databases.sql:/docker-entrypoint-initdb.d/init-databases.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U platform"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+    networks: [platform]
+
+  redis:
+    image: redis:7
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis-data:/data
+    networks: [platform]
+
+  clickhouse:
+    image: clickhouse/clickhouse-server:24.8
+    restart: unless-stopped
+    environment:
+      CLICKHOUSE_DB: analytics
+      CLICKHOUSE_USER: platform
+      CLICKHOUSE_PASSWORD: platform
+    volumes:
+      - clickhouse-data:/var/lib/clickhouse
+    ulimits:
+      nofile: { soft: 262144, hard: 262144 }
+    networks: [platform]
+
+volumes:
+  minio-data:
+  postgres-data:
+  redis-data:
+  clickhouse-data:
+
+networks:
+  platform:

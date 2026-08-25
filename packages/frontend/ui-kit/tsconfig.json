@@ -1,0 +1,32 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "strict": false,
+    "jsx": "react-jsx",
+    "skipLibCheck": true,
+    "noEmit": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/lib/*": [
+        "src/lib/*"
+      ],
+      "@/components/ui/*": [
+        "src/ui/*"
+      ],
+      "@/hooks/*": [
+        "src/hooks/*"
+      ],
+      "@/components/shared/*": [
+        "src/shared/*"
+      ],
+      "@/components/admin/*": [
+        "src/admin/*"
+      ]
+    }
+  },
+  "include": [
+    "src"
+  ]
+}

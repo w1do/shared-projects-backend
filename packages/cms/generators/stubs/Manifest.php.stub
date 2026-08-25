@@ -1,0 +1,29 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Cms\{{Studly}};
+
+use Cms\Contracts\Manifest\NavigationItem;
+use Cms\Contracts\Manifest\PermissionDefinition;
+use Cms\Contracts\Manifest\ServiceManifest;
+
+final class {{Studly}}Manifest
+{
+    public const VERSION = '0.1.0';
+
+    public static function build(): ServiceManifest
+    {
+        return new ServiceManifest(
+            key: '{{name}}',
+            version: self::VERSION,
+            permissions: [
+                new PermissionDefinition('{{name}}.items.view', 'Просмотр', 'items'),
+                new PermissionDefinition('{{name}}.items.manage', 'Управление', 'items'),
+            ],
+            navigation: [
+                new NavigationItem('{{name}}.items', 'nav.{{name}}.items', '/{{name}}', '{{name}}.items.view', 'box', 90),
+            ],
+        );
+    }
+}

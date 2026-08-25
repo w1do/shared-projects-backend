@@ -1,0 +1,34 @@
+{
+    "name": "cms/localization",
+    "description": "CMS platform package: project translation dictionary and AI translation fill",
+    "type": "library",
+    "license": "proprietary",
+    "require": {
+        "php": "^8.3",
+        "cms/shared": "*",
+        "cms/ai": "*",
+        "spatie/laravel-data": "^4.0",
+        "illuminate/support": "^13.0",
+        "illuminate/database": "^13.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Cms\\Localization\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Cms\\Localization\\Tests\\": "tests/"
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "version": "0.1.0",
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Cms\\Localization\\Infrastructure\\Providers\\LocalizationServiceProvider"
+            ]
+        }
+    }
+}

@@ -1,0 +1,62 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Cms\Pay\Application\Handlers;
+
+use Cms\Pay\Application\Commands\CreatePaymentCommand;
+use Cms\Pay\Application\Commands\SubscribeCommand;
+use Cms\Pay\Application\DTOs\Payment\CreatePaymentDTO;
+use Cms\Pay\Domain\Models\Payment;
+use Cms\Pay\Domain\Models\Plan;
+use Cms\Pay\Domain\Models\Subscription;
+use Cms\Shared\Analytics\Analytics;
+use Illuminate\Validation\ValidationException;
+
+/** Оформление подписки: создаётся подписка и платёж первого периода. */
+final class SubscribeHandler
+{
+    public function __construct(private readonly CreatePaymentHandler $createPayment) {}
+
+    /** @return array{subscription: Subscription, payment: Payment} */
+    public function handle(SubscribeCommand $command): array
+    {
+        $plan = Plan::query()->where('code', $command->planCode)->whereNull('archived_at')->first();
+        if ($plan === null) {
+            throw ValidationException::withMessages(['plan_code' => ['Unknown or archived plan.']]);
+        }
+
+        $exists = Subscription::query()
+            ->where('user_key', $command->userKey)
+            ->where('plan_id', $plan->id)
+            ->whereIn('status', ['active', 'past_due', 'paused'])
+            ->exists();
+        if ($exists) {
+            throw ValidationException::withMessages(['plan_code' => ['Subscription already exists.']]);
+        }
+
+        $subscription = Subscription::create([
+            'user_key' => $command->userKey,
+            'plan_id' => $plan->id,
+            'current_period_ends_at' => now()->add($plan->periodInterval()),
+        ]);
+
+        $payment = $this->createPayment->handle(new CreatePaymentCommand(
+            userKey: $command->userKey,
+            data: CreatePaymentDTO::from([
+                'amount_minor' => $plan->price_minor,
+                'currency' => $plan->currency,
+                'description' => "Subscription {$plan->code}",
+            ]),
+            idempotencyKey: "sub:{$subscription->id}:initial",
+            subscriptionId: $subscription->id,
+        ));
+
+        Analytics::push($command->userKey, [
+            'name' => 'subscription.created',
+            'props' => ['plan' => $plan->code, 'subscription_id' => $subscription->id],
+        ], $subscription->project_id);
+
+        return ['subscription' => $subscription->fresh('plan') ?? $subscription, 'payment' => $payment];
+    }
+}

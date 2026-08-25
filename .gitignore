@@ -1,0 +1,25 @@
+/vendor/
+/node_modules/
+.env
+.env.backup
+.phpunit.result.cache
+/apps/*/vendor/
+/apps/*/node_modules/
+/apps/*/storage/logs/*
+/apps/*/storage/framework/cache/data/*
+/apps/*/storage/framework/sessions/*
+/apps/*/storage/framework/views/*
+/apps/*/database/database.sqlite
+/apps/*/.env
+/apps/*/.phpunit.cache
+/frontends/admin/dist/
+/frontends/admin/node_modules/
+/packages/frontend/*/node_modules/
+infra/services/*/.env
+
+# локальные секреты окружений — не коммитятся
+infra/services/*/.env.local
+/frontends/source-admin/node_modules/
+/frontends/admin/.next/
+/e2e/node_modules/
+/e2e/.artifacts/

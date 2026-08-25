@@ -1,0 +1,35 @@
+{
+    "name": "cms/analytics",
+    "description": "CMS platform package: analytics",
+    "type": "library",
+    "license": "proprietary",
+    "require": {
+        "php": "^8.3",
+        "cms/shared": "*",
+        "spatie/laravel-data": "^4.0",
+        "illuminate/support": "^13.0",
+        "illuminate/database": "^13.0",
+        "illuminate/http": "^13.0",
+        "illuminate/redis": "^13.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Cms\\Analytics\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Cms\\Analytics\\Tests\\": "tests/"
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "version": "0.1.0",
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Cms\\Analytics\\AnalyticsServiceProvider"
+            ]
+        }
+    }
+}

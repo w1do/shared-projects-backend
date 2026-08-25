@@ -1,0 +1,32 @@
+{
+    "name": "cms/ai",
+    "description": "CMS platform package: AI operations contract over laravel/ai",
+    "type": "library",
+    "license": "proprietary",
+    "require": {
+        "php": "^8.3",
+        "spatie/laravel-data": "^4.0",
+        "illuminate/support": "^13.0",
+        "laravel/ai": "^0.11"
+    },
+    "autoload": {
+        "psr-4": {
+            "Cms\\Ai\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Cms\\Ai\\Tests\\": "tests/"
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "version": "0.1.0",
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Cms\\Ai\\AiPackageServiceProvider"
+            ]
+        }
+    }
+}

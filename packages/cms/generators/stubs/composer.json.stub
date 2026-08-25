@@ -1,0 +1,31 @@
+{
+    "name": "cms/{{name}}",
+    "description": "CMS platform module: {{name}}",
+    "type": "library",
+    "version": "0.1.0",
+    "license": "proprietary",
+    "require": {
+        "php": "^8.3",
+        "cms/shared": "*",
+        "spatie/laravel-data": "^4.0",
+        "illuminate/support": "^13.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Cms\\{{Studly}}\\": "src/",
+            "Cms\\{{Studly}}\\Database\\Factories\\": "database/factories/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Cms\\{{Studly}}\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": ["Cms\\{{Studly}}\\{{Studly}}ServiceProvider"]
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}

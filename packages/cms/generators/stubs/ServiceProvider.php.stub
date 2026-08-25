@@ -1,0 +1,22 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Cms\{{Studly}};
+
+use Cms\{{Studly}}\Console\PublishManifestCommand;
+use Illuminate\Support\ServiceProvider;
+
+final class {{Studly}}ServiceProvider extends ServiceProvider
+{
+    public function boot(): void
+    {
+        $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
+        $this->loadRoutesFrom(__DIR__.'/../routes/admin.php');
+        $this->loadRoutesFrom(__DIR__.'/../routes/public.php');
+
+        if ($this->app->runningInConsole()) {
+            $this->commands([PublishManifestCommand::class]);
+        }
+    }
+}

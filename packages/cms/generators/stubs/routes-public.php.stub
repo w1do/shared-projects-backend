@@ -1,0 +1,11 @@
+<?php
+
+use Cms\Shared\AuthClient\Middleware\AuthorizeProjectKey;
+use Cms\Shared\AuthClient\Middleware\EnsureServiceEnabled;
+use Illuminate\Support\Facades\Route;
+
+Route::prefix('api/v1/{{name}}')
+    ->middleware([AuthorizeProjectKey::class, EnsureServiceEnabled::class.':{{name}}'])
+    ->group(function () {
+        //
+    });

@@ -1,0 +1,36 @@
+{
+    "name": "cms/shared",
+    "description": "CMS platform package: shared",
+    "type": "library",
+    "license": "proprietary",
+    "require": {
+        "php": "^8.3",
+        "illuminate/support": "^13.0",
+        "illuminate/http": "^13.0",
+        "illuminate/database": "^13.0",
+        "illuminate/queue": "^13.0",
+        "illuminate/contracts": "^13.0",
+        "illuminate/cache": "^13.0",
+        "cms/contracts": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Cms\\Shared\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Cms\\Shared\\Tests\\": "tests/"
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Cms\\Shared\\SharedServiceProvider"
+            ]
+        }
+    },
+    "version": "0.1.0"
+}

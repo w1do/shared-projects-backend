@@ -1,0 +1,1071 @@
+[
+  {
+    "id": "AET-10482",
+    "customer": {
+      "name": "Mai Tran",
+      "email": "mai.tran@aetheria.com",
+      "phone": "+84 908 123 456",
+      "initials": "MT",
+      "shippingAddress": {
+        "street": "88 Le Loi, District 1",
+        "city": "Ho Chi Minh City",
+        "state": "HCMC",
+        "postalCode": "70000",
+        "country": "Vietnam"
+      },
+      "billingAddress": {
+        "street": "88 Le Loi, District 1",
+        "city": "Ho Chi Minh City",
+        "state": "HCMC",
+        "postalCode": "70000",
+        "country": "Vietnam"
+      }
+    },
+    "items": [
+      {
+        "id": "p1",
+        "name": "Bichup Self-Generating Essence",
+        "brand": "WHOO",
+        "sku": "WH-BCH-50",
+        "price": 220,
+        "quantity": 1,
+        "image": "https://images.unsplash.com/photo-1741896135518-ce303a539bc0?w=800&fit=crop",
+        "gradient": ["#dad9fc", "#9580ff"]
+      },
+      {
+        "id": "p2",
+        "name": "The First Geniture Ampoule",
+        "brand": "Ohui",
+        "sku": "OH-FGA-45",
+        "price": 184,
+        "quantity": 1,
+        "image": "https://images.unsplash.com/photo-1741896134904-062a3b21abf?w=800&fit=crop",
+        "gradient": ["#e8e8e8", "#181925"]
+      }
+    ],
+    "status": "Paid",
+    "paymentMethod": "Credit Card",
+    "shippingMethod": "Express Shipping",
+    "trackingNumber": "DHL-AETH-98402",
+    "placedAt": "2026-06-03T14:12:00Z",
+    "subtotal": 404,
+    "shippingFee": 15,
+    "tax": 40.4,
+    "discount": 47.4,
+    "total": 412,
+    "timeline": [
+      {
+        "title": "Order Placed",
+        "timestamp": "June 03, 2026 · 14:12 PM",
+        "description": "Customer checked out successfully via Online Store.",
+        "done": true
+      },
+      {
+        "title": "Payment Confirmed",
+        "timestamp": "June 03, 2026 · 14:12 PM",
+        "description": "Payment captured successfully via Stripe.",
+        "done": true
+      },
+      {
+        "title": "Processing Fulfillment",
+        "timestamp": "June 03, 2026 · 14:18 PM",
+        "description": "Order is being packed at HCMC Warehouse.",
+        "done": true
+      },
+      {
+        "title": "Shipped & Dispatched",
+        "timestamp": "Pending",
+        "description": "Hand off to courier service.",
+        "done": false
+      }
+    ]
+  },
+  {
+    "id": "AET-10481",
+    "customer": {
+      "name": "Soo-jin Park",
+      "email": "soojin.park@kbeauty.co.kr",
+      "phone": "+82 10 5555 8822",
+      "initials": "SP",
+      "shippingAddress": {
+        "street": "24-10 Garosu-gil, Gangnam-gu",
+        "city": "Seoul",
+        "state": "Seoul",
+        "postalCode": "06035",
+        "country": "South Korea"
+      },
+      "billingAddress": {
+        "street": "24-10 Garosu-gil, Gangnam-gu",
+        "city": "Seoul",
+        "state": "Seoul",
+        "postalCode": "06035",
+        "country": "South Korea"
+      }
+    },
+    "items": [
+      {
+        "id": "p3",
+        "name": "Propolis Energy Ampule",
+        "brand": "CNP Laboratory",
+        "sku": "CN-PRP-30",
+        "price": 42,
+        "quantity": 1,
+        "image": "https://images.unsplash.com/photo-1713768704571-6aeb0d0e5105?w=800&fit=crop",
+        "gradient": ["#def6e4", "#9580ff"]
+      }
+    ],
+    "status": "Shipped",
+    "paymentMethod": "Apple Pay",
+    "shippingMethod": "Standard Shipping",
+    "trackingNumber": "KPOST-8840294",
+    "placedAt": "2026-06-03T13:46:00Z",
+    "subtotal": 42,
+    "shippingFee": 0,
+    "tax": 0,
+    "discount": 0,
+    "total": 42,
+    "timeline": [
+      {
+        "title": "Order Placed",
+        "timestamp": "June 03, 2026 · 13:46 PM",
+        "description": "Customer placed the order.",
+        "done": true
+      },
+      {
+        "title": "Payment Confirmed",
+        "timestamp": "June 03, 2026 · 13:46 PM",
+        "description": "Payment captured successfully via Apple Pay.",
+        "done": true
+      },
+      {
+        "title": "Packed & Ready",
+        "timestamp": "June 03, 2026 · 14:05 PM",
+        "description": "Package ready for pick-up at Seoul Hub.",
+        "done": true
+      },
+      {
+        "title": "Dispatched from Hub",
+        "timestamp": "June 03, 2026 · 14:20 PM",
+        "description": "In transit with Korea Post. Courier tracking number updated.",
+        "done": true
+      }
+    ]
+  },
+  {
+    "id": "AET-10480",
+    "customer": {
+      "name": "Hana Kobayashi",
+      "email": "hana.k@tokyolink.jp",
+      "phone": "+81 90 9988 7766",
+      "initials": "HK",
+      "shippingAddress": {
+        "street": "2-chome Minami-Aoyama, Minato-ku",
+        "city": "Tokyo",
+        "state": "Tokyo",
+        "postalCode": "107-0062",
+        "country": "Japan"
+      },
+      "billingAddress": {
+        "street": "2-chome Minami-Aoyama, Minato-ku",
+        "city": "Tokyo",
+        "state": "Tokyo",
+        "postalCode": "107-0062",
+        "country": "Japan"
+      }
+    },
+    "items": [
+      {
+        "id": "p4",
+        "name": "Hyaluronic Dewy Radiance Toner",
+        "brand": "AHC",
+        "sku": "AH-HYL-100",
+        "price": 28,
+        "quantity": 2,
+        "image": "https://images.unsplash.com/photo-1709551264845-e9dddd775388?w=800&fit=crop",
+        "gradient": ["#bed5fe", "#181925"]
+      },
+      {
+        "id": "p5",
+        "name": "Re:dium Recharging Cream",
+        "brand": "Daycell",
+        "sku": "DC-RDM-50",
+        "price": 64,
+        "quantity": 1,
+        "image": "https://images.unsplash.com/photo-1729952620303-4dc47fb5d93a?w=800&fit=crop",
+        "gradient": ["#dad9fc", "#181925"]
+      }
+    ],
+    "status": "Processing",
+    "paymentMethod": "Credit Card",
+    "shippingMethod": "Express Shipping",
+    "trackingNumber": null,
+    "placedAt": "2026-06-03T13:24:00Z",
+    "subtotal": 120,
+    "shippingFee": 8,
+    "tax": 12,
+    "discount": 20,
+    "total": 120,
+    "timeline": [
+      {
+        "title": "Order Placed",
+        "timestamp": "June 03, 2026 · 13:24 PM",
+        "description": "Customer checked out via Visa card.",
+        "done": true
+      },
+      {
+        "title": "Payment Confirmed",
+        "timestamp": "June 03, 2026 · 13:24 PM",
+        "description": "Authorization captured successfully.",
+        "done": true
+      },
+      {
+        "title": "Fulfillment in Progress",
+        "timestamp": "June 03, 2026 · 13:50 PM",
+        "description": "Allocated to Tokyo Central fulfillment team.",
+        "done": true
+      },
+      {
+        "title": "Shipped & Dispatched",
+        "timestamp": "Pending",
+        "description": "Awaiting tracking ID assignment.",
+        "done": false
+      }
+    ]
+  },
+  {
+    "id": "AET-10479",
+    "customer": {
+      "name": "Elena Rossi",
+      "email": "elena.rossi@milanodesign.it",
+      "phone": "+39 345 6789 012",
+      "initials": "ER",
+      "shippingAddress": {
+        "street": "Via Montenapoleone 12",
+        "city": "Milano",
+        "state": "Milano",
+        "postalCode": "20121",
+        "country": "Italy"
+      },
+      "billingAddress": {
+        "street": "Via Montenapoleone 12",
+        "city": "Milano",
+        "state": "Milano",
+        "postalCode": "20121",
+        "country": "Italy"
+      }
+    },
+    "items": [
+      {
+        "id": "p1",
+        "name": "Bichup Self-Generating Essence",
+        "brand": "WHOO",
+        "sku": "WH-BCH-50",
+        "price": 220,
+        "quantity": 1,
+        "image": "https://images.unsplash.com/photo-1741896135518-ce303a539bc0?w=800&fit=crop",
+        "gradient": ["#dad9fc", "#9580ff"]
+      }
+    ],
+    "status": "Paid",
+    "paymentMethod": "PayPal",
+    "shippingMethod": "Standard Shipping",
+    "trackingNumber": null,
+    "placedAt": "2026-06-03T12:24:00Z",
+    "subtotal": 220,
+    "shippingFee": 0,
+    "tax": 22,
+    "discount": 74,
+    "total": 168,
+    "timeline": [
+      {
+        "title": "Order Placed",
+        "timestamp": "June 03, 2026 · 12:24 PM",
+        "description": "Customer authorized purchase on PayPal.",
+        "done": true
+      },
+      {
+        "title": "Payment Confirmed",
+        "timestamp": "June 03, 2026 · 12:24 PM",
+        "description": "PayPal instant payment verified.",
+        "done": true
+      },
+      {
+        "title": "Processing Fulfillment",
+        "timestamp": "Pending",
+        "description": "Sent to Frankfurt distribution center.",
+        "done": false
+      }
+    ]
+  },
+  {
+    "id": "AET-10478",
+    "customer": {
+      "name": "Noa Levi",
+      "email": "noa.levi@telaviv.org",
+      "phone": "+972 54 123 4567",
+      "initials": "NL",
+      "shippingAddress": {
+        "street": "Rothschild Boulevard 42",
+        "city": "Tel Aviv",
+        "state": "Tel Aviv",
+        "postalCode": "6512104",
+        "country": "Israel"
+      },
+      "billingAddress": {
+        "street": "Rothschild Boulevard 42",
+        "city": "Tel Aviv",
+        "state": "Tel Aviv",
+        "postalCode": "6512104",
+        "country": "Israel"
+      }
+    },
+    "items": [
+      {
+        "id": "p2",
+        "name": "The First Geniture Ampoule",
+        "brand": "Ohui",
+        "sku": "OH-FGA-45",
+        "price": 184,
+        "quantity": 2,
+        "image": "https://images.unsplash.com/photo-1741896134904-062a3b21abf?w=800&fit=crop",
+        "gradient": ["#e8e8e8", "#181925"]
+      }
+    ],
+    "status": "Pending",
+    "paymentMethod": "Bank Transfer",
+    "shippingMethod": "Express Shipping",
+    "trackingNumber": null,
+    "placedAt": "2026-06-03T11:24:00Z",
+    "subtotal": 368,
+    "shippingFee": 20,
+    "tax": 36.8,
+    "discount": 56.8,
+    "total": 368,
+    "timeline": [
+      {
+        "title": "Order Initiated",
+        "timestamp": "June 03, 2026 · 11:24 AM",
+        "description": "Customer chose Direct Bank Transfer. Invoice generated.",
+        "done": true
+      },
+      {
+        "title": "Awaiting Bank Clearance",
+        "timestamp": "Pending",
+        "description": "Waiting for manual bank remittance verification by billing team.",
+        "done": false
+      }
+    ]
+  },
+  {
+    "id": "AET-10477",
+    "customer": {
+      "name": "Alexander Wright",
+      "email": "alex.wright@creative-lab.co.uk",
+      "phone": "+44 7911 123456",
+      "initials": "AW",
+      "shippingAddress": {
+        "street": "12 Kingsland Road, Shoreditch",
+        "city": "London",
+        "state": "London",
+        "postalCode": "E2 8DA",
+        "country": "United Kingdom"
+      },
+      "billingAddress": {
+        "street": "12 Kingsland Road, Shoreditch",
+        "city": "London",
+        "state": "London",
+        "postalCode": "E2 8DA",
+        "country": "United Kingdom"
+      }
+    },
+    "items": [
+      {
+        "id": "p5",
+        "name": "Re:dium Recharging Cream",
+        "brand": "Daycell",
+        "sku": "DC-RDM-50",
+        "price": 64,
+        "quantity": 2,
+        "image": "https://images.unsplash.com/photo-1729952620303-4dc47fb5d93a?w=800&fit=crop",
+        "gradient": ["#dad9fc", "#181925"]
+      },
+      {
+        "id": "p3",
+        "name": "Propolis Energy Ampule",
+        "brand": "CNP Laboratory",
+        "sku": "CN-PRP-30",
+        "price": 42,
+        "quantity": 2,
+        "image": "https://images.unsplash.com/photo-1713768704571-6aeb0d0e5105?w=800&fit=crop",
+        "gradient": ["#def6e4", "#9580ff"]
+      }
+    ],
+    "status": "Refunded",
+    "paymentMethod": "Credit Card",
+    "shippingMethod": "Standard Shipping",
+    "trackingNumber": "UPS-GB-998877",
+    "placedAt": "2026-06-02T16:40:00Z",
+    "subtotal": 212,
+    "shippingFee": 0,
+    "tax": 21.2,
+    "discount": 0,
+    "total": 233.2,
+    "timeline": [
+      {
+        "title": "Order Placed",
+        "timestamp": "June 02, 2026 · 16:40 PM",
+        "description": "Customer checked out.",
+        "done": true
+      },
+      {
+        "title": "Payment Confirmed",
+        "timestamp": "June 02, 2026 · 16:40 PM",
+        "description": "Payment captured successfully.",
+        "done": true
+      },
+      {
+        "title": "Shipped & Dispatched",
+        "timestamp": "June 03, 2026 · 09:15 AM",
+        "description": "Dispatched from London Hub via UPS.",
+        "done": true
+      },
+      {
+        "title": "Refund Initiated",
+        "timestamp": "June 03, 2026 · 10:30 AM",
+        "description": "Customer requested cancellation due to wrong shipping address. Refunded fully.",
+        "done": true
+      }
+    ]
+  },
+  {
+    "id": "AET-10476",
+    "customer": {
+      "name": "Sophie Dubois",
+      "email": "sophie.dubois@paris-style.fr",
+      "phone": "+33 6 1234 5678",
+      "initials": "SD",
+      "shippingAddress": {
+        "street": "18 Rue du Faubourg Saint-Honoré",
+        "city": "Paris",
+        "state": "Paris",
+        "postalCode": "75008",
+        "country": "France"
+      },
+      "billingAddress": {
+        "street": "18 Rue du Faubourg Saint-Honoré",
+        "city": "Paris",
+        "state": "Paris",
+        "postalCode": "75008",
+        "country": "France"
+      }
+    },
+    "items": [
+      {
+        "id": "p1",
+        "name": "Bichup Self-Generating Essence",
+        "brand": "WHOO",
+        "sku": "WH-BCH-50",
+        "price": 220,
+        "quantity": 3,
+        "image": "https://images.unsplash.com/photo-1741896135518-ce303a539bc0?w=800&fit=crop",
+        "gradient": ["#dad9fc", "#9580ff"]
+      }
+    ],
+    "status": "Shipped",
+    "paymentMethod": "Credit Card",
+    "shippingMethod": "Express Shipping",
+    "trackingNumber": "FEDEX-FR-77112",
+    "placedAt": "2026-06-02T10:15:00Z",
+    "subtotal": 660,
+    "shippingFee": 25,
+    "tax": 66,
+    "discount": 100,
+    "total": 651,
+    "timeline": [
+      {
+        "title": "Order Placed",
+        "timestamp": "June 02, 2026 · 10:15 AM",
+        "description": "VIP checked out via AMEX card.",
+        "done": true
+      },
+      {
+        "title": "Payment Confirmed",
+        "timestamp": "June 02, 2026 · 10:17 AM",
+        "description": "AMEX payment authorized and captured.",
+        "done": true
+      },
+      {
+        "title": "Shipped & Dispatched",
+        "timestamp": "June 02, 2026 · 16:30 PM",
+        "description": "Dispatched from Frankfurt Warehouse via FedEx Priority.",
+        "done": true
+      }
+    ]
+  },
+  {
+    "id": "AET-10475",
+    "customer": {
+      "name": "Marcus Chen",
+      "email": "marcus.chen@techventures.sg",
+      "phone": "+65 9123 4567",
+      "initials": "MC",
+      "shippingAddress": {
+        "street": "12 Marina Boulevard, Tower 3",
+        "city": "Singapore",
+        "state": "Singapore",
+        "postalCode": "018982",
+        "country": "Singapore"
+      },
+      "billingAddress": {
+        "street": "12 Marina Boulevard, Tower 3",
+        "city": "Singapore",
+        "state": "Singapore",
+        "postalCode": "018982",
+        "country": "Singapore"
+      }
+    },
+    "items": [
+      {
+        "id": "p4",
+        "name": "Hyaluronic Dewy Radiance Toner",
+        "brand": "AHC",
+        "sku": "AH-HYL-100",
+        "price": 28,
+        "quantity": 5,
+        "image": "https://images.unsplash.com/photo-1709551264845-e9dddd775388?w=800&fit=crop",
+        "gradient": ["#bed5fe", "#181925"]
+      }
+    ],
+    "status": "Processing",
+    "paymentMethod": "Apple Pay",
+    "shippingMethod": "Same-day Delivery",
+    "trackingNumber": null,
+    "placedAt": "2026-06-02T09:00:00Z",
+    "subtotal": 140,
+    "shippingFee": 15,
+    "tax": 9.8,
+    "discount": 14,
+    "total": 150.8,
+    "timeline": [
+      {
+        "title": "Order Placed",
+        "timestamp": "June 02, 2026 · 09:00 AM",
+        "description": "Checked out with Apple Pay.",
+        "done": true
+      },
+      {
+        "title": "Payment Confirmed",
+        "timestamp": "June 02, 2026 · 09:01 AM",
+        "description": "Apple Pay secure transaction confirmed.",
+        "done": true
+      },
+      {
+        "title": "Packing Items",
+        "timestamp": "June 02, 2026 · 11:30 AM",
+        "description": "Items separated at Changi Fulfillment Center.",
+        "done": true
+      },
+      {
+        "title": "Shipped & Dispatched",
+        "timestamp": "Pending",
+        "description": "Awaiting local courier dispatch.",
+        "done": false
+      }
+    ]
+  },
+  {
+    "id": "AET-10474",
+    "customer": {
+      "name": "Charlotte Smith",
+      "email": "c.smith@fashionhub.com.au",
+      "phone": "+61 2 9382 0468",
+      "initials": "CS",
+      "shippingAddress": {
+        "street": "45 George Street, The Rocks",
+        "city": "Sydney",
+        "state": "New South Wales",
+        "postalCode": "2000",
+        "country": "Australia"
+      },
+      "billingAddress": {
+        "street": "45 George Street, The Rocks",
+        "city": "Sydney",
+        "state": "New South Wales",
+        "postalCode": "2000",
+        "country": "Australia"
+      }
+    },
+    "items": [
+      {
+        "id": "p2",
+        "name": "The First Geniture Ampoule",
+        "brand": "Ohui",
+        "sku": "OH-FGA-45",
+        "price": 184,
+        "quantity": 1,
+        "image": "https://images.unsplash.com/photo-1741896134904-062a3b21abf?w=800&fit=crop",
+        "gradient": ["#e8e8e8", "#181925"]
+      },
+      {
+        "id": "p3",
+        "name": "Propolis Energy Ampule",
+        "brand": "CNP Laboratory",
+        "sku": "CN-PRP-30",
+        "price": 42,
+        "quantity": 2,
+        "image": "https://images.unsplash.com/photo-1713768704571-6aeb0d0e5105?w=800&fit=crop",
+        "gradient": ["#def6e4", "#9580ff"]
+      }
+    ],
+    "status": "Paid",
+    "paymentMethod": "Credit Card",
+    "shippingMethod": "Standard Shipping",
+    "trackingNumber": null,
+    "placedAt": "2026-06-01T15:20:00Z",
+    "subtotal": 268,
+    "shippingFee": 0,
+    "tax": 26.8,
+    "discount": 30,
+    "total": 264.8,
+    "timeline": [
+      {
+        "title": "Order Placed",
+        "timestamp": "June 01, 2026 · 15:20 PM",
+        "description": "Customer ordered via web portal.",
+        "done": true
+      },
+      {
+        "title": "Payment Confirmed",
+        "timestamp": "June 01, 2026 · 15:21 PM",
+        "description": "Transaction verified successfully.",
+        "done": true
+      },
+      {
+        "title": "Awaiting Packing",
+        "timestamp": "Pending",
+        "description": "Queued at Sydney warehouse.",
+        "done": false
+      }
+    ]
+  },
+  {
+    "id": "AET-10473",
+    "customer": {
+      "name": "James Miller",
+      "email": "james.m@westcoastventures.com",
+      "phone": "+1 415 555 0192",
+      "initials": "JM",
+      "shippingAddress": {
+        "street": "320 Sansome St",
+        "city": "San Francisco",
+        "state": "California",
+        "postalCode": "94104",
+        "country": "United States"
+      },
+      "billingAddress": {
+        "street": "320 Sansome St",
+        "city": "San Francisco",
+        "state": "California",
+        "postalCode": "94104",
+        "country": "United States"
+      }
+    },
+    "items": [
+      {
+        "id": "p1",
+        "name": "Bichup Self-Generating Essence",
+        "brand": "WHOO",
+        "sku": "WH-BCH-50",
+        "price": 220,
+        "quantity": 2,
+        "image": "https://images.unsplash.com/photo-1741896135518-ce303a539bc0?w=800&fit=crop",
+        "gradient": ["#dad9fc", "#9580ff"]
+      },
+      {
+        "id": "p5",
+        "name": "Re:dium Recharging Cream",
+        "brand": "Daycell",
+        "sku": "DC-RDM-50",
+        "price": 64,
+        "quantity": 1,
+        "image": "https://images.unsplash.com/photo-1729952620303-4dc47fb5d93a?w=800&fit=crop",
+        "gradient": ["#dad9fc", "#181925"]
+      }
+    ],
+    "status": "Shipped",
+    "paymentMethod": "Credit Card",
+    "shippingMethod": "Express Shipping",
+    "trackingNumber": "UPS-USA-4411883",
+    "placedAt": "2026-06-01T10:12:00Z",
+    "subtotal: ": 504,
+    "shippingFee": 20,
+    "tax": 50.4,
+    "discount": 50,
+    "total": 524.4,
+    "timeline": [
+      {
+        "title": "Order Placed",
+        "timestamp": "June 01, 2026 · 10:12 AM",
+        "description": "Customer placed the order.",
+        "done": true
+      },
+      {
+        "title": "Payment Confirmed",
+        "timestamp": "June 01, 2026 · 10:13 AM",
+        "description": "Card checkout verified by Stripe.",
+        "done": true
+      },
+      {
+        "title": "Fulfillment Finished",
+        "timestamp": "June 01, 2026 · 14:00 PM",
+        "description": "Items boxed and marked ready at SF Warehouse.",
+        "done": true
+      },
+      {
+        "title": "Shipped & Dispatched",
+        "timestamp": "June 01, 2026 · 16:30 PM",
+        "description": "Dispatched. In transit via UPS Second Day Air.",
+        "done": true
+      }
+    ]
+  },
+  {
+    "id": "AET-10472",
+    "customer": {
+      "name": "Amara Okeke",
+      "email": "amara@lagoscreative.ng",
+      "phone": "+234 803 123 4567",
+      "initials": "AO",
+      "shippingAddress": {
+        "street": "12 Ademola Adetokunbo St, Victoria Island",
+        "city": "Lagos",
+        "state": "Lagos",
+        "postalCode": "101241",
+        "country": "Nigeria"
+      },
+      "billingAddress": {
+        "street": "12 Ademola Adetokunbo St, Victoria Island",
+        "city": "Lagos",
+        "state": "Lagos",
+        "postalCode": "101241",
+        "country": "Nigeria"
+      }
+    },
+    "items": [
+      {
+        "id": "p3",
+        "name": "Propolis Energy Ampule",
+        "brand": "CNP Laboratory",
+        "sku": "CN-PRP-30",
+        "price": 42,
+        "quantity": 3,
+        "image": "https://images.unsplash.com/photo-1713768704571-6aeb0d0e5105?w=800&fit=crop",
+        "gradient": ["#def6e4", "#9580ff"]
+      }
+    ],
+    "status": "Paid",
+    "paymentMethod": "Credit Card",
+    "shippingMethod": "Standard Shipping",
+    "trackingNumber": null,
+    "placedAt": "2026-05-31T14:40:00Z",
+    "subtotal": 126,
+    "shippingFee": 15,
+    "tax": 0,
+    "discount": 0,
+    "total": 141,
+    "timeline": [
+      {
+        "title": "Order Placed",
+        "timestamp": "May 31, 2026 · 14:40 PM",
+        "description": "Ordered from mobile web client.",
+        "done": true
+      },
+      {
+        "title": "Payment Confirmed",
+        "timestamp": "May 31, 2026 · 14:40 PM",
+        "description": "Payment captured successfully.",
+        "done": true
+      },
+      {
+        "title": "Processing Fulfillment",
+        "timestamp": "Pending",
+        "description": "Waiting to pack items at Lagos regional warehouse.",
+        "done": false
+      }
+    ]
+  },
+  {
+    "id": "AET-10471",
+    "customer": {
+      "name": "Lucas Müller",
+      "email": "lucas.mueller@berlintech.de",
+      "phone": "+49 30 987654",
+      "initials": "LM",
+      "shippingAddress": {
+        "street": "Torstraße 101",
+        "city": "Berlin",
+        "state": "Berlin",
+        "postalCode": "10119",
+        "country": "Germany"
+      },
+      "billingAddress": {
+        "street": "Torstraße 101",
+        "city": "Berlin",
+        "state": "Berlin",
+        "postalCode": "10119",
+        "country": "Germany"
+      }
+    },
+    "items": [
+      {
+        "id": "p4",
+        "name": "Hyaluronic Dewy Radiance Toner",
+        "brand": "AHC",
+        "sku": "AH-HYL-100",
+        "price": 28,
+        "quantity": 1,
+        "image": "https://images.unsplash.com/photo-1709551264845-e9dddd775388?w=800&fit=crop",
+        "gradient": ["#bed5fe", "#181925"]
+      },
+      {
+        "id": "p5",
+        "name": "Re:dium Recharging Cream",
+        "brand": "Daycell",
+        "sku": "DC-RDM-50",
+        "price": 64,
+        "quantity": 1,
+        "image": "https://images.unsplash.com/photo-1729952620303-4dc47fb5d93a?w=800&fit=crop",
+        "gradient": ["#dad9fc", "#181925"]
+      }
+    ],
+    "status": "Refunded",
+    "paymentMethod": "PayPal",
+    "shippingMethod": "Standard Shipping",
+    "trackingNumber": null,
+    "placedAt": "2026-05-31T09:20:00Z",
+    "subtotal": 92,
+    "shippingFee": 5,
+    "tax": 9.2,
+    "discount": 10,
+    "total": 96.2,
+    "timeline": [
+      {
+        "title": "Order Placed",
+        "timestamp": "May 31, 2026 · 09:20 AM",
+        "description": "Customer checked out.",
+        "done": true
+      },
+      {
+        "title": "Payment Confirmed",
+        "timestamp": "May 31, 2026 · 09:21 AM",
+        "description": "PayPal notification cleared.",
+        "done": true
+      },
+      {
+        "title": "Refund Processed",
+        "timestamp": "May 31, 2026 · 11:00 AM",
+        "description": "Customer canceled prior to packing. Amount refunded back to PayPal account.",
+        "done": true
+      }
+    ]
+  },
+  {
+    "id": "AET-10470",
+    "customer": {
+      "name": "Sofia Alvarez",
+      "email": "sofia.alvarez@madridart.es",
+      "phone": "+34 611 223 344",
+      "initials": "SA",
+      "shippingAddress": {
+        "street": "Calle de Alcala 54",
+        "city": "Madrid",
+        "state": "Madrid",
+        "postalCode": "28014",
+        "country": "Spain"
+      },
+      "billingAddress": {
+        "street": "Calle de Alcala 54",
+        "city": "Madrid",
+        "state": "Madrid",
+        "postalCode": "28014",
+        "country": "Spain"
+      }
+    },
+    "items": [
+      {
+        "id": "p2",
+        "name": "The First Geniture Ampoule",
+        "brand": "Ohui",
+        "sku": "OH-FGA-45",
+        "price": 184,
+        "quantity": 1,
+        "image": "https://images.unsplash.com/photo-1741896134904-062a3b21abf?w=800&fit=crop",
+        "gradient": ["#e8e8e8", "#181925"]
+      }
+    ],
+    "status": "Shipped",
+    "paymentMethod": "Credit Card",
+    "shippingMethod": "Standard Shipping",
+    "trackingNumber": "CORREOS-998811",
+    "placedAt": "2026-05-30T16:00:00Z",
+    "subtotal": 184,
+    "shippingFee": 0,
+    "tax": 18.4,
+    "discount": 0,
+    "total": 202.4,
+    "timeline": [
+      {
+        "title": "Order Placed",
+        "timestamp": "May 30, 2026 · 16:00 PM",
+        "description": "Customer placed the order.",
+        "done": true
+      },
+      {
+        "title": "Payment Confirmed",
+        "timestamp": "May 30, 2026 · 16:00 PM",
+        "description": "Credit card payment verified.",
+        "done": true
+      },
+      {
+        "title": "Dispatched from Hub",
+        "timestamp": "May 31, 2026 · 10:00 AM",
+        "description": "Package forwarded to Correos Spain local delivery.",
+        "done": true
+      }
+    ]
+  },
+  {
+    "id": "AET-10469",
+    "customer": {
+      "name": "Tariq Mahmood",
+      "email": "tariq.m@dubaiholding.ae",
+      "phone": "+971 50 123 4567",
+      "initials": "TM",
+      "shippingAddress": {
+        "street": "Sheikh Zayed Road, Emirates Towers",
+        "city": "Dubai",
+        "state": "Dubai",
+        "postalCode": "00000",
+        "country": "United Arab Emirates"
+      },
+      "billingAddress": {
+        "street": "Sheikh Zayed Road, Emirates Towers",
+        "city": "Dubai",
+        "state": "Dubai",
+        "postalCode": "00000",
+        "country": "United Arab Emirates"
+      }
+    },
+    "items": [
+      {
+        "id": "p1",
+        "name": "Bichup Self-Generating Essence",
+        "brand": "WHOO",
+        "sku": "WH-BCH-50",
+        "price": 220,
+        "quantity": 2,
+        "image": "https://images.unsplash.com/photo-1741896135518-ce303a539bc0?w=800&fit=crop",
+        "gradient": ["#dad9fc", "#9580ff"]
+      },
+      {
+        "id": "p2",
+        "name": "The First Geniture Ampoule",
+        "brand": "Ohui",
+        "sku": "OH-FGA-45",
+        "price": 184,
+        "quantity": 2,
+        "image": "https://images.unsplash.com/photo-1741896134904-062a3b21abf?w=800&fit=crop",
+        "gradient": ["#e8e8e8", "#181925"]
+      }
+    ],
+    "status": "Processing",
+    "paymentMethod": "Apple Pay",
+    "shippingMethod": "Express Shipping",
+    "trackingNumber": null,
+    "placedAt": "2026-05-30T10:30:00Z",
+    "subtotal": 808,
+    "shippingFee": 30,
+    "tax": 0,
+    "discount": 80.8,
+    "total": 757.2,
+    "timeline": [
+      {
+        "title": "Order Placed",
+        "timestamp": "May 30, 2026 · 10:30 AM",
+        "description": "Customer checked out successfully.",
+        "done": true
+      },
+      {
+        "title": "Payment Confirmed",
+        "timestamp": "May 30, 2026 · 10:30 AM",
+        "description": "Apple Pay secure transaction confirmed.",
+        "done": true
+      },
+      {
+        "title": "Warehouse Allocation",
+        "timestamp": "May 30, 2026 · 14:15 PM",
+        "description": "Fulfillment route designated to Dubai Hub 1.",
+        "done": true
+      },
+      {
+        "title": "Shipped & Dispatched",
+        "timestamp": "Pending",
+        "description": "Awaiting international dispatch.",
+        "done": false
+      }
+    ]
+  },
+  {
+    "id": "AET-10468",
+    "customer": {
+      "name": "Yuki Tanaka",
+      "email": "yuki.tanaka@shibuya-studios.jp",
+      "phone": "+81 80 1234 5678",
+      "initials": "YT",
+      "shippingAddress": {
+        "street": "1-chome Shibuya, Shibuya-ku",
+        "city": "Tokyo",
+        "state": "Tokyo",
+        "postalCode": "150-0002",
+        "country": "Japan"
+      },
+      "billingAddress": {
+        "street": "1-chome Shibuya, Shibuya-ku",
+        "city": "Tokyo",
+        "state": "Tokyo",
+        "postalCode": "150-0002",
+        "country": "Japan"
+      }
+    },
+    "items": [
+      {
+        "id": "p5",
+        "name": "Re:dium Recharging Cream",
+        "brand": "Daycell",
+        "sku": "DC-RDM-50",
+        "price": 64,
+        "quantity": 1,
+        "image": "https://images.unsplash.com/photo-1729952620303-4dc47fb5d93a?w=800&fit=crop",
+        "gradient": ["#dad9fc", "#181925"]
+      }
+    ],
+    "status": "Pending",
+    "paymentMethod": "Bank Transfer",
+    "shippingMethod": "Standard Shipping",
+    "trackingNumber": null,
+    "placedAt": "2026-05-29T16:22:00Z",
+    "subtotal": 64,
+    "shippingFee": 5,
+    "tax": 6.4,
+    "discount": 0,
+    "total": 75.4,
+    "timeline": [
+      {
+        "title": "Order Placed",
+        "timestamp": "May 29, 2026 · 16:22 PM",
+        "description": "Awaiting bank remittance. Order held.",
+        "done": true
+      }
+    ]
+  }
+]

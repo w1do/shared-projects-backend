@@ -1,0 +1,123 @@
+name: pull-request
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  backend:
+    name: ${{ matrix.service }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        service: [auth-service, content-service, analytics-service, pay-service]
+    defaults:
+      run:
+        working-directory: apps/${{ matrix.service }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: pdo_sqlite, redis
+          coverage: none
+      - name: Install dependencies
+        run: composer install --no-interaction --prefer-dist
+      - name: Pint (code style)
+        run: ./vendor/bin/pint --test ../../packages/cms app
+      - name: Larastan (level 8)
+        run: ./vendor/bin/phpstan analyse --memory-limit=1G
+      - name: Pest (app + packages)
+        run: php artisan test
+    services:
+      redis:
+        image: redis:7
+        ports: ['6379:6379']
+
+  swagger:
+    name: openapi up to date
+    runs-on: ubuntu-latest
+    needs: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with: { php-version: '8.4' }
+      - name: Install all apps
+        run: for d in apps/*; do (cd $d && composer install --no-interaction --prefer-dist --no-scripts); done
+      - name: Rebuild merged swagger
+        run: ./tools/cms api
+      - name: Fail on diff # изменение API без обновлённого openapi.json — красный билд
+        run: git diff --exit-code openapi/
+
+  frontend:
+    name: frontend packages
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - run: npm install --no-audit --no-fund
+      - name: Regenerate api-client from swagger
+        run: npm run generate --workspace packages/frontend/api-client
+      - name: Build workspaces
+        run: npm run build --workspaces --if-present
+
+  admin-console:
+    name: admin console (bun)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with: { bun-version: '1.2.21' }
+      # Вёрстка переносится как есть: расхождение с источником валит билд
+      - name: Layout matches source-admin
+        run: |
+          set -e
+          for path in src/components src/app src/styles.css src/theme.css public; do
+            diff -r "frontends/source-admin/$path" "frontends/admin/$path"
+          done
+      - name: Install dependencies
+        working-directory: frontends/admin
+        run: bun install --frozen-lockfile
+      - name: Production build
+        working-directory: frontends/admin
+        run: bun run build
+
+  e2e:
+    name: admin console e2e
+    runs-on: ubuntu-latest
+    needs: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - name: Install e2e dependencies
+        working-directory: e2e
+        run: npm ci || npm install --no-audit --no-fund
+      - name: Install Chromium # только он: остальные браузеры набору не нужны
+        working-directory: e2e
+        run: npx playwright install --with-deps chromium
+      - name: Bring the stack up
+        run: ./tools/cms up
+      - name: Seed demo environment
+        run: ./tools/smoke.sh
+      - name: Run scenarios # headless: E2E_HEADED не задаётся
+        working-directory: e2e
+        run: npx playwright test
+      - name: Upload artifacts on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-artifacts
+          path: e2e/.artifacts/
+          retention-days: 7
+
+  docker:
+    name: docker image
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build shared image
+        run: docker build -f infra/docker/Dockerfile --build-arg APP_SERVICE=auth-service .

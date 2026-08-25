@@ -1,0 +1,64 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Cms\Pay\Domain\Models;
+
+use Cms\Pay\Domain\Enums\PaymentStatus;
+use Cms\Shared\Tenant\BelongsToProject;
+use Illuminate\Database\Eloquent\Concerns\HasUlids;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
+
+/**
+ * @property string $id
+ * @property string $project_id
+ * @property string $user_key
+ * @property int $amount_minor
+ * @property int $refunded_minor
+ * @property string $currency
+ * @property PaymentStatus $status
+ * @property string $provider
+ * @property ?string $provider_ref
+ * @property ?string $description
+ * @property ?string $idempotency_key
+ * @property ?string $subscription_id
+ * @property ?Carbon $created_at
+ */
+class Payment extends Model
+{
+    use BelongsToProject;
+    use HasUlids;
+
+    protected $keyType = 'string';
+
+    public $incrementing = false;
+
+    protected $fillable = [
+        'project_id', 'user_key', 'amount_minor', 'currency', 'status',
+        'provider', 'provider_ref', 'description', 'idempotency_key', 'subscription_id',
+    ];
+
+    protected $attributes = ['status' => 'created', 'refunded_minor' => 0];
+
+    protected function casts(): array
+    {
+        return [
+            'status' => PaymentStatus::class,
+            'amount_minor' => 'int',
+            'refunded_minor' => 'int',
+        ];
+    }
+
+    /** @return HasMany<PaymentTransaction, $this> */
+    public function transactions(): HasMany
+    {
+        return $this->hasMany(PaymentTransaction::class);
+    }
+
+    public function refundableMinor(): int
+    {
+        return $this->amount_minor - $this->refunded_minor;
+    }
+}

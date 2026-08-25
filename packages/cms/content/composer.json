@@ -1,0 +1,38 @@
+{
+    "name": "cms/content",
+    "description": "CMS platform package: content",
+    "type": "library",
+    "license": "proprietary",
+    "require": {
+        "php": "^8.3",
+        "cms/shared": "*",
+        "kalnoy/nestedset": "^7.0",
+        "spatie/laravel-sluggable": "^3.6",
+        "spatie/laravel-data": "^4.0",
+        "spatie/laravel-query-builder": "^6.0",
+        "illuminate/support": "^13.0",
+        "illuminate/database": "^13.0",
+        "illuminate/http": "^13.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Cms\\Content\\": "src/",
+            "Cms\\Content\\Database\\Factories\\": "database/factories/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Cms\\Content\\Tests\\": "tests/"
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "version": "0.1.0",
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Cms\\Content\\ContentServiceProvider"
+            ]
+        }
+    }
+}

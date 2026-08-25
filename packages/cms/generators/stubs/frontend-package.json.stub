@@ -1,0 +1,14 @@
+{
+  "name": "@cms/{{name}}",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "src/index.ts",
+  "scripts": {
+    "build": "echo '@cms/{{name}}: nothing to build yet'"
+  },
+  "dependencies": {
+    "@cms/api-client": "*",
+    "@cms/ui-kit": "*"
+  }
+}

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="PHPUnit">
+    <option name="directories">
+      <list>
+        <option value="$PROJECT_DIR$/apps/content-service/tests/Unit" />
+        <option value="$PROJECT_DIR$/apps/content-service/tests/Feature" />
+        <option value="$PROJECT_DIR$/apps/chat-service/tests/Unit" />
+        <option value="$PROJECT_DIR$/apps/chat-service/tests/Feature" />
+        <option value="$PROJECT_DIR$/packages/service-seo/tests" />
+        <option value="$PROJECT_DIR$/packages/service-notification/tests" />
+        <option value="$PROJECT_DIR$/packages/service-ai/tests" />
+        <option value="$PROJECT_DIR$/packages/service-chat/tests" />
+        <option value="$PROJECT_DIR$/packages/events/tests" />
+        <option value="$PROJECT_DIR$/packages/platform-sdk/tests" />
+        <option value="$PROJECT_DIR$/packages/service-content/tests" />
+      </list>
+    </option>
+  </component>
+</project>

@@ -1,0 +1,11 @@
+<?php
+
+use Cms\Shared\AuthClient\Middleware\AuthorizeOperator;
+use Cms\Shared\AuthClient\Middleware\EnsureServiceEnabled;
+use Illuminate\Support\Facades\Route;
+
+$authorize = fn (string $permission) => [AuthorizeOperator::class.':'.$permission, EnsureServiceEnabled::class.':{{name}}'];
+
+Route::prefix('api/admin/v1/projects/{project}/{{name}}')->group(function () use ($authorize) {
+    // Route::get('items', [ItemController::class, 'index'])->middleware($authorize('{{name}}.items.view'));
+});

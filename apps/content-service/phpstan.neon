@@ -1,0 +1,18 @@
+includes:
+    - vendor/larastan/larastan/extension.neon
+
+parameters:
+    level: 8
+    paths:
+        - app
+        - ../../packages/cms/shared/src
+        - ../../packages/cms/contracts/src
+        - ../../packages/cms/content/src
+        - ../../packages/cms/ai/src
+        - ../../packages/cms/localization/src
+    databaseMigrationsPath:
+        - ../../packages/cms/content/database/migrations
+    reportUnmatchedIgnoredErrors: false
+    ignoreErrors:
+        - identifier: missingType.iterableValue
+        - identifier: missingType.generics

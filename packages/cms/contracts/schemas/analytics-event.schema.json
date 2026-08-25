@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://platform/cms/contracts/analytics-event.schema.json",
+  "title": "AnalyticsEvent",
+  "type": "object",
+  "required": ["event_id", "project_id", "name", "subject_key", "occurred_at"],
+  "properties": {
+    "event_id": { "type": "string", "format": "uuid" },
+    "project_id": { "type": "string" },
+    "name": { "type": "string", "pattern": "^[a-z0-9_.]+$" },
+    "subject_key": { "type": "string", "pattern": "^(user|anon|admin):" },
+    "occurred_at": { "type": "string", "format": "date-time" },
+    "source": { "type": "string", "enum": ["site", "service"] },
+    "props": { "type": "object" },
+    "value_minor": { "type": "integer" },
+    "currency": { "type": ["string", "null"], "minLength": 3, "maxLength": 3 }
+  },
+  "additionalProperties": false
+}
