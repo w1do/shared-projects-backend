@@ -23,3 +23,10 @@ infra/services/*/.env.local
 /frontends/admin/.next/
 /e2e/node_modules/
 /e2e/.artifacts/
+
+# IDE и локальные инструменты агентов — не часть репозитория
+/.idea/
+/.ai/
+/.claude/
+.DS_Store
+Thumbs.db
