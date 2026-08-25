@@ -77,7 +77,6 @@ final class StructuredResponseMapper
     public function categoryTree(array $rows): array
     {
         $children = [];
-        $order = [];
 
         foreach ($rows as $row) {
             if (! is_array($row) || ! isset($row['name'], $row['slug'])) {
@@ -87,7 +86,6 @@ final class StructuredResponseMapper
                 ? $row['parent_slug']
                 : null;
             $children[$parent ?? ''][] = ['name' => (string) $row['name'], 'slug' => (string) $row['slug']];
-            $order[(string) $row['slug']] = true;
         }
 
         $build = function (?string $parentSlug) use (&$build, $children): array {
@@ -102,8 +100,6 @@ final class StructuredResponseMapper
 
             return $nodes;
         };
-
-        unset($order);
 
         return $build(null);
     }
