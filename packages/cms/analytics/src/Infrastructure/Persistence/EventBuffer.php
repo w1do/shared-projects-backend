@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Cms\Analytics\Infrastructure\Support;
+namespace Cms\Analytics\Infrastructure\Persistence;
 
 use Illuminate\Support\Facades\Redis;
 

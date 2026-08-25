@@ -2,15 +2,17 @@
 
 declare(strict_types=1);
 
-namespace Cms\Analytics\Infrastructure\Support;
+namespace Cms\Analytics\Infrastructure\Enrichment;
+
+use Cms\Analytics\Domain\Contracts\UserAgentProfiler;
+use Cms\Analytics\Domain\ValueObjects\ClientProfile;
 
 /** Грубый разбор UA: device/os/browser для среза в отчётах. */
-final class UserAgentParser
+final class UserAgentParser implements UserAgentProfiler
 {
-    /** @return array{device: string, os: string, browser: string} */
-    public static function parse(?string $ua): array
+    public function profile(?string $userAgent): ClientProfile
     {
-        $ua = strtolower((string) $ua);
+        $ua = strtolower((string) $userAgent);
 
         $device = str_contains($ua, 'mobile') || str_contains($ua, 'android') || str_contains($ua, 'iphone')
             ? 'mobile' : 'desktop';
@@ -32,6 +34,6 @@ final class UserAgentParser
             default => 'other',
         };
 
-        return ['device' => $device, 'os' => $os, 'browser' => $browser];
+        return new ClientProfile($device, $os, $browser);
     }
 }

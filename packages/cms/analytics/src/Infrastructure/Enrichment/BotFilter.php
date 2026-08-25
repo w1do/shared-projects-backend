@@ -2,17 +2,19 @@
 
 declare(strict_types=1);
 
-namespace Cms\Analytics\Infrastructure\Support;
+namespace Cms\Analytics\Infrastructure\Enrichment;
+
+use Cms\Analytics\Domain\Contracts\BotDetector;
 
 /** Простой UA-фильтр ботов: события ботов не попадают в буфер. */
-final class BotFilter
+final class BotFilter implements BotDetector
 {
     private const SIGNATURES = [
         'bot', 'crawler', 'spider', 'slurp', 'curl/', 'wget/', 'python-requests',
         'headless', 'lighthouse', 'pingdom', 'uptime',
     ];
 
-    public static function isBot(?string $userAgent): bool
+    public function isBot(?string $userAgent): bool
     {
         if ($userAgent === null || $userAgent === '') {
             return true;

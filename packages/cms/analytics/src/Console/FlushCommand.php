@@ -6,7 +6,7 @@ namespace Cms\Analytics\Console;
 
 use Cms\Analytics\Application\Commands\FlushBufferCommand;
 use Cms\Analytics\Application\Handlers\FlushBufferHandler;
-use Cms\Analytics\Infrastructure\Support\EventBuffer;
+use Cms\Analytics\Infrastructure\Persistence\EventBuffer;
 use Illuminate\Console\Command;
 
 /**
@@ -25,8 +25,8 @@ final class FlushCommand extends Command
 
         do {
             $result = $flush->handle(new FlushBufferCommand);
-            if ($result['flushed'] > 0 || $result['dead'] > 0) {
-                $this->info(sprintf('flushed=%d dead=%d buffer=%d', $result['flushed'], $result['dead'], $buffer->size()));
+            if ($result->flushed > 0 || $result->dead > 0) {
+                $this->info(sprintf('flushed=%d dead=%d buffer=%d', $result->flushed, $result->dead, $buffer->size()));
             }
 
             if ($this->option('daemon')) {
