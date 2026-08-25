@@ -875,6 +875,24 @@
                         "description": "Validation error"
                     }
                 }
+            },
+            "post": {
+                "tags": [
+                    "pay"
+                ],
+                "summary": "POST /api/admin/v1/projects/{project}/pay/plans",
+                "operationId": "pay_store_api_admin_v1_projects_project_pay_plans",
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                }
             }
         },
         "/api/admin/v1/projects/{project}/pay/plans/{plan}": {
@@ -1379,6 +1397,21 @@
             }
         },
         "/api/v1/pay/subscriptions": {
+            "get": {
+                "tags": [
+                    "pay"
+                ],
+                "summary": "GET /api/v1/pay/subscriptions",
+                "operationId": "pay_mine_api_v1_pay_subscriptions",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    }
+                }
+            },
             "post": {
                 "tags": [
                     "pay"
@@ -1414,6 +1447,23 @@
                     },
                     "422": {
                         "description": "Validation error"
+                    }
+                }
+            }
+        },
+        "/internal/cache-bust": {
+            "post": {
+                "tags": [
+                    "auth"
+                ],
+                "summary": "POST /internal/cache-bust",
+                "operationId": "shared_cache_bust_internal_cache_bust",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
                     }
                 }
             }

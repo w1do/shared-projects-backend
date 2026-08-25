@@ -54,6 +54,37 @@ services:
       - path: ./infra/services/content-service/.env.local
         required: false
 
+  # Воркер очередей auth: аудит и рассылка cache-bust после переноса в Jobs (этап 6).
+  auth-worker:
+    <<: *php-service
+    command: ["php", "artisan", "queue:work", "--sleep=2", "--tries=2", "--timeout=120"]
+    environment:
+      APP_SERVICE: auth-service
+    env_file: [./infra/services/auth-service/.env]
+
+  # Воркер очередей платежей: вебхуки (queues: webhooks, critical) и default.
+  pay-worker:
+    <<: *php-service
+    command: ["php", "artisan", "queue:work", "--queue=critical,webhooks,default", "--sleep=2", "--tries=2", "--timeout=120"]
+    environment:
+      APP_SERVICE: pay-service
+    env_file: [./infra/services/pay-service/.env]
+
+  # Воркер очередей аналитики: экспорт отчётов (queue: exports) и default.
+  analytics-worker:
+    <<: *php-service
+    command: ["php", "artisan", "queue:work", "--queue=exports,default", "--sleep=2", "--tries=2", "--timeout=120"]
+    environment:
+      APP_SERVICE: analytics-service
+    env_file: [./infra/services/analytics-service/.env]
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      clickhouse:
+        condition: service_started
+
   analytics-service:
     <<: *php-service
     environment:

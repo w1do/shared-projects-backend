@@ -10,6 +10,8 @@ for s in "${SERVICES[@]}"; do
     extra=""
     # словарь переводов живёт в content-service отдельным пакетом
     [ "$s" = "content" ] && extra="$ROOT/packages/cms/localization/src"
+    # платформенные internal-маршруты (cache-bust) живут в shared; документируем через auth
+    [ "$s" = "auth" ] && extra="$ROOT/packages/cms/shared/src"
     "$app/vendor/bin/openapi" --format json --output "$ROOT/openapi/${s}.json" "$ROOT/packages/cms/${s}/src" $extra 2>/dev/null
     echo "built openapi/${s}.json"
 done
