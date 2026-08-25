@@ -2,8 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Cms\Shared\Tenant;
+namespace Cms\Shared\Jobs;
 
+use Cms\Shared\Tenant\ProjectContext;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;

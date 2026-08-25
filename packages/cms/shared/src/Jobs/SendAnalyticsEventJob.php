@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Cms\Shared\Analytics;
+namespace Cms\Shared\Jobs;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
