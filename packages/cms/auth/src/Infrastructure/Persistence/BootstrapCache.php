@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Cms\Auth\Infrastructure\Support;
+namespace Cms\Auth\Infrastructure\Persistence;
 
 use Illuminate\Support\Facades\Cache;
 

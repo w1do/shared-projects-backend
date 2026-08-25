@@ -9,7 +9,7 @@ use Cms\Auth\Domain\Models\Project;
 use Illuminate\Support\Collection;
 use Spatie\Permission\Models\Role;
 
-final class ListRoles
+final class ListRolesQuery
 {
     /** @return Collection<int, RoleDTO> */
     public function handle(Project $project): Collection

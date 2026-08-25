@@ -9,7 +9,7 @@ use Cms\Auth\Domain\Models\Admin;
 use Cms\Auth\Domain\Models\Project;
 use Illuminate\Support\Collection;
 
-final class ListMembers
+final class ListMembersQuery
 {
     /** @return Collection<int, MemberDTO> */
     public function handle(Project $project): Collection

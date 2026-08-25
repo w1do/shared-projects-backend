@@ -8,7 +8,7 @@ use Cms\Auth\Domain\Models\User;
 use Illuminate\Contracts\Pagination\CursorPaginator;
 
 /** Пользователи текущего проекта (scope из ProjectContext). */
-final class ListProjectUsers
+final class ListProjectUsersQuery
 {
     public function handle(int $perPage = 50): CursorPaginator
     {

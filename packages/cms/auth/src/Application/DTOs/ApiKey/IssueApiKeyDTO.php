@@ -15,13 +15,4 @@ final class IssueApiKeyDTO extends Data
         public array|Optional $scopes,
     ) {}
 
-    /** @return array<string, list<mixed>> */
-    public static function rules(): array
-    {
-        return [
-            'type' => ['required', 'in:public,secret'],
-            'scopes' => ['sometimes', 'array'],
-            'scopes.*' => ['string', 'max:64'],
-        ];
-    }
 }

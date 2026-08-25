@@ -6,6 +6,7 @@ namespace Cms\Auth\Presentation\Http\Middleware;
 
 use Closure;
 use Cms\Auth\Domain\Models\ProjectApiKey;
+use Cms\Auth\Infrastructure\Jobs\TouchApiKeyLastUsedJob;
 use Cms\Shared\Http\ErrorEnvelope;
 use Cms\Shared\Tenant\ProjectContext;
 use Illuminate\Http\Request;
@@ -31,7 +32,8 @@ final class ResolveSiteProject
             return ErrorEnvelope::unauthorized('Invalid project API key.');
         }
 
-        $key->forceFill(['last_used_at' => now()])->saveQuietly();
+        // Та же отметка использования, что и при интроспекции ключа — один Job на оба места
+        TouchApiKeyLastUsedJob::dispatch($key->id, now());
 
         $this->context->set($key->project_id);
         $request->attributes->set('project_id', $key->project_id);

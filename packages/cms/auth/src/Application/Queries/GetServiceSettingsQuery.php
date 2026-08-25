@@ -9,7 +9,7 @@ use Cms\Auth\Domain\Models\Project;
 use Cms\Auth\Domain\Models\ProjectSetting;
 use Illuminate\Support\Collection;
 
-final class GetServiceSettings
+final class GetServiceSettingsQuery
 {
     /** @return Collection<int, SettingValueDTO> */
     public function handle(Project $project, string $service): Collection

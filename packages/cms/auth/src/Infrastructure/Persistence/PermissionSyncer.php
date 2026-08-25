@@ -2,75 +2,49 @@
 
 declare(strict_types=1);
 
-namespace Cms\Auth\Infrastructure\Support;
+namespace Cms\Auth\Infrastructure\Persistence;
 
+use Cms\Auth\Domain\Enums\Guard;
+use Cms\Auth\Domain\Enums\SystemRole;
 use Cms\Auth\Domain\Models\Admin;
 use Cms\Auth\Domain\Models\Project;
+use Cms\Auth\Infrastructure\Jobs\SyncSystemRolesJob;
 use Cms\Contracts\Manifest\ServiceManifest;
 use Illuminate\Support\Facades\DB;
-use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
-use Spatie\Permission\PermissionRegistrar;
 
 /**
- * Права происходят только из манифестов сервисов: upsert в таблицы spatie
- * и пере-раскрытие wildcard-шаблонов системных ролей по каждому проекту.
+ * Права происходят только из манифестов сервисов.
+ *
+ * Класс остался входной точкой, но разошёлся на две ответственности:
+ * каталог прав (`PermissionCatalog`) и раскрытие шаблонов системных ролей
+ * (`SystemRoleSyncer`); проход по всем проектам уехал в `SyncSystemRolesJob`.
  */
 final class PermissionSyncer
 {
+    public function __construct(
+        private readonly PermissionCatalog $catalog,
+        private readonly SystemRoleSyncer $roles,
+    ) {}
+
     public function sync(ServiceManifest $manifest): void
     {
-        foreach ($manifest->permissions as $definition) {
-            Permission::query()->updateOrCreate(
-                ['name' => $definition->key, 'guard_name' => 'admin'],
-                ['label' => $definition->label, 'group' => $definition->group],
-            );
-        }
+        $this->catalog->upsert($manifest);
 
-        app(PermissionRegistrar::class)->forgetCachedPermissions();
-
-        Project::query()->each(fn (Project $project) => $this->syncSystemRoles($project));
+        SyncSystemRolesJob::dispatch();
     }
 
-    /** Создаёт/обновляет системные роли проекта по шаблонам из config. */
+    /** Создаёт/обновляет системные роли одного проекта по шаблонам из config. */
     public function syncSystemRoles(Project $project): void
     {
-        $registrar = app(PermissionRegistrar::class);
-        $previousTeam = $registrar->getPermissionsTeamId();
-        $registrar->setPermissionsTeamId($project->id);
-
-        try {
-            $allPermissions = Permission::query()->where('guard_name', 'admin')->pluck('name');
-
-            foreach (config('cms-auth.system_roles', []) as $roleName => $patterns) {
-                if ($roleName === 'super-admin') {
-                    continue; // глобальная роль, не на проект
-                }
-
-                $role = Role::query()->firstOrCreate([
-                    'name' => $roleName,
-                    'guard_name' => 'admin',
-                    'project_id' => $project->id,
-                ]);
-
-                $matched = $allPermissions
-                    ->filter(fn (string $p) => self::matchesAny($p, $patterns))
-                    ->values()
-                    ->all();
-
-                $role->syncPermissions($matched);
-            }
-        } finally {
-            $registrar->setPermissionsTeamId($previousTeam);
-            $registrar->forgetCachedPermissions();
-        }
+        $this->roles->sync($project);
     }
 
     public static function ensureGlobalSuperAdminRole(): Role
     {
         return Role::query()->firstOrCreate([
-            'name' => 'super-admin',
-            'guard_name' => 'admin',
+            'name' => SystemRole::SuperAdmin->value,
+            'guard_name' => Guard::Admin->value,
             'project_id' => null,
         ]);
     }
@@ -86,18 +60,5 @@ final class PermissionSyncer
             'model_id' => $admin->getKey(),
             'project_id' => '',
         ]);
-    }
-
-    /** @param list<string> $patterns шаблоны вида "*", "content.*", "*.view" */
-    private static function matchesAny(string $permission, array $patterns): bool
-    {
-        foreach ($patterns as $pattern) {
-            $regex = '/^'.str_replace('\*', '.*', preg_quote($pattern, '/')).'$/';
-            if (preg_match($regex, $permission)) {
-                return true;
-            }
-        }
-
-        return false;
     }
 }

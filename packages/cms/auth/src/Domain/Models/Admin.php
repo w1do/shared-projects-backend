@@ -5,7 +5,10 @@ declare(strict_types=1);
 namespace Cms\Auth\Domain\Models;
 
 use Cms\Auth\Database\Factories\AdminFactory;
+use Cms\Auth\Domain\Enums\Guard;
+use Cms\Auth\Domain\Enums\SystemRole;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Support\Facades\DB;
 use Laravel\Sanctum\HasApiTokens;
@@ -27,7 +30,7 @@ class Admin extends Authenticatable
     use HasRoles;
 
     /** @var string */
-    protected $guard_name = 'admin';
+    protected $guard_name = Guard::Admin->value;
 
     protected $fillable = ['name', 'email', 'password', 'locale'];
 
@@ -38,6 +41,19 @@ class Admin extends Authenticatable
         return ['password' => 'hashed'];
     }
 
+    /**
+     * Проекты, в которых оператор состоит участником.
+     *
+     * Обратная сторона `Project::members()`. Раньше это отношение собиралось
+     * ручным `belongsToMany()` прямо в query сборки bootstrap.
+     *
+     * @return BelongsToMany<Project, $this>
+     */
+    public function projects(): BelongsToMany
+    {
+        return $this->belongsToMany(Project::class, 'project_members', 'admin_id', 'project_id');
+    }
+
     public function isSuperAdmin(): bool
     {
         // super-admin — глобальная роль: pivot project_id = '' (вне teams-скоупа spatie)
@@ -46,7 +62,7 @@ class Admin extends Authenticatable
             ->where('model_has_roles.model_type', static::class)
             ->where('model_has_roles.model_id', $this->getKey())
             ->where('model_has_roles.project_id', '')
-            ->where('roles.name', 'super-admin')
+            ->where('roles.name', SystemRole::SuperAdmin->value)
             ->exists();
     }
 

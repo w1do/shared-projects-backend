@@ -5,23 +5,29 @@ declare(strict_types=1);
 namespace Cms\Auth\Application\Handlers;
 
 use Cms\Auth\Application\Commands\CreateRoleCommand;
-use Cms\Auth\Infrastructure\Support\Audit;
-use Cms\Auth\Infrastructure\Support\BootstrapCache;
-use Illuminate\Validation\ValidationException;
+use Cms\Auth\Application\Exceptions\AuthRuleViolation;
+use Cms\Auth\Domain\Enums\AuditAction;
+use Cms\Auth\Domain\Enums\Guard;
+use Cms\Auth\Infrastructure\Persistence\AuditRecorder;
+use Cms\Auth\Infrastructure\Persistence\BootstrapCache;
 use Spatie\Permission\Models\Role;
 
 final class CreateRoleHandler
 {
+    public function __construct(
+        private readonly AuditRecorder $audit,
+    ) {}
+
     public function handle(CreateRoleCommand $command): Role
     {
         if (array_key_exists($command->data->name, config('cms-auth.system_roles', []))) {
-            throw ValidationException::withMessages(['name' => ['This role name is reserved.']]);
+            throw AuthRuleViolation::roleNameReserved();
         }
 
-        $role = Role::query()->create(['name' => $command->data->name, 'guard_name' => 'admin', 'project_id' => $command->project->id]);
+        $role = Role::query()->create(['name' => $command->data->name, 'guard_name' => Guard::Admin->value, 'project_id' => $command->project->id]);
         $role->syncPermissions($command->data->permissions);
 
-        Audit::record('role.created', $command->project->id, "role:{$role->name}", ['permissions' => $command->data->permissions]);
+        $this->audit->record(AuditAction::RoleCreated, $command->project->id, "role:{$role->name}", ['permissions' => $command->data->permissions]);
         BootstrapCache::bump();
 
         $fresh = $role->fresh('permissions');

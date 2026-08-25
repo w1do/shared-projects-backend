@@ -8,7 +8,7 @@ use Cms\Auth\Domain\Models\Admin;
 use Cms\Auth\Domain\Models\Project;
 use Illuminate\Support\Collection;
 
-final class ListProjects
+final class ListProjectsQuery
 {
     /** @return Collection<int, Project> */
     public function handle(Admin $admin): Collection

@@ -8,7 +8,7 @@ use Cms\Auth\Domain\Models\AuditLog;
 use Cms\Auth\Domain\Models\Project;
 use Illuminate\Contracts\Pagination\CursorPaginator;
 
-final class ListAuditEntries
+final class ListAuditEntriesQuery
 {
     public function handle(Project $project, int $perPage = 50): CursorPaginator
     {

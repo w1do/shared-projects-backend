@@ -10,10 +10,4 @@ final class SettingsPayloadDTO extends Data
 {
     /** @param array<string, mixed> $values */
     public function __construct(public array $values) {}
-
-    /** @return array<string, list<mixed>> */
-    public static function rules(): array
-    {
-        return ['values' => ['required', 'array']];
-    }
 }

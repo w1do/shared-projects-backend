@@ -1,5 +1,7 @@
 <?php
 
+use Cms\Auth\Domain\Enums\ServiceName;
+
 return [
     // Системные роли: super-admin — глобальная (project_id = null), остальные выдаются на проект.
     'system_roles' => [
@@ -12,7 +14,7 @@ return [
     ],
 
     // Сервисы платформы, которые можно включать на проект
-    'services' => ['content', 'analytics', 'pay'],
+    'services' => ServiceName::toggleable(),
 
     // Rate limit входа: попыток в минуту
     'login_rate_limit' => (int) env('AUTH_LOGIN_RATE_LIMIT', 5),

@@ -5,15 +5,15 @@ declare(strict_types=1);
 namespace Cms\Auth\Application\Handlers;
 
 use Cms\Auth\Application\Commands\RegisterSiteUserCommand;
+use Cms\Auth\Application\DTOs\User\SiteAuthTokenDTO;
+use Cms\Auth\Application\Exceptions\AuthRuleViolation;
 use Cms\Auth\Domain\Models\User;
 use Cms\Shared\Analytics\Analytics;
-use Illuminate\Validation\ValidationException;
 use Spatie\LaravelData\Optional;
 
 final class RegisterSiteUserHandler
 {
-    /** @return array{user: User, token: string} */
-    public function handle(RegisterSiteUserCommand $command): array
+    public function handle(RegisterSiteUserCommand $command): SiteAuthTokenDTO
     {
         $exists = User::acrossProjects()
             ->where('project_id', $command->projectId)
@@ -21,7 +21,7 @@ final class RegisterSiteUserHandler
             ->exists();
 
         if ($exists) {
-            throw ValidationException::withMessages(['email' => ['Email is already registered.']]);
+            throw AuthRuleViolation::emailAlreadyRegistered();
         }
 
         $user = User::create([
@@ -35,6 +35,6 @@ final class RegisterSiteUserHandler
 
         Analytics::push($user->subjectKey(), ['name' => 'user.registered'], $command->projectId);
 
-        return ['user' => $user, 'token' => $token];
+        return SiteAuthTokenDTO::forUser($token, $user);
     }
 }

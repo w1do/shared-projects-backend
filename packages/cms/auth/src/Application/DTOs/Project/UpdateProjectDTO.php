@@ -15,13 +15,4 @@ final class UpdateProjectDTO extends Data
         public array|Optional $locales,
     ) {}
 
-    /** @return array<string, list<mixed>> */
-    public static function rules(): array
-    {
-        return [
-            'name' => ['sometimes', 'string', 'max:255'],
-            'locales' => ['sometimes', 'array', 'min:1'],
-            'locales.*' => ['string', 'max:10'],
-        ];
-    }
 }

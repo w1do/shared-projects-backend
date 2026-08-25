@@ -10,9 +10,4 @@ final class ForgotPasswordDTO extends Data
 {
     public function __construct(public string $email) {}
 
-    /** @return array<string, list<mixed>> */
-    public static function rules(): array
-    {
-        return ['email' => ['required', 'email']];
-    }
 }

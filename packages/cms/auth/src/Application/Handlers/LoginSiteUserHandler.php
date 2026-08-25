@@ -5,22 +5,21 @@ declare(strict_types=1);
 namespace Cms\Auth\Application\Handlers;
 
 use Cms\Auth\Application\Commands\LoginSiteUserCommand;
-use Cms\Auth\Domain\Exceptions\TooManyAttempts;
+use Cms\Auth\Application\DTOs\User\SiteAuthTokenDTO;
+use Cms\Auth\Application\Exceptions\AuthRuleViolation;
 use Cms\Auth\Domain\Models\User;
+use Cms\Auth\Infrastructure\Persistence\AttemptThrottle;
 use Cms\Shared\Analytics\Analytics;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\RateLimiter;
-use Illuminate\Validation\ValidationException;
 
 final class LoginSiteUserHandler
 {
-    /** @return array{user: User, token: string} */
-    public function handle(LoginSiteUserCommand $command): array
+    public function __construct(private readonly AttemptThrottle $throttle) {}
+
+    public function handle(LoginSiteUserCommand $command): SiteAuthTokenDTO
     {
         $throttleKey = "web-login:{$command->projectId}:".strtolower($command->data->email)."|{$command->ip}";
-        if (RateLimiter::tooManyAttempts($throttleKey, (int) config('cms-auth.login_rate_limit', 5))) {
-            throw new TooManyAttempts;
-        }
+        $this->throttle->ensureNotExceeded($throttleKey, (int) config('cms-auth.login_rate_limit', 5));
 
         $user = User::acrossProjects()
             ->where('project_id', $command->projectId)
@@ -28,16 +27,16 @@ final class LoginSiteUserHandler
             ->first();
 
         if ($user === null || $user->isBlocked() || ! Hash::check($command->data->password, $user->password)) {
-            RateLimiter::hit($throttleKey, 60);
+            $this->throttle->hit($throttleKey, 60);
 
-            throw ValidationException::withMessages(['email' => ['Invalid credentials.']]);
+            throw AuthRuleViolation::invalidCredentials();
         }
 
-        RateLimiter::clear($throttleKey);
+        $this->throttle->clear($throttleKey);
 
         $token = $user->createToken('web', ['project:'.$command->projectId])->plainTextToken;
         Analytics::push($user->subjectKey(), ['name' => 'user.login'], $command->projectId);
 
-        return ['user' => $user, 'token' => $token];
+        return SiteAuthTokenDTO::forUser($token, $user);
     }
 }

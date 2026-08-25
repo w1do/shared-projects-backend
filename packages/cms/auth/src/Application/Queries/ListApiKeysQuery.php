@@ -8,7 +8,7 @@ use Cms\Auth\Application\DTOs\ApiKey\ApiKeyDTO;
 use Cms\Auth\Domain\Models\Project;
 use Illuminate\Support\Collection;
 
-final class ListApiKeys
+final class ListApiKeysQuery
 {
     /** @return Collection<int, ApiKeyDTO> */
     public function handle(Project $project): Collection

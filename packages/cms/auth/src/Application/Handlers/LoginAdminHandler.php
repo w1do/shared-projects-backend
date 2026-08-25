@@ -5,37 +5,36 @@ declare(strict_types=1);
 namespace Cms\Auth\Application\Handlers;
 
 use Cms\Auth\Application\Commands\LoginAdminCommand;
-use Cms\Auth\Domain\Exceptions\TooManyAttempts;
+use Cms\Auth\Application\DTOs\Auth\AuthTokenDTO;
+use Cms\Auth\Application\Exceptions\AuthRuleViolation;
 use Cms\Auth\Domain\Models\Admin;
+use Cms\Auth\Infrastructure\Persistence\AttemptThrottle;
 use Cms\Shared\Analytics\Analytics;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\RateLimiter;
-use Illuminate\Validation\ValidationException;
 
 final class LoginAdminHandler
 {
-    /** @return array{admin: Admin, token: string} */
-    public function handle(LoginAdminCommand $command): array
+    public function __construct(private readonly AttemptThrottle $throttle) {}
+
+    public function handle(LoginAdminCommand $command): AuthTokenDTO
     {
         $throttleKey = 'admin-login:'.strtolower($command->data->email).'|'.$command->ip;
-        if (RateLimiter::tooManyAttempts($throttleKey, (int) config('cms-auth.login_rate_limit', 5))) {
-            throw new TooManyAttempts;
-        }
+        $this->throttle->ensureNotExceeded($throttleKey, (int) config('cms-auth.login_rate_limit', 5));
 
         $admin = Admin::query()->where('email', $command->data->email)->first();
 
         if ($admin === null || ! Hash::check($command->data->password, $admin->password)) {
-            RateLimiter::hit($throttleKey, 60);
+            $this->throttle->hit($throttleKey, 60);
 
             // Существование аккаунта не раскрываем
-            throw ValidationException::withMessages(['email' => ['Invalid credentials.']]);
+            throw AuthRuleViolation::invalidCredentials();
         }
 
-        RateLimiter::clear($throttleKey);
+        $this->throttle->clear($throttleKey);
 
         $token = $admin->createToken('admin')->plainTextToken;
         Analytics::push("admin:{$admin->id}", ['name' => 'admin.login']);
 
-        return ['admin' => $admin, 'token' => $token];
+        return AuthTokenDTO::forAdmin($token, $admin);
     }
 }

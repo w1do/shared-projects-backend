@@ -15,13 +15,4 @@ final class SiteRegisterDTO extends Data
         public string|Optional $name,
     ) {}
 
-    /** @return array<string, list<mixed>> */
-    public static function rules(): array
-    {
-        return [
-            'email' => ['required', 'email'],
-            'password' => ['required', 'string', 'min:8'],
-            'name' => ['sometimes', 'string', 'max:255'],
-        ];
-    }
 }
