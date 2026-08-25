@@ -5,25 +5,25 @@ declare(strict_types=1);
 namespace Cms\Localization\Application\Queries;
 
 use Cms\Contracts\Introspection\IntrospectionResult;
-use Illuminate\Http\Request;
 
 /**
- * Локали текущего проекта — из introspection auth-сервиса (атрибут запроса,
- * положенный middleware'ом авторизации). Первая локаль — локаль по умолчанию.
+ * Локали текущего проекта — из introspection auth-сервиса. Результат
+ * интроспекции достаёт Presentation (атрибут запроса, положенный middleware'ом
+ * авторизации) и передаёт сюда: HTTP-запрос в Application не попадает.
+ * Первая локаль — локаль по умолчанию.
  */
 final class ProjectLocalesQuery
 {
     /** @return list<string> */
-    public function handle(Request $request): array
+    public function handle(?IntrospectionResult $introspection): array
     {
-        $introspection = $request->attributes->get('introspection');
-        $locales = $introspection instanceof IntrospectionResult ? $introspection->locales : [];
+        $locales = $introspection === null ? [] : $introspection->locales;
 
         return $locales !== [] ? $locales : ['en'];
     }
 
-    public function defaultLocale(Request $request): string
+    public function defaultLocale(?IntrospectionResult $introspection): string
     {
-        return $this->handle($request)[0];
+        return $this->handle($introspection)[0];
     }
 }

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Cms\Ai\Domain\Exceptions;
+namespace Cms\Ai\Application\Exceptions;
 
 use RuntimeException;
 

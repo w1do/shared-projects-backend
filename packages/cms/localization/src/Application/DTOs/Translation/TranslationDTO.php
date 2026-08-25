@@ -27,4 +27,10 @@ final class TranslationDTO extends Data
             machine: array_filter($translation->machine),
         );
     }
+
+    /** Значение локали с откатом на локаль по умолчанию. */
+    public function valueFor(string $locale, string $fallback): ?string
+    {
+        return $this->values[$locale] ?? $this->values[$fallback] ?? null;
+    }
 }

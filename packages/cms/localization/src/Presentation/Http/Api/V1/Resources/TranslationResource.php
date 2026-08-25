@@ -5,16 +5,15 @@ declare(strict_types=1);
 namespace Cms\Localization\Presentation\Http\Api\V1\Resources;
 
 use Cms\Localization\Application\DTOs\Translation\TranslationDTO;
-use Cms\Localization\Domain\Models\Translation;
+use Cms\Shared\Http\Resources\ApiResource;
 use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\JsonResource;
 
-/** @property Translation $resource */
-final class TranslationResource extends JsonResource
+/** @property TranslationDTO $resource */
+final class TranslationResource extends ApiResource
 {
     /** @return array<string, mixed> */
     public function toArray(Request $request): array
     {
-        return TranslationDTO::fromModel($this->resource)->toArray();
+        return $this->resource->toArray();
     }
 }

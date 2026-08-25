@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Cms\Ai\Domain\Contracts;
+namespace Cms\Ai\Application\Contracts;
 
 use Cms\Ai\Application\DTOs\GeneratePost\GeneratePostRequestDTO;
 use Cms\Ai\Application\DTOs\GeneratePost\PostDraftDTO;

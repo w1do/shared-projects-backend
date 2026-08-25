@@ -17,6 +17,8 @@ use Laravel\Ai\Promptable;
  */
 final class StructuredAgent implements Agent, HasStructuredOutput
 {
+    use Promptable;
+
     /** @param callable(JsonSchema): array<string, mixed> $schema */
     public function __construct(
         private readonly string $instructions,
@@ -33,6 +35,4 @@ final class StructuredAgent implements Agent, HasStructuredOutput
     {
         return ($this->schema)($schema);
     }
-
-    use Promptable;
 }
