@@ -25,13 +25,20 @@ final class PasswordResetTokens
         private readonly Config $config,
     ) {}
 
-    public function issue(string $email, Guard $guard, ?string $projectId): void
+    /**
+     * Выпускает одноразовый токен и возвращает его plain-значение для доставки.
+     * В БД хранится только sha256-хэш — plain существует лишь в момент выпуска.
+     */
+    public function issue(string $email, Guard $guard, ?string $projectId): string
     {
+        $plain = Str::random(64);
+
         $this->db->table('password_reset_tokens')->updateOrInsert(
             ['email' => $email, 'guard' => $guard->value],
-            ['token' => hash('sha256', Str::random(64)), 'created_at' => now(), 'project_id' => $projectId],
+            ['token' => hash('sha256', $plain), 'created_at' => now(), 'project_id' => $projectId],
         );
-        // Доставка токена — почтовым каналом окружения (нотификации), вне MVP-кода.
+
+        return $plain;
     }
 
     /** Токен предъявлен верно и не истёк. */
