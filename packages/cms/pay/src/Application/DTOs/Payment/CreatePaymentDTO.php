@@ -7,6 +7,12 @@ namespace Cms\Pay\Application\DTOs\Payment;
 use Spatie\LaravelData\Data;
 use Spatie\LaravelData\Optional;
 
+/**
+ * Внутренний DTO создания платежа: HTTP-поверхности у него нет — платёж
+ * создают только `SubscribeHandler` и `RenewSubscriptionHandler`. Прежние
+ * `rules()` не применялись ни к одному запросу и сняты вместе с остальными
+ * (валидация живёт в FormRequest'ах); отдельный FormRequest здесь не нужен.
+ */
 final class CreatePaymentDTO extends Data
 {
     public function __construct(
@@ -15,15 +21,4 @@ final class CreatePaymentDTO extends Data
         public string|Optional|null $description,
         public string|Optional $provider,
     ) {}
-
-    /** @return array<string, list<mixed>> */
-    public static function rules(): array
-    {
-        return [
-            'amount_minor' => ['required', 'integer', 'min:1'],
-            'currency' => ['required', 'string', 'size:3'],
-            'description' => ['sometimes', 'nullable', 'string', 'max:255'],
-            'provider' => ['sometimes', 'string', 'max:32'],
-        ];
-    }
 }

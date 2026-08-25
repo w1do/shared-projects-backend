@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Cms\Pay\Infrastructure\Providers;
+namespace Cms\Pay\Infrastructure\Gateways;
 
 use Cms\Pay\Domain\Contracts\PaymentProvider;
 use Illuminate\Validation\ValidationException;

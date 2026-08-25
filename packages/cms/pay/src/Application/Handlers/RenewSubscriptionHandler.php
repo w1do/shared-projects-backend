@@ -25,6 +25,8 @@ final class RenewSubscriptionHandler
         }
         $periodKey = $subscription->current_period_ends_at->format('Ymd');
 
+        // Сырые поля плана, не Money: см. SubscribeHandler (валюта из БД
+        // может не проходить строгий VO — поведение сохраняется).
         $payment = $this->createPayment->handle(new CreatePaymentCommand(
             userKey: $subscription->user_key,
             data: CreatePaymentDTO::from([

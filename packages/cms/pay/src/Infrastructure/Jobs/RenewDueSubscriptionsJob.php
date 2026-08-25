@@ -14,7 +14,15 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 
-/** Ежечасно: платёж продления для подписок с истёкшим периодом (очередь critical). */
+/**
+ * Ежечасно: платёж продления для подписок с истёкшим периодом (очередь critical).
+ *
+ * Джоба НЕ наследует `Cms\Shared\Jobs\ProjectAwareJob` (задача 7.8): она
+ * межпроектная по построению — выбирает due-подписки `acrossProjects()` и
+ * ставит контекст на каждую отдельно, поэтому единственного `$projectId`
+ * для конструктора базового класса у неё нет. `ProjectContext` инжектится
+ * в handle() — ручного `app()` здесь нет.
+ */
 final class RenewDueSubscriptionsJob implements ShouldQueue
 {
     use Dispatchable;

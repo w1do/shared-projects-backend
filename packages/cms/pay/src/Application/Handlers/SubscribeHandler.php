@@ -7,42 +7,44 @@ namespace Cms\Pay\Application\Handlers;
 use Cms\Pay\Application\Commands\CreatePaymentCommand;
 use Cms\Pay\Application\Commands\SubscribeCommand;
 use Cms\Pay\Application\DTOs\Payment\CreatePaymentDTO;
-use Cms\Pay\Domain\Models\Payment;
+use Cms\Pay\Application\DTOs\Subscription\SubscriptionCheckoutDTO;
+use Cms\Pay\Application\Exceptions\PlanNotAvailable;
+use Cms\Pay\Application\Exceptions\SubscriptionAlreadyExists;
 use Cms\Pay\Domain\Models\Plan;
 use Cms\Pay\Domain\Models\Subscription;
 use Cms\Shared\Analytics\Analytics;
-use Illuminate\Validation\ValidationException;
 
 /** Оформление подписки: создаётся подписка и платёж первого периода. */
 final class SubscribeHandler
 {
     public function __construct(private readonly CreatePaymentHandler $createPayment) {}
 
-    /** @return array{subscription: Subscription, payment: Payment} */
-    public function handle(SubscribeCommand $command): array
+    public function handle(SubscribeCommand $command): SubscriptionCheckoutDTO
     {
         $plan = Plan::query()->where('code', $command->planCode)->whereNull('archived_at')->first();
         if ($plan === null) {
-            throw ValidationException::withMessages(['plan_code' => ['Unknown or archived plan.']]);
+            throw PlanNotAvailable::make();
         }
 
         $exists = Subscription::query()
-            ->where('user_key', $command->userKey)
+            ->where('user_key', $command->userKey->value)
             ->where('plan_id', $plan->id)
             ->whereIn('status', ['active', 'past_due', 'paused'])
             ->exists();
         if ($exists) {
-            throw ValidationException::withMessages(['plan_code' => ['Subscription already exists.']]);
+            throw SubscriptionAlreadyExists::make();
         }
 
         $subscription = Subscription::create([
-            'user_key' => $command->userKey,
+            'user_key' => $command->userKey->value,
             'plan_id' => $plan->id,
             'current_period_ends_at' => now()->add($plan->periodInterval()),
         ]);
 
+        // Сырые поля плана, не Money: строгий VO Currency отверг бы валюту
+        // в нижнем регистре, которая сейчас проходит весь цикл (Б-список).
         $payment = $this->createPayment->handle(new CreatePaymentCommand(
-            userKey: $command->userKey,
+            userKey: $command->userKey->value,
             data: CreatePaymentDTO::from([
                 'amount_minor' => $plan->price_minor,
                 'currency' => $plan->currency,
@@ -52,11 +54,11 @@ final class SubscribeHandler
             subscriptionId: $subscription->id,
         ));
 
-        Analytics::push($command->userKey, [
+        Analytics::push($command->userKey->value, [
             'name' => 'subscription.created',
             'props' => ['plan' => $plan->code, 'subscription_id' => $subscription->id],
         ], $subscription->project_id);
 
-        return ['subscription' => $subscription->fresh('plan') ?? $subscription, 'payment' => $payment];
+        return SubscriptionCheckoutDTO::fromModels($subscription->fresh('plan') ?? $subscription, $payment);
     }
 }

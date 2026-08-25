@@ -8,7 +8,7 @@ use Cms\Pay\Application\DTOs\Plan\PlanDTO;
 use Cms\Pay\Domain\Models\Plan;
 use Illuminate\Support\Collection;
 
-final class ListPlans
+final class ListPlansQuery
 {
     /** @return Collection<int, PlanDTO> */
     public function handle(bool $includeArchived = false): Collection

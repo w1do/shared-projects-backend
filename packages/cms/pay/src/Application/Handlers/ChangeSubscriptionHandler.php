@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Cms\Pay\Application\Handlers;
 
 use Cms\Pay\Application\Commands\ChangeSubscriptionCommand;
+use Cms\Pay\Domain\Enums\SubscriptionAction;
 use Cms\Pay\Domain\Enums\SubscriptionStatus;
 use Cms\Pay\Domain\Models\Subscription;
 use Cms\Shared\Analytics\Analytics;
-use Illuminate\Validation\ValidationException;
 
 /** cancel — доступ до конца оплаченного периода; resume; pause; delete — soft-delete. */
 final class ChangeSubscriptionHandler
@@ -17,16 +17,17 @@ final class ChangeSubscriptionHandler
     {
         $subscription = $command->subscription;
 
+        // Набор действий закрыт enum'ом: ветки default больше нет, неизвестное
+        // действие отсеивается на границе (маршрут admin / контроллер site).
         match ($command->action) {
-            'cancel' => $this->apply($subscription, SubscriptionStatus::Canceled, 'canceled_at'),
-            'resume' => $this->resume($subscription),
-            'pause' => $this->apply($subscription, SubscriptionStatus::Paused, 'paused_at'),
-            'delete' => $subscription->delete(), // история и леджер сохраняются
-            default => throw ValidationException::withMessages(['action' => ['Unknown action.']]),
+            SubscriptionAction::Cancel => $this->apply($subscription, SubscriptionStatus::Canceled, 'canceled_at'),
+            SubscriptionAction::Resume => $this->resume($subscription),
+            SubscriptionAction::Pause => $this->apply($subscription, SubscriptionStatus::Paused, 'paused_at'),
+            SubscriptionAction::Delete => $subscription->delete(), // история и леджер сохраняются
         };
 
         Analytics::push($subscription->user_key, [
-            'name' => "subscription.{$command->action}",
+            'name' => "subscription.{$command->action->value}",
             'props' => ['subscription_id' => $subscription->id],
         ], $subscription->project_id);
 

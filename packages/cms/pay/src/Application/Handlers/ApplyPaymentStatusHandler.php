@@ -5,18 +5,28 @@ declare(strict_types=1);
 namespace Cms\Pay\Application\Handlers;
 
 use Cms\Pay\Application\Commands\ApplyPaymentStatusCommand;
+use Cms\Pay\Application\Exceptions\PaymentTransitionNotAllowed;
 use Cms\Pay\Domain\Enums\PaymentStatus;
-use Cms\Pay\Domain\Enums\SubscriptionStatus;
-use Cms\Pay\Domain\Enums\TransactionType;
+use Cms\Pay\Domain\Events\PaymentStatusChanged;
+use Cms\Pay\Domain\Events\PaymentSucceeded;
 use Cms\Pay\Domain\Models\Payment;
-use Cms\Pay\Domain\Models\Subscription;
-use Cms\Shared\Analytics\Analytics;
+use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\ValidationException;
 
-/** Единственная точка смены статуса платежа: леджер, продление подписки, событие в аналитику. */
+/**
+ * Единственная точка смены статуса платежа. Побочные эффекты (леджер,
+ * продление подписки, аналитика) вынесены в синхронные листенеры доменных
+ * событий; сам handler отвечает только за гвард идемпотентности, проверку
+ * перехода и запись статуса.
+ *
+ * Границу транзакции двигать нельзя (И8): гвард идемпотентности стоит ДО
+ * транзакции, все эффекты — внутри одной транзакции и в прежнем порядке
+ * (леджер → продление подписки → аналитика).
+ */
 final class ApplyPaymentStatusHandler
 {
+    public function __construct(private readonly Dispatcher $events) {}
+
     public function handle(ApplyPaymentStatusCommand $command): Payment
     {
         $payment = $command->payment;
@@ -27,9 +37,7 @@ final class ApplyPaymentStatusHandler
         }
 
         if (! $payment->status->canTransitionTo($target)) {
-            throw ValidationException::withMessages([
-                'status' => ["Transition {$payment->status->value} → {$target->value} is not allowed."],
-            ]);
+            throw PaymentTransitionNotAllowed::between($payment->status, $target);
         }
 
         return DB::transaction(function () use ($payment, $target) {
@@ -37,50 +45,12 @@ final class ApplyPaymentStatusHandler
             $payment->save();
 
             if ($target === PaymentStatus::Succeeded) {
-                $payment->transactions()->create([
-                    'project_id' => $payment->project_id,
-                    'type' => TransactionType::Charge,
-                    'amount_minor' => $payment->amount_minor,
-                    'currency' => $payment->currency,
-                    'created_at' => now(),
-                ]);
-
-                if ($payment->subscription_id !== null) {
-                    $this->extendSubscription($payment);
-                }
+                $this->events->dispatch(new PaymentSucceeded($payment));
             }
 
-            Analytics::push($payment->user_key, [
-                'name' => $target === PaymentStatus::Succeeded ? 'payment.succeeded' : "payment.{$target->value}",
-                'value_minor' => $target === PaymentStatus::Succeeded ? $payment->amount_minor : 0,
-                'currency' => $payment->currency,
-                'props' => ['payment_id' => $payment->id],
-            ], $payment->project_id);
+            $this->events->dispatch(new PaymentStatusChanged($payment, $target));
 
             return $payment;
         });
-    }
-
-    private function extendSubscription(Payment $payment): void
-    {
-        $subscription = Subscription::query()->with('plan')->find($payment->subscription_id);
-        if ($subscription === null) {
-            return;
-        }
-
-        $plan = $subscription->plan;
-        if ($plan === null) {
-            return;
-        }
-
-        $base = $subscription->current_period_ends_at->isFuture()
-            ? $subscription->current_period_ends_at
-            : now();
-
-        $subscription->forceFill([
-            'current_period_ends_at' => $base->add($plan->periodInterval()),
-            'status' => SubscriptionStatus::Active,
-            'renewal_attempts' => 0,
-        ])->save();
     }
 }

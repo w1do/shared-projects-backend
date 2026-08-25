@@ -9,7 +9,7 @@ use Cms\Pay\Application\Handlers\ApplyPaymentStatusHandler;
 use Cms\Pay\Domain\Enums\PaymentStatus;
 use Cms\Pay\Domain\Models\Payment;
 use Cms\Pay\Domain\Models\WebhookEvent;
-use Cms\Pay\Infrastructure\Providers\ProviderRegistry;
+use Cms\Pay\Infrastructure\Gateways\ProviderRegistry;
 use Cms\Shared\Tenant\ProjectContext;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
@@ -18,7 +18,21 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Facades\Log;
 
-/** Обработка вебхука в очереди: идемпотентно, с ретраями; HTTP уже ответил 200. */
+/**
+ * Обработка вебхука в очереди: идемпотентно, с ретраями; HTTP уже ответил 200.
+ *
+ * Джоба НЕ наследует общий `Cms\Shared\Jobs\ProjectAwareJob` (задача 7.8) —
+ * это невозможно по трём причинам сразу:
+ *  1. `ProjectAwareJob` требует `__construct(string $projectId)`, а проект
+ *     вебхука на момент диспатча неизвестен: его источника сегодня нет вовсе
+ *     (`ProviderRegistry::for()` игнорирует `$projectId`, в контроллере
+ *     хардкод '-') — это и есть блокировка 7.9 задачей 9.2;
+ *  2. проект определяется только ПОСЛЕ загрузки платежа по payload'у,
+ *     то есть внутри handle(), а не до постановки в очередь;
+ *  3. `ProjectAwareJob::handle()` объявлен final и без аргументов, что
+ *     несовместимо с инъекцией `ProviderRegistry`/`ApplyPaymentStatusHandler`.
+ * Решение зеркалит `ExportReportJob` в analytics (задача 2.7).
+ */
 final class ProcessWebhookEventJob implements ShouldBeUnique, ShouldQueue
 {
     use Dispatchable;

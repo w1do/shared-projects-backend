@@ -7,7 +7,7 @@ namespace Cms\Pay\Application\Queries;
 use Cms\Pay\Domain\Models\Payment;
 use Illuminate\Contracts\Pagination\CursorPaginator;
 
-final class ListPayments
+final class ListPaymentsQuery
 {
     public function handle(int $perPage = 50): CursorPaginator
     {
