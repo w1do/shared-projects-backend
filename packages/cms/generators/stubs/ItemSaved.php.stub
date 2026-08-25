@@ -1,0 +1,19 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Cms\{{Studly}}\Domain\Events;
+
+use Cms\{{Studly}}\Domain\Models\Item;
+use Illuminate\Foundation\Events\Dispatchable;
+
+/**
+ * Доменное событие: Handler сообщает о факте, а реакции (кэш, аналитика,
+ * уведомления) живут в слушателях приложения — не внутри Handler'а.
+ */
+final class ItemSaved
+{
+    use Dispatchable;
+
+    public function __construct(public readonly Item $item) {}
+}

@@ -6,7 +6,7 @@ namespace Cms\Pay\Application\Handlers;
 
 use Cms\Pay\Application\Commands\CreatePaymentCommand;
 use Cms\Pay\Domain\Models\Payment;
-use Cms\Pay\Infrastructure\Providers\ProviderRegistry;
+use Cms\Pay\Infrastructure\Gateways\ProviderRegistry;
 use Cms\Shared\Tenant\ProjectContext;
 use Spatie\LaravelData\Optional;
 

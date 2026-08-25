@@ -1,0 +1,33 @@
+{
+    "status": 200,
+    "content_type": "application/json",
+    "body": {
+        "subject": "admin",
+        "active": true,
+        "project_id": "<string>",
+        "user_id": "<string>",
+        "super_admin": false,
+        "permissions": [
+            "auth.projects.view",
+            "auth.projects.manage",
+            "auth.members.view",
+            "auth.members.manage",
+            "auth.roles.view",
+            "auth.roles.manage",
+            "auth.keys.view",
+            "auth.keys.manage",
+            "auth.services.manage",
+            "auth.settings.view",
+            "auth.settings.manage",
+            "auth.audit.view",
+            "auth.users.view",
+            "auth.users.manage"
+        ],
+        "key_type": null,
+        "scopes": [],
+        "enabled_services": [],
+        "locales": [
+            "ru"
+        ]
+    }
+}

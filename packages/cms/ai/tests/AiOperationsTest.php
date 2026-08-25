@@ -2,16 +2,17 @@
 
 declare(strict_types=1);
 
+use Cms\Ai\Application\Contracts\AiOperations;
 use Cms\Ai\Application\DTOs\GeneratePost\GeneratePostRequestDTO;
 use Cms\Ai\Application\DTOs\Normalize\NormalizeRequestDTO;
 use Cms\Ai\Application\DTOs\Rewrite\RewriteRequestDTO;
 use Cms\Ai\Application\DTOs\SuggestCategories\SuggestCategoriesRequestDTO;
 use Cms\Ai\Application\DTOs\Translate\TranslateRequestDTO;
-use Cms\Ai\Domain\Contracts\AiOperations;
-use Cms\Ai\Domain\Exceptions\AiConfigurationException;
-use Cms\Ai\Domain\Exceptions\AiRequestException;
-use Cms\Ai\Domain\Exceptions\AiResponseException;
+use Cms\Ai\Application\Exceptions\AiConfigurationException;
+use Cms\Ai\Application\Exceptions\AiRequestException;
+use Cms\Ai\Application\Exceptions\AiResponseException;
 use Cms\Ai\Infrastructure\Agents\StructuredAgent;
+use Cms\Ai\Infrastructure\Config\AiProviderConfig;
 
 beforeEach(function () {
     config()->set('cms-ai.api_key', 'test-key');
@@ -114,3 +115,19 @@ test('malformed response shape is a response error', function () {
 
     app(AiOperations::class)->rewrite(new RewriteRequestDTO(text: 'x', instruction: 'y'));
 })->throws(AiResponseException::class);
+
+test('provider config reaches the sdk as an own instance without touching foreign entries', function () {
+    config()->set('cms-ai.base_url', 'https://polza.ai/api/v1');
+
+    app(AiOperations::class); // резолв собирает конфигурацию провайдера
+
+    $instance = 'ai.providers.'.AiProviderConfig::INSTANCE;
+
+    expect(config("{$instance}.driver"))->toBe('openai')
+        ->and(config("{$instance}.key"))->toBe('test-key')
+        ->and(config("{$instance}.url"))->toBe('https://polza.ai/api/v1')
+        // настройки драйвера сохраняются целиком, не только key/url
+        ->and(config("{$instance}.store"))->toBe(config('ai.providers.openai.store'))
+        // чужая запись провайдера не переписывается (было — мутация в boot())
+        ->and(config('ai.providers.openai.key'))->not->toBe('test-key');
+});

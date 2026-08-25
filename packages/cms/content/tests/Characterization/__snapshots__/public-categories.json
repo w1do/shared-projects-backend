@@ -1,0 +1,47 @@
+{
+    "status": 200,
+    "content_type": "application/json",
+    "body": {
+        "data": [
+            {
+                "id": "<int>",
+                "name": "News",
+                "name_translations": {
+                    "en": "News"
+                },
+                "slug": "news",
+                "parent_id": null,
+                "is_index": true,
+                "seo": {
+                    "title": "News — catalog",
+                    "description": null,
+                    "keywords": null,
+                    "canonical": null,
+                    "robots": null,
+                    "og_title": null,
+                    "og_description": null,
+                    "og_image": null,
+                    "twitter_card": null,
+                    "json_ld": {
+                        "@context": "https://schema.org",
+                        "@type": "CollectionPage"
+                    }
+                },
+                "children": [
+                    {
+                        "id": "<int>",
+                        "name": "Sport",
+                        "name_translations": {
+                            "en": "Sport"
+                        },
+                        "slug": "sport",
+                        "parent_id": "<int>",
+                        "is_index": true,
+                        "seo": null,
+                        "children": []
+                    }
+                ]
+            }
+        ]
+    }
+}

@@ -10,6 +10,9 @@ parameters:
         - ../../packages/cms/content/src
         - ../../packages/cms/ai/src
         - ../../packages/cms/localization/src
+        - ../../packages/cms/shared/routes
+        - ../../packages/cms/content/routes
+        - ../../packages/cms/localization/routes
     databaseMigrationsPath:
         - ../../packages/cms/content/database/migrations
     reportUnmatchedIgnoredErrors: false

@@ -1,0 +1,34 @@
+{
+    "status": 422,
+    "content_type": "application/json",
+    "body": {
+        "error": {
+            "code": "validation_failed",
+            "message": "The given data was invalid.",
+            "details": {
+                "title": [
+                    "The title field must not be greater than 255 characters."
+                ],
+                "description": [
+                    "The description field must not be greater than 500 characters."
+                ],
+                "keywords": [
+                    "The keywords field must not be greater than 500 characters."
+                ],
+                "canonical": [
+                    "The canonical field must be a valid URL."
+                ],
+                "robots": [
+                    "The robots field must not be greater than 64 characters."
+                ],
+                "twitter_card": [
+                    "The twitter card field must not be greater than 32 characters."
+                ],
+                "json_ld": [
+                    "The json ld field must be an array."
+                ]
+            },
+            "trace_id": "<string>"
+        }
+    }
+}

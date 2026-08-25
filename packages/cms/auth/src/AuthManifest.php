@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Cms\Auth;
 
+use Cms\Auth\Domain\Enums\ServiceName;
 use Cms\Contracts\Manifest\NavigationItem;
 use Cms\Contracts\Manifest\PermissionDefinition;
 use Cms\Contracts\Manifest\ServiceManifest;
@@ -16,7 +17,7 @@ final class AuthManifest
     public static function build(): ServiceManifest
     {
         return new ServiceManifest(
-            key: 'auth',
+            key: ServiceName::Auth->value,
             version: self::VERSION,
             permissions: [
                 new PermissionDefinition('auth.projects.view', 'Просмотр проекта', 'projects'),

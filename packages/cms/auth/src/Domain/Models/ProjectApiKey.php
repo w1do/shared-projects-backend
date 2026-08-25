@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Cms\Auth\Domain\Models;
 
+use Cms\Auth\Domain\Enums\ApiKeyType;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -46,11 +47,15 @@ class ProjectApiKey extends Model
         return $this->revoked_at !== null;
     }
 
-    /** @return array{model: self, plain: string} Секрет возвращается один раз — хранится только хэш. */
+    /**
+     * @param  list<string>  $scopes
+     * @return array{model: self, plain: string} Секрет возвращается один раз — хранится только хэш.
+     */
     public static function issue(string $projectId, string $type, array $scopes): array
     {
-        $prefix = $type === 'public' ? 'pk_live_' : 'sk_live_';
-        $plain = $prefix.Str::random(40);
+        // Префикс задаёт тип ключа; неизвестный тип сюда не доходит — его отсекает
+        // валидация запроса, и запасной вариант остаётся прежним (секретный ключ).
+        $plain = (ApiKeyType::tryFrom($type) ?? ApiKeyType::Secret)->prefix().Str::random(40);
 
         $model = static::create([
             'project_id' => $projectId,

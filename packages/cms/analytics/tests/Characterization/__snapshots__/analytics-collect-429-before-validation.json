@@ -1,0 +1,12 @@
+{
+    "status": 429,
+    "content_type": "application/json",
+    "body": {
+        "error": {
+            "code": "too_many_events",
+            "message": "Event rate limit exceeded.",
+            "details": {},
+            "trace_id": "<string>"
+        }
+    }
+}

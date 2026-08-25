@@ -1,0 +1,33 @@
+{
+    "status": 200,
+    "content_type": "application/json",
+    "body": {
+        "data": [
+            {
+                "id": "<int>",
+                "key": "nav.blogs",
+                "values": {
+                    "en": "Blogs"
+                },
+                "machine": []
+            },
+            {
+                "id": "<int>",
+                "key": "nav.categories",
+                "values": {
+                    "en": "Categories",
+                    "ru": "Категории"
+                },
+                "machine": {
+                    "ru": true
+                }
+            },
+            {
+                "id": "<int>",
+                "key": "nav.empty",
+                "values": [],
+                "machine": []
+            }
+        ]
+    }
+}

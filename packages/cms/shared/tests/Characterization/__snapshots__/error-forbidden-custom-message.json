@@ -1,0 +1,12 @@
+{
+    "status": 403,
+    "content_type": "application/json",
+    "body": {
+        "error": {
+            "code": "forbidden",
+            "message": "Missing permission auth.users.view.",
+            "details": {},
+            "trace_id": "<string>"
+        }
+    }
+}

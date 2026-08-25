@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 use Cms\Contracts\Introspection\IntrospectionResult;
 use Cms\Contracts\Introspection\Subject;
-use Cms\Shared\AuthClient\CachedIntrospector;
+use Cms\Shared\AuthClient\Introspector;
 
 /** Фейковый introspector: auth-service недоступен в юнит-контуре content. */
-class FakeIntrospector extends CachedIntrospector
+class FakeIntrospector implements Introspector
 {
     public function __construct(
         private readonly IntrospectionResult $tokenResult,
@@ -43,7 +43,7 @@ function actingAsContentOperator(string $projectId = 'proj-1', array $permission
         keyType: 'secret', scopes: ['*'], enabledServices: $services,
     );
 
-    app()->instance(CachedIntrospector::class, new FakeIntrospector($token, $key));
+    app()->instance(Introspector::class, new FakeIntrospector($token, $key));
 
     return ['Authorization' => 'Bearer test-operator-token'];
 }

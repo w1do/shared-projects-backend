@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use Cms\Auth\Domain\Models\Admin;
-use Cms\Auth\Infrastructure\Support\PermissionSyncer;
+use Cms\Auth\Infrastructure\Persistence\PermissionSyncer;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\PermissionRegistrar;

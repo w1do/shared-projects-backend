@@ -1,0 +1,27 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Cms\{{Studly}}\Application\Queries;
+
+use Cms\{{Studly}}\Application\DTOs\Item\ItemDTO;
+use Cms\{{Studly}}\Domain\Contracts\ItemRepository;
+use Cms\{{Studly}}\Domain\Models\Item;
+
+/**
+ * Чтение без побочных эффектов. Суффикс *Query обязателен — его проверяет
+ * архитектурный гейт.
+ */
+final class ListItemsQuery
+{
+    public function __construct(private readonly ItemRepository $items) {}
+
+    /** @return list<ItemDTO> */
+    public function handle(int $limit = 25): array
+    {
+        return array_map(
+            fn (Item $item): ItemDTO => ItemDTO::fromModel($item),
+            $this->items->all($limit),
+        );
+    }
+}

@@ -1,0 +1,29 @@
+{
+    "status": 200,
+    "content_type": "application/json",
+    "body": {
+        "data": [
+            {
+                "id": "<int>",
+                "actor_type": "admin",
+                "actor_id": "<string>",
+                "action": "project.updated",
+                "subject": "project:site-a",
+                "changes": {
+                    "before": {
+                        "name": "SITE-A"
+                    },
+                    "after": {
+                        "name": "Name 1"
+                    }
+                },
+                "created_at": "<string>"
+            }
+        ],
+        "meta": {
+            "per_page": 50,
+            "next_cursor": null,
+            "prev_cursor": "<string>"
+        }
+    }
+}

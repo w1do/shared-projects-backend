@@ -291,7 +291,7 @@
             "dist": {
                 "type": "path",
                 "url": "../../packages/cms/ai",
-                "reference": "45db79d28fd3a48acfa35018f8c6a3db8229f1bd"
+                "reference": "3b3e17dbf7467713faaca9bd4f1eb39481134cbf"
             },
             "require": {
                 "illuminate/support": "^13.0",
@@ -303,7 +303,7 @@
             "extra": {
                 "laravel": {
                     "providers": [
-                        "Cms\\Ai\\AiPackageServiceProvider"
+                        "Cms\\Ai\\Infrastructure\\Providers\\AiPackageServiceProvider"
                     ]
                 }
             },
@@ -332,9 +332,10 @@
             "dist": {
                 "type": "path",
                 "url": "../../packages/cms/content",
-                "reference": "620897bd78fdd553690d55c2368b04ea166452ba"
+                "reference": "4cad9cc2f956e0049f8d8ecbca7ad35c39212178"
             },
             "require": {
+                "cms/localization": "*",
                 "cms/shared": "*",
                 "illuminate/database": "^13.0",
                 "illuminate/http": "^13.0",
@@ -349,7 +350,7 @@
             "extra": {
                 "laravel": {
                     "providers": [
-                        "Cms\\Content\\ContentServiceProvider"
+                        "Cms\\Content\\Infrastructure\\Providers\\ContentServiceProvider"
                     ]
                 }
             },
@@ -454,7 +455,7 @@
             "dist": {
                 "type": "path",
                 "url": "../../packages/cms/shared",
-                "reference": "78a55865d698900066c0737a1616bd4528429786"
+                "reference": "400e69c561595aa4d8e00bca5798d3cae8fec35a"
             },
             "require": {
                 "cms/contracts": "*",
@@ -477,7 +478,10 @@
             "autoload": {
                 "psr-4": {
                     "Cms\\Shared\\": "src/"
-                }
+                },
+                "files": [
+                    "src/aliases.php"
+                ]
             },
             "autoload-dev": {
                 "psr-4": {

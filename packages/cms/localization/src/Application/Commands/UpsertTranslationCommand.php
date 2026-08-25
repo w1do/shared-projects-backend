@@ -13,5 +13,10 @@ final readonly class UpsertTranslationCommand
         public UpsertTranslationDTO $data,
         /** Ручная запись снимает пометку автоперевода с изменённых локалей. */
         public bool $manual = true,
+        /**
+         * id обновляемой записи. Задан — это update: ключ берётся из найденной
+         * записи, присланный `key` игнорируется. Не задан — upsert по ключу.
+         */
+        public ?int $translationId = null,
     ) {}
 }

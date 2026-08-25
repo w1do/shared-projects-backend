@@ -140,7 +140,7 @@
             "dist": {
                 "type": "path",
                 "url": "../../packages/cms/auth",
-                "reference": "e7f647168d50f2973e9ab55d212417eb194501a8"
+                "reference": "40e569687da295edca5203702e97c98db48e4148"
             },
             "require": {
                 "cms/shared": "*",
@@ -156,7 +156,7 @@
             "extra": {
                 "laravel": {
                     "providers": [
-                        "Cms\\Auth\\AuthServiceProvider"
+                        "Cms\\Auth\\Infrastructure\\Providers\\AuthServiceProvider"
                     ]
                 }
             },
@@ -259,7 +259,7 @@
             "dist": {
                 "type": "path",
                 "url": "../../packages/cms/shared",
-                "reference": "78a55865d698900066c0737a1616bd4528429786"
+                "reference": "400e69c561595aa4d8e00bca5798d3cae8fec35a"
             },
             "require": {
                 "cms/contracts": "*",
@@ -282,7 +282,10 @@
             "autoload": {
                 "psr-4": {
                     "Cms\\Shared\\": "src/"
-                }
+                },
+                "files": [
+                    "src/aliases.php"
+                ]
             },
             "autoload-dev": {
                 "psr-4": {

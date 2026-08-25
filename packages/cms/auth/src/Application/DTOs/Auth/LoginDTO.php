@@ -13,12 +13,4 @@ final class LoginDTO extends Data
         public string $password,
     ) {}
 
-    /** @return array<string, list<mixed>> */
-    public static function rules(): array
-    {
-        return [
-            'email' => ['required', 'email'],
-            'password' => ['required', 'string'],
-        ];
-    }
 }

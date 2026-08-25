@@ -1,0 +1,22 @@
+{
+    "status": 200,
+    "content_type": "application/json",
+    "body": {
+        "data": [
+            {
+                "date": "<string>",
+                "name": "page_view",
+                "events": 10,
+                "sessions": 4,
+                "subjects": 3
+            },
+            {
+                "date": "<string>",
+                "name": "purchase",
+                "events": 2,
+                "sessions": 2,
+                "subjects": 2
+            }
+        ]
+    }
+}

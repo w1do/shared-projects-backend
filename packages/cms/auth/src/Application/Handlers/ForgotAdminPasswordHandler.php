@@ -5,30 +5,28 @@ declare(strict_types=1);
 namespace Cms\Auth\Application\Handlers;
 
 use Cms\Auth\Application\Commands\ForgotAdminPasswordCommand;
-use Cms\Auth\Domain\Exceptions\TooManyAttempts;
+use Cms\Auth\Domain\Enums\Guard;
 use Cms\Auth\Domain\Models\Admin;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\RateLimiter;
-use Illuminate\Support\Str;
+use Cms\Auth\Infrastructure\Persistence\AttemptThrottle;
+use Cms\Auth\Infrastructure\Persistence\PasswordResetTokens;
 
 final class ForgotAdminPasswordHandler
 {
+    public function __construct(
+        private readonly AttemptThrottle $throttle,
+        private readonly PasswordResetTokens $tokens,
+    ) {}
+
     public function handle(ForgotAdminPasswordCommand $command): void
     {
         $throttleKey = 'admin-reset:'.strtolower($command->data->email);
-        if (RateLimiter::tooManyAttempts($throttleKey, 3)) {
-            throw new TooManyAttempts;
-        }
-        RateLimiter::hit($throttleKey, 300);
+        $this->throttle->ensureNotExceeded($throttleKey, 3);
+        $this->throttle->hit($throttleKey, 300);
 
         if (! Admin::query()->where('email', $command->data->email)->exists()) {
             return; // ответ одинаковый вне зависимости от существования аккаунта
         }
 
-        DB::table('password_reset_tokens')->updateOrInsert(
-            ['email' => $command->data->email, 'guard' => 'admin'],
-            ['token' => hash('sha256', Str::random(64)), 'created_at' => now(), 'project_id' => null],
-        );
-        // Доставка токена — почтовым каналом окружения (нотификации), вне MVP-кода.
+        $this->tokens->issue($command->data->email, Guard::Admin, null);
     }
 }

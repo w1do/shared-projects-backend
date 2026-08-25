@@ -1,0 +1,18 @@
+{
+    "status": 200,
+    "content_type": "application/json",
+    "body": {
+        "data": {
+            "id": "<int>",
+            "name": "Second",
+            "name_translations": {
+                "en": "Second"
+            },
+            "slug": "second",
+            "parent_id": null,
+            "is_index": true,
+            "seo": null,
+            "children": []
+        }
+    }
+}

@@ -6,106 +6,72 @@ namespace Cms\Content\Presentation\Http\Api\V1\Controllers\Admin;
 
 use Cms\Content\Application\Commands\ChangeStatusCommand;
 use Cms\Content\Application\Commands\RestoreRevisionCommand;
-use Cms\Content\Application\Commands\SnapshotRevisionCommand;
-use Cms\Content\Application\DTOs\Content\ChangeStatusDTO;
+use Cms\Content\Application\Commands\UpsertPageCommand;
 use Cms\Content\Application\DTOs\Page\PageDTO;
-use Cms\Content\Application\DTOs\Page\UpsertPageDTO;
 use Cms\Content\Application\Handlers\ChangeStatusHandler;
 use Cms\Content\Application\Handlers\RestoreRevisionHandler;
-use Cms\Content\Application\Handlers\SnapshotRevisionHandler;
-use Cms\Content\Application\Queries\ListRevisions;
+use Cms\Content\Application\Handlers\UpsertPageHandler;
+use Cms\Content\Application\Queries\ListPagesQuery;
+use Cms\Content\Application\Queries\ListRevisionsQuery;
 use Cms\Content\Domain\Models\Page;
-use Cms\Shared\Http\ApiResponse;
-use Cms\Shared\Http\ErrorEnvelope;
+use Cms\Content\Presentation\Http\Api\V1\Requests\Page\UpsertPageRequest;
+use Cms\Content\Presentation\Http\Api\V1\Requests\Status\ChangeStatusRequest;
+use Cms\Content\Presentation\Http\Api\V1\Resources\Page\PageResource;
+use Cms\Content\Presentation\Http\Api\V1\Resources\Revision\RevisionResource;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Str;
+use Illuminate\Http\Request;
 use OpenApi\Attributes as OA;
-use Spatie\LaravelData\Optional;
 
 final class PageController
 {
-    public function __construct(private readonly SnapshotRevisionHandler $snapshot) {}
-
     #[OA\Get(path: '/api/admin/v1/projects/{project}/content/pages', operationId: 'content_index_api_admin_v1_projects_project_content_pages', tags: ['content'], summary: 'GET /api/admin/v1/projects/{project}/content/pages', responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')])]
-    public function index(): JsonResponse
+    public function index(Request $request, ListPagesQuery $query): JsonResponse
     {
-        return ApiResponse::data(Page::query()->with('seo')->orderByDesc('id')->get()->map(PageDTO::fromModel(...)));
+        return PageResource::collection($query->handle())->toResponse($request);
     }
 
-    public function store(UpsertPageDTO $data): JsonResponse
+    public function store(UpsertPageRequest $request, UpsertPageHandler $command): JsonResponse
     {
-        $page = $this->fill(new Page, $data);
-        $page->save();
-        $this->snapshot->handle(new SnapshotRevisionCommand($page));
+        $page = $command->handle(new UpsertPageCommand($request->upsert()));
 
-        return ApiResponse::created(PageDTO::fromModel($page));
+        return (new PageResource(PageDTO::fromModel($page)))->toCreatedResponse($request);
     }
 
     #[OA\Put(path: '/api/admin/v1/projects/{project}/content/pages/{page}', operationId: 'content_update_api_admin_v1_projects_project_content_pages_page', tags: ['content'], summary: 'PUT /api/admin/v1/projects/{project}/content/pages/{page}', responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')])]
-    public function update(UpsertPageDTO $data, string $project, int $pageId): JsonResponse
+    public function update(UpsertPageRequest $request, string $project, int $pageId, UpsertPageHandler $command): JsonResponse
     {
-        $page = Page::query()->find($pageId);
-        if ($page === null) {
-            return ErrorEnvelope::notFound();
-        }
+        $page = Page::query()->findOrFail($pageId);
+        $updated = $command->handle(new UpsertPageCommand($request->upsert(), $page));
 
-        $this->fill($page, $data)->save();
-        $this->snapshot->handle(new SnapshotRevisionCommand($page));
-
-        return ApiResponse::data(PageDTO::fromModel($page));
+        return (new PageResource(PageDTO::fromModel($updated)))->toResponse($request);
     }
 
     #[OA\Post(path: '/api/admin/v1/projects/{project}/content/pages/{page}/status', operationId: 'content_changeStatus_api_admin_v1_projects_project_content_pages_page_status', tags: ['content'], summary: 'POST /api/admin/v1/projects/{project}/content/pages/{page}/status', responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')])]
-    public function changeStatus(ChangeStatusDTO $data, string $project, int $pageId, ChangeStatusHandler $command): JsonResponse
+    public function changeStatus(ChangeStatusRequest $request, string $project, int $pageId, ChangeStatusHandler $command): JsonResponse
     {
-        $page = Page::query()->find($pageId);
-        if ($page === null) {
-            return ErrorEnvelope::notFound();
-        }
+        $page = Page::query()->findOrFail($pageId);
+        $updated = $command->handle(new ChangeStatusCommand($page, $request->change()));
 
-        $updated = $command->handle(new ChangeStatusCommand($page, $data));
-        assert($updated instanceof Page);
-
-        return ApiResponse::data(PageDTO::fromModel($updated));
+        return (new PageResource(PageDTO::fromModel($updated)))->toResponse($request);
     }
 
     #[OA\Get(path: '/api/admin/v1/projects/{project}/content/pages/{page}/revisions', operationId: 'content_revisions_api_admin_v1_projects_project_content_pages_page_revisions', tags: ['content'], summary: 'GET /api/admin/v1/projects/{project}/content/pages/{page}/revisions', responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')])]
-    public function revisions(string $project, int $pageId, ListRevisions $query): JsonResponse
+    public function revisions(Request $request, string $project, int $pageId, ListRevisionsQuery $query): JsonResponse
     {
-        $page = Page::query()->find($pageId);
+        $page = Page::query()->findOrFail($pageId);
 
-        return $page === null ? ErrorEnvelope::notFound() : ApiResponse::data($query->handle($page));
+        return RevisionResource::collection($query->handle($page))->toResponse($request);
     }
 
     #[OA\Post(path: '/api/admin/v1/projects/{project}/content/pages/{page}/revisions/{revision}/restore', operationId: 'content_restore_api_admin_v1_projects_project_content_pages_page_revisions_revision_restore', tags: ['content'], summary: 'POST /api/admin/v1/projects/{project}/content/pages/{page}/revisions/{revision}/restore', responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')])]
-    public function restore(string $project, int $pageId, int $revisionId, RestoreRevisionHandler $command): JsonResponse
+    public function restore(Request $request, string $project, int $pageId, int $revisionId, RestoreRevisionHandler $command): JsonResponse
     {
-        $page = Page::query()->find($pageId);
-        $revision = $page?->revisions()->whereKey($revisionId)->first();
-        if ($page === null || $revision === null) {
-            return ErrorEnvelope::notFound();
-        }
+        $page = Page::query()->findOrFail($pageId);
+        // Ревизия ищется в пределах страницы: чужая ревизия даёт 404, а не 403 (И11)
+        $revision = $page->revisions()->whereKey($revisionId)->firstOrFail();
 
         $restored = $command->handle(new RestoreRevisionCommand($page, $revision));
-        assert($restored instanceof Page);
 
-        return ApiResponse::data(PageDTO::fromModel($restored));
-    }
-
-    private function fill(Page $page, UpsertPageDTO $data): Page
-    {
-        $page->title = $data->title;
-        $page->slug = $data->slug instanceof Optional ? ($page->slug ?? Str::slug($data->title)) : $data->slug;
-        if (! $data->body instanceof Optional) {
-            $page->body = $data->body;
-        }
-        if (! $data->locale instanceof Optional) {
-            $page->locale = $data->locale;
-        }
-        if (! $data->is_index instanceof Optional) {
-            $page->is_index = $data->is_index;
-        }
-
-        return $page;
+        return (new PageResource(PageDTO::fromModel($restored)))->toResponse($request);
     }
 }

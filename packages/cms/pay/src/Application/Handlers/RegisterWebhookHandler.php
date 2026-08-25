@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Cms\Pay\Application\Handlers;
 
 use Cms\Pay\Application\Commands\RegisterWebhookCommand;
+use Cms\Pay\Application\DTOs\Webhook\WebhookRegistrationDTO;
 use Cms\Pay\Domain\Models\WebhookEvent;
 use Cms\Pay\Infrastructure\Jobs\ProcessWebhookEventJob;
 use Illuminate\Database\UniqueConstraintViolationException;
@@ -15,8 +16,7 @@ use Illuminate\Database\UniqueConstraintViolationException;
  */
 final class RegisterWebhookHandler
 {
-    /** @return array{event: ?WebhookEvent, duplicate: bool} */
-    public function handle(RegisterWebhookCommand $command): array
+    public function handle(RegisterWebhookCommand $command): WebhookRegistrationDTO
     {
         try {
             $event = WebhookEvent::create([
@@ -25,11 +25,11 @@ final class RegisterWebhookHandler
                 'payload' => $command->payload,
             ]);
         } catch (UniqueConstraintViolationException) {
-            return ['event' => null, 'duplicate' => true];
+            return WebhookRegistrationDTO::duplicate();
         }
 
         ProcessWebhookEventJob::dispatch($event->id)->onQueue('webhooks');
 
-        return ['event' => $event, 'duplicate' => false];
+        return WebhookRegistrationDTO::registered($event->id);
     }
 }

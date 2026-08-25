@@ -1,0 +1,12 @@
+{
+    "status": 404,
+    "content_type": "application/json",
+    "body": {
+        "error": {
+            "code": "not_found",
+            "message": "Project not found.",
+            "details": {},
+            "trace_id": "<string>"
+        }
+    }
+}

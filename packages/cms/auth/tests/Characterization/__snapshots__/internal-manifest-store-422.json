@@ -1,0 +1,19 @@
+{
+    "status": 422,
+    "content_type": "application/json",
+    "body": {
+        "error": {
+            "code": "validation_failed",
+            "message": "The given data was invalid.",
+            "details": {
+                "key": [
+                    "The key field must only contain letters, numbers, dashes, and underscores."
+                ],
+                "version": [
+                    "The version field is required."
+                ]
+            },
+            "trace_id": "<string>"
+        }
+    }
+}

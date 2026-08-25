@@ -1,0 +1,32 @@
+{
+    "status": 200,
+    "content_type": "application/json",
+    "body": {
+        "data": [
+            {
+                "id": "<int>",
+                "snapshot": {
+                    "title": "Hello world",
+                    "slug": "hello-world",
+                    "body": "v2",
+                    "locale": "ru",
+                    "status": "draft"
+                },
+                "author_id": "<string>",
+                "created_at": "<string>"
+            },
+            {
+                "id": "<int>",
+                "snapshot": {
+                    "title": "Hello world",
+                    "slug": "hello-world",
+                    "body": "v1",
+                    "locale": "ru",
+                    "status": "draft"
+                },
+                "author_id": "<string>",
+                "created_at": "<string>"
+            }
+        ]
+    }
+}

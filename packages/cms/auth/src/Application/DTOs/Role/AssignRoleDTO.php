@@ -10,9 +10,4 @@ final class AssignRoleDTO extends Data
 {
     public function __construct(public string $role) {}
 
-    /** @return array<string, list<mixed>> */
-    public static function rules(): array
-    {
-        return ['role' => ['required', 'string', 'max:64']];
-    }
 }

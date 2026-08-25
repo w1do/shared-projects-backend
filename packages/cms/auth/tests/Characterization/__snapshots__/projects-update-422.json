@@ -1,0 +1,19 @@
+{
+    "status": 422,
+    "content_type": "application/json",
+    "body": {
+        "error": {
+            "code": "validation_failed",
+            "message": "The given data was invalid.",
+            "details": {
+                "name": [
+                    "The name field must not be greater than 255 characters."
+                ],
+                "locales": [
+                    "The locales field must have at least 1 items."
+                ]
+            },
+            "trace_id": "<string>"
+        }
+    }
+}

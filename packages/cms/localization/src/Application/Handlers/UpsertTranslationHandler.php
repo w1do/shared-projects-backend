@@ -14,7 +14,7 @@ final class UpsertTranslationHandler
 
     public function handle(UpsertTranslationCommand $command): Translation
     {
-        $translation = Translation::query()->firstOrNew(['key' => $command->data->key]);
+        $translation = $this->target($command);
 
         $values = $translation->values;
         $machine = $translation->machine;
@@ -33,5 +33,19 @@ final class UpsertTranslationHandler
         $this->version->bump($translation->project_id);
 
         return $translation;
+    }
+
+    /**
+     * Обновление по id: ключ берётся из найденной записи, присланный `key`
+     * игнорируется — это update, а не create. Поиск идёт в скоупе проекта,
+     * запись чужого проекта не находится (404).
+     */
+    private function target(UpsertTranslationCommand $command): Translation
+    {
+        if ($command->translationId !== null) {
+            return Translation::query()->findOrFail($command->translationId);
+        }
+
+        return Translation::query()->firstOrNew(['key' => $command->data->key]);
     }
 }

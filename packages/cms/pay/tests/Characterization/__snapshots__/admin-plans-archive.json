@@ -1,0 +1,17 @@
+{
+    "status": 200,
+    "content_type": "application/json",
+    "body": {
+        "data": {
+            "id": "<int>",
+            "code": "basic",
+            "name": "Basic",
+            "price_minor": 9900,
+            "currency": "RUB",
+            "interval": "month",
+            "archived": true,
+            "options": [],
+            "features": []
+        }
+    }
+}

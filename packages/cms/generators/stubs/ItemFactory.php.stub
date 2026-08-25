@@ -1,0 +1,30 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Cms\{{Studly}}\Database\Factories;
+
+use Cms\{{Studly}}\Domain\Enums\ItemStatus;
+use Cms\{{Studly}}\Domain\Models\Item;
+use Illuminate\Database\Eloquent\Factories\Factory;
+
+/**
+ * Namespace фабрик объявлен в composer.json (autoload psr-4),
+ * модель связывается с фабрикой через Item::newFactory().
+ *
+ * @extends Factory<Item>
+ */
+final class ItemFactory extends Factory
+{
+    protected $model = Item::class;
+
+    /** @return array<string, mixed> */
+    public function definition(): array
+    {
+        return [
+            // project_id не задаётся: его проставляет BelongsToProject из ProjectContext
+            'title' => fake()->unique()->sentence(3),
+            'status' => ItemStatus::Draft,
+        ];
+    }
+}

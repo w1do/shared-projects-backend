@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-use Cms\Analytics\Infrastructure\Support\EventBuffer;
+use Cms\Analytics\Infrastructure\Persistence\EventBuffer;
 use Cms\Contracts\Introspection\IntrospectionResult;
 use Cms\Contracts\Introspection\Subject;
-use Cms\Shared\AuthClient\CachedIntrospector;
+use Cms\Shared\AuthClient\Introspector;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Redis;
 
@@ -43,7 +43,7 @@ test('raw ip never reaches the buffer, only a salted hash', function () {
 
 test('invalid api key gets 401', function () {
     $invalid = new IntrospectionResult(subject: Subject::Invalid, active: false);
-    app()->instance(CachedIntrospector::class, new FakeAnalyticsIntrospector($invalid, $invalid));
+    app()->instance(Introspector::class, new FakeAnalyticsIntrospector($invalid, $invalid));
 
     $this->postJson('/api/v1/collect', ['events' => [['name' => 'x']]], ['X-Api-Key' => 'bad'])
         ->assertStatus(401);

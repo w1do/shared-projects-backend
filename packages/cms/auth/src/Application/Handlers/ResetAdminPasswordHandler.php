@@ -5,26 +5,20 @@ declare(strict_types=1);
 namespace Cms\Auth\Application\Handlers;
 
 use Cms\Auth\Application\Commands\ResetAdminPasswordCommand;
+use Cms\Auth\Application\Exceptions\AuthRuleViolation;
+use Cms\Auth\Domain\Enums\Guard;
 use Cms\Auth\Domain\Models\Admin;
-use Illuminate\Support\Facades\DB;
+use Cms\Auth\Infrastructure\Persistence\PasswordResetTokens;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\ValidationException;
 
 final class ResetAdminPasswordHandler
 {
+    public function __construct(private readonly PasswordResetTokens $tokens) {}
+
     public function handle(ResetAdminPasswordCommand $command): void
     {
-        $row = DB::table('password_reset_tokens')
-            ->where('email', $command->data->email)
-            ->where('guard', 'admin')
-            ->first();
-
-        $ttl = (int) config('cms-auth.reset_token_ttl', 60);
-
-        if ($row === null
-            || ! hash_equals($row->token, hash('sha256', $command->data->token))
-            || now()->diffInMinutes($row->created_at) > $ttl) {
-            throw ValidationException::withMessages(['token' => ['Reset token is invalid or expired.']]);
+        if (! $this->tokens->matches($command->data->email, Guard::Admin, null, $command->data->token)) {
+            throw AuthRuleViolation::resetTokenInvalid();
         }
 
         /** @var Admin $admin */
@@ -32,7 +26,7 @@ final class ResetAdminPasswordHandler
         $admin->forceFill(['password' => Hash::make($command->data->password)])->save();
 
         // Одноразовость: токен удаляется, все выданные токены доступа инвалидируются
-        DB::table('password_reset_tokens')->where('email', $command->data->email)->where('guard', 'admin')->delete();
+        $this->tokens->forget($command->data->email, Guard::Admin, null);
         $admin->tokens()->delete();
     }
 }

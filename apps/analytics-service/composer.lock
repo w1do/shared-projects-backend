@@ -140,7 +140,7 @@
             "dist": {
                 "type": "path",
                 "url": "../../packages/cms/analytics",
-                "reference": "112fab7a4626c55691b3058f80af71b1b685768d"
+                "reference": "0baca7cea9cfa91efa9948ae4943aa6b927036ed"
             },
             "require": {
                 "cms/shared": "*",
@@ -155,7 +155,7 @@
             "extra": {
                 "laravel": {
                     "providers": [
-                        "Cms\\Analytics\\AnalyticsServiceProvider"
+                        "Cms\\Analytics\\Infrastructure\\Providers\\AnalyticsServiceProvider"
                     ]
                 }
             },
@@ -216,7 +216,7 @@
             "dist": {
                 "type": "path",
                 "url": "../../packages/cms/shared",
-                "reference": "78a55865d698900066c0737a1616bd4528429786"
+                "reference": "400e69c561595aa4d8e00bca5798d3cae8fec35a"
             },
             "require": {
                 "cms/contracts": "*",
@@ -239,7 +239,10 @@
             "autoload": {
                 "psr-4": {
                     "Cms\\Shared\\": "src/"
-                }
+                },
+                "files": [
+                    "src/aliases.php"
+                ]
             },
             "autoload-dev": {
                 "psr-4": {

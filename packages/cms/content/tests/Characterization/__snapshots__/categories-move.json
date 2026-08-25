@@ -1,0 +1,18 @@
+{
+    "status": 200,
+    "content_type": "application/json",
+    "body": {
+        "data": {
+            "id": "<int>",
+            "name": "Moved",
+            "name_translations": {
+                "en": "Moved"
+            },
+            "slug": "moved",
+            "parent_id": "<int>",
+            "is_index": true,
+            "seo": null,
+            "children": []
+        }
+    }
+}

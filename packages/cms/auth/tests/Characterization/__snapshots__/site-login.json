@@ -1,0 +1,16 @@
+{
+    "status": 200,
+    "content_type": "application/json",
+    "body": {
+        "data": {
+            "token": "<string>",
+            "user": {
+                "id": "<int>",
+                "name": "Site User",
+                "email": "u@example.com",
+                "project_id": "<string>",
+                "blocked": false
+            }
+        }
+    }
+}

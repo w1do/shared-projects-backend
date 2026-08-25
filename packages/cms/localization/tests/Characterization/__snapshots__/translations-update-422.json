@@ -1,0 +1,19 @@
+{
+    "status": 422,
+    "content_type": "application/json",
+    "body": {
+        "error": {
+            "code": "validation_failed",
+            "message": "The given data was invalid.",
+            "details": {
+                "key": [
+                    "The key field is required."
+                ],
+                "values.de": [
+                    "Locale 'de' is not declared for this project."
+                ]
+            },
+            "trace_id": "<string>"
+        }
+    }
+}

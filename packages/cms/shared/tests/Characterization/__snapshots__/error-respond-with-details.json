@@ -1,0 +1,15 @@
+{
+    "status": 402,
+    "content_type": "application/json",
+    "body": {
+        "error": {
+            "code": "payment_declined",
+            "message": "Payment declined by provider.",
+            "details": {
+                "provider": "platega",
+                "reason": "insufficient_funds"
+            },
+            "trace_id": "<string>"
+        }
+    }
+}

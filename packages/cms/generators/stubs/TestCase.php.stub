@@ -1,0 +1,21 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Cms\{{Studly}}\Tests;
+
+use Tests\TestCase as HostTestCase;
+
+/**
+ * База тестов пакета: своего ядра у пакета нет, тесты гоняет хост-приложение.
+ * Подключение в apps/<service>:
+ *
+ *   phpunit.xml   → <testsuite name="Packages">
+ *                       <directory>../../packages/cms/{{name}}/tests</directory>
+ *   tests/Pest.php → pest()->extend(Tests\TestCase::class)->use(RefreshDatabase::class)
+ *                        ->in('../../../packages/cms/{{name}}/tests');
+ *
+ * Если хост уже расширяет каталог через Pest.php, этот файл можно удалить —
+ * он нужен только PHPUnit-тестам пакета, объявляющим класс явно.
+ */
+abstract class TestCase extends HostTestCase {}

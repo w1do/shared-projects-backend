@@ -1,0 +1,41 @@
+{
+    "status": 200,
+    "content_type": "application/json",
+    "body": {
+        "data": [
+            {
+                "id": "<int>",
+                "title": "Secret",
+                "slug": "secret",
+                "body": null,
+                "locale": "en",
+                "status": "draft",
+                "published_at": null,
+                "is_index": false,
+                "seo": null
+            },
+            {
+                "id": "<int>",
+                "title": "About us",
+                "slug": "about-us",
+                "body": "About body",
+                "locale": "ru",
+                "status": "draft",
+                "published_at": null,
+                "is_index": true,
+                "seo": {
+                    "title": "About — seo",
+                    "description": null,
+                    "keywords": null,
+                    "canonical": null,
+                    "robots": null,
+                    "og_title": "About",
+                    "og_description": null,
+                    "og_image": "https://site.test/og.png",
+                    "twitter_card": null,
+                    "json_ld": null
+                }
+            }
+        ]
+    }
+}

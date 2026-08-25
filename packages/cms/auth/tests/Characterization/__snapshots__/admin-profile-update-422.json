@@ -1,0 +1,25 @@
+{
+    "status": 422,
+    "content_type": "application/json",
+    "body": {
+        "error": {
+            "code": "validation_failed",
+            "message": "The given data was invalid.",
+            "details": {
+                "name": [
+                    "The name field must not be greater than 255 characters."
+                ],
+                "locale": [
+                    "The locale field must not be greater than 10 characters."
+                ],
+                "password": [
+                    "The password field must be at least 8 characters."
+                ],
+                "current_password": [
+                    "The current password field is required when password is present."
+                ]
+            },
+            "trace_id": "<string>"
+        }
+    }
+}

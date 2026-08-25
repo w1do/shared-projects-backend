@@ -7,32 +7,35 @@ namespace Cms\Pay\Presentation\Http\Api\V1\Controllers\Admin;
 use Cms\Pay\Application\Commands\ChangeSubscriptionCommand;
 use Cms\Pay\Application\DTOs\Subscription\SubscriptionDTO;
 use Cms\Pay\Application\Handlers\ChangeSubscriptionHandler;
-use Cms\Pay\Application\Queries\ListSubscriptions;
+use Cms\Pay\Application\Queries\ListSubscriptionsQuery;
+use Cms\Pay\Domain\Enums\SubscriptionAction;
 use Cms\Pay\Domain\Models\Subscription;
-use Cms\Shared\Http\ApiResponse;
-use Cms\Shared\Http\ErrorEnvelope;
+use Cms\Pay\Presentation\Http\Api\V1\Resources\Subscription\SubscriptionCursorCollection;
+use Cms\Pay\Presentation\Http\Api\V1\Resources\Subscription\SubscriptionResource;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use OpenApi\Attributes as OA;
 
 final class SubscriptionAdminController
 {
     #[OA\Get(path: '/api/admin/v1/projects/{project}/pay/subscriptions', operationId: 'pay_index_api_admin_v1_projects_project_pay_subscriptions', tags: ['pay'], summary: 'GET /api/admin/v1/projects/{project}/pay/subscriptions', responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')])]
-    public function index(ListSubscriptions $query): JsonResponse
+    public function index(Request $request, ListSubscriptionsQuery $query): JsonResponse
     {
-        return ApiResponse::cursorPage($query->handle(), fn (Subscription $s) => SubscriptionDTO::fromModel($s));
+        return (new SubscriptionCursorCollection($query->handle()))->toResponse($request);
     }
 
     /** action ∈ cancel | resume | pause | delete */
     #[OA\Post(path: '/api/admin/v1/projects/{project}/pay/subscriptions/{subscription}/{action}', operationId: 'pay_change_api_admin_v1_projects_project_pay_subscriptions_subscription_action', tags: ['pay'], summary: 'POST /api/admin/v1/projects/{project}/pay/subscriptions/{subscription}/{action}', responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')])]
-    public function change(string $project, string $subscriptionId, string $action, ChangeSubscriptionHandler $handler): JsonResponse
+    public function change(Request $request, string $project, string $subscriptionId, string $action, ChangeSubscriptionHandler $handler): JsonResponse
     {
-        $subscription = Subscription::query()->with('plan')->find($subscriptionId);
-        if ($subscription === null) {
-            return ErrorEnvelope::notFound();
-        }
+        // Скоуп проекта — глобальный (BelongsToProject); чужая подписка не
+        // находится и даёт 404 тем же телом, что и прежний ручной конверт.
+        $subscription = Subscription::query()->with('plan')->findOrFail($subscriptionId);
 
-        return ApiResponse::data(SubscriptionDTO::fromModel(
-            $handler->handle(new ChangeSubscriptionCommand($subscription, $action)),
-        ));
+        // Множество значений ограничено `whereIn` на маршруте (И7), поэтому
+        // сюда доходит только допустимое оператору действие.
+        $updated = $handler->handle(new ChangeSubscriptionCommand($subscription, SubscriptionAction::from($action)));
+
+        return (new SubscriptionResource(SubscriptionDTO::fromModel($updated)))->toResponse($request);
     }
 }

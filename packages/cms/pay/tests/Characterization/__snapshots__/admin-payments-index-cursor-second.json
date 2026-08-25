@@ -1,0 +1,25 @@
+{
+    "status": 200,
+    "content_type": "application/json",
+    "body": {
+        "data": [
+            {
+                "id": "<string>",
+                "user_key": "user:proj-1:7",
+                "amount_minor": 5000,
+                "refunded_minor": 0,
+                "currency": "RUB",
+                "status": "pending",
+                "provider": "manual",
+                "description": "Invoice",
+                "subscription_id": null,
+                "created_at": "<string>"
+            }
+        ],
+        "meta": {
+            "per_page": 50,
+            "next_cursor": null,
+            "prev_cursor": "<string>"
+        }
+    }
+}

@@ -13,6 +13,12 @@ final class RestoreRevisionHandler
 {
     public function __construct(private readonly SnapshotRevisionHandler $snapshot) {}
 
+    /**
+     * @template TModel of Post|Page
+     *
+     * @param  RestoreRevisionCommand<TModel>  $command
+     * @return TModel
+     */
     public function handle(RestoreRevisionCommand $command): Post|Page
     {
         $command->model->fill(array_intersect_key((array) $command->revision->snapshot, array_flip(['title', 'slug', 'body', 'locale'])));

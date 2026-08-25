@@ -20,7 +20,9 @@ final class UpsertPlanHandler
 
             $plan->code = $data->code;
             $plan->name = $data->name;
-            $plan->price_minor = max(0, $data->price_minor);
+            // Неотрицательность цены — правило приёма (`min:0` в UpsertPlanRequest),
+            // дублирующий max(0, ...) снят.
+            $plan->price_minor = $data->price_minor;
             if (! $data->currency instanceof Optional) {
                 $plan->currency = $data->currency;
             }

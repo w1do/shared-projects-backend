@@ -5,28 +5,21 @@ declare(strict_types=1);
 namespace Cms\Auth\Application\Handlers;
 
 use Cms\Auth\Application\Commands\ResetSitePasswordCommand;
+use Cms\Auth\Application\Exceptions\AuthRuleViolation;
+use Cms\Auth\Domain\Enums\Guard;
 use Cms\Auth\Domain\Models\User;
+use Cms\Auth\Infrastructure\Persistence\PasswordResetTokens;
 use Cms\Shared\Analytics\Analytics;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\ValidationException;
 
 final class ResetSitePasswordHandler
 {
+    public function __construct(private readonly PasswordResetTokens $tokens) {}
+
     public function handle(ResetSitePasswordCommand $command): void
     {
-        $row = DB::table('password_reset_tokens')
-            ->where('email', $command->data->email)
-            ->where('guard', 'web')
-            ->where('project_id', $command->projectId)
-            ->first();
-
-        $ttl = (int) config('cms-auth.reset_token_ttl', 60);
-
-        if ($row === null
-            || ! hash_equals($row->token, hash('sha256', $command->data->token))
-            || now()->diffInMinutes($row->created_at) > $ttl) {
-            throw ValidationException::withMessages(['token' => ['Reset token is invalid or expired.']]);
+        if (! $this->tokens->matches($command->data->email, Guard::Web, $command->projectId, $command->data->token)) {
+            throw AuthRuleViolation::resetTokenInvalid();
         }
 
         /** @var User $user */
@@ -37,9 +30,7 @@ final class ResetSitePasswordHandler
 
         $user->forceFill(['password' => Hash::make($command->data->password)])->save();
 
-        DB::table('password_reset_tokens')
-            ->where('email', $command->data->email)->where('guard', 'web')->where('project_id', $command->projectId)
-            ->delete();
+        $this->tokens->forget($command->data->email, Guard::Web, $command->projectId);
         $user->tokens()->delete();
 
         Analytics::push($user->subjectKey(), ['name' => 'user.password_reset'], $command->projectId);

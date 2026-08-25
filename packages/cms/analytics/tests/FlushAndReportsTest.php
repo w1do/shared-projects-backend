@@ -7,7 +7,7 @@ use Cms\Analytics\Application\Commands\RecordEventsCommand;
 use Cms\Analytics\Application\Handlers\FlushBufferHandler;
 use Cms\Analytics\Application\Handlers\RecordEventsHandler;
 use Cms\Analytics\Infrastructure\Jobs\ExportReportJob;
-use Cms\Analytics\Infrastructure\Support\EventBuffer;
+use Cms\Analytics\Infrastructure\Persistence\EventBuffer;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Redis;
@@ -31,7 +31,7 @@ test('flush inserts a batch into clickhouse and trims the buffer only on success
 
     $result = app(FlushBufferHandler::class)->handle(new FlushBufferCommand);
 
-    expect($result)->toBe(['flushed' => 3, 'dead' => 0])
+    expect($result->toArray())->toBe(['flushed' => 3, 'dead' => 0])
         ->and(app(EventBuffer::class)->size())->toBe(0);
 
     Http::assertSent(fn ($request) => str_contains($request->url(), 'INSERT+INTO+events')
@@ -45,7 +45,7 @@ test('failed insert moves the batch to dead-letter and keeps accepting events', 
     $result = app(FlushBufferHandler::class)->handle(new FlushBufferCommand);
 
     $buffer = app(EventBuffer::class);
-    expect($result['dead'])->toBe(2)
+    expect($result->dead)->toBe(2)
         ->and($buffer->size())->toBe(0)
         ->and($buffer->deadSize())->toBe(2);
 
@@ -68,7 +68,7 @@ test('replay returns dead-letter events to the buffer and flush retries them', f
     $result = app(FlushBufferHandler::class)->handle(new FlushBufferCommand);
 
     expect($replayed)->toBe(2)
-        ->and($result['flushed'])->toBe(2)
+        ->and($result->flushed)->toBe(2)
         ->and(app(EventBuffer::class)->deadSize())->toBe(0);
 });
 

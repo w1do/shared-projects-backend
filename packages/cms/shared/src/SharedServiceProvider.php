@@ -9,6 +9,7 @@ use Cms\Shared\Analytics\NullRecorder;
 use Cms\Shared\Analytics\QueuedHttpRecorder;
 use Cms\Shared\AuthClient\AuthClient;
 use Cms\Shared\AuthClient\CachedIntrospector;
+use Cms\Shared\AuthClient\Introspector;
 use Cms\Shared\Http\TraceId;
 use Cms\Shared\Tenant\ProjectContext;
 use Illuminate\Contracts\Foundation\Application;
@@ -41,6 +42,9 @@ final class SharedServiceProvider extends ServiceProvider
             cache: $app->make('cache.store'),
             ttlSeconds: (int) config('cms.introspection_ttl', 90),
         ));
+
+        // Порт интроспекции: потребители зависят от интерфейса, реализация — кэширующая.
+        $this->app->bind(Introspector::class, fn (Application $app) => $app->make(CachedIntrospector::class));
 
         $this->app->singleton(
             AnalyticsRecorder::class,

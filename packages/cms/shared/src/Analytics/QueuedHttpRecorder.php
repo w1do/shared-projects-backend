@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Cms\Shared\Analytics;
 
 use Cms\Contracts\Events\AnalyticsEvent;
+use Cms\Shared\Jobs\SendAnalyticsEventJob;
 use Illuminate\Contracts\Bus\Dispatcher;
 
 /**

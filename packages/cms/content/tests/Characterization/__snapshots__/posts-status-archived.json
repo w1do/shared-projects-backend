@@ -1,0 +1,20 @@
+{
+    "status": 200,
+    "content_type": "application/json",
+    "body": {
+        "data": {
+            "id": "<int>",
+            "title": "Hello world",
+            "slug": "hello-world",
+            "body": "Body text",
+            "locale": "ru",
+            "translation_group": null,
+            "status": "archived",
+            "scheduled_at": null,
+            "published_at": "<string>",
+            "is_index": true,
+            "categories": [],
+            "seo": null
+        }
+    }
+}

@@ -5,6 +5,7 @@
     "license": "proprietary",
     "require": {
         "php": "^8.3",
+        "cms/localization": "*",
         "cms/shared": "*",
         "kalnoy/nestedset": "^7.0",
         "spatie/laravel-sluggable": "^3.6",
@@ -31,7 +32,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Cms\\Content\\ContentServiceProvider"
+                "Cms\\Content\\Infrastructure\\Providers\\ContentServiceProvider"
             ]
         }
     }

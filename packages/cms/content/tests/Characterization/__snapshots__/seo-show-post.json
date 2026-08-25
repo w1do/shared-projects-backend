@@ -1,0 +1,18 @@
+{
+    "status": 200,
+    "content_type": "application/json",
+    "body": {
+        "data": {
+            "title": "Post seo",
+            "description": null,
+            "keywords": null,
+            "canonical": null,
+            "robots": null,
+            "og_title": null,
+            "og_description": null,
+            "og_image": null,
+            "twitter_card": null,
+            "json_ld": null
+        }
+    }
+}

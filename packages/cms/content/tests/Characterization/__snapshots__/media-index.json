@@ -1,0 +1,24 @@
+{
+    "status": 200,
+    "content_type": "application/json",
+    "body": {
+        "data": [
+            {
+                "id": "<int>",
+                "path": "projects/proj-1/media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.jpg",
+                "mime": "image/jpeg",
+                "size": 12288,
+                "alt": "Cover photo",
+                "variants": {
+                    "thumb": "projects/proj-1/media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.jpg",
+                    "original": "projects/proj-1/media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.jpg"
+                }
+            }
+        ],
+        "meta": {
+            "per_page": 50,
+            "next_cursor": null,
+            "prev_cursor": null
+        }
+    }
+}

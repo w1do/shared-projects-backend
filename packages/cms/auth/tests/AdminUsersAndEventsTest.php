@@ -6,7 +6,7 @@ use Cms\Auth\Domain\Models\Admin;
 use Cms\Auth\Domain\Models\ProjectApiKey;
 use Cms\Auth\Domain\Models\User;
 use Cms\Shared\Analytics\AnalyticsRecorder;
-use Cms\Shared\Analytics\SendAnalyticsEventJob;
+use Cms\Shared\Jobs\SendAnalyticsEventJob;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Http;
 

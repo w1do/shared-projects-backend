@@ -17,7 +17,7 @@ done
 echo "== seed operator"
 $COMPOSE exec -T -w /var/www/apps/auth-service auth-service php artisan tinker --execute="
 \$a = Cms\Auth\Domain\Models\Admin::query()->firstOrCreate(['email' => 'root@example.com'], ['name' => 'Root', 'password' => 'secret-123']);
-Cms\Auth\Infrastructure\Support\PermissionSyncer::grantSuperAdmin(\$a);
+Cms\Auth\Infrastructure\Persistence\PermissionSyncer::grantSuperAdmin(\$a);
 echo 'operator ready';" >/dev/null
 
 echo "== publish manifests"

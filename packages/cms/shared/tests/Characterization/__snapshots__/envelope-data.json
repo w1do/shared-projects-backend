@@ -1,0 +1,19 @@
+{
+    "status": 200,
+    "content_type": "application/json",
+    "body": {
+        "data": {
+            "key": "site-a",
+            "name": "Site A",
+            "enabled": true,
+            "weight": 0,
+            "tags": [],
+            "settings": {},
+            "nested": {
+                "locale": "ru",
+                "currency": "RUB"
+            },
+            "missing": null
+        }
+    }
+}

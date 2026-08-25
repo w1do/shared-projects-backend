@@ -5,9 +5,10 @@ declare(strict_types=1);
 namespace Cms\Content\Application\Handlers;
 
 use Cms\Content\Application\Commands\MoveCategoryCommand;
+use Cms\Content\Application\Exceptions\ContentRuleViolation;
 use Cms\Content\Domain\Models\Category;
+use Cms\Content\Infrastructure\Persistence\CategoryTreeWriter;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\ValidationException;
 use Spatie\LaravelData\Optional;
 
 /**
@@ -16,55 +17,42 @@ use Spatie\LaravelData\Optional;
  */
 final class MoveCategoryHandler
 {
+    public function __construct(private readonly CategoryTreeWriter $tree) {}
+
     public function handle(MoveCategoryCommand $command): Category
     {
         return DB::transaction(function () use ($command) {
-            Category::query()
-                ->where('project_id', $command->category->project_id)
-                ->lockForUpdate()
-                ->get(['id']);
+            $this->tree->lockTree($command->category);
 
+            // «Ключ отсутствует» ≠ «ключ = null»: без parent_id узел остаётся на
+            // месте, явный null уводит его в корень вместе с поддеревом (И1).
             if (! $command->data->parent_id instanceof Optional) {
-                if ($command->data->parent_id === null) {
-                    $command->category->saveAsRoot();
-                } else {
-                    $parent = Category::query()->findOrFail($command->data->parent_id);
-
-                    if ($parent->getKey() === $command->category->getKey() || $parent->isDescendantOf($command->category)) {
-                        throw ValidationException::withMessages(['parent_id' => ['Cannot move a node under its own descendant.']]);
-                    }
-
-                    $command->category->appendToNode($parent)->save();
-                }
+                $this->reparent($command->category, $command->data->parent_id);
             }
 
             if (! $command->data->position instanceof Optional) {
-                $this->placeAmongSiblings($command->category, $command->data->position);
+                $this->tree->placeAmongSiblings($command->category, $command->data->position);
             }
 
             return $command->category->fresh() ?? $command->category;
         });
     }
 
-    /**
-     * Позиция среди соседей: индекс в списке уровня без самого узла.
-     * 0 — первым, i — перед соседом с этим индексом, за пределами списка — последним.
-     */
-    private function placeAmongSiblings(Category $category, int $position): void
+    private function reparent(Category $category, ?int $parentId): void
     {
-        /** @var list<Category> $siblings */
-        $siblings = $category->siblings()->defaultOrder()->get()->values()->all();
+        if ($parentId === null) {
+            $this->tree->moveToRoot($category);
 
-        if ($siblings === []) {
-            return; // единственный узел уровня — позиция очевидна
+            return;
         }
 
-        if (isset($siblings[$position])) {
-            $category->insertBeforeNode($siblings[$position]);
-        } else {
-            // Перестановка в конец в пределах того же родителя: appendToNode не
-            // вызывался, узел мог стоять в середине — двигаем явно.
-            $category->insertAfterNode($siblings[count($siblings) - 1]);
+        $parent = Category::query()->findOrFail($parentId);
+
+        // Замыкание дерева на себя — доменный инвариант (Category::wouldCycleUnder)
+        if ($category->wouldCycleUnder($parent)) {
+            throw ContentRuleViolation::categoryMovedUnderOwnDescendant();
         }
+
+        $this->tree->moveUnder($category, $parent);
     }
 }

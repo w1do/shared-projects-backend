@@ -20,6 +20,10 @@ if [ -n "${DB_HOST:-}" ]; then
     done
 fi
 
+# Самолечение манифеста пакетов: bind-mount отдаёт контейнеру хостовый
+# bootstrap/cache, где после переноса сервис-провайдеров лежат устаревшие FQCN.
+rm -f bootstrap/cache/packages.php bootstrap/cache/services.php
+
 if [ "${AUTO_MIGRATE:-0}" = "1" ]; then
     php artisan migrate --force || true
 fi

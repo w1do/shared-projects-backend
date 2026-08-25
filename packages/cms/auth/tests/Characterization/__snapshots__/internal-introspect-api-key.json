@@ -1,0 +1,22 @@
+{
+    "status": 200,
+    "content_type": "application/json",
+    "body": {
+        "subject": "api_key",
+        "active": true,
+        "project_id": "<string>",
+        "user_id": null,
+        "super_admin": false,
+        "permissions": [],
+        "key_type": "public",
+        "scopes": [
+            "collect"
+        ],
+        "enabled_services": [
+            "content"
+        ],
+        "locales": [
+            "ru"
+        ]
+    }
+}

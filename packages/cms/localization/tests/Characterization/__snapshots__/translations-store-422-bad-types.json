@@ -1,0 +1,19 @@
+{
+    "status": 422,
+    "content_type": "application/json",
+    "body": {
+        "error": {
+            "code": "validation_failed",
+            "message": "The given data was invalid.",
+            "details": {
+                "key": [
+                    "The key field must not be greater than 255 characters."
+                ],
+                "values.en": [
+                    "The values.en field must be a string."
+                ]
+            },
+            "trace_id": "<string>"
+        }
+    }
+}

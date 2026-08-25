@@ -8,6 +8,8 @@ parameters:
         - ../../packages/cms/shared/src
         - ../../packages/cms/contracts/src
         - ../../packages/cms/analytics/src
+        - ../../packages/cms/shared/routes
+        - ../../packages/cms/analytics/routes
     databaseMigrationsPath:
         - ../../packages/cms/analytics/database/migrations
     reportUnmatchedIgnoredErrors: false

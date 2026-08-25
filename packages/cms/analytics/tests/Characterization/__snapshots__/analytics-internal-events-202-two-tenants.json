@@ -1,0 +1,9 @@
+{
+    "status": 202,
+    "content_type": "application/json",
+    "body": {
+        "data": {
+            "accepted": 2
+        }
+    }
+}

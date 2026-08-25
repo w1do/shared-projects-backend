@@ -1,0 +1,12 @@
+{
+    "status": 422,
+    "content_type": "application/json",
+    "body": {
+        "error": {
+            "code": "invalid_idempotency_key",
+            "message": "Idempotency-Key is too long.",
+            "details": {},
+            "trace_id": "<string>"
+        }
+    }
+}

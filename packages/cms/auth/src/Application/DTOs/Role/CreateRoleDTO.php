@@ -14,13 +14,4 @@ final class CreateRoleDTO extends Data
         public array $permissions,
     ) {}
 
-    /** @return array<string, list<mixed>> */
-    public static function rules(): array
-    {
-        return [
-            'name' => ['required', 'string', 'max:64', 'alpha_dash'],
-            'permissions' => ['required', 'array'],
-            'permissions.*' => ['string', 'exists:permissions,name'],
-        ];
-    }
 }

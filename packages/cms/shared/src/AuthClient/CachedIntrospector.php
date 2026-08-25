@@ -11,7 +11,7 @@ use Illuminate\Contracts\Cache\Repository as Cache;
  * Introspection с кэшем в Redis: TTL ограничен (секунды–минуты),
  * при недоступности auth-service валидный кэш продолжает работать до TTL.
  */
-class CachedIntrospector
+class CachedIntrospector implements Introspector
 {
     public function __construct(
         private readonly AuthClient $client,

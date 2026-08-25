@@ -6,6 +6,7 @@ namespace Cms\Pay\Domain\Models;
 
 use Cms\Pay\Domain\Enums\PaymentStatus;
 use Cms\Shared\Tenant\BelongsToProject;
+use Cms\Shared\Values\Money;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -60,5 +61,11 @@ class Payment extends Model
     public function refundableMinor(): int
     {
         return $this->amount_minor - $this->refunded_minor;
+    }
+
+    /** Остаток, доступный к возврату. */
+    public function refundable(): Money
+    {
+        return Money::of($this->refundableMinor(), $this->currency);
     }
 }

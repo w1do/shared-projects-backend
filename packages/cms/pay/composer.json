@@ -28,7 +28,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Cms\\Pay\\PayServiceProvider"
+                "Cms\\Pay\\Infrastructure\\Providers\\PayServiceProvider"
             ]
         }
     }

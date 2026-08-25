@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Cms\Content\Infrastructure\Jobs;
 
 use Cms\Content\Domain\Models\MediaFile;
-use Cms\Shared\Tenant\ProjectAwareJob;
+use Cms\Shared\Jobs\ProjectAwareJob;
 
 /** Генерация превью-вариантов изображения. Никогда не в HTTP-запросе. */
 final class GenerateMediaVariantsJob extends ProjectAwareJob

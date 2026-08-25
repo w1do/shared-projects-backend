@@ -22,19 +22,4 @@ final class UpsertPlanDTO extends Data
         public array|Optional $options,
         public array|Optional $features,
     ) {}
-
-    /** @return array<string, list<mixed>> */
-    public static function rules(): array
-    {
-        return [
-            'code' => ['required', 'string', 'max:64', 'alpha_dash'],
-            'name' => ['required', 'string', 'max:255'],
-            'price_minor' => ['required', 'integer', 'min:0'],
-            'currency' => ['sometimes', 'string', 'size:3'],
-            'interval' => ['sometimes', 'in:day,month,year'],
-            'options' => ['sometimes', 'array'],
-            'features' => ['sometimes', 'array'],
-            'features.*' => ['string', 'max:64'],
-        ];
-    }
 }

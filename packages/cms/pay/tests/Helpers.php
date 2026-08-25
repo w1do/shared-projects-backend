@@ -5,10 +5,10 @@ declare(strict_types=1);
 use Cms\Contracts\Introspection\IntrospectionResult;
 use Cms\Contracts\Introspection\Subject;
 use Cms\Pay\Domain\Models\Plan;
-use Cms\Shared\AuthClient\CachedIntrospector;
+use Cms\Shared\AuthClient\Introspector;
 use Cms\Shared\Tenant\ProjectContext;
 
-class FakePayIntrospector extends CachedIntrospector
+class FakePayIntrospector implements Introspector
 {
     public function __construct(
         private readonly IntrospectionResult $tokenResult,
@@ -39,7 +39,7 @@ function actingAsPayOperator(string $projectId = 'proj-1', array $permissions = 
         userId: '1', permissions: $permissions, enabledServices: $services);
     $key = new IntrospectionResult(subject: Subject::ApiKey, active: true, projectId: $projectId,
         keyType: 'secret', scopes: ['*'], enabledServices: $services);
-    app()->instance(CachedIntrospector::class, new FakePayIntrospector($admin, $key));
+    app()->instance(Introspector::class, new FakePayIntrospector($admin, $key));
 
     return ['Authorization' => 'Bearer test-operator'];
 }
@@ -51,7 +51,7 @@ function actingAsSiteUser(string $projectId = 'proj-1', string $userId = '7', ar
         enabledServices: $services);
     $key = new IntrospectionResult(subject: Subject::ApiKey, active: true, projectId: $projectId,
         keyType: 'secret', scopes: ['*'], enabledServices: $services);
-    app()->instance(CachedIntrospector::class, new FakePayIntrospector($user, $key));
+    app()->instance(Introspector::class, new FakePayIntrospector($user, $key));
 
     return ['X-Api-Key' => 'pk_live_test', 'X-User-Token' => 'user-token'];
 }

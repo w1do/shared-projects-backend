@@ -6,21 +6,27 @@ namespace Cms\Content\Application\Handlers;
 
 use Cms\Content\Application\Commands\SnapshotRevisionCommand;
 use Cms\Content\Application\Commands\UpsertPostCommand;
+use Cms\Content\Application\Exceptions\ContentRuleViolation;
+use Cms\Content\Application\Queries\PostSlugTakenQuery;
 use Cms\Content\Domain\Models\Post;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
-use Illuminate\Validation\ValidationException;
 use Spatie\LaravelData\Optional;
 
 final class UpsertPostHandler
 {
-    public function __construct(private readonly SnapshotRevisionHandler $revision) {}
+    public function __construct(
+        private readonly SnapshotRevisionHandler $revision,
+        private readonly PostSlugTakenQuery $slugTaken,
+    ) {}
 
     public function handle(UpsertPostCommand $command): Post
     {
         return DB::transaction(function () use ($command) {
             $post = $command->post ?? new Post;
 
+            // «Ключ отсутствует» ≠ «ключ = null»: непереданное поле не трогается,
+            // слаг существующего поста не перегенерируется (Safety Protocol, И1).
             $post->title = $command->data->title;
             $post->slug = $command->data->slug instanceof Optional ? ($post->slug ?? Str::slug($command->data->title)) : $command->data->slug;
             if (! $command->data->body instanceof Optional) {
@@ -37,13 +43,9 @@ final class UpsertPostHandler
             }
             $post->author_id ??= $command->authorId;
 
-            $slugTaken = Post::query()
-                ->where('slug', $post->slug)
-                ->where('locale', $post->locale)
-                ->when($post->exists, fn ($q) => $q->whereKeyNot($post->getKey()))
-                ->exists();
-            if ($slugTaken) {
-                throw ValidationException::withMessages(['slug' => ['Slug is already in use.']]);
+            // Уникальность слага в пределах проекта и локали — доменный инвариант
+            if ($this->slugTaken->handle($post)) {
+                throw ContentRuleViolation::slugTaken();
             }
 
             $post->save();

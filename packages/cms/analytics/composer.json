@@ -28,7 +28,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Cms\\Analytics\\AnalyticsServiceProvider"
+                "Cms\\Analytics\\Infrastructure\\Providers\\AnalyticsServiceProvider"
             ]
         }
     }

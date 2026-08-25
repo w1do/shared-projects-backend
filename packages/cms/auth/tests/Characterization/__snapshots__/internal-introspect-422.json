@@ -1,0 +1,19 @@
+{
+    "status": 422,
+    "content_type": "application/json",
+    "body": {
+        "error": {
+            "code": "validation_failed",
+            "message": "The given data was invalid.",
+            "details": {
+                "token": [
+                    "<string>"
+                ],
+                "api_key": [
+                    "The api key field is required when token is not present."
+                ]
+            },
+            "trace_id": "<string>"
+        }
+    }
+}

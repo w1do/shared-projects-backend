@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Cms\Analytics\Console;
 
-use Cms\Analytics\Infrastructure\Support\EventBuffer;
+use Cms\Analytics\Infrastructure\Persistence\EventBuffer;
 use Illuminate\Console\Command;
 
 final class ReplayCommand extends Command

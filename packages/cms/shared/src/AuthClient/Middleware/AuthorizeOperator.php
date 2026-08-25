@@ -6,7 +6,7 @@ namespace Cms\Shared\AuthClient\Middleware;
 
 use Closure;
 use Cms\Contracts\Introspection\Subject;
-use Cms\Shared\AuthClient\CachedIntrospector;
+use Cms\Shared\AuthClient\Introspector;
 use Cms\Shared\Http\ErrorEnvelope;
 use Cms\Shared\Tenant\ProjectContext;
 use Illuminate\Http\Request;
@@ -20,7 +20,7 @@ use Symfony\Component\HttpFoundation\Response;
 final class AuthorizeOperator
 {
     public function __construct(
-        private readonly CachedIntrospector $introspector,
+        private readonly Introspector $introspector,
         private readonly ProjectContext $context,
     ) {}
 

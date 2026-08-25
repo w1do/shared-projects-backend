@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace Cms\Localization\Application\DTOs\Translation;
 
-use Illuminate\Foundation\Http\FormRequest;
 use Spatie\LaravelData\Data;
 
-/** Чистая структура между слоями: валидация — в FormRequest. */
+/** Чистая структура между слоями: валидация — в FormRequest, HTTP сюда не попадает. */
 final class UpsertTranslationDTO extends Data
 {
     public function __construct(
@@ -16,11 +15,10 @@ final class UpsertTranslationDTO extends Data
         public array $values,
     ) {}
 
-    public static function fromRequest(FormRequest $request): self
+    /** @param array<string, mixed> $data провалидированные данные запроса */
+    public static function fromValidated(array $data): self
     {
         /** @var array{key: string, values: array<string, string>} $data */
-        $data = $request->validated();
-
         return new self(key: $data['key'], values: $data['values']);
     }
 }

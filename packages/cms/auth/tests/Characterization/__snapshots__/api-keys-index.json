@@ -1,0 +1,30 @@
+{
+    "status": 200,
+    "content_type": "application/json",
+    "body": {
+        "data": [
+            {
+                "id": "<string>",
+                "type": "public",
+                "prefix": "pk_live_r1ab",
+                "scopes": [
+                    "collect"
+                ],
+                "last_used_at": null,
+                "revoked_at": null,
+                "key": null
+            },
+            {
+                "id": "<string>",
+                "type": "secret",
+                "prefix": "sk_live_r2ab",
+                "scopes": [
+                    "*"
+                ],
+                "last_used_at": null,
+                "revoked_at": "<string>",
+                "key": null
+            }
+        ]
+    }
+}

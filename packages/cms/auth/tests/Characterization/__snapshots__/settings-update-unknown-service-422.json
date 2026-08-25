@@ -1,0 +1,16 @@
+{
+    "status": 422,
+    "content_type": "application/json",
+    "body": {
+        "error": {
+            "code": "validation_failed",
+            "message": "The given data was invalid.",
+            "details": {
+                "service": [
+                    "Service manifest is not registered."
+                ]
+            },
+            "trace_id": "<string>"
+        }
+    }
+}

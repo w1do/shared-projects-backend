@@ -14,13 +14,4 @@ final class ResetPasswordDTO extends Data
         public string $password,
     ) {}
 
-    /** @return array<string, list<mixed>> */
-    public static function rules(): array
-    {
-        return [
-            'email' => ['required', 'email'],
-            'token' => ['required', 'string'],
-            'password' => ['required', 'string', 'min:8'],
-        ];
-    }
 }

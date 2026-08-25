@@ -1,0 +1,34 @@
+{
+    "status": 422,
+    "content_type": "application/json",
+    "body": {
+        "error": {
+            "code": "validation_failed",
+            "message": "The given data was invalid.",
+            "details": {
+                "title": [
+                    "The title field is required."
+                ],
+                "slug": [
+                    "The slug field must only contain letters, numbers, dashes, and underscores."
+                ],
+                "body": [
+                    "The body field must be a string."
+                ],
+                "locale": [
+                    "The locale field must not be greater than 10 characters."
+                ],
+                "translation_group": [
+                    "The translation group field must not be greater than 64 characters."
+                ],
+                "categories": [
+                    "The categories field must be an array."
+                ],
+                "is_index": [
+                    "The is index field must be true or false."
+                ]
+            },
+            "trace_id": "<string>"
+        }
+    }
+}

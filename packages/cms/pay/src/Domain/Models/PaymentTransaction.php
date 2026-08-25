@@ -22,7 +22,7 @@ class PaymentTransaction extends Model
         return ['type' => TransactionType::class, 'amount_minor' => 'int', 'created_at' => 'datetime'];
     }
 
-    public static function boot(): void
+    protected static function boot(): void
     {
         parent::boot();
         static::updating(fn () => throw new \LogicException('Ledger entries are append-only.'));

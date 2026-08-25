@@ -28,10 +28,4 @@ class Translation extends Model
     {
         return ['values' => 'array', 'machine' => 'array'];
     }
-
-    /** Значение локали с откатом на локаль по умолчанию. */
-    public function valueFor(string $locale, string $fallback): ?string
-    {
-        return $this->values[$locale] ?? $this->values[$fallback] ?? null;
-    }
 }

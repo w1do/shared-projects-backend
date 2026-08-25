@@ -16,7 +16,10 @@
     "autoload": {
         "psr-4": {
             "Cms\\Shared\\": "src/"
-        }
+        },
+        "files": [
+            "src/aliases.php"
+        ]
     },
     "autoload-dev": {
         "psr-4": {

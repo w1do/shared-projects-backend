@@ -1,0 +1,42 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Cms\{{Studly}}\Application\Handlers;
+
+use Cms\{{Studly}}\Application\Commands\UpsertItemCommand;
+use Cms\{{Studly}}\Application\DTOs\Item\ItemDTO;
+use Cms\{{Studly}}\Domain\Contracts\ItemRepository;
+use Cms\{{Studly}}\Domain\Enums\ItemStatus;
+use Cms\{{Studly}}\Domain\Events\ItemSaved;
+use Illuminate\Contracts\Events\Dispatcher;
+use Spatie\LaravelData\Optional;
+
+/**
+ * Вся бизнес-логика команды — здесь: один handle(), одна ответственность.
+ * Зависимости — конструктором; app()/resolve() в Application запрещены.
+ * Тяжёлое и внешнее (HTTP, файлы, рассылки) — в Job из Infrastructure/Persistence.
+ */
+final class UpsertItemHandler
+{
+    public function __construct(
+        private readonly ItemRepository $items,
+        private readonly Dispatcher $events,
+    ) {}
+
+    public function handle(UpsertItemCommand $command): ItemDTO
+    {
+        $attributes = ['title' => $command->data->title];
+
+        // Optional: ключа не было в запросе — поле не трогаем (И1).
+        if (! $command->data->status instanceof Optional) {
+            $attributes['status'] = ItemStatus::from($command->data->status);
+        }
+
+        $item = $this->items->save($command->itemId, $attributes);
+
+        $this->events->dispatch(new ItemSaved($item));
+
+        return ItemDTO::fromModel($item);
+    }
+}

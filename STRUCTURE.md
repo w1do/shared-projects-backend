@@ -43,7 +43,7 @@ spatie/laravel-permission (teams, `team_id = project_id`); категории �
 └── CLAUDE.md · STRUCTURE.md
 ```
 
-## 2. Канонический модуль-пакет (строго, без отступлений)
+## 2. Канонический модуль-пакет (строго; исключения — библиотеки shared/contracts/generators и пакеты без сущностей/HTTP, см. CLAUDE.md)
 
 ```text
 packages/cms/<module>/src/
@@ -61,14 +61,15 @@ packages/cms/<module>/src/
 │   │   └── Post/UpsertPostDTO.php …
 │   └── Handlers/          <Команда>Handler — вся бизнес-логика, один handle()
 ├── Infrastructure/
-│   ├── Persistence/       репозитории, ClickHouse, Redis-буферы, Jobs
-│   ├── Providers/         адаптеры внешних провайдеров (PaymentProvider и т.п.)
+│   ├── Persistence/       репозитории, ClickHouse, Redis-буферы, Jobs, кэши
+│   ├── Providers/         сервис-провайдер пакета (<Module>ServiceProvider)
+│   ├── Gateways/          адаптеры внешних провайдеров (PaymentProvider и т.п.)
 │   └── Notifications/
 └── Presentation/
     └── Http/Api/V1/
-        ├── Controllers/   тонкие: DTO → Handler → Resource
-        ├── Requests/
-        └── Resources/
+        ├── Controllers/   тонкие: FormRequest → DTO → Handler → Resource
+        ├── Requests/      FormRequests — вся HTTP-валидация
+        └── Resources/     JsonResources — все ответы (envelope ApiResponse)
 плюс: config/ database/{migrations,factories} routes/ tests/ composer.json (extra.laravel.providers)
 ```
 

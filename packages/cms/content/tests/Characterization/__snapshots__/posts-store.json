@@ -1,0 +1,22 @@
+{
+    "status": 201,
+    "content_type": "application/json",
+    "body": {
+        "data": {
+            "id": "<int>",
+            "title": "Hello world",
+            "slug": "hello-world",
+            "body": "Body text",
+            "locale": "ru",
+            "translation_group": "group-a",
+            "status": "draft",
+            "scheduled_at": null,
+            "published_at": null,
+            "is_index": true,
+            "categories": [
+                1
+            ],
+            "seo": null
+        }
+    }
+}

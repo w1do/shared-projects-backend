@@ -1,0 +1,26 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Cms\{{Studly}}\Domain\ValueObjects;
+
+use InvalidArgumentException;
+
+/**
+ * Значение с инвариантом: объект существует — значит заголовок валиден.
+ * Проверка живёт в конструкторе, а не в вызывающем коде.
+ */
+final readonly class ItemTitle
+{
+    public function __construct(public string $value)
+    {
+        if (trim($value) === '') {
+            throw new InvalidArgumentException('Item title must not be blank.');
+        }
+    }
+
+    public function __toString(): string
+    {
+        return $this->value;
+    }
+}

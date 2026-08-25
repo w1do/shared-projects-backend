@@ -1,0 +1,12 @@
+{
+    "status": 401,
+    "content_type": "application/json",
+    "body": {
+        "error": {
+            "code": "unauthenticated",
+            "message": "API key is required.",
+            "details": {},
+            "trace_id": "<string>"
+        }
+    }
+}

@@ -1,0 +1,18 @@
+{
+    "status": 200,
+    "content_type": "application/json",
+    "body": {
+        "data": {
+            "id": "<int>",
+            "name": "Fresh news",
+            "name_translations": {
+                "en": "Fresh news"
+            },
+            "slug": "fresh-news",
+            "parent_id": null,
+            "is_index": false,
+            "seo": null,
+            "children": []
+        }
+    }
+}

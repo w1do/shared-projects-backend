@@ -2,13 +2,11 @@
 
 declare(strict_types=1);
 
+use Cms\Ai\Application\Contracts\AiOperations;
 use Cms\Ai\Application\DTOs\Translate\TranslateResultDTO;
-use Cms\Ai\Domain\Contracts\AiOperations;
-use Cms\Ai\Domain\Exceptions\AiRequestException;
-use Cms\Content\Domain\Models\Category;
+use Cms\Ai\Application\Exceptions\AiRequestException;
 use Cms\Localization\Domain\Models\Translation;
 use Cms\Localization\Infrastructure\Jobs\TranslateMissingJob;
-use Cms\Localization\Infrastructure\TranslationsVersion;
 use Cms\Shared\Tenant\ProjectContext;
 use Illuminate\Support\Facades\Bus;
 
@@ -57,6 +55,21 @@ test('updating one locale keeps the others intact', function () {
 
     $t->refresh();
     expect($t->values)->toBe(['en' => 'Blogs', 'ru' => 'Журнал']);
+});
+
+test('update keeps the key of the found record and creates no second row', function () {
+    // Б4: PUT — это update, присланный key игнорируется; запись остаётся одна.
+    $headers = translationHeaders();
+    app(ProjectContext::class)->set('proj-1');
+    $t = Translation::create(['key' => 'nav.keep', 'values' => ['en' => 'Keep']]);
+
+    $this->putJson("/api/admin/v1/projects/proj-1/content/translations/{$t->id}", [
+        'key' => 'nav.other', 'values' => ['ru' => 'Оставить'],
+    ], $headers)->assertOk();
+
+    expect(Translation::query()->count())->toBe(1)
+        ->and($t->refresh()->key)->toBe('nav.keep')
+        ->and($t->values)->toBe(['en' => 'Keep', 'ru' => 'Оставить']);
 });
 
 test('operator without manage permission cannot change the dictionary', function () {
@@ -126,9 +139,7 @@ test('translate-missing fills only missing locales and marks them machine', func
         }
     });
 
-    (new TranslateMissingJob('proj-1', ['en', 'ru'], 'en'))->handle(
-        app(AiOperations::class), app(ProjectContext::class), app(TranslationsVersion::class),
-    );
+    app()->call([new TranslateMissingJob('proj-1', ['en', 'ru'], 'en'), 'handle']);
 
     $t->refresh();
     expect($t->values)->toBe(['en' => 'Team', 'ru' => 'Команда'])
@@ -136,9 +147,7 @@ test('translate-missing fills only missing locales and marks them machine', func
 
     // повторный запуск: всё заполнено — провайдер не вызывается
     $ai = app(AiOperations::class);
-    (new TranslateMissingJob('proj-1', ['en', 'ru'], 'en'))->handle(
-        $ai, app(ProjectContext::class), app(TranslationsVersion::class),
-    );
+    app()->call([new TranslateMissingJob('proj-1', ['en', 'ru'], 'en'), 'handle']);
     expect($ai->calls)->toBe(1);
 });
 
@@ -187,9 +196,7 @@ test('ai failure leaves records unchanged', function () {
     });
 
     try {
-        (new TranslateMissingJob('proj-1', ['en', 'ru'], 'en'))->handle(
-            app(AiOperations::class), app(ProjectContext::class), app(TranslationsVersion::class),
-        );
+        app()->call([new TranslateMissingJob('proj-1', ['en', 'ru'], 'en'), 'handle']);
         $this->fail('expected AiRequestException');
     } catch (AiRequestException) {
     }
@@ -211,82 +218,20 @@ test('translate-missing endpoint queues the job and requires manage permission',
         ->assertStatus(403);
 });
 
-test('category name accepts both string and per-locale forms', function () {
-    $headers = translationHeaders(['content.categories.view', 'content.categories.manage']);
-
-    // строковая форма — как раньше
-    $plain = $this->postJson('/api/admin/v1/projects/proj-1/content/categories', [
-        'name' => 'Guides',
-    ], $headers)->assertCreated()->json('data');
-    expect($plain['name'])->toBe('Guides')
-        ->and($plain['name_translations'])->toBe(['en' => 'Guides'])
-        ->and($plain['slug'])->toBe('guides');
-
-    // переводимая форма — как в постановке: title = [en, ru], slug един
-    $translated = $this->postJson('/api/admin/v1/projects/proj-1/content/categories', [
-        'name' => ['en' => 'Categories', 'ru' => 'Категории'],
-    ], $headers)->assertCreated()->json('data');
-    expect($translated['name'])->toBe('Categories')
-        ->and($translated['name_translations'])->toBe(['en' => 'Categories', 'ru' => 'Категории'])
-        ->and($translated['slug'])->toBe('categories');
-});
-
-test('missing locale falls back to the default locale name', function () {
-    $headers = translationHeaders(['content.categories.view', 'content.categories.manage']);
+test('translate-missing normalizes ids for the job and keeps accepting loose input', function () {
+    Bus::fake();
+    $headers = translationHeaders();
     app(ProjectContext::class)->set('proj-1');
+    $t = Translation::create(['key' => 'nav.ids', 'values' => ['en' => 'Ids']]);
 
-    $id = $this->postJson('/api/admin/v1/projects/proj-1/content/categories', [
-        'name' => ['en' => 'News'],
-    ], $headers)->assertCreated()->json('data.id');
+    $this->postJson('/api/admin/v1/projects/proj-1/content/translations/translate-missing', [
+        'ids' => [(string) $t->id],
+    ], $headers)->assertStatus(202);
+    Bus::assertDispatched(TranslateMissingJob::class, fn ($job) => $job->ids === [$t->id]);
 
-    $category = Category::query()->findOrFail($id);
-    expect($category->getTranslation('name', 'ru', true))->toBe('News');
-});
-
-test('translate-missing fills category names and marks them machine', function () {
-    app(ProjectContext::class)->set('proj-1');
-    $category = Category::create(['name' => ['en' => 'News'], 'slug' => 'tm-news']);
-
-    app()->instance(AiOperations::class, new class implements AiOperations
-    {
-        public function translate($request): TranslateResultDTO
-        {
-            return new TranslateResultDTO(translations: ['name' => ['ru' => 'Новости']]);
-        }
-
-        public function rewrite($r): never
-        {
-            throw new RuntimeException('unused');
-        }
-
-        public function normalize($r): never
-        {
-            throw new RuntimeException('unused');
-        }
-
-        public function suggestCategories($r): never
-        {
-            throw new RuntimeException('unused');
-        }
-
-        public function generatePost($r): never
-        {
-            throw new RuntimeException('unused');
-        }
-    });
-
-    (new TranslateMissingJob('proj-1', ['en', 'ru'], 'en', subject: 'categories'))->handle(
-        app(AiOperations::class), app(ProjectContext::class), app(TranslationsVersion::class),
-    );
-
-    $category->refresh();
-    expect($category->getTranslations('name'))->toBe(['en' => 'News', 'ru' => 'Новости'])
-        ->and($category->name_machine)->toBe(['ru' => true]);
-
-    // ручная правка ru снимает пометку
-    $headers = translationHeaders(['content.categories.view', 'content.categories.manage']);
-    $this->putJson("/api/admin/v1/projects/proj-1/content/categories/{$category->id}", [
-        'name' => ['ru' => 'Новости проекта'],
-    ], $headers)->assertOk();
-    expect($category->refresh()->name_machine)->toBe([]);
+    // Контракт приёма не сужается: ids не массив — это «весь словарь», а не 422.
+    $this->postJson('/api/admin/v1/projects/proj-1/content/translations/translate-missing', [
+        'ids' => 'not-an-array',
+    ], $headers)->assertStatus(202);
+    Bus::assertDispatched(TranslateMissingJob::class, fn ($job) => $job->ids === null);
 });

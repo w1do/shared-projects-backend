@@ -1,0 +1,22 @@
+{
+    "status": 200,
+    "content_type": "application/json",
+    "body": {
+        "data": {
+            "title": "News — catalog",
+            "description": "All the news",
+            "keywords": "news, daily",
+            "canonical": "https://site.test/news",
+            "robots": "index,follow",
+            "og_title": "News",
+            "og_description": "News description",
+            "og_image": "https://site.test/og.png",
+            "twitter_card": "summary_large_image",
+            "json_ld": {
+                "@context": "https://schema.org",
+                "@type": "CollectionPage",
+                "name": "News"
+            }
+        }
+    }
+}

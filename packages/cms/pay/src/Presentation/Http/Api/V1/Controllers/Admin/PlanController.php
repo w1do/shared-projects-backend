@@ -10,45 +10,53 @@ use Cms\Pay\Application\DTOs\Plan\PlanDTO;
 use Cms\Pay\Application\DTOs\Plan\UpsertPlanDTO;
 use Cms\Pay\Application\Handlers\ArchivePlanHandler;
 use Cms\Pay\Application\Handlers\UpsertPlanHandler;
-use Cms\Pay\Application\Queries\ListPlans;
+use Cms\Pay\Application\Queries\ListPlansQuery;
 use Cms\Pay\Domain\Models\Plan;
-use Cms\Shared\Http\ApiResponse;
-use Cms\Shared\Http\ErrorEnvelope;
+use Cms\Pay\Presentation\Http\Api\V1\Requests\Plan\UpsertPlanRequest;
+use Cms\Pay\Presentation\Http\Api\V1\Resources\Plan\PlanResource;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use OpenApi\Attributes as OA;
 
 final class PlanController
 {
     #[OA\Get(path: '/api/admin/v1/projects/{project}/pay/plans', operationId: 'pay_index_api_admin_v1_projects_project_pay_plans', tags: ['pay'], summary: 'GET /api/admin/v1/projects/{project}/pay/plans', responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')])]
-    public function index(ListPlans $query): JsonResponse
+    public function index(Request $request, ListPlansQuery $query): JsonResponse
     {
-        return ApiResponse::data($query->handle(includeArchived: true));
+        // Непагинированная коллекция без `meta` — форма списка не меняется (И5):
+        // курсор молча обрезал бы каталог до одной страницы (guard 0.6).
+        return PlanResource::collection($query->handle(includeArchived: true))->toResponse($request);
     }
 
-    public function store(UpsertPlanDTO $data, UpsertPlanHandler $handler): JsonResponse
+    #[OA\Post(path: '/api/admin/v1/projects/{project}/pay/plans', operationId: 'pay_store_api_admin_v1_projects_project_pay_plans', tags: ['pay'], summary: 'POST /api/admin/v1/projects/{project}/pay/plans', responses: [new OA\Response(response: 201, description: 'Created'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')])]
+    public function store(UpsertPlanRequest $request, UpsertPlanHandler $handler): JsonResponse
     {
-        return ApiResponse::created(PlanDTO::fromModel($handler->handle(new UpsertPlanCommand($data))));
+        // DTO собирается ТОЛЬКО из validated(): отсутствующий ключ остаётся
+        // Optional и не превращается в null (И1).
+        $plan = $handler->handle(new UpsertPlanCommand(UpsertPlanDTO::from($request->validated())));
+
+        return (new PlanResource(PlanDTO::fromModel($plan)))->toCreatedResponse($request);
     }
 
     #[OA\Put(path: '/api/admin/v1/projects/{project}/pay/plans/{plan}', operationId: 'pay_update_api_admin_v1_projects_project_pay_plans_plan', tags: ['pay'], summary: 'PUT /api/admin/v1/projects/{project}/pay/plans/{plan}', responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')])]
-    public function update(UpsertPlanDTO $data, string $project, int $planId, UpsertPlanHandler $handler): JsonResponse
+    public function update(UpsertPlanRequest $request, string $project, int $planId, UpsertPlanHandler $handler): JsonResponse
     {
-        $plan = Plan::query()->find($planId);
-        if ($plan === null) {
-            return ErrorEnvelope::notFound();
-        }
+        // Скоуп проекта — глобальный (BelongsToProject); чужой план не находится
+        // и даёт 404 тем же телом, что и прежний ручной конверт (задача 1.4).
+        $plan = Plan::query()->findOrFail($planId);
 
-        return ApiResponse::data(PlanDTO::fromModel($handler->handle(new UpsertPlanCommand($data, $plan))));
+        $updated = $handler->handle(new UpsertPlanCommand(UpsertPlanDTO::from($request->validated()), $plan));
+
+        return (new PlanResource(PlanDTO::fromModel($updated)))->toResponse($request);
     }
 
     #[OA\Post(path: '/api/admin/v1/projects/{project}/pay/plans/{plan}/archive', operationId: 'pay_archive_api_admin_v1_projects_project_pay_plans_plan_archive', tags: ['pay'], summary: 'POST /api/admin/v1/projects/{project}/pay/plans/{plan}/archive', responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')])]
-    public function archive(string $project, int $planId, ArchivePlanHandler $handler): JsonResponse
+    public function archive(Request $request, string $project, int $planId, ArchivePlanHandler $handler): JsonResponse
     {
-        $plan = Plan::query()->find($planId);
-        if ($plan === null) {
-            return ErrorEnvelope::notFound();
-        }
+        $plan = Plan::query()->findOrFail($planId);
 
-        return ApiResponse::data(PlanDTO::fromModel($handler->handle(new ArchivePlanCommand($plan))));
+        $archived = $handler->handle(new ArchivePlanCommand($plan));
+
+        return (new PlanResource(PlanDTO::fromModel($archived)))->toResponse($request);
     }
 }

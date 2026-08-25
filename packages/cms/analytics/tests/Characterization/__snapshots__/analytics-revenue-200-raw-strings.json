@@ -1,0 +1,14 @@
+{
+    "status": 200,
+    "content_type": "application/json",
+    "body": {
+        "data": [
+            {
+                "date": "<string>",
+                "currency": "RUB",
+                "revenue_minor": "1250000",
+                "payments": "12"
+            }
+        ]
+    }
+}

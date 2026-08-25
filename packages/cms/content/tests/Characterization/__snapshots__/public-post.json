@@ -1,0 +1,20 @@
+{
+    "status": 200,
+    "content_type": "application/json",
+    "body": {
+        "data": {
+            "id": "<int>",
+            "title": "Live post",
+            "slug": "live-post",
+            "body": "Live body",
+            "locale": "ru",
+            "translation_group": null,
+            "status": "published",
+            "scheduled_at": null,
+            "published_at": "<string>",
+            "is_index": true,
+            "categories": [],
+            "seo": null
+        }
+    }
+}

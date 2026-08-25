@@ -6,8 +6,8 @@ namespace Cms\Auth\Application\Handlers;
 
 use Cms\Auth\Application\Commands\PublishManifestCommand;
 use Cms\Auth\Domain\Models\ServiceManifestRecord;
-use Cms\Auth\Infrastructure\Support\BootstrapCache;
-use Cms\Auth\Infrastructure\Support\PermissionSyncer;
+use Cms\Auth\Infrastructure\Persistence\BootstrapCache;
+use Cms\Auth\Infrastructure\Persistence\PermissionSyncer;
 
 /** Регистрация манифеста сервиса: upsert записи, прав и системных ролей, сброс bootstrap-кэша. */
 final class PublishManifestHandler

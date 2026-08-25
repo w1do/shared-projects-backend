@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Cms\Content\Application\Handlers;
 
 use Cms\Content\Application\Commands\ChangeStatusCommand;
+use Cms\Content\Application\Exceptions\ContentRuleViolation;
 use Cms\Content\Domain\Enums\ContentStatus;
 use Cms\Content\Domain\Models\Page;
 use Cms\Content\Domain\Models\Post;
@@ -12,19 +13,23 @@ use Cms\Content\Infrastructure\Jobs\PurgeContentCacheJob;
 use Cms\Content\Infrastructure\Jobs\RegenerateSitemapJob;
 use Cms\Shared\Analytics\Analytics;
 use Illuminate\Support\Carbon;
-use Illuminate\Validation\ValidationException;
 use Spatie\LaravelData\Optional;
 
 final class ChangeStatusHandler
 {
+    /**
+     * @template TModel of Post|Page
+     *
+     * @param  ChangeStatusCommand<TModel>  $command
+     * @return TModel
+     */
     public function handle(ChangeStatusCommand $command): Post|Page
     {
         $target = ContentStatus::from($command->data->status);
 
+        // Допустимость перехода — инвариант статус-машины (Domain/Enums/ContentStatus)
         if (! $command->model->status->canTransitionTo($target)) {
-            throw ValidationException::withMessages([
-                'status' => ["Transition {$command->model->status->value} → {$target->value} is not allowed."],
-            ]);
+            throw ContentRuleViolation::statusTransition($command->model->status, $target);
         }
 
         $command->model->status = $target;

@@ -12,6 +12,7 @@
             <directory>tests/Feature</directory>
         </testsuite>
         <testsuite name="Packages">
+            <directory>../../packages/cms/shared/tests</directory>
             <directory>../../packages/cms/analytics/tests</directory>
         </testsuite>
     </testsuites>

@@ -3,10 +3,10 @@
 declare(strict_types=1);
 
 use Cms\Content\Infrastructure\Jobs\GenerateMediaVariantsJob;
-use Cms\Content\Infrastructure\Support\RobotsGenerator;
-use Cms\Content\Infrastructure\Support\SitemapGenerator;
+use Cms\Content\Infrastructure\Seo\RobotsGenerator;
+use Cms\Content\Infrastructure\Seo\SitemapGenerator;
 use Cms\Shared\Analytics\AnalyticsRecorder;
-use Cms\Shared\Analytics\SendAnalyticsEventJob;
+use Cms\Shared\Jobs\SendAnalyticsEventJob;
 use Cms\Shared\Tenant\ProjectContext;
 use Illuminate\Http\Testing\File;
 use Illuminate\Support\Facades\Bus;

@@ -1,0 +1,43 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Cms\{{Studly}}\Infrastructure\Persistence;
+
+use Cms\{{Studly}}\Domain\Contracts\ItemRepository;
+use Cms\{{Studly}}\Domain\Models\Item;
+
+/**
+ * Единственное место, где модуль ходит в БД. Скоуп проекта даёт
+ * BelongsToProject — ручных where('project_id') здесь быть не должно.
+ * Рядом, в этом же каталоге, живут Jobs и кэши модуля.
+ */
+final class EloquentItemRepository implements ItemRepository
+{
+    public function find(int $id): ?Item
+    {
+        return Item::query()->find($id);
+    }
+
+    /** @return list<Item> */
+    public function all(int $limit): array
+    {
+        return array_values(Item::query()->orderByDesc('id')->limit($limit)->get()->all());
+    }
+
+    /** @param array<string, mixed> $attributes */
+    public function save(?int $id, array $attributes): Item
+    {
+        $item = $id === null ? new Item : Item::query()->findOrFail($id);
+
+        $item->fill($attributes);
+        $item->save();
+
+        return $item;
+    }
+
+    public function delete(Item $item): void
+    {
+        $item->delete();
+    }
+}

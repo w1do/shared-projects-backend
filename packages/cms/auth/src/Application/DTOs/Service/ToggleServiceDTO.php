@@ -10,9 +10,4 @@ final class ToggleServiceDTO extends Data
 {
     public function __construct(public bool $enabled) {}
 
-    /** @return array<string, list<mixed>> */
-    public static function rules(): array
-    {
-        return ['enabled' => ['required', 'boolean']];
-    }
 }
