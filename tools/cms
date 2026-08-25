@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # cms — единая точка управления платформой.
+#   ./tools/cms bootstrap                     развернуть всё с нуля: env, стек, миграции, демо-данные
 #   ./tools/cms up|down|restart [service]     поднять/остановить стек или один сервис
 #   ./tools/cms migrate [service]             миграции всех сервисов или одного
 #   ./tools/cms test [service]                тесты всех сервисов или одного
@@ -17,6 +18,24 @@ usage() { grep '^#   ' "$0" | sed 's/^#   //'; exit 1; }
 
 cmd="${1:-}"; shift || true
 case "$cmd" in
+    bootstrap)
+        # Разворот с нуля одной командой: env из примеров → стек → миграции
+        # (AUTO_MIGRATE) → оператор/проект/манифесты → демо-контент.
+        for d in "$ROOT"/infra/services/*/; do
+            [ -f "$d/.env" ] || { cp "$d/.env.example" "$d/.env"; echo "env: $(basename "$d")/.env создан из примера"; }
+        done
+        $COMPOSE up -d --build
+        echo "==> жду готовности сервисов…"
+        for s in auth content analytics pay; do
+            until curl -sf "http://localhost:8080/health/$s" >/dev/null 2>&1; do sleep 3; done
+            echo "    $s: ok"
+        done
+        "$ROOT/tools/smoke.sh"
+        "$0" seed-demo
+        echo ""
+        echo "Готово: http://localhost:8080/login  (root@example.com / secret-123)"
+        echo "AI-переводы: положите OPENAI_API_KEY=... в infra/services/content-service/.env.local"
+        ;;
     up)       $COMPOSE up -d --build "${@}" ;;
     down)     $COMPOSE down "${@}" ;;
     restart)  $COMPOSE restart "${@}" ;;

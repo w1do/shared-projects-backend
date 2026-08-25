@@ -1,91 +1,107 @@
-# Platform — shared multi-tenant backend
+# Shared Projects Backend
 
-Единый backend для подключения множества проектов (сайтов) с единой системой управления через
-tenant (`Project`). Четыре отдельных Laravel-приложения за одним gateway; вся логика — в
-composer-пакетах `packages/cms/*`; панель управления собирается из npm-пакетов `packages/frontend/*`.
+Единый multi-tenant backend для управления множеством проектов (сайтов) из одной панели.
+Четыре Laravel-сервиса за одним gateway, вся бизнес-логика — в composer-пакетах
+`packages/cms/*` (строгий DDD/CQRS), панель управления — Next.js поверх готовой вёрстки.
+
+**Разработчик:** [@W1DO_DIGITAL](https://t.me/W1DO_DIGITAL) (Telegram)
+
+## Быстрый старт — одна команда
+
+Требуется только Docker (+ Compose v2):
+
+```bash
+git clone git@github.com:w1do/shared-projects-backend.git
+cd shared-projects-backend
+./tools/cms bootstrap
+```
+
+Команда сама: создаст `.env` каждого сервиса из примеров → соберёт и поднимет стек
+(gateway, 4 сервиса, воркер очередей, postgres, redis, clickhouse, minio, панель) →
+дождётся health-чеков → накатит миграции → заведёт оператора, проект `demo`,
+манифесты сервисов и демо-контент (дерево категорий, посты).
+
+После разворота:
+
+| | |
+| --- | --- |
+| Панель управления | http://localhost:8080/login |
+| Логин / пароль | `root@example.com` / `secret-123` |
+| API | http://localhost:8080/api/… (swagger: `openapi/openapi.json`) |
+| Health | `/health/{auth\|content\|analytics\|pay}` |
+
+Для AI-функций (автоперевод, генерация) положите ключ в неотслеживаемый файл:
+
+```bash
+echo "OPENAI_API_KEY=<ключ>" > infra/services/content-service/.env.local
+docker compose -f infra/compose/compose.yaml --project-directory . up -d content-service content-worker
+```
+
+## Сервисы
 
 | Сервис | Что делает |
 |---|---|
-| **auth-service** | операторы (guard `admin`), пользователи сайтов по проекту (guard `web`), роли/права (spatie, teams), проекты, API-ключи, включение сервисов, настройки, аудит, `/bootstrap`, introspection |
-| **content-service** | посты, страницы, категории (nested sets), полиморфное SEO + JSON-LD, sitemap.xml, robots.txt, медиа (S3/MinIO) |
-| **analytics-service** | `/collect` → Redis-буфер → батч в ClickHouse, история пользователя `Analytics::push`, отчёты по materialized views |
-| **pay-service** | тарифные планы/опции/возможности, единоразовые платежи, подписки (cancel/resume/pause/delete), идемпотентные вебхуки |
+| **auth-service** | операторы, пользователи сайтов, роли/права (spatie, teams-режим), проекты и их локали, API-ключи, включение сервисов, настройки, аудит, `/bootstrap`, introspection, версия переводов |
+| **content-service** | посты (статусы, ревизии, привязка к категориям), категории (nested set, перемещение поддеревьев с позицией), словарь переводов, переводимые поля, SEO + JSON-LD, sitemap, медиа (S3/MinIO) |
+| **analytics-service** | `/collect` → Redis-буфер → ClickHouse, история пользователя, отчёты |
+| **pay-service** | тарифы/подписки (cancel/resume/pause), платежи, идемпотентные вебхуки |
+| **content-worker** | воркер очередей: автоперевод, sitemap, фоновые задачи |
 
-Архитектура и правила: `STRUCTURE.md`, `CLAUDE.md`; план — `openspec/changes/platform-core-backend/`.
+## Пакеты платформы (`packages/cms/*`)
 
-## Быстрый старт
+- **shared / contracts** — tenant-контекст (`project_id` везде), introspection, HTTP-envelope, деньги только в минорных единицах
+- **auth, content, analytics, pay** — доменные модули (four-layer: Domain / Application / Infrastructure / Presentation)
+- **ai** — единый AI-контракт `AiOperations`: `rewrite`, `normalize`, `translate`, `suggestCategories`, `generatePost`. Под капотом `laravel/ai`; провайдер по умолчанию — [Polza](https://polza.ai) (OpenAI-совместимый), меняется через `OPENAI_BASE_URL`/`OPENAI_API_KEY`/`CMS_AI_MODEL` без правки кода. Только структурные ответы: невалидный ответ модели — ошибка, а не данные
+- **localization** — словарь переводов проекта `key → {locale: value}`, переводимые поля сущностей (spatie/laravel-translatable, имя категории при едином slug), автоперевод недостающих локалей через `cms/ai` с пометкой `machine` до ручного подтверждения, `translations_version` в bootstrap
 
-Требуется: Docker + Docker Compose. Весь стек поднимается одной командой:
+## Панель управления (`frontends/admin`)
 
-```bash
-./tools/cms up          # gateway :8080, 4 сервиса, postgres, redis, clickhouse, minio, фронт админки
-./tools/cms migrate     # миграции всех сервисов
-curl localhost:8080/health/auth   # health каждого сервиса: /health/{auth|content|analytics|pay}
-```
+Вёрстка переносится из `frontends/source-admin` как источник правды дизайна (CI сверяет
+байт-в-байт); платформа подключена только через слой данных.
 
-Другие команды:
+- **Меню собирается из bootstrap**: раздел виден, только если его сервис включён для
+  проекта и у оператора есть право; прямой заход в скрытый раздел → отказ
+- **Категории** — дерево с drag-and-drop: бросок на строку вкладывает, между строками —
+  задаёт порядок (сохраняется платформой); свои потомки как цель запрещены; сворачивание
+  ветвей; селект категорий с вложенным деревом и поиском
+- **Блоги** — статусы по статус-машине (draft/published/archived), привязка к категориям,
+  ревизии с восстановлением
+- **Customers / Team** — реальные пользователи и участники проекта: блокировка, удаление,
+  приглашение с автосозданием оператора
+- **Settings → Languages** — локали проекта, редактор словаря переводов (бейдж `machine`
+  у автопереводов), кнопка «Translate missing»; имя категории вводится по локалям
 
-```bash
-./tools/cms test [service]   # Pest-тесты (все сервисы или один)
-./tools/cms api              # сборка единого swagger → openapi/openapi.json
-./tools/cms down | ps | logs
-```
+Подробно: [`docs/admin-console.md`](docs/admin-console.md).
 
-## Локальная разработка без Docker
-
-```bash
-cd apps/auth-service && composer install
-./vendor/bin/pest                 # тесты приложения + его пакетов
-./vendor/bin/phpstan analyse      # Larastan level 8 (пакеты включены)
-./vendor/bin/pint ../../packages/cms app
-```
-
-Фронтовые пакеты (npm workspaces):
+## Тесты и качество
 
 ```bash
-npm install
-npm run generate --workspace packages/frontend/api-client   # типы + TanStack Query-хуки из swagger
-npm run build --workspaces --if-present
+./tools/cms test [service]   # Pest: 190+ тестов (в т.ч. пакеты) на in-memory sqlite
+./tools/cms e2e [--headed]   # 21 сценарий Playwright против живого стека (headed — видно на экране)
+./tools/cms api              # пересборка единого swagger (CI следит за свежестью)
 ```
 
-Панель управления `frontends/admin` живёт на Bun отдельно от npm workspaces:
+Качество в каждом сервисе: Pint (кодстайл Spatie), Larastan level 8, Pest.
+CI (`.github/workflows/pull-request.yml`): тесты 4 сервисов → swagger-контракт →
+сборка фронтов → сверка вёрстки панели с источником → e2e → docker-образ.
+
+## Прочие команды
 
 ```bash
-cd frontends/admin
-bun install
-bun run dev                       # разработка
-bun run build && bun run start    # production
+./tools/cms up|down|restart [service]    # управление стеком
+./tools/cms migrate [service]            # миграции
+./tools/cms seed-demo [project]          # демо-контент в проект
+./tools/cms artisan <service> <args…>    # artisan внутри контейнера
+./tools/smoke.sh                         # сквозной прогон всех сервисов через gateway
 ```
 
-Вход — оператор платформы (email + пароль, auth-service, guard `admin`); после входа
-открывается дашборд `/admin`. Разделы `dashboard`, `blogs`, `categories`, `customers`,
-`team` и `settings` работают на данных платформы. Меню собирается из
-`GET /api/admin/v1/bootstrap`: раздел виден, только если его сервис включён для
-проекта и у оператора есть объявленное для раздела право; прямой переход на
-скрытый раздел уводит на `/admin/unauthorized`. Разделы без аналога в платформе
-(каталог, заказы, промо, уведомления, поддержка) скрыты — их вёрстка и
-демо-данные остаются в репозитории и возвращаются одной строкой карты требований.
-Подробности, таблица «раздел → сервис → право» и перечень скрытых разделов —
-`docs/admin-console.md`.
+## Архитектура и планирование
 
-## Как всё связано
+- Правила кодовой базы — [`CLAUDE.md`](CLAUDE.md), структура — [`STRUCTURE.md`](STRUCTURE.md)
+- Спецификации возможностей — `openspec/specs/` (11 способностей), история изменений —
+  `openspec/changes/archive/`
+- Скиллы и конвенции — `.ai/skills/`
 
-- Единая точка входа — gateway (Caddy), маршрутизация по префиксам: см. `infra/gateway/Caddyfile`.
-- Downstream-сервисы проверяют токены и API-ключи через `POST /internal/introspect` auth-service
-  (Redis-кэш, TTL 60–120 c). Выключенный для проекта сервис отвечает 404.
-- Каждый сервис публикует манифест (права, навигация, схемы настроек) командой
-  `php artisan manifest:publish`; консоль строится из `GET /api/admin/v1/bootstrap`.
-- События всех сервисов идут в analytics через `Analytics::push($key, $history)`.
-- Новый модуль: `php artisan make:module <name>` — пара пакетов backend+frontend по эталону (§6 STRUCTURE.md).
+---
 
-## Конфигурация
-
-Все настройки — в `infra/`: `infra/services/<service>/.env` (пер-сервисные env), общий Dockerfile
-`infra/docker/`, compose `infra/compose/compose.yaml`. Секреты сервисных вызовов — `SERVICE_TOKEN`.
-
-## CI
-
-`.github/workflows/pull-request.yml`: Pint → Larastan (level 8) → Pest (матрица по сервисам) →
-проверка актуальности `openapi/openapi.json` → сборка npm workspaces → сборка панели на Bun
-с проверкой неизменности вёрстки относительно `frontends/source-admin` → docker-образ.
-Красный шаг блокирует мёрж.
+Вопросы и заказ разработки: Telegram [@W1DO_DIGITAL](https://t.me/W1DO_DIGITAL)
