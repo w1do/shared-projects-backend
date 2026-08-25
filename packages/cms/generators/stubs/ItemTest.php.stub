@@ -1,0 +1,29 @@
+<?php
+
+declare(strict_types=1);
+
+use Cms\{{Studly}}\Domain\Enums\ItemStatus;
+use Cms\{{Studly}}\Domain\Models\Item;
+
+/**
+ * Стаб теста пакета: проверяется публичный HTTP-контракт (конвейер целиком),
+ * а не внутренности handler'а. Заголовки оператора выдаёт хелпер хост-приложения
+ * — замените actingAsOperator() на тот, что есть в apps/<service>/tests.
+ */
+test('item survives a round trip through the admin endpoint', function () {
+    $headers = actingAsOperator('proj-1', ['{{name}}.items.view', '{{name}}.items.manage']);
+
+    $this->postJson('/api/admin/v1/projects/proj-1/{{name}}/items', ['title' => 'First item'], $headers)
+        ->assertCreated()
+        ->assertJsonPath('data.title', 'First item')
+        ->assertJsonPath('data.status', ItemStatus::Draft->value);
+
+    expect(Item::query()->count())->toBe(1);
+});
+
+test('title is required', function () {
+    $headers = actingAsOperator('proj-1', ['{{name}}.items.manage']);
+
+    $this->postJson('/api/admin/v1/projects/proj-1/{{name}}/items', [], $headers)
+        ->assertStatus(422);
+});

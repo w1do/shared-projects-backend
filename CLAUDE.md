@@ -20,18 +20,27 @@
 │   ├── DTOs/              суффикс DTO, ПАПКА НА СУЩНОСТЬ: DTOs/Post/UpsertPostDTO.php
 │   └── Handlers/          <Команда>Handler / <Запрос>Handler, один handle()
 ├── Infrastructure/
-│   ├── Persistence/       репозитории, ClickHouse, Redis-буферы, Jobs
-│   ├── Providers/         адаптеры внешних провайдеров
+│   ├── Persistence/       репозитории, ClickHouse, Redis-буферы, Jobs, кэши
+│   ├── Providers/         сервис-провайдер пакета (<Module>ServiceProvider)
+│   ├── Gateways/          адаптеры внешних провайдеров (PaymentProvider и т.п.)
 │   └── Notifications/
 └── Presentation/
     └── Http/Api/V1/
-        ├── Controllers/   тонкие: DTO → Handler → Resource
-        ├── Requests/
-        └── Resources/
+        ├── Controllers/   тонкие: FormRequest → DTO → Handler → Resource
+        ├── Requests/      FormRequests — ВСЯ HTTP-валидация здесь
+        └── Resources/     JsonResources — ВСЕ ответы здесь (envelope ApiResponse)
 ```
 
-- **DTO**: только `spatie/laravel-data`; имя класса заканчивается на `DTO` (НЕ `Data`); файл лежит в `Application/DTOs/<Сущность>/`. Валидация — rules() в DTO; контроллеры без `$request->validate()` и без ручных массивов ответов.
-- **Handlers**: вся бизнес-логика команд/запросов в `Application/Handlers/`; контроллер только принимает DTO, вызывает Handler, возвращает DTO/Resource. Аудит и побочные эффекты — в Handlers.
+Исключения из four-layer (закреплены задачей 1.7 / Decision 9–11):
+- **библиотеки** `shared`, `contracts`, `generators` — плоские namespace, сервис-провайдер в корне `src/`;
+- **пакет без сущностей и HTTP** (`ai`) — без `Domain/` и `Presentation/`: порт и исключения в `Application/`, реализация в `Infrastructure/`; папки DTO — по операциям;
+- `Domain/Policies/` обязателен только там, где есть per-record проверки (auth, pay).
+
+Канон закреплён машинно: архитектурный гейт `packages/cms/shared/tests/ArchitectureGateTest.php` (исполняется всеми сервисами) и инвентарь `./tools/refactor-inventory.sh --strict`.
+
+- **DTO**: только `spatie/laravel-data`; имя класса заканчивается на `DTO` (НЕ `Data`); файл лежит в `Application/DTOs/<Сущность>/`. DTO — чистая структура между слоями: БЕЗ `rules()`, без импортов `Illuminate\Http\*`. DTO со свойствами `|Optional` строится ТОЛЬКО как `XxxDTO::from($request->validated())` — никаких `?? null` и достройки ключей: «поле не передано» ≠ «поле = null».
+- **Конвейер контроллера**: FormRequest (вся валидация запроса) → DTO → Handler → JsonResource. Контроллеры без `$request->validate()`, без `Validator::make`, без ручных массивов ответов. Доменные инварианты (переход статуса, занятый слаг) — доменные исключения `*RuleViolation extends ValidationException` в `Application/Exceptions/` c текстами-контрактами в одном месте.
+- **Handlers**: вся бизнес-логика команд/запросов в `Application/Handlers/`; один `handle()`, одна ответственность. Аудит и побочные эффекты — в Handlers. Queries — с суффиксом `*Query`, без мутаций состояния.
 - Laravel best practices: конструкторная инъекция (никаких `app()`/`resolve()` в Domain/Application), события Laravel для доменных событий, Policy для авторизации сущностей, spatie-кодстайл (`.ai/skills/spatie-laravel-php`).
 - **Tenant-изоляция**: каждая бизнес-таблица имеет `project_id`; модели используют `BelongsToProject`; контекст — scoped `ProjectContext` (Octane-safe, никаких синглтонов с request-состоянием).
 - **Деньги** — только целые минорные единицы (`Cms\Shared\Values\Money`), float запрещён везде.

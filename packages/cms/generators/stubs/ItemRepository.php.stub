@@ -1,0 +1,24 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Cms\{{Studly}}\Domain\Contracts;
+
+use Cms\{{Studly}}\Domain\Models\Item;
+
+/**
+ * Порт наружу: Application зависит от интерфейса, реализация — в
+ * Infrastructure/Persistence и связывается в {{Studly}}ServiceProvider::register().
+ */
+interface ItemRepository
+{
+    public function find(int $id): ?Item;
+
+    /** @return list<Item> записи текущего проекта, свежие сверху */
+    public function all(int $limit): array;
+
+    /** @param array<string, mixed> $attributes */
+    public function save(?int $id, array $attributes): Item;
+
+    public function delete(Item $item): void;
+}

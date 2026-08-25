@@ -1,0 +1,41 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Cms\{{Studly}}\Domain\Models;
+
+use Cms\{{Studly}}\Database\Factories\ItemFactory;
+use Cms\{{Studly}}\Domain\Enums\ItemStatus;
+use Cms\Shared\Tenant\BelongsToProject;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+/**
+ * Пример сущности модуля — переименуйте под свою предметную область.
+ * Изоляция проекта — трейтом BelongsToProject, а не ручными where('project_id').
+ *
+ * @property int $id
+ * @property string $project_id
+ * @property string $title
+ * @property ItemStatus $status
+ */
+class Item extends Model
+{
+    use BelongsToProject;
+    use HasFactory;
+
+    protected $table = '{{snake}}_items';
+
+    protected $fillable = ['project_id', 'title', 'status'];
+
+    /** @return array<string, string> */
+    protected function casts(): array
+    {
+        return ['status' => ItemStatus::class];
+    }
+
+    protected static function newFactory(): ItemFactory
+    {
+        return ItemFactory::new();
+    }
+}

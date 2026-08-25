@@ -1,0 +1,43 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Cms\{{Studly}}\Presentation\Http\Api\V1\Controllers\Admin;
+
+use Cms\{{Studly}}\Application\Commands\UpsertItemCommand;
+use Cms\{{Studly}}\Application\Handlers\UpsertItemHandler;
+use Cms\{{Studly}}\Application\Queries\ListItemsQuery;
+use Cms\{{Studly}}\Presentation\Http\Api\V1\Requests\Item\UpsertItemRequest;
+use Cms\{{Studly}}\Presentation\Http\Api\V1\Resources\Item\ItemResource;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+
+/**
+ * Тонкий контроллер: FormRequest → DTO → Handler → Resource.
+ * Здесь нет ни $request->validate(), ни ручных массивов ответа, ни логики.
+ */
+final class ItemController
+{
+    public function index(Request $request, ListItemsQuery $query): JsonResponse
+    {
+        return ItemResource::collection($query->handle())->toResponse($request);
+    }
+
+    public function store(UpsertItemRequest $request, UpsertItemHandler $handler): JsonResponse
+    {
+        $item = $handler->handle(new UpsertItemCommand($request->upsert()));
+
+        return (new ItemResource($item))->toCreatedResponse($request);
+    }
+
+    /**
+     * Параметры маршрута подставляются позиционно: {project} идёт раньше {item},
+     * поэтому объявлены оба — иначе $itemId получил бы значение проекта.
+     */
+    public function update(UpsertItemRequest $request, string $project, int $itemId, UpsertItemHandler $handler): JsonResponse
+    {
+        $item = $handler->handle(new UpsertItemCommand($request->upsert(), itemId: $itemId));
+
+        return (new ItemResource($item))->toResponse($request);
+    }
+}

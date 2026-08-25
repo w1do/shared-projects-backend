@@ -6,6 +6,7 @@
     "license": "proprietary",
     "require": {
         "php": "^8.3",
+        "cms/contracts": "*",
         "cms/shared": "*",
         "spatie/laravel-data": "^4.0",
         "illuminate/support": "^13.0"
@@ -23,7 +24,7 @@
     },
     "extra": {
         "laravel": {
-            "providers": ["Cms\\{{Studly}}\\{{Studly}}ServiceProvider"]
+            "providers": ["Cms\\{{Studly}}\\Infrastructure\\Providers\\{{Studly}}ServiceProvider"]
         }
     },
     "minimum-stability": "stable",

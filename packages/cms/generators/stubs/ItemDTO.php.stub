@@ -1,0 +1,27 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Cms\{{Studly}}\Application\DTOs\Item;
+
+use Cms\{{Studly}}\Domain\Models\Item;
+use Spatie\LaravelData\Data;
+
+/** Форма ответа: наружу уходит DTO, Eloquent-модель не сериализуется. */
+final class ItemDTO extends Data
+{
+    public function __construct(
+        public int $id,
+        public string $title,
+        public string $status,
+    ) {}
+
+    public static function fromModel(Item $item): self
+    {
+        return new self(
+            id: $item->id,
+            title: $item->title,
+            status: $item->status->value,
+        );
+    }
+}

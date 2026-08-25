@@ -1,0 +1,30 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Cms\{{Studly}}\Domain\Policies;
+
+use Cms\{{Studly}}\Domain\Enums\ItemStatus;
+use Cms\{{Studly}}\Domain\Models\Item;
+
+/**
+ * Per-record правила модуля — единственное место, где они описаны.
+ *
+ * Маршрутные права (`{{name}}.items.*`) проверяет middleware AuthorizeOperator
+ * в routes/admin.php; Policy отвечает на вопросы о конкретной записи и
+ * вызывается из контроллера или handler'а. Каталог Domain/Policies/ обязателен
+ * только там, где такие проверки есть, — иначе удалите этот файл.
+ */
+final class ItemPolicy
+{
+    /** Опубликованную запись правит только тот, кому разрешена публикация. */
+    public function update(Item $item, bool $mayPublish): bool
+    {
+        return $item->status !== ItemStatus::Published || $mayPublish;
+    }
+
+    public function delete(Item $item): bool
+    {
+        return $item->status !== ItemStatus::Published;
+    }
+}

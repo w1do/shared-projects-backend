@@ -1,0 +1,17 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Cms\{{Studly}}\Application\Commands;
+
+use Cms\{{Studly}}\Application\DTOs\Item\UpsertItemDTO;
+
+/** Команда-намерение: только данные для UpsertItemHandler, без логики. */
+final readonly class UpsertItemCommand
+{
+    public function __construct(
+        public UpsertItemDTO $data,
+        /** id обновляемой записи; null — создание. */
+        public ?int $itemId = null,
+    ) {}
+}

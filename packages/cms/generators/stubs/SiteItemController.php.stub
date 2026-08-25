@@ -1,0 +1,22 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Cms\{{Studly}}\Presentation\Http\Api\V1\Controllers\Site;
+
+use Cms\{{Studly}}\Application\Queries\ListItemsQuery;
+use Cms\{{Studly}}\Presentation\Http\Api\V1\Resources\Item\ItemResource;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+
+/**
+ * Публичная витрина модуля: проект берётся из API-ключа middleware'ом
+ * AuthorizeProjectKey, поэтому в сигнатуре нет {project}.
+ */
+final class ItemController
+{
+    public function index(Request $request, ListItemsQuery $query): JsonResponse
+    {
+        return ItemResource::collection($query->handle())->toResponse($request);
+    }
+}

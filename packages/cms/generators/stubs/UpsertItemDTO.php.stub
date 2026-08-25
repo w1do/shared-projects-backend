@@ -1,0 +1,24 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Cms\{{Studly}}\Application\DTOs\Item;
+
+use Spatie\LaravelData\Data;
+use Spatie\LaravelData\Optional;
+
+/**
+ * Чистая структура между слоями: БЕЗ rules() и без импортов Illuminate\Http\*
+ * — вся HTTP-валидация живёт в UpsertItemRequest.
+ *
+ * DTO с Optional-свойствами строится ТОЛЬКО как ::from($request->validated())
+ * целиком: достройка ключей через `?? null` превратила бы «поле не передано»
+ * в «поле = null» и молча затёрла бы значение в БД.
+ */
+final class UpsertItemDTO extends Data
+{
+    public function __construct(
+        public string $title,
+        public string|Optional $status,
+    ) {}
+}
