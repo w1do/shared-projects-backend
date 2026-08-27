@@ -1,8 +1,11 @@
-import InventoryPage from "@/components/pages/inventory";
+import type { Metadata } from "next";
 
-export const metadata = {
-  title: "Inventory · Ætheria Admin",
-  description: "Track stock levels, alert thresholds, and replenishment.",
+import InventoryPage from "@/components/pages/inventory";
+import { t } from "@/lib/admin/console-texts";
+
+export const metadata: Metadata = {
+  title: `${t("console.nav.inventory")} · Ætheria Admin`,
+  description: t("console.meta.inventory-description"),
 };
 
 /**

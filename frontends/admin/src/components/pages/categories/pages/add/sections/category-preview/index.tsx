@@ -1,19 +1,20 @@
 "use client";
 
-import { formatCurrency } from "@/lib/utils";
 import { useWatch } from "react-hook-form";
 import Image from "next/image";
-import { Folder, TrendingUp } from "lucide-react";
+import { Folder } from "lucide-react";
 import { Card } from "@/components/ui/data-display/card";
 import { AdminDynamicStyles } from "@/components/admin/AdminDynamicStyles";
 import type { CategoryFormValues } from "@/lib/admin/schemas/catalog/category-form-schema";
 import { iconMap } from "@/components/pages/categories/config/icons";
 import { CategoryStatusBadge } from "@/components/pages/categories/sections/category-status-badge";
+import { useConsoleText } from "@/lib/admin/use-console-text";
 
 export function CategoryLivePreview() {
+  const t = useConsoleText();
   const values = useWatch<CategoryFormValues>() as CategoryFormValues;
 
-  const name = values.name?.trim() || "Category name";
+  const name = values.name?.trim() || t("console.categories.preview.name-placeholder");
   const slug = values.slug?.trim() || "category-slug";
   const status = values.status ?? "Active";
   const Icon = (values.iconName && iconMap[values.iconName]) || Folder;
@@ -22,9 +23,11 @@ export function CategoryLivePreview() {
   return (
     <Card variant="form-section">
       <div>
-        <h2 className="text-heading font-medium leading-tight text-foreground">Live Preview</h2>
+        <h2 className="text-heading font-medium leading-tight text-foreground">
+          {t("console.categories.preview.title")}
+        </h2>
         <p className="text-xs text-muted-foreground-lighter">
-          A real-time look at the storefront category card.
+          {t("console.categories.preview.subtitle")}
         </p>
       </div>
 
@@ -65,27 +68,14 @@ export function CategoryLivePreview() {
             /{slug}
           </p>
 
+          {/* Торговых метрик у платформы нет — превью без блока выручки. */}
           <div className="mt-4 grid grid-cols-2 gap-4 border-t border-border/40 pt-4">
             <div className="flex flex-col">
               <span className="text-caption font-semibold uppercase tracking-wider text-muted-foreground-lighter">
-                Display Order
+                {t("console.categories.form.display-order")}
               </span>
               <span className="mt-2 text-sm font-semibold text-foreground">
                 #{values.displayOrder || 1}
-              </span>
-            </div>
-            <div className="flex flex-col">
-              <span className="text-caption font-semibold uppercase tracking-wider text-muted-foreground-lighter">
-                Revenue
-              </span>
-              <span className="mt-2 flex items-center gap-2 text-sm font-semibold text-foreground">
-                {formatCurrency(values.revenue)}
-                {Number(values.growthYoY) !== 0 && (
-                  <span className="flex items-center font-medium text-caption text-success">
-                    <TrendingUp className="mr-1 size-4" />
-                    {values.growthYoY}%
-                  </span>
-                )}
               </span>
             </div>
           </div>

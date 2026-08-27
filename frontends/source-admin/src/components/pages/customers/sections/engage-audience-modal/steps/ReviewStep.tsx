@@ -8,7 +8,9 @@ import type { DetailedCustomer } from "@/lib/admin/mocks/customers";
 import type { Campaign } from "@/lib/admin/mocks/types";
 import type { Promotion } from "@/lib/admin/mocks/promotions";
 import type { EngageAudienceFormValues } from "@/lib/admin/schemas/content/engage-audience-schema";
-import { intentOptions } from "../types";
+import { engageChannelLabel, intentOptions } from "../types";
+import { useConsoleText } from "@/lib/admin/use-console-text";
+import { customerTierLabel } from "@/components/pages/customers/utils";
 
 type ReviewStepProps = {
   customers: DetailedCustomer[];
@@ -17,6 +19,7 @@ type ReviewStepProps = {
 };
 
 export function ReviewStep({ customers, campaigns, promotions }: ReviewStepProps) {
+  const t = useConsoleText();
   const { control } = useFormContext<EngageAudienceFormValues>();
   const values = useWatch({ control });
 
@@ -29,13 +32,20 @@ export function ReviewStep({ customers, campaigns, promotions }: ReviewStepProps
   if (values.intent === "promotion") assetLabel = promotion?.title ?? "—";
   if (values.intent === "coupon") assetLabel = promotion?.code ?? "—";
   if (values.intent === "loyalty")
-    assetLabel = values.loyaltyTier ? `${values.loyaltyTier} tier` : "—";
+    assetLabel = values.loyaltyTier
+      ? t("console.engage.review.tier-value").replace(
+          "{tier}",
+          customerTierLabel(values.loyaltyTier),
+        )
+      : "—";
 
   return (
     <div className="flex flex-col gap-6">
       <div className="rounded-2xl border border-border/60 bg-muted/20 p-4">
         <div className="flex flex-wrap items-center gap-2">
-          <p className="font-semibold text-foreground">{intentMeta?.title ?? "Outreach"}</p>
+          <p className="font-semibold text-foreground">
+            {intentMeta?.title ?? t("console.engage.intent.fallback")}
+          </p>
           {intentMeta?.badge ? (
             <Badge variant="soft" color="secondary" shape="circle" size="sm">
               {intentMeta.badge}
@@ -43,43 +53,54 @@ export function ReviewStep({ customers, campaigns, promotions }: ReviewStepProps
           ) : null}
         </div>
         <p className="mt-2 text-caption text-muted-foreground">
-          {intentMeta?.description ?? "Review the payload before sending."}
+          {intentMeta?.description ?? t("console.engage.intent.fallback-description")}
         </p>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
         <ReviewRow
           icon={<Users className="size-4" />}
-          label="Audience"
-          value={`${customers.length} customer${customers.length === 1 ? "" : "s"}`}
+          label={t("console.engage.review.audience")}
+          value={t("console.engage.audience.reach-count").replace(
+            "{count}",
+            String(customers.length),
+          )}
         />
-        <ReviewRow icon={<Megaphone className="size-4" />} label="Asset" value={assetLabel} />
+        <ReviewRow
+          icon={<Megaphone className="size-4" />}
+          label={t("console.engage.review.asset")}
+          value={assetLabel}
+        />
         <ReviewRow
           icon={<Mail className="size-4" />}
-          label="Channel"
-          value={values.channel || "—"}
+          label={t("console.engage.review.channel")}
+          value={values.channel ? engageChannelLabel(values.channel) : "—"}
         />
         <ReviewRow
           icon={<CalendarRange className="size-4" />}
-          label="Schedule"
-          value={values.scheduleAt || "Send now"}
+          label={t("console.engage.review.schedule")}
+          value={values.scheduleAt || t("console.engage.review.send-now")}
         />
         <ReviewRow
           icon={<Tag className="size-4" />}
-          label="Subject"
+          label={t("console.engage.review.subject")}
           value={values.subject || "—"}
         />
       </div>
 
       {values.message ? (
         <div className="rounded-2xl border border-border/60 bg-card p-4">
-          <p className="text-caption font-semibold text-muted-foreground">Message</p>
+          <p className="text-caption font-semibold text-muted-foreground">
+            {t("console.engage.review.message")}
+          </p>
           <p className="mt-2 whitespace-pre-wrap text-caption text-foreground">{values.message}</p>
         </div>
       ) : null}
 
       <div className="rounded-2xl border border-border/60 bg-card p-4">
-        <p className="mb-2 text-caption font-semibold text-muted-foreground">Recipients preview</p>
+        <p className="mb-2 text-caption font-semibold text-muted-foreground">
+          {t("console.engage.review.recipients")}
+        </p>
         <ul className="flex flex-col gap-2">
           {customers.slice(0, 5).map((customer) => (
             <li key={customer.id} className="truncate text-caption text-foreground">
@@ -88,15 +109,18 @@ export function ReviewStep({ customers, campaigns, promotions }: ReviewStepProps
           ))}
           {customers.length > 5 ? (
             <li className="text-caption text-muted-foreground-lighter">
-              +{customers.length - 5} more
+              {t("console.engage.review.more").replace("{count}", String(customers.length - 5))}
             </li>
           ) : null}
         </ul>
       </div>
 
       <div className="rounded-2xl border border-dashed border-brand-accent/30 bg-accent/40 p-4 text-caption text-foreground">
-        Confirm this snapshot before shipping. <span className="font-semibold">Send</span> delivers
-        immediately; <span className="font-semibold">Schedule</span> keeps the selected date.
+        {t("console.engage.review.note-before")}{" "}
+        <span className="font-semibold">{t("console.engage.review.note-send")}</span>{" "}
+        {t("console.engage.review.note-middle")}{" "}
+        <span className="font-semibold">{t("console.engage.review.note-schedule")}</span>{" "}
+        {t("console.engage.review.note-after")}
       </div>
     </div>
   );

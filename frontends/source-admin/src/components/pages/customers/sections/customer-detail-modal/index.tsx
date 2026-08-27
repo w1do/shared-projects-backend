@@ -13,6 +13,8 @@ import { Avatar } from "@/components/ui/data-display/avatar";
 import { Badge } from "@/components/ui/data-display/badge";
 import { AdminDynamicStyles } from "@/components/admin/AdminDynamicStyles";
 import type { DetailedCustomer } from "@/lib/admin/mocks/customers";
+import { useConsoleText } from "@/lib/admin/use-console-text";
+import { customerTierLabel } from "@/components/pages/customers/utils";
 
 // Sections
 import { ContactSection } from "./sections/contact";
@@ -27,8 +29,14 @@ interface CustomerDetailModalProps {
 }
 
 export function CustomerDetailModal({ customer, isOpen, onClose }: CustomerDetailModalProps) {
+  const t = useConsoleText();
+
   if (!customer) return null;
   const gradientId = `customer-detail-${customer.id}`;
+  const joinedLabel = new Date(customer.joinedAt).toLocaleDateString("ru-RU", {
+    month: "long",
+    year: "numeric",
+  });
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
@@ -53,16 +61,19 @@ export function CustomerDetailModal({ customer, isOpen, onClose }: CustomerDetai
                 <div className="flex flex-col gap-2">
                   <DialogTitle className="flex items-center gap-2 text-heading font-semibold">
                     {customer.name}
-                    <Badge variant="soft" shape="circle" color="primary">
-                      {customer.tier} Tier
-                    </Badge>
+                    {customer.tier && (
+                      <Badge variant="soft" shape="circle" color="primary">
+                        {t("console.customers.detail.tier-badge").replace(
+                          "{tier}",
+                          customerTierLabel(customer.tier),
+                        )}
+                      </Badge>
+                    )}
                   </DialogTitle>
                   <DialogDescription className="text-caption text-muted-foreground-lighter">
-                    Customer ID: {customer.id} &bull; Member since{" "}
-                    {new Date(customer.joinedAt).toLocaleDateString("en-US", {
-                      month: "long",
-                      year: "numeric",
-                    })}
+                    {t("console.customers.detail.meta")
+                      .replace("{id}", customer.id)
+                      .replace("{date}", joinedLabel)}
                   </DialogDescription>
                 </div>
               </div>
@@ -84,7 +95,7 @@ export function CustomerDetailModal({ customer, isOpen, onClose }: CustomerDetai
                 <div className="grid grid-cols-2 gap-4">
                   <div className="rounded-2xl border border-border/60 p-4 flex flex-col gap-2">
                     <span className="text-caption font-medium text-muted-foreground-lighter uppercase">
-                      Total Spent
+                      {t("console.customers.detail.total-spent")}
                     </span>
                     <span className="text-heading font-semibold font-sans">
                       ${customer.totalSpent.toFixed(2)}
@@ -92,10 +103,13 @@ export function CustomerDetailModal({ customer, isOpen, onClose }: CustomerDetai
                   </div>
                   <div className="rounded-2xl border border-border/60 p-4 flex flex-col gap-2">
                     <span className="text-caption font-medium text-muted-foreground-lighter uppercase">
-                      Total Orders
+                      {t("console.customers.detail.total-orders")}
                     </span>
                     <span className="text-heading font-semibold font-sans">
-                      {customer.totalOrders} items
+                      {t("console.customers.detail.orders-value").replace(
+                        "{count}",
+                        String(customer.totalOrders),
+                      )}
                     </span>
                   </div>
                 </div>

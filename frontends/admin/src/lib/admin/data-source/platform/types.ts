@@ -119,10 +119,18 @@ export type PlatformRevenueRow = {
 };
 
 export type PlatformBootstrap = {
-  user: { id: number; name: string; email: string; locale: string; is_super_admin: boolean };
+  user: {
+    id: number;
+    name: string;
+    email: string;
+    locale: string;
+    is_super_admin: boolean;
+  };
   projects: PlatformProject[];
   current_project: string | null;
   services: Array<{ key: string; version: string; enabled: boolean }>;
   permissions: string[];
+  /** Версия словаря переводов проекта — инвалидация кэша текстов консоли. */
+  translations_version: string;
   server_time: string;
 };

@@ -11,6 +11,7 @@ import {
   CategoryTreeSelect,
   type CategoryTreeOption,
 } from "@/components/ui/inputs/category-tree-select";
+import { useConsoleText } from "@/lib/admin/use-console-text";
 
 interface GeneralInfoSectionProps {
   autoSlug: boolean;
@@ -32,6 +33,7 @@ export function GeneralInfoSection({
   disabledParentIds,
   locales,
 }: GeneralInfoSectionProps) {
+  const t = useConsoleText();
   const extraLocales = (locales ?? []).slice(1);
   const {
     register,
@@ -40,17 +42,19 @@ export function GeneralInfoSection({
   } = useFormContext<CategoryFormValues>();
 
   const statusOptions = [
-    { value: "Active", label: "Active" },
-    { value: "Draft", label: "Draft" },
-    { value: "Archived", label: "Archived" },
+    { value: "Active", label: t("console.categories.status.active") },
+    { value: "Draft", label: t("console.categories.status.draft") },
+    { value: "Archived", label: t("console.categories.status.archived") },
   ];
 
   return (
     <Card variant="form-section">
       <div>
-        <h2 className="text-heading font-medium leading-tight text-foreground">Category Details</h2>
+        <h2 className="text-heading font-medium leading-tight text-foreground">
+          {t("console.categories.form.details")}
+        </h2>
         <p className="text-xs text-muted-foreground-lighter">
-          Define how this category is named and surfaced across the catalog.
+          {t("console.categories.form.details-hint")}
         </p>
       </div>
 
@@ -59,10 +63,13 @@ export function GeneralInfoSection({
           {...register("name")}
           label={
             extraLocales.length > 0 && locales
-              ? `Category Name (${locales[0].toUpperCase()} · default)`
-              : "Category Name"
+              ? t("console.categories.form.name-default").replace(
+                  "{locale}",
+                  locales[0].toUpperCase(),
+                )
+              : t("console.categories.form.name")
           }
-          placeholder="e.g., Serums & Ampoules"
+          placeholder={t("console.categories.form.name-placeholder")}
           error={errors.name?.message}
         />
 
@@ -75,8 +82,11 @@ export function GeneralInfoSection({
               <Input
                 value={field.value ?? ""}
                 onChange={field.onChange}
-                label={`Category Name (${locale.toUpperCase()})`}
-                placeholder="Leave empty to fall back to the default locale"
+                label={t("console.categories.form.name-locale").replace(
+                  "{locale}",
+                  locale.toUpperCase(),
+                )}
+                placeholder={t("console.categories.form.name-locale-placeholder")}
                 data-testid={`category-name-${locale}`}
               />
             )}
@@ -85,8 +95,8 @@ export function GeneralInfoSection({
 
         <Input
           {...register("slug")}
-          label="Slug"
-          placeholder="e.g., serums-ampoules"
+          label={t("console.categories.form.slug")}
+          placeholder={t("console.categories.form.slug-placeholder")}
           labelRight={
             !isEdit && (
               <Button
@@ -96,7 +106,9 @@ export function GeneralInfoSection({
                 color="surface"
                 onClick={() => setAutoSlug(!autoSlug)}
               >
-                {autoSlug ? "Manual edit" : "Auto sync"}
+                {autoSlug
+                  ? t("console.categories.form.slug-manual")
+                  : t("console.categories.form.slug-auto")}
               </Button>
             )
           }
@@ -105,8 +117,8 @@ export function GeneralInfoSection({
 
         <Textarea
           {...register("description")}
-          label="Description"
-          placeholder="Describe this category..."
+          label={t("console.categories.form.description")}
+          placeholder={t("console.categories.form.description-placeholder")}
           error={errors.description?.message}
         />
 
@@ -115,7 +127,7 @@ export function GeneralInfoSection({
           name="status"
           render={({ field }) => (
             <Select
-              label="Status"
+              label={t("console.categories.form.status")}
               value={field.value}
               options={statusOptions}
               onChange={(e) => field.onChange(e.target.value)}
@@ -131,8 +143,9 @@ export function GeneralInfoSection({
             render={({ field }) => (
               <CategoryTreeSelect
                 mode="single"
-                label="Parent category"
+                label={t("console.categories.form.parent")}
                 allowRoot
+                rootLabel={t("console.categories.move.root")}
                 options={parentOptions}
                 disabledIds={disabledParentIds}
                 value={field.value ? field.value : null}

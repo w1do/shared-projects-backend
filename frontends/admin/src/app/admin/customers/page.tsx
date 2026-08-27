@@ -1,9 +1,9 @@
 import CustomersPage from "@/components/pages/customers";
+import { t } from "@/lib/admin/console-texts";
 
 export const metadata = {
-  title: "Customers | Ætheria Admin",
-  description:
-    "View profiles, dermatology skin concerns, loyalty tiers, and customer lifetime value logs.",
+  title: `${t("console.nav.customers")} | Ætheria Admin`,
+  description: t("console.meta.customers-description"),
 };
 
 /**

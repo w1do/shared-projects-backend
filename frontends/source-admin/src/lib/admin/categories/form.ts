@@ -1,9 +1,16 @@
-import type { CategoryFormValues } from "@/lib/admin/schemas/catalog/category-form-schema";
+import type {
+  CategoryFormValues,
+  MockCategoryFormValues,
+} from "@/lib/admin/schemas/catalog/category-form-schema";
 import type { Category } from "@/lib/admin/mocks/types";
 import { slugify } from "@/lib/admin/shared/slugify";
 import { defaultGradients } from "@/lib/theme-colors";
 
-export const defaultCategoryFormValues: CategoryFormValues = {
+/**
+ * Форма живого режима денежных полей не имеет — значения по умолчанию несут
+ * нули торговых метрик только ради модели демо-каталога (мок-режим).
+ */
+export const defaultCategoryFormValues: MockCategoryFormValues = {
   name: "",
   slug: "",
   description: "",
@@ -15,9 +22,11 @@ export const defaultCategoryFormValues: CategoryFormValues = {
   displayOrder: 1,
   revenue: 0,
   growthYoY: 0,
+  parentId: "",
+  nameTranslations: {},
 };
 
-export const sampleCategoryFormValues: CategoryFormValues = {
+export const sampleCategoryFormValues: MockCategoryFormValues = {
   name: "Night Repair Rituals",
   slug: "night-repair-rituals",
   description:
@@ -54,8 +63,15 @@ export function createCategoryId(name: string, existingIds: string[] = []) {
   return nextId;
 }
 
+/** Живая форма метрик не передаёт — демо-каталог хранит нули. */
+function moneyOf(values: CategoryFormValues | MockCategoryFormValues) {
+  return "revenue" in values
+    ? { revenue: values.revenue, growthYoY: values.growthYoY }
+    : { revenue: 0, growthYoY: 0 };
+}
+
 export function createCategoryFromForm(
-  values: CategoryFormValues,
+  values: CategoryFormValues | MockCategoryFormValues,
   existingIds: string[] = [],
 ): Category {
   const name = values.name.trim();
@@ -70,14 +86,13 @@ export function createCategoryFromForm(
     coverGradient: [values.coverGradientStart, values.coverGradientEnd],
     thumbnail: values.thumbnail,
     iconName: values.iconName,
-    revenue: values.revenue,
-    growthYoY: values.growthYoY,
+    ...moneyOf(values),
     displayOrder: values.displayOrder,
     createdAt: new Date().toISOString().slice(0, 10),
   };
 }
 
-export function createCategoryFormValues(category: Category): CategoryFormValues {
+export function createCategoryFormValues(category: Category): MockCategoryFormValues {
   return {
     name: category.name,
     slug: category.slug,
@@ -90,14 +105,21 @@ export function createCategoryFormValues(category: Category): CategoryFormValues
     displayOrder: category.displayOrder,
     revenue: category.revenue,
     growthYoY: category.growthYoY,
+    parentId: category.parentId ?? "",
+    nameTranslations: category.nameTranslations ?? {},
   };
 }
 
 export function mergeCategoryWithFormValues(
   category: Category,
-  values: CategoryFormValues,
+  values: CategoryFormValues | MockCategoryFormValues,
 ): Category {
   const name = values.name.trim();
+  // Без денежных полей в форме прежние метрики категории сохраняются как есть.
+  const money =
+    "revenue" in values
+      ? { revenue: values.revenue, growthYoY: values.growthYoY }
+      : { revenue: category.revenue, growthYoY: category.growthYoY };
 
   return {
     ...category,
@@ -108,8 +130,7 @@ export function mergeCategoryWithFormValues(
     coverGradient: [values.coverGradientStart, values.coverGradientEnd],
     thumbnail: values.thumbnail,
     iconName: values.iconName,
-    revenue: values.revenue,
-    growthYoY: values.growthYoY,
+    ...money,
     displayOrder: values.displayOrder,
   };
 }

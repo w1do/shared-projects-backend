@@ -4,7 +4,11 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Bell, ArrowRight } from "lucide-react";
 import { IconButton } from "@/components/ui/inputs/icon-button";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/overlay/popover";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/overlay/popover";
 import { type AdminNotification } from "@/lib/admin/mocks/notifications";
 import { relativeTime } from "@/components/pages/notifications/utils";
 import { typeConfig } from "@/components/pages/notifications/config/filters";
@@ -16,6 +20,7 @@ import {
 import { StatusDot } from "@/components/ui/feedback/status-dot";
 import { Badge } from "@/components/ui/data-display/badge";
 import { Button } from "@/components/ui/inputs/button";
+import { useConsoleText } from "@/lib/admin/use-console-text";
 import { cn } from "@/lib/utils";
 
 const RECENT_COUNT = 5;
@@ -42,7 +47,9 @@ function CompactRow({
         !notification.read && "bg-primary/5",
       )}
     >
-      <div className={`flex size-8 shrink-0 items-center justify-center rounded-full ${tone}`}>
+      <div
+        className={`flex size-8 shrink-0 items-center justify-center rounded-full ${tone}`}
+      >
         <Icon className="size-4" />
       </div>
       <div className="flex min-w-0 flex-1 flex-col gap-2">
@@ -58,13 +65,16 @@ function CompactRow({
           {notification.description}
         </span>
       </div>
-      {!notification.read && <StatusDot color="primary" size="md" className="mt-2" />}
+      {!notification.read && (
+        <StatusDot color="primary" size="md" className="mt-2" />
+      )}
     </Button>
   );
 }
 
 export function NotificationsBell() {
   const router = useRouter();
+  const t = useConsoleText();
   const [open, setOpen] = useState(false);
   const { data: notifications = [] } = useNotificationsQuery();
   const markReadMutation = useMarkNotificationReadMutation();
@@ -72,7 +82,10 @@ export function NotificationsBell() {
 
   const unreadCount = notifications.filter((n) => !n.read).length;
   const recent = [...notifications]
-    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+    .sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+    )
     .slice(0, RECENT_COUNT);
 
   const markRead = (id: string, href?: string) => {
@@ -91,31 +104,49 @@ export function NotificationsBell() {
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <IconButton variant="ghost" shape="circle" className="relative" aria-label="Notifications">
+        <IconButton
+          variant="ghost"
+          shape="circle"
+          className="relative"
+          aria-label={t("console.nav.notifications")}
+        >
           <Bell />
-          {unreadCount > 0 && <StatusDot color="error" ping className="absolute right-2 top-2" />}
+          {unreadCount > 0 && (
+            <StatusDot color="error" ping className="absolute right-2 top-2" />
+          )}
         </IconButton>
       </PopoverTrigger>
       <PopoverContent align="end" className="w-96 p-0">
         <div className="flex items-center justify-between border-b border-border/60 p-4">
           <div className="flex items-center gap-2">
-            <span className="text-xs font-semibold text-foreground">Notifications</span>
+            <span className="text-xs font-semibold text-foreground">
+              {t("console.nav.notifications")}
+            </span>
             {unreadCount > 0 && (
-              <Badge variant="contained" color="primary" shape="circle" size="sm">
+              <Badge
+                variant="contained"
+                color="primary"
+                shape="circle"
+                size="sm"
+              >
                 {unreadCount}
               </Badge>
             )}
           </div>
           {unreadCount > 0 && (
             <Button variant="text" color="primary" onClick={markAllRead}>
-              Mark all read
+              {t("console.common.mark-all-read")}
             </Button>
           )}
         </div>
 
         <div className="flex flex-col gap-2 p-2">
           {recent.map((notification) => (
-            <CompactRow key={notification.id} notification={notification} onSelect={markRead} />
+            <CompactRow
+              key={notification.id}
+              notification={notification}
+              onSelect={markRead}
+            />
           ))}
         </div>
 
@@ -128,7 +159,7 @@ export function NotificationsBell() {
           endIcon={<ArrowRight className="size-4" />}
           onClick={() => setOpen(false)}
         >
-          View all notifications
+          {t("console.notifications.view-all")}
         </Button>
       </PopoverContent>
     </Popover>

@@ -16,8 +16,10 @@ import {
 } from "@/lib/admin/schemas/settings/taxes-settings-schema";
 import { SettingsSection } from "./shared/SettingsSection";
 import { SettingsToggleRow } from "./shared/SettingsToggleRow";
+import { useConsoleText } from "@/lib/admin/use-console-text";
 
 export function TaxesSection({ initial }: { initial: TaxSettings }) {
+  const t = useConsoleText();
   const {
     register,
     control,
@@ -38,21 +40,21 @@ export function TaxesSection({ initial }: { initial: TaxSettings }) {
       value: fromTaxesSettingsFormValues(_values, initial),
     });
     if (!result.ok) {
-      toast.error(result.reason ?? "Could not save settings.");
+      toast.error(result.reason ?? t("console.settings.save-failed"));
       return;
     }
-    toast.success("Tax settings saved.");
+    toast.success(t("console.settings.taxes.saved"));
   };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <SettingsSection
         icon={Receipt}
-        title="Taxes"
-        description="Control how tax is calculated, displayed, and reported across regions."
+        title={t("console.settings.taxes.title")}
+        description={t("console.settings.taxes.description")}
         footer={
           <Button type="submit" variant="contained" shape="circle" disabled={isSubmitting}>
-            {isSubmitting ? "Saving…" : "Save changes"}
+            {isSubmitting ? t("console.settings.saving") : t("console.settings.save")}
           </Button>
         }
       >
@@ -61,8 +63,8 @@ export function TaxesSection({ initial }: { initial: TaxSettings }) {
           control={control}
           render={({ field }) => (
             <SettingsToggleRow
-              title="Prices include tax"
-              description="Show tax-inclusive prices on the storefront."
+              title={t("console.settings.taxes.prices-include")}
+              description={t("console.settings.taxes.prices-include-description")}
               checked={field.value}
               onCheckedChange={field.onChange}
             />
@@ -73,8 +75,8 @@ export function TaxesSection({ initial }: { initial: TaxSettings }) {
           control={control}
           render={({ field }) => (
             <SettingsToggleRow
-              title="Auto-calculate tax"
-              description="Apply regional rates automatically at checkout."
+              title={t("console.settings.taxes.auto-calculate")}
+              description={t("console.settings.taxes.auto-calculate-description")}
               checked={field.value}
               onCheckedChange={field.onChange}
             />
@@ -82,7 +84,7 @@ export function TaxesSection({ initial }: { initial: TaxSettings }) {
         />
         <div className="grid gap-6 sm:grid-cols-2">
           <Input
-            label="Default rate (%)"
+            label={t("console.settings.taxes.default-rate")}
             type="number"
             step="0.01"
             min={0}
@@ -90,11 +92,15 @@ export function TaxesSection({ initial }: { initial: TaxSettings }) {
             error={errors.defaultRate?.message}
             {...register("defaultRate")}
           />
-          <Input label="Tax registration ID" error={errors.taxId?.message} {...register("taxId")} />
+          <Input
+            label={t("console.settings.taxes.tax-id")}
+            error={errors.taxId?.message}
+            {...register("taxId")}
+          />
         </div>
         <div className="rounded-2xl border border-border/60 bg-muted/15 p-4">
           <p className="text-caption font-semibold uppercase tracking-widest text-muted-foreground-lighter">
-            Regional rates
+            {t("console.settings.taxes.regional-rates")}
           </p>
           <div className="mt-4 flex flex-col gap-2">
             {initial.regions.map((region) => (

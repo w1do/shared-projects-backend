@@ -1,15 +1,30 @@
 import type { Article } from "@/lib/admin/mocks/magazine";
+import { t, type ConsoleTextKey } from "@/lib/admin/console-texts";
 
 export interface CategoryOption {
   value: string;
   label: string;
 }
 
+/** Ключи подписей статусов поста; сравнение и фильтрация идут по значениям. */
+const STATUS_LABEL_KEYS: Record<string, ConsoleTextKey> = {
+  draft: "console.post-status.draft",
+  scheduled: "console.post-status.scheduled",
+  published: "console.post-status.published",
+  archived: "console.post-status.archived",
+};
+
+/** Подпись статуса поста для чипов и списков; неизвестный статус остаётся как есть. */
+export function articleStatusLabel(status: string): string {
+  const key = STATUS_LABEL_KEYS[status];
+  return key ? t(key) : status;
+}
+
 /** Build the category filter options from the article set. */
 export function categoryOptions(articles: Article[]): CategoryOption[] {
   const unique = Array.from(new Set(articles.map((a) => a.category))).sort();
   return [
-    { value: "all", label: "All Categories" },
+    { value: "all", label: t("console.blogs.filter.all-categories") },
     ...unique.map((c) => ({ value: c, label: c })),
   ];
 }
@@ -38,13 +53,13 @@ export function filterArticles(
 export function statusOptions(articles: Article[]): CategoryOption[] | null {
   if (!articles.some((article) => article.status)) return null;
   return [
-    { value: "all", label: "All statuses" },
-    { value: "draft", label: "Draft" },
-    { value: "scheduled", label: "Scheduled" },
-    { value: "published", label: "Published" },
-    { value: "archived", label: "Archived" },
+    { value: "all", label: t("console.blogs.filter.all-statuses") },
+    { value: "draft", label: t("console.post-status.draft") },
+    { value: "scheduled", label: t("console.post-status.scheduled") },
+    { value: "published", label: t("console.post-status.published") },
+    { value: "archived", label: t("console.post-status.archived") },
   ];
 }
 
 export const formatArticleDate = (iso: string) =>
-  new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+  new Date(iso).toLocaleDateString("ru-RU", { month: "short", day: "numeric", year: "numeric" });

@@ -7,7 +7,9 @@ import { Badge } from "@/components/ui/data-display/badge";
 import { Button } from "@/components/ui/inputs/button";
 import { IconButton } from "@/components/ui/inputs/icon-button";
 import type { Article } from "@/lib/admin/mocks/magazine";
-import { formatArticleDate } from "@/components/pages/blogs/utils";
+import { tf } from "@/lib/admin/console-texts";
+import { useConsoleText } from "@/lib/admin/use-console-text";
+import { articleStatusLabel, formatArticleDate } from "@/components/pages/blogs/utils";
 
 interface ArticleCardProps {
   article: Article;
@@ -17,6 +19,7 @@ interface ArticleCardProps {
 }
 
 export function ArticleCard({ article, onOpen, onEdit, onDelete }: ArticleCardProps) {
+  const t = useConsoleText();
   return (
     <div className="group relative flex flex-col overflow-hidden rounded-3xl border border-border/60 bg-background text-left shadow-subtle-3 transition-all duration-300 hover:border-brand-accent/40">
       {/* Full-card open control: keyboard accessible without nesting buttons */}
@@ -28,7 +31,7 @@ export function ArticleCard({ article, onOpen, onEdit, onDelete }: ArticleCardPr
         shape="rectangle"
         onClick={() => onOpen(article)}
         className="absolute inset-0 z-0 h-auto w-auto cursor-pointer rounded-none p-0 hover:bg-transparent active:scale-100 focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:ring-inset focus-visible:ring-offset-0"
-        aria-label={`Open article: ${article.title}`}
+        aria-label={tf("console.blogs.open-article", { title: article.title })}
       />
 
       <div className="pointer-events-none aspect-thumb relative overflow-hidden">
@@ -56,7 +59,7 @@ export function ArticleCard({ article, onOpen, onEdit, onDelete }: ArticleCardPr
               shape="circle"
               data-testid="article-status"
             >
-              {article.status}
+              {articleStatusLabel(article.status)}
             </Badge>
           )}
         </div>
@@ -70,7 +73,7 @@ export function ArticleCard({ article, onOpen, onEdit, onDelete }: ArticleCardPr
               shape="circle"
               variant="contained"
               colors="surface"
-              title="Preview"
+              title={t("console.blogs.preview")}
               onClick={() => onOpen(article)}
             >
               <Eye />
@@ -81,7 +84,7 @@ export function ArticleCard({ article, onOpen, onEdit, onDelete }: ArticleCardPr
               shape="circle"
               variant="contained"
               colors="surface"
-              title="Edit"
+              title={t("console.common.edit")}
               onClick={() => onEdit(article)}
             >
               <Pencil />
@@ -92,7 +95,7 @@ export function ArticleCard({ article, onOpen, onEdit, onDelete }: ArticleCardPr
               shape="circle"
               variant="contained"
               colors="surface"
-              title="Delete"
+              title={t("console.common.delete")}
               onClick={() => onDelete(article)}
             >
               <Trash2 />
@@ -125,7 +128,7 @@ export function ArticleCard({ article, onOpen, onEdit, onDelete }: ArticleCardPr
           </div>
           <span className="flex shrink-0 items-center gap-2 text-caption text-muted-foreground-lighter">
             <Clock className="size-4" />
-            {article.readingTimeMin}m
+            {tf("console.blogs.minutes", { count: article.readingTimeMin })}
           </span>
         </div>
       </div>

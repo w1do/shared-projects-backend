@@ -8,8 +8,10 @@ import type { PaymentProvider } from "@/lib/admin/mocks/settings";
 import { useSaveSettingsSectionMutation } from "@/hooks/admin/settings";
 import { SettingsSection } from "./shared/SettingsSection";
 import { SettingsToggleRow } from "./shared/SettingsToggleRow";
+import { useConsoleText } from "@/lib/admin/use-console-text";
 
 export function PaymentsSection({ initial }: { initial: PaymentProvider[] }) {
+  const t = useConsoleText();
   const [providers, setProviders] = useState<PaymentProvider[]>(initial);
   const saveMutation = useSaveSettingsSectionMutation();
 
@@ -22,14 +24,20 @@ export function PaymentsSection({ initial }: { initial: PaymentProvider[] }) {
       {
         onSuccess: (result) => {
           if (!result.ok) {
-            toast.error(result.reason ?? "Could not save payment settings.");
+            toast.error(result.reason ?? t("console.settings.payments.save-failed"));
             setProviders(providers);
             return;
           }
-          toast.success(`${provider?.name} ${enabled ? "enabled" : "disabled"}.`);
+          toast.success(
+            t(
+              enabled
+                ? "console.settings.payments.enabled"
+                : "console.settings.payments.disabled",
+            ).replace("{name}", provider?.name ?? ""),
+          );
         },
         onError: () => {
-          toast.error("Could not save payment settings.");
+          toast.error(t("console.settings.payments.save-failed"));
           setProviders(providers);
         },
       },
@@ -39,8 +47,8 @@ export function PaymentsSection({ initial }: { initial: PaymentProvider[] }) {
   return (
     <SettingsSection
       icon={CreditCard}
-      title="Payment providers"
-      description="Choose the gateways customers can use at checkout and their environment."
+      title={t("console.settings.payments.title")}
+      description={t("console.settings.payments.description")}
     >
       {providers.map((provider) => (
         <SettingsToggleRow
@@ -56,7 +64,9 @@ export function PaymentsSection({ initial }: { initial: PaymentProvider[] }) {
               shape="circle"
               size="sm"
             >
-              {provider.mode === "live" ? "Live" : "Test"}
+              {provider.mode === "live"
+                ? t("console.settings.payments.mode-live")
+                : t("console.settings.payments.mode-test")}
             </Badge>
           }
         />

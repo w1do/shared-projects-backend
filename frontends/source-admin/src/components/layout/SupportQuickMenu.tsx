@@ -4,16 +4,27 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { HelpCircle, ArrowRight } from "lucide-react";
 import { IconButton } from "@/components/ui/inputs/icon-button";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/overlay/popover";
-import { type SupportTicket, type TicketPriority } from "@/lib/admin/mocks/support";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/overlay/popover";
+import {
+  type SupportTicket,
+  type TicketPriority,
+} from "@/lib/admin/mocks/support";
 import { useSupportTicketsQuery } from "@/hooks/admin/support";
 import { useMarkTicketReadMutation } from "@/hooks/admin/support";
-import { relativeTime, lastMessagePreview } from "@/components/pages/support/utils";
+import {
+  relativeTime,
+  lastMessagePreview,
+} from "@/components/pages/support/utils";
 import { StatusDot } from "@/components/ui/feedback/status-dot";
 import { Badge } from "@/components/ui/data-display/badge";
 import { Button } from "@/components/ui/inputs/button";
 import { Avatar } from "@/components/ui/data-display/avatar";
 import { AdminDynamicStyles } from "@/components/admin/AdminDynamicStyles";
+import { useConsoleText } from "@/lib/admin/use-console-text";
 import { cn } from "@/lib/utils";
 
 const RECENT_COUNT = 5;
@@ -58,7 +69,11 @@ function CompactTicketRow({
     >
       <AdminDynamicStyles
         gradients={[
-          { id: gradientId, start: ticket.customer.gradient[0], end: ticket.customer.gradient[1] },
+          {
+            id: gradientId,
+            start: ticket.customer.gradient[0],
+            end: ticket.customer.gradient[1],
+          },
         ]}
       />
       <Avatar size="sm" data-admin-gradient={gradientId}>
@@ -83,20 +98,26 @@ function CompactTicketRow({
           {lastMessagePreview(ticket)}
         </span>
       </div>
-      {ticket.unread && <StatusDot color="primary" size="md" className="mt-2" />}
+      {ticket.unread && (
+        <StatusDot color="primary" size="md" className="mt-2" />
+      )}
     </Button>
   );
 }
 
 export function SupportQuickMenu() {
   const router = useRouter();
+  const t = useConsoleText();
   const [open, setOpen] = useState(false);
   const { data: tickets = [] } = useSupportTicketsQuery();
   const markReadMutation = useMarkTicketReadMutation();
 
   const unreadCount = tickets.filter((t) => t.unread).length;
   const recent = [...tickets]
-    .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
+    .sort(
+      (a, b) =>
+        new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
+    )
     .slice(0, RECENT_COUNT);
 
   const handleSelectTicket = (id: string) => {
@@ -108,30 +129,46 @@ export function SupportQuickMenu() {
   };
 
   const handleMarkAllRead = () => {
-    tickets.filter((t) => t.unread).forEach((t) => markReadMutation.mutate(t.id));
+    tickets
+      .filter((t) => t.unread)
+      .forEach((t) => markReadMutation.mutate(t.id));
   };
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <IconButton variant="ghost" shape="circle" className="relative" aria-label="Support">
+        <IconButton
+          variant="ghost"
+          shape="circle"
+          className="relative"
+          aria-label={t("console.nav.support")}
+        >
           <HelpCircle />
-          {unreadCount > 0 && <StatusDot color="error" ping className="absolute right-2 top-2" />}
+          {unreadCount > 0 && (
+            <StatusDot color="error" ping className="absolute right-2 top-2" />
+          )}
         </IconButton>
       </PopoverTrigger>
       <PopoverContent align="end" className="w-96 p-0">
         <div className="flex items-center justify-between border-b border-border/60 p-4">
           <div className="flex items-center gap-2">
-            <span className="text-xs font-semibold text-foreground">Support Tickets</span>
+            <span className="text-xs font-semibold text-foreground">
+              {t("console.support.tickets-title")}
+            </span>
             {unreadCount > 0 && (
-              <Badge variant="contained" color="primary" shape="circle" size="sm">
+              <Badge
+                variant="contained"
+                color="primary"
+                shape="circle"
+                size="sm"
+              >
                 {unreadCount}
               </Badge>
             )}
           </div>
           {unreadCount > 0 && (
             <Button variant="text" color="primary" onClick={handleMarkAllRead}>
-              Mark all read
+              {t("console.common.mark-all-read")}
             </Button>
           )}
         </div>
@@ -139,11 +176,15 @@ export function SupportQuickMenu() {
         <div className="flex max-h-80 flex-col gap-2 overflow-y-auto p-2">
           {recent.length === 0 ? (
             <div className="p-4 text-center text-caption text-muted-foreground-lighter">
-              No tickets found.
+              {t("console.support.empty")}
             </div>
           ) : (
             recent.map((ticket) => (
-              <CompactTicketRow key={ticket.id} ticket={ticket} onSelect={handleSelectTicket} />
+              <CompactTicketRow
+                key={ticket.id}
+                ticket={ticket}
+                onSelect={handleSelectTicket}
+              />
             ))
           )}
         </div>
@@ -157,7 +198,7 @@ export function SupportQuickMenu() {
           endIcon={<ArrowRight className="size-4" />}
           onClick={() => setOpen(false)}
         >
-          View support inbox
+          {t("console.support.view-inbox")}
         </Button>
       </PopoverContent>
     </Popover>

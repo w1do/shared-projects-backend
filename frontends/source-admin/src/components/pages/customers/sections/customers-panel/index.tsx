@@ -4,11 +4,12 @@ import { useMemo, useState } from "react";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/inputs/input";
 import { Select } from "@/components/ui/inputs/select";
-import type { DetailedCustomer } from "@/lib/admin/mocks/customers";
+import type { CustomerTier, DetailedCustomer } from "@/lib/admin/mocks/customers";
 import { CustomersTable } from "@/components/pages/customers/sections/customers-table";
 import { CustomersBulkActions } from "@/components/pages/customers/sections/customers-bulk-actions";
 import { EngageAudienceModal } from "@/components/pages/customers/sections/engage-audience-modal";
 import { useDataTable } from "@/hooks/use-data-table";
+import { useConsoleText } from "@/lib/admin/use-console-text";
 import {
   TIER_OPTIONS,
   SKIN_TYPES,
@@ -22,7 +23,7 @@ interface CustomersPanelProps {
   onDeleteCustomer: (customer: DetailedCustomer) => void;
 }
 
-type TierFilter = DetailedCustomer["tier"] | "all";
+type TierFilter = CustomerTier | "all";
 type SkinTypeFilter = "all" | DetailedCustomer["skinProfile"]["skinType"];
 type SkinConcernFilter = "all" | string;
 type SortField = "joinedAt" | "totalSpent" | "totalOrders";
@@ -33,6 +34,7 @@ export function CustomersPanel({
   onToggleBlocked,
   onDeleteCustomer,
 }: CustomersPanelProps) {
+  const t = useConsoleText();
   const [skinTypeFilter, setSkinTypeFilter] = useState<SkinTypeFilter>("all");
   const [skinConcernFilter, setSkinConcernFilter] = useState<SkinConcernFilter>("all");
   const [isEngageOpen, setIsEngageOpen] = useState(false);
@@ -113,7 +115,7 @@ export function CustomersPanel({
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div className="w-full max-w-sm">
           <Input
-            placeholder="Search name, email, or concerns..."
+            placeholder={t("console.customers.search-placeholder")}
             startIcon={<Search />}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
@@ -121,25 +123,28 @@ export function CustomersPanel({
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          <Select
-            value={tierFilter}
-            onChange={(e) => setTierFilter(e.target.value as TierFilter)}
-            options={TIER_OPTIONS}
-            placeholder="All Tiers"
-            className="w-40"
-          />
+          {/* Фильтр лояльности — только когда данные несут уровни (демо-шаблон). */}
+          {customers.some((customer) => customer.tier !== undefined) && (
+            <Select
+              value={tierFilter}
+              onChange={(e) => setTierFilter(e.target.value as TierFilter)}
+              options={TIER_OPTIONS}
+              placeholder={t("console.customers.filter.all-tiers")}
+              className="w-40"
+            />
+          )}
           <Select
             value={skinTypeFilter}
             onChange={(e) => setSkinTypeFilter(e.target.value as SkinTypeFilter)}
             options={SKIN_TYPES}
-            placeholder="Skin Type"
+            placeholder={t("console.customers.filter.skin-type")}
             className="w-40"
           />
           <Select
             value={skinConcernFilter}
             onChange={(e) => setSkinConcernFilter(e.target.value as SkinConcernFilter)}
             options={SKIN_CONCERNS}
-            placeholder="Skin Concern"
+            placeholder={t("console.customers.filter.skin-concern")}
             className="w-40"
           />
         </div>

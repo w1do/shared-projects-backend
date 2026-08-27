@@ -9,8 +9,10 @@ import type { ShippingZone } from "@/lib/admin/mocks/settings";
 import { formatCurrency } from "@/lib/utils";
 import { useSaveSettingsSectionMutation } from "@/hooks/admin/settings";
 import { SettingsSection } from "./shared/SettingsSection";
+import { useConsoleText } from "@/lib/admin/use-console-text";
 
 export function ShippingSection({ initial }: { initial: ShippingZone[] }) {
+  const t = useConsoleText();
   const [zones, setZones] = useState<ShippingZone[]>(initial);
   const saveMutation = useSaveSettingsSectionMutation();
 
@@ -23,14 +25,20 @@ export function ShippingSection({ initial }: { initial: ShippingZone[] }) {
       {
         onSuccess: (result) => {
           if (!result.ok) {
-            toast.error(result.reason ?? "Could not save shipping settings.");
+            toast.error(result.reason ?? t("console.settings.shipping.save-failed"));
             setZones(zones);
             return;
           }
-          toast.success(`${zone?.name} ${enabled ? "activated" : "paused"}.`);
+          toast.success(
+            t(
+              enabled
+                ? "console.settings.shipping.activated"
+                : "console.settings.shipping.paused",
+            ).replace("{name}", zone?.name ?? ""),
+          );
         },
         onError: () => {
-          toast.error("Could not save shipping settings.");
+          toast.error(t("console.settings.shipping.save-failed"));
           setZones(zones);
         },
       },
@@ -40,8 +48,8 @@ export function ShippingSection({ initial }: { initial: ShippingZone[] }) {
   return (
     <SettingsSection
       icon={Truck}
-      title="Shipping zones"
-      description="Flat rates and free-shipping thresholds applied per destination region."
+      title={t("console.settings.shipping.title")}
+      description={t("console.settings.shipping.description")}
     >
       {zones.map((zone) => (
         <div
@@ -54,11 +62,14 @@ export function ShippingSection({ initial }: { initial: ShippingZone[] }) {
           </div>
           <div className="flex items-center gap-2">
             <Badge variant="soft" shape="circle" size="sm">
-              {formatCurrency(zone.rate)} flat
+              {t("console.settings.shipping.flat").replace("{rate}", formatCurrency(zone.rate))}
             </Badge>
             {zone.freeThreshold !== null ? (
               <Badge variant="soft" color="accent" shape="circle" size="sm">
-                Free over {formatCurrency(zone.freeThreshold)}
+                {t("console.settings.shipping.free-over").replace(
+                  "{threshold}",
+                  formatCurrency(zone.freeThreshold),
+                )}
               </Badge>
             ) : null}
           </div>

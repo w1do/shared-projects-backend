@@ -14,6 +14,7 @@ import {
   type EngageIntent,
 } from "@/lib/admin/schemas/content/engage-audience-schema";
 import { intentOptions, type EngageModalStep } from "./types";
+import { t } from "@/lib/admin/console-texts";
 
 export function useEngageAudienceModal(
   isOpen: boolean,
@@ -79,7 +80,7 @@ export function useEngageAudienceModal(
   const handleContinue = async () => {
     if (step === "audience") {
       if (audienceCustomers.length === 0) {
-        toast.error("Select at least one customer to continue");
+        toast.error(t("console.engage.toast.select-customer"));
         return;
       }
       setStep("intent");
@@ -89,7 +90,7 @@ export function useEngageAudienceModal(
     if (step === "intent") {
       const intent = methods.getValues("intent");
       if (!intent) {
-        toast.error("Choose an outreach intent");
+        toast.error(t("console.engage.toast.choose-intent"));
         return;
       }
       setStep("configure");
@@ -99,7 +100,7 @@ export function useEngageAudienceModal(
     if (step === "configure") {
       const valid = await methods.trigger();
       if (!valid) {
-        toast.error("Complete the configuration before reviewing");
+        toast.error(t("console.engage.toast.complete-before-review"));
         return;
       }
       setStep("review");
@@ -114,21 +115,21 @@ export function useEngageAudienceModal(
 
   const commit = async (mode: "send" | "schedule") => {
     if (audienceCustomers.length === 0) {
-      toast.error("Select at least one customer");
+      toast.error(t("console.engage.toast.select-customer-short"));
       setStep("audience");
       return;
     }
 
     const valid = await methods.trigger();
     if (!valid) {
-      toast.error("Complete the configuration before sending");
+      toast.error(t("console.engage.toast.complete-before-send"));
       setStep("configure");
       return;
     }
 
     const values = methods.getValues();
     if (mode === "schedule" && !values.scheduleAt) {
-      toast.error("Pick a schedule date or send now");
+      toast.error(t("console.engage.toast.pick-schedule"));
       setStep("configure");
       return;
     }
@@ -136,23 +137,28 @@ export function useEngageAudienceModal(
     setIsSubmitting(true);
     try {
       const intentLabel =
-        intentOptions.find((item) => item.id === values.intent)?.title ?? "Outreach";
+        intentOptions.find((item) => item.id === values.intent)?.title ??
+        t("console.engage.intent.fallback");
       const count = audienceCustomers.length;
 
       await new Promise((resolve) => setTimeout(resolve, 700));
 
       toast.success(
         mode === "send"
-          ? `${intentLabel} queued for ${count} customer${count === 1 ? "" : "s"}`
-          : `${intentLabel} scheduled for ${values.scheduleAt}`,
+          ? t("console.engage.toast.queued")
+              .replace("{intent}", intentLabel)
+              .replace("{count}", String(count))
+          : t("console.engage.toast.scheduled")
+              .replace("{intent}", intentLabel)
+              .replace("{date}", values.scheduleAt ?? ""),
         {
-          description: "Connect your backend to deliver real outreach messages.",
+          description: t("console.engage.toast.mock-description"),
         },
       );
       onSent?.();
       onClose();
     } catch {
-      toast.error("Failed to queue outreach");
+      toast.error(t("console.engage.toast.failed"));
     } finally {
       setIsSubmitting(false);
     }

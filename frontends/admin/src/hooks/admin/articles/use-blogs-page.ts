@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import type { Article } from "@/lib/admin/mocks/magazine";
+import { t, tf } from "@/lib/admin/console-texts";
 import { useArticlesQuery } from "./use-articles-query";
 import { useDeleteArticleMutation } from "./use-article-mutations";
 
@@ -39,8 +40,8 @@ export function useBlogsPage(options: Options = {}) {
 
   const removeArticle = (article: Article) => {
     deleteMutation.mutate(article.id, {
-      onSuccess: () => toast.success(`“${article.title}” deleted`),
-      onError: () => toast.error("Could not delete article."),
+      onSuccess: () => toast.success(tf("console.blogs.toast.deleted", { title: article.title })),
+      onError: () => toast.error(t("console.blogs.toast.delete-failed")),
     });
   };
 

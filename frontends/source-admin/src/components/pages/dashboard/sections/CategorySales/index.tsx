@@ -17,14 +17,18 @@ type CategorySalesProps = {
 };
 
 function resolveUnits(category: Category | CategorySalesItem) {
-  if ("sales" in category && typeof category.sales === "number") return category.sales;
+  if ("sales" in category && typeof category.sales === "number")
+    return category.sales;
   if ("productCount" in category && typeof category.productCount === "number") {
     return category.productCount;
   }
   return 0;
 }
 
-export function CategorySales({ categories, rangeLabel = "Selected range" }: CategorySalesProps) {
+export function CategorySales({
+  categories,
+  rangeLabel = "Selected range",
+}: CategorySalesProps) {
   const categoriesWithUnits = categories
     .map((c) => ({
       name: c.name,
@@ -34,7 +38,10 @@ export function CategorySales({ categories, rangeLabel = "Selected range" }: Cat
     .sort((a, b) => b.revenue - a.revenue);
 
   const totalSales = categoriesWithUnits.reduce((acc, c) => acc + c.sales, 0);
-  const totalRevenue = categoriesWithUnits.reduce((acc, c) => acc + c.revenue, 0);
+  const totalRevenue = categoriesWithUnits.reduce(
+    (acc, c) => acc + c.revenue,
+    0,
+  );
 
   return (
     <div className="rounded-3xl bg-card p-6 shadow-subtle-3">
@@ -54,13 +61,25 @@ export function CategorySales({ categories, rangeLabel = "Selected range" }: Cat
       <ul>
         {categoriesWithUnits.slice(0, 6).map((c, idx) => {
           const isLead = idx === 0;
-          const share = totalRevenue > 0 ? ((c.revenue / totalRevenue) * 100).toFixed(1) : "0.0";
+          const share =
+            totalRevenue > 0
+              ? ((c.revenue / totalRevenue) * 100).toFixed(1)
+              : "0.0";
           return (
-            <li key={c.name} className="grid items-center gap-2 mt-6 grid-cols-category-sales-row">
-              <span className="text-body text-foreground truncate block" title={c.name}>
+            <li
+              key={c.name}
+              className="grid items-center gap-2 mt-6 grid-cols-category-sales-row"
+            >
+              <span
+                className="text-body text-foreground truncate block"
+                title={c.name}
+              >
                 {c.name}
               </span>
-              <Progress value={Number(share)} colors={isLead ? "destructive" : "default"} />
+              <Progress
+                value={Number(share)}
+                colors={isLead ? "destructive" : "default"}
+              />
               <span className="text-right font-openrunde text-caption text-foreground">
                 {share}%
               </span>

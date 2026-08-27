@@ -1,21 +1,29 @@
 "use client";
 
-import { formatCurrency } from "@/lib/utils";
-import { Edit2, Trash2, TrendingUp } from "lucide-react";
+import { Edit2, Trash2 } from "lucide-react";
 import { IconButton } from "@/components/ui/inputs/icon-button";
 import Image from "next/image";
 import { AdminDynamicStyles } from "@/components/admin/AdminDynamicStyles";
 import type { Category } from "@/lib/admin/mocks/types";
 import { getCategoryIcon } from "@/components/pages/categories/config/icons";
 import { CategoryStatusBadge } from "../category-status-badge";
+import { useConsoleText } from "@/lib/admin/use-console-text";
 
 interface CategoryCardProps {
   category: Category;
+  /** Число прямых потомков в дереве — единственная реальная метрика карточки. */
+  childrenCount?: number;
   onEditClick: (category: Category) => void;
   onDeleteClick: (id: string) => void;
 }
 
-export function CategoryCard({ category, onEditClick, onDeleteClick }: CategoryCardProps) {
+export function CategoryCard({
+  category,
+  childrenCount = 0,
+  onEditClick,
+  onDeleteClick,
+}: CategoryCardProps) {
+  const t = useConsoleText();
   const IconComponent = getCategoryIcon(category.iconName);
 
   const [colorStart, colorEnd] = category.coverGradient;
@@ -67,31 +75,17 @@ export function CategoryCard({ category, onEditClick, onDeleteClick }: CategoryC
 
           {/* Description */}
           <p className="mt-4 text-xs text-muted-foreground line-clamp-2 leading-relaxed flex-1">
-            {category.description || "No description provided for this cosmetic category."}
+            {category.description || t("console.categories.card.no-description")}
           </p>
 
-          {/* Stats Section */}
+          {/* Stats Section: торговых метрик у платформы нет — только данные дерева. */}
           <div className="grid grid-cols-2 gap-4 border-t border-border/40 pt-4 mt-4">
             <div className="flex flex-col">
               <span className="text-caption text-muted-foreground-lighter uppercase tracking-wider font-semibold">
-                Products
+                {t("console.categories.card.children")}
               </span>
               <span className="text-sm font-semibold text-foreground mt-2">
-                {category.productCount} {category.productCount === 1 ? "Item" : "Items"}
-              </span>
-            </div>
-            <div className="flex flex-col">
-              <span className="text-caption text-muted-foreground-lighter uppercase tracking-wider font-semibold">
-                Sales Revenue
-              </span>
-              <span className="text-sm font-semibold text-foreground mt-2 flex items-center gap-2">
-                {formatCurrency(category.revenue)}
-                {category.status === "Active" && (
-                  <span className="text-caption text-success flex items-center font-medium">
-                    <TrendingUp className="size-4 mr-1" />
-                    {category.growthYoY}%
-                  </span>
-                )}
+                {childrenCount}
               </span>
             </div>
           </div>
@@ -104,7 +98,7 @@ export function CategoryCard({ category, onEditClick, onDeleteClick }: CategoryC
               variant="contained"
               color="surface"
               onClick={() => onEditClick(category)}
-              title="Edit category"
+              title={t("console.common.edit")}
             >
               <Edit2 />
             </IconButton>
@@ -114,7 +108,7 @@ export function CategoryCard({ category, onEditClick, onDeleteClick }: CategoryC
               variant="contained"
               color="surface"
               onClick={() => onDeleteClick(category.id)}
-              title="Delete category"
+              title={t("console.categories.delete")}
             >
               <Trash2 />
             </IconButton>

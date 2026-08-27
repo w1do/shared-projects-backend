@@ -175,7 +175,7 @@ test.describe("селект категорий с деревом и поиско
     await expect(found, "видна цепочка предков").toContainText("Аналитика / Рынок");
 
     await page.locator("input[cmdk-input]").fill("нет-такого-узла");
-    await expect(page.getByText("No categories found.")).toBeVisible();
+    await expect(page.getByText("Категорий не найдено.")).toBeVisible();
   });
 
   test("множественный выбор в форме поста отражается в триггере", async ({ page }) => {

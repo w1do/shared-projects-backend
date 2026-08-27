@@ -5,13 +5,15 @@ import { Input } from "@/components/ui/inputs/input";
 import { ButtonGroup } from "@/components/ui/inputs/button-group";
 import { cn } from "@/lib/utils";
 import { Select } from "@/components/ui/inputs/select";
+import { useConsoleText } from "@/lib/admin/use-console-text";
 
-const STATUS_OPTIONS = [
-  { value: "all", label: "All status" },
-  { value: "Active", label: "Active" },
-  { value: "Draft", label: "Draft" },
-  { value: "Archived", label: "Archived" },
-];
+// Метки статусов подменяются локализованными строками при рендере.
+const BASE_STATUS_OPTIONS = [
+  { value: "all", label: "all" },
+  { value: "Active", label: "active" },
+  { value: "Draft", label: "draft" },
+  { value: "Archived", label: "archived" },
+] as const;
 
 interface CategoriesToolbarProps {
   searchTerm: string;
@@ -30,15 +32,28 @@ export function CategoriesToolbar({
   viewMode,
   setViewMode,
 }: CategoriesToolbarProps) {
+  const t = useConsoleText();
   const viewModeOptions = [
     { value: "grid" as const, label: <LayoutGrid className="size-4" /> },
     { value: "table" as const, label: <List className="size-4" /> },
   ];
 
+  const statusOptions = BASE_STATUS_OPTIONS.map((opt) => ({
+    value: opt.value,
+    label:
+      opt.label === "all"
+        ? t("console.categories.filter.all-statuses")
+        : opt.label === "active"
+          ? t("console.categories.status.active")
+          : opt.label === "draft"
+            ? t("console.categories.status.draft")
+            : t("console.categories.status.archived"),
+  }));
+
   return (
     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
       <Input
-        placeholder="Search categories by name or slug..."
+        placeholder={t("console.categories.search-placeholder")}
         startIcon={<Search />}
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
@@ -49,9 +64,9 @@ export function CategoriesToolbar({
         <Select
           value={filterStatus}
           onChange={(e) => setFilterStatus(e.target.value)}
-          options={STATUS_OPTIONS}
+          options={statusOptions}
           className="w-36"
-          placeholder="Filter status"
+          placeholder={t("console.categories.filter.status")}
         />
 
         <ButtonGroup

@@ -18,6 +18,7 @@ import {
   type GeneralSettingsFormValues,
 } from "@/lib/admin/schemas/settings/general-settings-schema";
 import { SettingsSection } from "./shared/SettingsSection";
+import { useConsoleText } from "@/lib/admin/use-console-text";
 import {
   CURRENCY_OPTIONS,
   TIMEZONE_OPTIONS,
@@ -27,6 +28,7 @@ import {
 const STOREFRONT_URL_KEY = "storefront_live_url";
 
 export function GeneralSection({ initial }: { initial: GeneralSettings }) {
+  const t = useConsoleText();
   const {
     register,
     control,
@@ -63,39 +65,47 @@ export function GeneralSection({ initial }: { initial: GeneralSettings }) {
       value: fromGeneralSettingsFormValues(values),
     });
     if (!result.ok) {
-      toast.error(result.reason ?? "Could not save settings.");
+      toast.error(result.reason ?? t("console.settings.save-failed"));
       return;
     }
-    toast.success("Store profile updated.");
+    toast.success(t("console.settings.general.saved"));
   };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <SettingsSection
         icon={Store}
-        title="Store profile"
-        description="Public identity, contact details, and regional defaults for the storefront."
+        title={t("console.settings.general.title")}
+        description={t("console.settings.general.description")}
         footer={
           <Button type="submit" variant="contained" shape="circle" disabled={isSubmitting}>
-            {isSubmitting ? "Saving…" : "Save changes"}
+            {isSubmitting ? t("console.settings.saving") : t("console.settings.save")}
           </Button>
         }
       >
         <div className="grid gap-6 sm:grid-cols-2">
-          <Input label="Store name" error={errors.storeName?.message} {...register("storeName")} />
           <Input
-            label="Support email"
+            label={t("console.settings.general.store-name")}
+            error={errors.storeName?.message}
+            {...register("storeName")}
+          />
+          <Input
+            label={t("console.settings.general.support-email")}
             type="email"
             error={errors.supportEmail?.message}
             {...register("supportEmail")}
           />
-          <Input label="Phone" error={errors.phone?.message} {...register("phone")} />
+          <Input
+            label={t("console.settings.general.phone")}
+            error={errors.phone?.message}
+            {...register("phone")}
+          />
           <Controller
             name="currency"
             control={control}
             render={({ field }) => (
               <Select
-                label="Currency"
+                label={t("console.settings.general.currency")}
                 options={CURRENCY_OPTIONS}
                 value={field.value}
                 onChange={(e) => field.onChange(e.target.value)}
@@ -108,7 +118,7 @@ export function GeneralSection({ initial }: { initial: GeneralSettings }) {
             control={control}
             render={({ field }) => (
               <Select
-                label="Timezone"
+                label={t("console.settings.general.timezone")}
                 options={TIMEZONE_OPTIONS}
                 value={field.value}
                 onChange={(e) => field.onChange(e.target.value)}
@@ -121,7 +131,7 @@ export function GeneralSection({ initial }: { initial: GeneralSettings }) {
             control={control}
             render={({ field }) => (
               <Select
-                label="Weight unit"
+                label={t("console.settings.general.weight-unit")}
                 options={WEIGHT_UNIT_OPTIONS}
                 value={field.value}
                 onChange={(e) => field.onChange(e.target.value)}
@@ -131,7 +141,7 @@ export function GeneralSection({ initial }: { initial: GeneralSettings }) {
           />
           <div className="sm:col-span-2">
             <Input
-              label="Storefront URL"
+              label={t("console.settings.general.storefront-url")}
               placeholder="https://aetheria.studio"
               error={errors.storefrontUrl?.message}
               {...register("storefrontUrl")}
@@ -139,7 +149,7 @@ export function GeneralSection({ initial }: { initial: GeneralSettings }) {
           </div>
         </div>
         <Textarea
-          label="Store description"
+          label={t("console.settings.general.store-description")}
           error={errors.description?.message}
           {...register("description")}
         />

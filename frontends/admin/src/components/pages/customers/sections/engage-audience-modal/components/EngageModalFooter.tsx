@@ -4,6 +4,7 @@ import { ArrowLeft, ArrowRight, CalendarClock, Send } from "lucide-react";
 import { Button } from "@/components/ui/inputs/button";
 import { Tooltip } from "@/components/ui/overlay/tooltip";
 import type { EngageModalStep } from "../types";
+import { useConsoleText } from "@/lib/admin/use-console-text";
 
 type EngageModalFooterProps = {
   step: EngageModalStep;
@@ -28,11 +29,13 @@ export function EngageModalFooter({
   onSchedule,
   onSend,
 }: EngageModalFooterProps) {
+  const t = useConsoleText();
+
   if (step === "audience") {
     return (
       <div className="flex shrink-0 flex-wrap items-center justify-between gap-4 border-t border-border/50 p-6">
         <Button type="button" variant="outlined" shape="circle" onClick={onClose}>
-          Cancel
+          {t("console.common.cancel")}
         </Button>
         <Button
           type="button"
@@ -42,7 +45,7 @@ export function EngageModalFooter({
           disabled={!canContinue}
           onClick={onContinue}
         >
-          Continue
+          {t("console.engage.footer.continue")}
         </Button>
       </div>
     );
@@ -58,7 +61,7 @@ export function EngageModalFooter({
           startIcon={<ArrowLeft />}
           onClick={onBack}
         >
-          Back
+          {t("console.engage.footer.back")}
         </Button>
         <Button
           type="button"
@@ -68,7 +71,9 @@ export function EngageModalFooter({
           disabled={!canContinue}
           onClick={onContinue}
         >
-          {step === "intent" ? "Configure" : "Review"}
+          {step === "intent"
+            ? t("console.engage.footer.configure")
+            : t("console.engage.footer.review")}
         </Button>
       </div>
     );
@@ -84,13 +89,10 @@ export function EngageModalFooter({
         disabled={isSubmitting}
         onClick={onBack}
       >
-        Back
+        {t("console.engage.footer.back")}
       </Button>
       <div className="flex flex-wrap items-center gap-2">
-        <Tooltip
-          title="Queue this outreach for the schedule date without sending immediately."
-          side="top"
-        >
+        <Tooltip title={t("console.engage.footer.schedule-hint")} side="top">
           <Button
             type="button"
             variant="outlined"
@@ -99,11 +101,11 @@ export function EngageModalFooter({
             disabled={isSubmitting}
             onClick={onSchedule}
           >
-            Schedule
+            {t("console.engage.footer.schedule")}
           </Button>
         </Tooltip>
         <Tooltip
-          title={`Send this outreach to ${audienceCount} customer${audienceCount === 1 ? "" : "s"} now.`}
+          title={t("console.engage.footer.send-hint").replace("{count}", String(audienceCount))}
           side="top"
         >
           <Button
@@ -115,7 +117,9 @@ export function EngageModalFooter({
             disabled={isSubmitting}
             onClick={onSend}
           >
-            {isSubmitting ? "Sending…" : `Send to ${audienceCount}`}
+            {isSubmitting
+              ? t("console.engage.footer.sending")
+              : t("console.engage.footer.send").replace("{count}", String(audienceCount))}
           </Button>
         </Tooltip>
       </div>

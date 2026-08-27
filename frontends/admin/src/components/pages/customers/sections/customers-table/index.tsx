@@ -5,6 +5,7 @@ import { DataGrid } from "@/components/ui/data-display/data-grid";
 import { DataTableFooter } from "@/components/shared/data-table/DataTableFooter";
 import type { DetailedCustomer } from "@/lib/admin/mocks/customers";
 import { getCustomerColumns } from "../customer-columns";
+import { useConsoleText } from "@/lib/admin/use-console-text";
 
 interface CustomersTableProps {
   customers: DetailedCustomer[];
@@ -47,9 +48,19 @@ export function CustomersTable({
   onPageChange,
   onItemsPerPageChange,
 }: CustomersTableProps) {
+  const t = useConsoleText();
+  // Колонка лояльности показывается, только когда данные её несут: живой
+  // режим уровней не имеет, демо-шаблон — имеет.
+  const showTier = customers.some((customer) => customer.tier !== undefined);
   const columns = useMemo(
-    () => getCustomerColumns({ onCustomerClick, onToggleBlocked, onDeleteCustomer }),
-    [onCustomerClick, onToggleBlocked, onDeleteCustomer],
+    () =>
+      getCustomerColumns({
+        onCustomerClick,
+        onToggleBlocked,
+        onDeleteCustomer,
+        showTier,
+      }),
+    [onCustomerClick, onToggleBlocked, onDeleteCustomer, showTier],
   );
 
   const handleSelectionChange = useCallback(
@@ -82,7 +93,7 @@ export function CustomersTable({
         onRowClick={(row) => onCustomerClick(row)}
         emptyState={
           <div className="py-6 text-center text-xs text-muted-foreground-lighter">
-            No customers found matching your search.
+            {t("console.customers.empty-filtered")}
           </div>
         }
       />
@@ -90,7 +101,7 @@ export function CustomersTable({
       <DataTableFooter
         currentPage={currentPage}
         endItem={endItem}
-        itemLabel="customers"
+        itemLabel={t("console.customers.footer-unit")}
         itemsPerPage={itemsPerPage}
         onItemsPerPageChange={onItemsPerPageChange}
         onPageChange={onPageChange}

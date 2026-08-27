@@ -3,6 +3,7 @@
 import { Sparkles, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/inputs/button";
 import { PageHeader } from "@/components/shared/layout/PageHeader";
+import { useConsoleText } from "@/lib/admin/use-console-text";
 
 interface BlogFormHeaderProps {
   title: string;
@@ -19,13 +20,14 @@ export function BlogFormHeader({
   isSubmitting,
   onAutoFill,
 }: BlogFormHeaderProps) {
+  const t = useConsoleText();
   return (
     <PageHeader
       title={title}
       breadcrumbItems={[
-        { label: "Admin", href: "/admin" },
-        { label: "Workspace", href: "/admin/blogs" },
-        { label: "Blogs", href: "/admin/blogs" },
+        { label: t("console.common.breadcrumb-admin"), href: "/admin" },
+        { label: t("console.nav.group.workspace"), href: "/admin/blogs" },
+        { label: t("console.nav.blogs"), href: "/admin/blogs" },
         { label: title },
       ]}
       actions={
@@ -40,7 +42,7 @@ export function BlogFormHeader({
               onClick={onAutoFill}
               startIcon={<Sparkles />}
             >
-              Auto-fill
+              {t("console.blogs.autofill")}
             </Button>
           )}
 

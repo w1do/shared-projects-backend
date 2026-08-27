@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-import { operatorToken, withServiceDisabled } from "../support/platform";
+import { operatorToken, setService, withServiceDisabled } from "../support/platform";
 import { signIn } from "../support/session";
 import { env } from "../support/env";
 
@@ -13,21 +13,21 @@ import { env } from "../support/env";
  */
 
 /** Разделы, доступные супер-администратору проекта demo. */
-/** Порядок каталожный: Overview → Catalog → Commerce → Workspace. */
-const VISIBLE = ["Dashboard", "Categories", "Customers", "Blogs", "Team", "Settings"];
+/** Порядок каталожный: Обзор → Каталог → Продажи → Рабочее пространство. */
+const VISIBLE = ["Дашборд", "Категории", "Клиенты", "Блог", "Команда", "Настройки"];
 
 /** Разделы вёрстки без сервиса платформы — их не должно быть в меню. */
 const HIDDEN = [
-  "Products",
-  "Variants",
-  "Brands",
-  "Collections",
-  "Inventory",
-  "Orders",
-  "Campaigns",
-  "Promotions",
-  "Support",
-  "Notifications",
+  "Товары",
+  "Варианты",
+  "Бренды",
+  "Коллекции",
+  "Склад",
+  "Заказы",
+  "Кампании",
+  "Акции",
+  "Поддержка",
+  "Уведомления",
 ];
 
 type Page = import("@playwright/test").Page;
@@ -39,12 +39,18 @@ type Page = import("@playwright/test").Page;
 function navGroups(page: Page) {
   return page
     .locator('[data-sidebar="group"]')
-    .filter({ hasNot: page.getByText("Quick Actions", { exact: true }) });
+    .filter({ hasNot: page.getByText("Быстрые действия", { exact: true }) });
 }
 
 /** Пункты меню сайдбара: только навигация. */
 function sidebarItems(page: Page) {
   return navGroups(page).locator('a[href^="/admin"]');
+}
+
+/** Названия пунктов меню — для сравнения состава целиком. */
+async function sidebarTitles(page: Page): Promise<string[]> {
+  const titles = (await sidebarItems(page).allInnerTexts()).map((t) => t.trim()).filter(Boolean);
+  return [...new Set(titles)];
 }
 
 test.describe("состав меню", () => {
@@ -57,13 +63,10 @@ test.describe("состав меню", () => {
     // Снимок разделов читается эффектом после гидрации: до него меню на миг
     // полное. Ждём устойчивого состояния, а не первого кадра.
     await expect
-      .poll(async () => {
-        const titles = (await items.allInnerTexts()).map((t) => t.trim()).filter(Boolean);
-        return [...new Set(titles)];
-      }, { timeout: 10_000 })
+      .poll(() => sidebarTitles(page), { timeout: 10_000 })
       .toEqual(VISIBLE);
 
-    const unique = [...new Set((await items.allInnerTexts()).map((t) => t.trim()).filter(Boolean))];
+    const unique = await sidebarTitles(page);
 
     for (const hidden of HIDDEN) {
       expect(unique, `раздел ${hidden} скрыт`).not.toContain(hidden);
@@ -97,11 +100,11 @@ test.describe("состав меню", () => {
     const body = await page.locator('[data-sidebar="sidebar"]').first().innerText();
 
     for (const action of [
-      "Add product",
-      "New promotion",
-      "Import inventory",
-      "Create collection",
-      "Launch campaign",
+      "Добавить товар",
+      "Новая акция",
+      "Импорт склада",
+      "Создать коллекцию",
+      "Запустить кампанию",
     ]) {
       expect(body, `действие «${action}» не предлагается`).not.toContain(action);
     }
@@ -124,7 +127,7 @@ test.describe("доступ к маршрутам", () => {
 });
 
 test.describe("реакция на состав сервисов проекта", () => {
-  test("выключение content убирает Blogs и Categories после повторного входа", async ({
+  test("выключение content убирает Блог и Категории после повторного входа", async ({
     browser,
   }) => {
     const token = await operatorToken();
@@ -142,9 +145,9 @@ test.describe("реакция на состав сервисов проекта"
 
         const titles = (await sidebarItems(page).allInnerTexts()).map((t) => t.trim());
 
-        expect(titles, "Blogs ушёл вместе с сервисом content").not.toContain("Blogs");
-        expect(titles, "Categories ушёл вместе с сервисом content").not.toContain("Categories");
-        expect(titles, "разделы ядра остались").toContain("Settings");
+        expect(titles, "Блог ушёл вместе с сервисом content").not.toContain("Блог");
+        expect(titles, "Категории ушли вместе с сервисом content").not.toContain("Категории");
+        expect(titles, "разделы ядра остались").toContain("Настройки");
 
         await page.goto("/admin/blogs");
         await expect(page).toHaveURL(/\/admin\/unauthorized$/);
@@ -152,5 +155,61 @@ test.describe("реакция на состав сервисов проекта"
         await context.close();
       }
     });
+  });
+});
+
+test.describe("переключение сервисов из консоли", () => {
+  /** Переключатель сервиса на вкладке «Сервисы» настроек. */
+  function serviceSwitch(page: Page, service: string) {
+    return page
+      .locator(`[data-testid=services-section] [data-service="${service}"]`)
+      .getByRole("switch");
+  }
+
+  async function openServicesTab(page: Page) {
+    await page.goto("/admin/settings");
+    await page.getByRole("tab", { name: /Сервисы|Services/ }).click();
+    await expect(page.locator("[data-testid=services-section]")).toBeVisible();
+  }
+
+  test("выключение content из UI сразу убирает разделы; галочка переживает перезагрузку", async ({
+    page,
+  }) => {
+    const token = await operatorToken();
+    const WITHOUT_CONTENT = ["Дашборд", "Клиенты", "Команда", "Настройки"];
+
+    try {
+      await openServicesTab(page);
+
+      const toggle = serviceSwitch(page, "content");
+      await expect(toggle).toBeEnabled();
+      await expect(toggle).toHaveAttribute("data-state", "checked");
+
+      // Выключение отражается в меню сразу — без перезагрузки и повторного входа.
+      await toggle.click();
+      await expect.poll(() => sidebarTitles(page), { timeout: 10_000 }).toEqual(WITHOUT_CONTENT);
+
+      // Состояние сохранено платформой: после перезагрузки галочка выключена.
+      await page.reload();
+      await page.getByRole("tab", { name: /Сервисы|Services/ }).click();
+      await expect(serviceSwitch(page, "content")).toHaveAttribute("data-state", "unchecked");
+      await expect.poll(() => sidebarTitles(page), { timeout: 10_000 }).toEqual(WITHOUT_CONTENT);
+
+      // Включение возвращает разделы так же сразу.
+      await serviceSwitch(page, "content").click();
+      await expect.poll(() => sidebarTitles(page), { timeout: 10_000 }).toEqual(VISIBLE);
+    } finally {
+      // Страховка: упавший сценарий не должен оставить проект без content.
+      await setService(token, "content", true);
+    }
+  });
+
+  test("ядровой сервис auth не предлагается к выключению", async ({ page }) => {
+    await openServicesTab(page);
+
+    await expect(serviceSwitch(page, "content")).toBeVisible();
+    await expect(
+      page.locator('[data-testid=services-section] [data-service="auth"]'),
+    ).toHaveCount(0);
   });
 });

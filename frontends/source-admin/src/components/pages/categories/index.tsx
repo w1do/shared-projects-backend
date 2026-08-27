@@ -1,7 +1,6 @@
 "use client";
 
 import { CategoriesHeader } from "./sections/categories-header";
-import { CategoriesStats } from "./sections/categories-stats";
 import { CategoriesPanel } from "./sections/categories-panel";
 import { CategoryDeleteDialog } from "./sections/category-delete-dialog";
 import { CategoryMoveDialog } from "./sections/category-move-dialog";
@@ -55,7 +54,7 @@ export default function CategoriesPage({
   return (
     <div className="flex flex-col gap-8">
       <CategoriesHeader categories={categories} />
-      <CategoriesStats categories={categories} />
+      {/* Карточки аналитики (CategoriesStats) скрыты: платформа не имеет торговых метрик. */}
       <CategoriesPanel
         categories={categories}
         onEditClick={openEdit}

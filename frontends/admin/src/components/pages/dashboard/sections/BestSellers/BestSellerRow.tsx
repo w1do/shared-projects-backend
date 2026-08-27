@@ -29,17 +29,26 @@ export function BestSellerRow({ product, maxRevenue }: BestSellerRowProps) {
         fallbackShadow="none"
       />
       <div className="min-w-0">
-        <div className="truncate text-caption font-medium text-foreground">{product.name}</div>
-        <div className="text-xs text-muted-foreground-lighter">
-          {product.brand} · {product.category} · {product.unitsSold.toLocaleString()} sold
+        <div className="truncate text-caption font-medium text-foreground">
+          {product.name}
         </div>
-        <Progress value={(product.revenue / maxRevenue) * 100} size="sm" className="mt-2" />
+        <div className="text-xs text-muted-foreground-lighter">
+          {product.brand} · {product.category} ·{" "}
+          {product.unitsSold.toLocaleString()} sold
+        </div>
+        <Progress
+          value={(product.revenue / maxRevenue) * 100}
+          size="sm"
+          className="mt-2"
+        />
       </div>
       <div className="text-right">
         <div className="font-openrunde text-base text-foreground">
           ${product.revenue.toLocaleString()}
         </div>
-        <div className="text-xs text-muted-foreground-lighter">${product.price}</div>
+        <div className="text-xs text-muted-foreground-lighter">
+          ${product.price}
+        </div>
       </div>
     </li>
   );

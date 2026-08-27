@@ -7,30 +7,32 @@ import { PageHeader } from "@/components/shared/layout/PageHeader";
 import { toast } from "sonner";
 import type { Category } from "@/lib/admin/mocks/types";
 import { exportCategoriesToPDF } from "@/lib/admin/categories/pdf/export";
+import { useConsoleText } from "@/lib/admin/use-console-text";
 
 interface CategoriesHeaderProps {
   categories: Category[];
 }
 
 export function CategoriesHeader({ categories }: CategoriesHeaderProps) {
+  const t = useConsoleText();
   const handleExport = () => {
     if (categories.length === 0) {
-      toast.error("There are no categories to export yet.");
+      toast.error(t("console.categories.export-empty"));
       return;
     }
 
-    toast.success("Generating categories taxonomy PDF report...");
+    toast.success(t("console.categories.export-started"));
     exportCategoriesToPDF(categories);
   };
 
   return (
     <PageHeader
-      title="Categories"
-      description="Structure product taxonomy, configure collection hierarchies, and track category-wise sales metrics."
+      title={t("console.nav.categories")}
+      description={t("console.categories.subtitle")}
       breadcrumbItems={[
-        { label: "Admin", href: "/admin" },
-        { label: "Catalog", href: "/admin/products" },
-        { label: "Categories" },
+        { label: t("console.common.breadcrumb-admin"), href: "/admin" },
+        { label: t("console.nav.group.catalog"), href: "/admin/products" },
+        { label: t("console.nav.categories") },
       ]}
       actions={
         <>
@@ -40,7 +42,7 @@ export function CategoriesHeader({ categories }: CategoriesHeaderProps) {
             startIcon={<Download className="size-4" />}
             onClick={handleExport}
           >
-            Export
+            {t("console.categories.export")}
           </Button>
           <Button
             variant="contained"
@@ -49,7 +51,7 @@ export function CategoriesHeader({ categories }: CategoriesHeaderProps) {
             component={Link}
             href="/admin/categories/add"
           >
-            Add category
+            {t("console.categories.add")}
           </Button>
         </>
       }

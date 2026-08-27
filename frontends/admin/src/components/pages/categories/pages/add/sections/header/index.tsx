@@ -3,6 +3,7 @@
 import { Sparkles, Check } from "lucide-react";
 import { Button } from "@/components/ui/inputs/button";
 import { PageHeader } from "@/components/shared/layout/PageHeader";
+import { useConsoleText } from "@/lib/admin/use-console-text";
 
 interface AddCategoryHeaderProps {
   isSubmitting: boolean;
@@ -10,15 +11,16 @@ interface AddCategoryHeaderProps {
 }
 
 export function AddCategoryHeader({ isSubmitting, onAutoFill }: AddCategoryHeaderProps) {
+  const t = useConsoleText();
   return (
     <PageHeader
-      title="Add category"
-      description="Create a new taxonomy node. Set its hierarchy, visual identity, and merchandising metrics for the storefront catalog."
+      title={t("console.categories.add")}
+      description={t("console.categories.add-subtitle")}
       breadcrumbItems={[
-        { label: "Admin", href: "/admin" },
-        { label: "Catalog", href: "/admin/products" },
-        { label: "Categories", href: "/admin/categories" },
-        { label: "Add category" },
+        { label: t("console.common.breadcrumb-admin"), href: "/admin" },
+        { label: t("console.nav.group.catalog"), href: "/admin/products" },
+        { label: t("console.nav.categories"), href: "/admin/categories" },
+        { label: t("console.categories.add") },
       ]}
       actions={
         <>
@@ -30,7 +32,7 @@ export function AddCategoryHeader({ isSubmitting, onAutoFill }: AddCategoryHeade
             onClick={onAutoFill}
             disabled={isSubmitting}
           >
-            Auto-fill
+            {t("console.categories.autofill")}
           </Button>
 
           <Button
@@ -40,7 +42,7 @@ export function AddCategoryHeader({ isSubmitting, onAutoFill }: AddCategoryHeade
             startIcon={<Check />}
             disabled={isSubmitting}
           >
-            {isSubmitting ? "Saving..." : "Save category"}
+            {isSubmitting ? t("console.categories.saving") : t("console.categories.save")}
           </Button>
         </>
       }

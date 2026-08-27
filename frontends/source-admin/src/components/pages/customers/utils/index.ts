@@ -1,8 +1,50 @@
-import type { DetailedCustomer } from "@/lib/admin/mocks/customers";
+import type { CustomerTier, DetailedCustomer } from "@/lib/admin/mocks/customers";
+import { t, type ConsoleTextKey } from "@/lib/admin/console-texts";
+
+const tierTextKeys: Record<CustomerTier, ConsoleTextKey> = {
+  Bronze: "console.customers.tier.bronze",
+  Silver: "console.customers.tier.silver",
+  Gold: "console.customers.tier.gold",
+  Platinum: "console.customers.tier.platinum",
+};
+
+const skinTypeTextKeys: Record<DetailedCustomer["skinProfile"]["skinType"], ConsoleTextKey> = {
+  Dry: "console.customers.skin-type.dry",
+  Oily: "console.customers.skin-type.oily",
+  Sensitive: "console.customers.skin-type.sensitive",
+  Combination: "console.customers.skin-type.combination",
+  Normal: "console.customers.skin-type.normal",
+};
+
+const skinConcernTextKeys: Record<string, ConsoleTextKey> = {
+  Acne: "console.customers.concern.acne",
+  Aging: "console.customers.concern.aging",
+  Hydration: "console.customers.concern.hydration",
+  Redness: "console.customers.concern.redness",
+  Brightening: "console.customers.concern.brightening",
+};
+
+/** Подпись уровня лояльности из реестра текстов консоли. */
+export function customerTierLabel(tier: CustomerTier): string {
+  return t(tierTextKeys[tier]);
+}
+
+/** Подпись типа кожи из реестра текстов консоли. */
+export function customerSkinTypeLabel(
+  skinType: DetailedCustomer["skinProfile"]["skinType"],
+): string {
+  return t(skinTypeTextKeys[skinType]);
+}
+
+/** Подпись запроса из профиля: незнакомое значение остаётся как есть. */
+export function customerSkinConcernLabel(concern: string): string {
+  const key = skinConcernTextKeys[concern];
+  return key ? t(key) : concern;
+}
 
 export interface CustomerFilterSortParams {
   searchTerm: string;
-  tierFilter: DetailedCustomer["tier"] | "all";
+  tierFilter: CustomerTier | "all";
   skinTypeFilter: "all" | DetailedCustomer["skinProfile"]["skinType"];
   skinConcernFilter: "all" | string;
   sortBy: "joined-desc" | "joined-asc" | "spent-desc" | "spent-asc" | "orders-desc" | "orders-asc";

@@ -45,7 +45,7 @@ async function visibleTree(page: Page): Promise<string[]> {
  * снимает зависимость от пагинации. Порядок строк остаётся префиксным.
  */
 async function filterByRun(page: Page) {
-  await page.getByPlaceholder(/Search categories/).fill(RUN);
+  await page.getByPlaceholder(/Поиск категорий|Search categories/).fill(RUN);
   await page.waitForTimeout(600);
 }
 
@@ -58,7 +58,7 @@ test.describe("дерево категорий", () => {
       // Корневая — через форму
       await page.goto("/admin/categories/add");
       await page.locator("input[name=name]").fill(`Section ${RUN}`);
-      await page.getByRole("button", { name: "Save category" }).last().click();
+      await page.getByRole("button", { name: /Сохранить категорию|Save category/ }).last().click();
       await page.waitForURL("**/admin/categories");
 
       // Подкатегория — через форму, с выбором родителя
@@ -69,7 +69,7 @@ test.describe("дерево категорий", () => {
         .locator("[data-category-option]", { hasText: `Section ${RUN}` })
         .first()
         .click();
-      await page.getByRole("button", { name: "Save category" }).last().click();
+      await page.getByRole("button", { name: /Сохранить категорию|Save category/ }).last().click();
       await page.waitForURL("**/admin/categories");
 
       await filterByRun(page);
@@ -101,22 +101,22 @@ test.describe("дерево категорий", () => {
       await row.hover();
       // Меню строки поверх Radix-попперов открывается не с первого раза —
       // повторяем, пока пункт не станет видимым.
-      const menuItem = page.getByText("Move to…");
+      const menuItem = page.getByText(/Переместить…|Move to…/);
       await expect(async () => {
         // Обычный клик: force после перерисовки списка промахивается мимо триггера.
         await row.locator("button").last().click({ timeout: 2000 });
         await expect(menuItem).toBeVisible({ timeout: 1500 });
       }).toPass({ timeout: 15_000 });
       await menuItem.click();
-      const dialog = page.getByRole("dialog", { name: "Move category" });
+      const dialog = page.getByRole("dialog", { name: /Переместить категорию|Move category/ });
       await expect(dialog).toBeVisible();
       await dialog.locator("[data-testid=category-move-parent]").click();
       const optionLocator =
-        parentLabel === "No parent (root)"
+        parentLabel === "No parent (root)" || parentLabel === "Без родителя (корень)"
           ? page.locator('[data-category-option="__root__"]')
           : page.locator("[data-category-option]", { hasText: parentLabel });
       await optionLocator.first().click();
-      await dialog.getByRole("button", { name: "Move category" }).click();
+      await dialog.getByRole("button", { name: /Переместить категорию|Move category/ }).click();
       await expect(dialog).not.toBeVisible();
       await page.waitForTimeout(1000);
     };
@@ -134,7 +134,7 @@ test.describe("дерево категорий", () => {
       expect(rows[index + 1], "потомок остался потомком").toBe(`2:Leaf ${RUN}`);
 
       // И в корень
-      await moveTo(`Middle ${RUN}`, "No parent (root)");
+      await moveTo(`Middle ${RUN}`, "Без родителя (корень)");
       rows = await visibleTree(page);
       index = rows.indexOf(`0:Middle ${RUN}`);
       expect(index, "узел стал корневым").toBeGreaterThanOrEqual(0);
@@ -157,8 +157,8 @@ test.describe("дерево категорий", () => {
       const row = page.locator("tr", { hasText: `Cycle ${RUN}` }).first();
       await row.scrollIntoViewIfNeeded();
       await row.locator("button").last().click();
-      await page.getByText("Move to…").click();
-      const dialog = page.getByRole("dialog", { name: "Move category" });
+      await page.getByText(/Переместить…|Move to…/).click();
+      const dialog = page.getByRole("dialog", { name: /Переместить категорию|Move category/ });
       await dialog.locator("[data-testid=category-move-parent]").click();
 
       // Сам узел и его поддерево видны, но недоступны для выбора
@@ -170,7 +170,7 @@ test.describe("дерево категорий", () => {
       // Закрыть выпадающий список и диалог полностью: висящий popper Radix
       // перехватывает клики по строкам таблицы.
       await page.keyboard.press("Escape");
-      await dialog.getByRole("button", { name: "Cancel" }).click();
+      await dialog.getByRole("button", { name: /Отмена|Cancel/ }).click();
       await expect(dialog).not.toBeVisible();
       await expect(page.locator("[data-radix-popper-content-wrapper]")).toHaveCount(0);
 
@@ -188,10 +188,10 @@ test.describe("дерево категорий", () => {
       const rowAgain = page.locator("tr", { hasText: `Cycle ${RUN}` }).first();
       await rowAgain.scrollIntoViewIfNeeded();
       await rowAgain.locator("button").last().click();
-      await page.getByText("Move to…").click();
+      await page.getByText(/Переместить…|Move to…/).click();
       await page
-        .getByRole("dialog", { name: "Move category" })
-        .getByRole("button", { name: "Move category" })
+        .getByRole("dialog", { name: /Переместить категорию|Move category/ })
+        .getByRole("button", { name: /Переместить категорию|Move category/ })
         .click();
       await expect(page.locator("[data-sonner-toast]").first()).toContainText("own subtree");
       await page.keyboard.press("Escape");
@@ -222,7 +222,7 @@ test.describe("жизненный цикл поста", () => {
       await page.locator("[data-testid=post-categories-select]").click();
       await page.locator("[data-category-option]", { hasText: /^Новости$/ }).first().click();
       await page.keyboard.press("Escape");
-      await page.getByRole("button", { name: "Save article" }).last().click();
+      await page.getByRole("button", { name: "Сохранить статью" }).last().click();
       await page.waitForURL("**/admin/blogs");
 
       const post = await postBySlug(token, `post-${slug}`);
@@ -232,18 +232,18 @@ test.describe("жизненный цикл поста", () => {
       expect(post.categories, "категория привязана").toContain(news!.id);
 
       await page.goto(`/admin/blogs/post-${slug}/edit`);
-      await expect(page.locator("[data-testid=post-status]")).toHaveText(/draft/i);
+      await expect(page.locator("[data-testid=post-status]")).toHaveText(/Черновик/);
 
       // Публикация
-      await page.getByRole("button", { name: "Publish", exact: true }).click();
-      await expect(page.locator("[data-testid=post-status]")).toHaveText(/published/i, {
+      await page.getByRole("button", { name: "Опубликовать", exact: true }).click();
+      await expect(page.locator("[data-testid=post-status]")).toHaveText(/Опубликован/, {
         timeout: 10_000,
       });
 
       // Правка заголовка → новая ревизия. Сохранение уводит на список,
       // поэтому на страницу редактирования возвращаемся явно.
       await page.locator("input[name=title]").fill(`Post ${slug} v2`);
-      await page.getByRole("button", { name: "Save changes" }).last().click();
+      await page.getByRole("button", { name: "Сохранить изменения" }).last().click();
       await page.waitForTimeout(2500);
       await page.goto(`/admin/blogs/post-${slug}/edit`);
       await expect
@@ -255,7 +255,7 @@ test.describe("жизненный цикл поста", () => {
       // Восстановление прежней версии возвращает старый заголовок
       await page
         .locator("[data-testid=post-revisions]")
-        .getByRole("button", { name: "Restore" })
+        .getByRole("button", { name: "Восстановить" })
         .last()
         .click();
       await page.waitForTimeout(2000);

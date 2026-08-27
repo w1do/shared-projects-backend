@@ -9,6 +9,11 @@
  */
 
 import { adminApiConfig, shouldUseAdminApi } from "./config";
+import { t, tf } from "@/lib/admin/console-texts";
+import {
+  type PlatformAdminProfile,
+  toOperatorProfile,
+} from "./operator-profile";
 import {
   type BootstrapAccess,
   clearSectionSnapshot,
@@ -34,14 +39,8 @@ export type OperatorProfile = {
   avatar?: string;
   status: "active" | "inactive";
   lastLogin?: string;
-};
-
-type PlatformAdminProfile = {
-  id: number;
-  name: string;
-  email: string;
-  locale: string;
-  is_super_admin: boolean;
+  /** Локаль оператора из платформы — язык текстов консоли (mock-режим поля не имеет). */
+  locale?: string;
 };
 
 type PlatformLoginData = {
@@ -96,33 +95,25 @@ export function getCurrentUser(): OperatorProfile | undefined {
   }
 }
 
-/** Профиль платформы → форма, которую ждёт вёрстка. */
-function toOperatorProfile(admin: PlatformAdminProfile): OperatorProfile {
-  return {
-    id: String(admin.id),
-    email: admin.email,
-    name: admin.name,
-    // Панель платформы не различает manager/staff — права проверяются на бекенде.
-    role: admin.is_super_admin ? "admin" : "manager",
-    position: admin.is_super_admin ? "Super admin" : "Operator",
-    phone: "",
-    status: "active",
-    lastLogin: new Date().toISOString(),
-  };
-}
-
 const DEFAULT_SESSION_MAX_AGE = 24 * 60 * 60;
 
 function sessionMaxAge(rememberMe: boolean) {
   return rememberMe ? 30 * 24 * 60 * 60 : DEFAULT_SESSION_MAX_AGE;
 }
 
-function persistSession(profile: OperatorProfile, token: string, rememberMe: boolean) {
+function persistSession(
+  profile: OperatorProfile,
+  token: string,
+  rememberMe: boolean,
+) {
   const maxAge = sessionMaxAge(rememberMe);
   writeCookie(AUTH_TOKEN_COOKIE, token, maxAge);
   writeCookie(AUTH_ROLE_COOKIE, profile.role, maxAge);
   if (typeof window !== "undefined") {
-    window.localStorage.setItem(CURRENT_USER_STORAGE_KEY, JSON.stringify(profile));
+    window.localStorage.setItem(
+      CURRENT_USER_STORAGE_KEY,
+      JSON.stringify(profile),
+    );
   }
 }
 
@@ -149,11 +140,19 @@ async function applyBootstrap(token: string, maxAgeSeconds: number) {
     data?: BootstrapAccess & {
       current_project?: string | null;
       projects?: { key: string }[];
+      user?: { locale?: string };
+      translations_version?: string;
     };
   };
   const key = payload.data?.current_project ?? payload.data?.projects?.[0]?.key;
   if (key) setProjectKey(key);
-  if (payload.data) rememberSectionSnapshot(payload.data, maxAgeSeconds);
+  if (payload.data) {
+    rememberSectionSnapshot(payload.data, maxAgeSeconds);
+    // Динамический импорт разрывает цикл session → api-client → session.
+    const { syncConsoleTexts } =
+      await import("./platform/console-texts-loader");
+    await syncConsoleTexts(payload.data);
+  }
 }
 
 async function signInAgainstPlatform(
@@ -172,20 +171,22 @@ async function signInAgainstPlatform(
       cache: "no-store",
     });
   } catch {
-    throw new AdminAuthError("Sign in failed. The platform is unreachable.");
+    throw new AdminAuthError(t("console.login.platform-unreachable"));
   }
 
   if (response.status === 401 || response.status === 422) {
     // Существование аккаунта не раскрываем.
-    throw new AdminAuthError("Invalid email or password.");
+    throw new AdminAuthError(t("console.login.invalid-credentials"));
   }
   if (!response.ok) {
-    throw new AdminAuthError(`Sign in failed with ${response.status}.`);
+    throw new AdminAuthError(
+      tf("console.login.failed-with-status", { status: response.status }),
+    );
   }
 
   const payload = (await response.json()) as { data?: PlatformLoginData };
   if (!payload.data?.token) {
-    throw new AdminAuthError("Sign in failed. Unexpected response from the platform.");
+    throw new AdminAuthError(t("console.login.unexpected-response"));
   }
 
   return {
@@ -197,10 +198,10 @@ async function signInAgainstPlatform(
 function signInAgainstMocks(email: string, password: string) {
   const user = authenticateMockUser(email);
   if (!user || user.password !== password) {
-    throw new AdminAuthError("Invalid email or password.");
+    throw new AdminAuthError(t("console.login.invalid-credentials"));
   }
   if (user.status === "inactive") {
-    throw new AdminAuthError("This account has been deactivated.");
+    throw new AdminAuthError(t("console.login.account-deactivated"));
   }
 
   const { password: _password, ...profile } = user;

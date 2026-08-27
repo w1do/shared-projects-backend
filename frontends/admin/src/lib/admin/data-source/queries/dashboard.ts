@@ -1,72 +1,73 @@
-import { kpis, recentOrders, revenueSeries } from "@/lib/admin/mocks/dashboard";
-import { bestSellers, campaigns as mockCampaigns, lowStock } from "@/lib/admin/mocks/products";
-import { brands as mockBrands } from "@/lib/admin/mocks/brands";
-import { mockCategories } from "@/lib/admin/mocks/taxonomy/categories";
-import type { Brand, Campaign, Category } from "@/lib/admin/mocks/types";
+import type { RecentPostRow } from "@/components/pages/dashboard/sections/RecentPosts";
+import type { TopPageRow } from "@/components/pages/dashboard/sections/TopPages";
+import { kpis, revenueSeries } from "@/lib/admin/mocks/dashboard";
+import { mockArticles } from "@/lib/admin/mocks/magazine";
 import * as platformAnalytics from "../platform/analytics";
 import { defaultPeriod } from "../platform/analytics";
 import * as platformContent from "../platform/content";
-import type { PlatformTopPageRow } from "../platform/types";
-import {
-  categoryToApiCategory,
-  revenueToPoints,
-  toDashboardStats,
-} from "../platform/mappers";
-import { flattenCategories, mapCategory, mapDashboard } from "../mappers";
+import type { PlatformPost, PlatformTopPageRow } from "../platform/types";
+import { revenueToPoints, toDashboardStats } from "../platform/mappers";
+import { mapDashboard } from "../mappers";
 import { fromSource } from "./shared";
 
+/** Демо-режим: свежие материалы — статьи вёрстки, топ страниц пуст. */
 const mockDashboardData = {
   kpis,
   revenueSeries,
-  bestSellers,
-  lowStock,
-  recentOrders,
-  campaigns: mockCampaigns,
-  brands: mockBrands,
-  categories: mockCategories,
-  topPages: [] as PlatformTopPageRow[],
+  topPages: [] as TopPageRow[],
+  recentPosts: mockArticles.map(
+    (article): RecentPostRow => ({
+      id: article.id,
+      title: article.title,
+      status: article.status ?? "published",
+      publishedAt: article.publishedAt,
+    }),
+  ),
 };
 
-/**
- * Optional widget series. Dashboard stats endpoints do not yet expose
- * campaign/brand/category breakdowns; brands/categories hydrate from catalog
- * list APIs when available, otherwise fall back to curated mocks.
- */
-async function loadWidgetSeries(): Promise<{
-  campaigns: Campaign[];
-  brands: Brand[];
-  categories: Category[];
-}> {
-  // Брендов и кампаний в платформе нет — эти виджеты остаются на демо-данных.
-  const brands: Brand[] = mockBrands;
-  const campaigns: Campaign[] = mockCampaigns;
-  let categories: Category[] = mockCategories;
+function toTopPageRow(row: PlatformTopPageRow): TopPageRow {
+  return {
+    id: row.path,
+    path: row.path,
+    hits: Number(row.hits) || 0,
+    sessions: Number(row.sessions) || 0,
+  };
+}
 
+function toRecentPostRow(post: PlatformPost): RecentPostRow {
+  return {
+    id: String(post.id),
+    title: post.title,
+    status: post.status,
+    publishedAt: post.published_at ?? post.scheduled_at ?? null,
+  };
+}
+
+/** Свежие материалы: последние посты проекта; сбой content не валит дашборд. */
+async function loadRecentPosts(): Promise<RecentPostRow[]> {
   try {
-    const tree = await platformContent.listCategories();
-    categories = flattenCategories(
-      tree.map((node, index) => categoryToApiCategory(node, index)),
-    ).map(mapCategory);
+    const posts = await platformContent.listPosts();
+    return posts
+      .map(toRecentPostRow)
+      .sort((a, b) => (b.publishedAt ?? "").localeCompare(a.publishedAt ?? ""));
   } catch {
-    // Keep mock category sales series.
+    return [];
   }
-
-  return { campaigns, brands, categories };
 }
 
 /**
- * dashboard → analytics-service: обзор, выручка и топ-страницы за период.
- * Виджеты без аналога в платформе (бестселлеры, остатки, последние заказы)
- * остаются на демо-данных вёрстки — см. docs/admin-console.md.
+ * dashboard → analytics-service (обзор, выручка, топ-страницы за период) +
+ * content-service (свежие материалы). Демо-виджеты шаблона (бестселлеры,
+ * остатки, заказы, кампании, бренды) живой дашборд не запрашивает и не рендерит.
  */
 export async function getAdminDashboardData() {
   return fromSource(async () => {
     const period = defaultPeriod();
-    const [overview, revenueRows, topPages, widgets] = await Promise.all([
+    const [overview, revenueRows, topPages, recentPosts] = await Promise.all([
       platformAnalytics.getOverview(period),
       platformAnalytics.getRevenue(period),
       platformAnalytics.getTopPages(period),
-      loadWidgetSeries(),
+      loadRecentPosts(),
     ]);
 
     const dashboard = mapDashboard(
@@ -76,15 +77,12 @@ export async function getAdminDashboardData() {
 
     return {
       ...dashboard,
-      topPages,
-      bestSellers,
-      lowStock,
-      recentOrders,
-      campaigns: widgets.campaigns,
-      brands: widgets.brands,
-      categories: widgets.categories,
+      topPages: topPages.map(toTopPageRow),
+      recentPosts,
     };
   }, mockDashboardData);
 }
 
-export type AdminDashboardData = Awaited<ReturnType<typeof getAdminDashboardData>>;
+export type AdminDashboardData = Awaited<
+  ReturnType<typeof getAdminDashboardData>
+>;

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 import { EditBlogForm } from "@/components/pages/blogs/pages/edit/EditBlogForm";
+import { t, tf } from "@/lib/admin/console-texts";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -9,8 +10,8 @@ interface Props {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   return {
-    title: `Edit Article · Ætheria Admin`,
-    description: `Edit the editorial journal article "${slug}".`,
+    title: `${t("console.blogs.form.edit-title")} · Ætheria Admin`,
+    description: tf("console.meta.blogs-edit-description", { slug }),
   };
 }
 

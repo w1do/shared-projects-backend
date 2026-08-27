@@ -110,6 +110,30 @@ export function visibleSectionKeys(bootstrap: BootstrapAccess): ConsoleSectionKe
 export const CONSOLE_SECTIONS_COOKIE = "console_sections";
 export const CONSOLE_SECTIONS_STORAGE_KEY = "console_sections";
 
+// Подписка на смену снимка: сайдбар и быстрые действия перечитывают снимок
+// сразу после записи (например, после переключения сервиса из настроек),
+// без повторного входа. События ограничены вкладкой — этого достаточно:
+// снимок пишется тем же клиентом, который его читает.
+const snapshotListeners = new Set<() => void>();
+let snapshotRevision = 0;
+
+function notifySnapshotListeners() {
+  snapshotRevision += 1;
+  for (const listener of snapshotListeners) listener();
+}
+
+export function subscribeSectionSnapshot(listener: () => void): () => void {
+  snapshotListeners.add(listener);
+  return () => {
+    snapshotListeners.delete(listener);
+  };
+}
+
+/** Монотонная версия снимка — снапшот для useSyncExternalStore. */
+export function sectionSnapshotRevision() {
+  return snapshotRevision;
+}
+
 /** Компактный формат cookie: ключи через запятую. */
 export function encodeSectionSnapshot(keys: readonly string[]): string {
   return keys.join(",");
@@ -131,6 +155,7 @@ export function persistSectionSnapshot(keys: readonly string[], maxAgeSeconds: n
   if (typeof window !== "undefined") {
     window.localStorage.setItem(CONSOLE_SECTIONS_STORAGE_KEY, value);
   }
+  notifySnapshotListeners();
 }
 
 export function clearSectionSnapshot() {
@@ -140,6 +165,7 @@ export function clearSectionSnapshot() {
   if (typeof window !== "undefined") {
     window.localStorage.removeItem(CONSOLE_SECTIONS_STORAGE_KEY);
   }
+  notifySnapshotListeners();
 }
 
 /**

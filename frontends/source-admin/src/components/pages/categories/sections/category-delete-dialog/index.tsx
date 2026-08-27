@@ -8,6 +8,7 @@ import {
   DialogDescription,
   DialogTitle,
 } from "@/components/ui/overlay/dialog";
+import { useConsoleText } from "@/lib/admin/use-console-text";
 
 type CategoryDeleteDialogProps = {
   open: boolean;
@@ -29,20 +30,27 @@ export function CategoryDeleteDialog({
   onClose,
   onConfirm,
 }: CategoryDeleteDialogProps) {
+  const t = useConsoleText();
   const isBulk = count > 1;
-  const title = isBulk ? `Delete ${count} categories` : "Delete category";
+  const title = isBulk
+    ? t("console.categories.delete.title-bulk").replace("{count}", String(count))
+    : t("console.categories.delete.title");
 
   // Поведение платформы: удаляется всё поддерево, посты сохраняются и теряют
   // только привязку к удалённым категориям.
   const subtreeNote =
     descendantCount > 0
-      ? ` Its ${descendantCount} nested categor${descendantCount > 1 ? "ies" : "y"} will be deleted too.`
+      ? ` ${t("console.categories.delete.subtree-note").replace("{count}", String(descendantCount))}`
       : "";
-  const postsNote = " Posts are kept — they only lose the link to the deleted categories.";
+  const postsNote = ` ${t("console.categories.delete.posts-note")}`;
+
+  const question = categoryName
+    ? t("console.categories.delete.question").replace("{name}", categoryName)
+    : t("console.categories.delete.question-plain");
 
   const description = isBulk
-    ? `This permanently removes ${count} selected categories and everything nested inside them.${postsNote}`
-    : `Are you sure you want to delete${categoryName ? ` “${categoryName}”` : " this category"}?${subtreeNote}${postsNote} This action cannot be undone.`;
+    ? `${t("console.categories.delete.question-bulk").replace("{count}", String(count))}${postsNote}`
+    : `${question}${subtreeNote}${postsNote} ${t("console.categories.delete.irreversible")}`;
 
   return (
     <Dialog open={open} onOpenChange={(nextOpen) => !nextOpen && !isBusy && onClose()}>
@@ -71,7 +79,7 @@ export function CategoryDeleteDialog({
             disabled={isBusy}
             onClick={onClose}
           >
-            Cancel
+            {t("console.common.cancel")}
           </Button>
           <Button
             variant="contained"
@@ -82,7 +90,7 @@ export function CategoryDeleteDialog({
             isLoading={isBusy}
             onClick={onConfirm}
           >
-            Confirm Delete
+            {t("console.categories.delete.confirm")}
           </Button>
         </div>
       </DialogContent>

@@ -9,9 +9,11 @@ import { Textarea } from "@/components/ui/inputs/textarea";
 import { ImageUploader } from "@/components/ui/inputs/image-uploader";
 import { Select } from "@/components/ui/inputs/select";
 import type { BlogFormValues } from "@/lib/admin/schemas/content/blog-form-schema";
+import { useConsoleText } from "@/lib/admin/use-console-text";
 import { BLOCK_TYPE_OPTIONS } from "@/components/pages/blogs/pages/add/constants";
 
 export function ContentBlocksSection() {
+  const t = useConsoleText();
   const {
     control,
     register,
@@ -25,9 +27,11 @@ export function ContentBlocksSection() {
     <Card variant="form-section">
       <div className="flex items-center justify-between">
         <div className="flex flex-col gap-2">
-          <h2 className="text-heading font-medium text-foreground leading-tight">Content</h2>
+          <h2 className="text-heading font-medium text-foreground leading-tight">
+            {t("console.blogs.form.content-title")}
+          </h2>
           <p className="text-xs text-muted-foreground-lighter">
-            Compose the story from headings, paragraphs, quotes, and images.
+            {t("console.blogs.form.content-subtitle")}
           </p>
         </div>
         <Button
@@ -38,7 +42,7 @@ export function ContentBlocksSection() {
           startIcon={<Plus />}
           onClick={() => append({ type: "paragraph", content: "" })}
         >
-          Add block
+          {t("console.blogs.form.add-block")}
         </Button>
       </div>
 
@@ -72,7 +76,7 @@ export function ContentBlocksSection() {
                   shape="circle"
                   variant="ghost"
                   colors="error"
-                  title="Remove block"
+                  title={t("console.blogs.form.remove-block")}
                   disabled={fields.length === 1}
                   onClick={() => remove(index)}
                 >
@@ -90,15 +94,15 @@ export function ContentBlocksSection() {
                   }
                   maxFiles={1}
                   multiple={false}
-                  placeholder="Upload image"
-                  description="Inline image displayed within the article body"
+                  placeholder={t("console.blogs.form.image-upload")}
+                  description={t("console.blogs.form.image-hint")}
                   error={blockError}
                   aspectRatio="video"
                 />
               ) : (
                 <Textarea
                   rows={3}
-                  placeholder="Write the block content…"
+                  placeholder={t("console.blogs.form.block-placeholder")}
                   error={blockError}
                   {...register(`contentBlocks.${index}.content`)}
                 />

@@ -7,12 +7,13 @@ import { IconButton } from "@/components/ui/inputs/icon-button";
 import { DataGrid } from "@/components/ui/data-display/data-grid";
 import { TreeTable } from "@/components/ui/data-display/tree-table";
 import { DataTableFooter } from "@/components/shared/data-table/DataTableFooter";
-import { descendantIds } from "@/lib/admin/data-source/category-tree";
+import { countChildren, descendantIds } from "@/lib/admin/data-source/category-tree";
 import type { Category } from "@/lib/admin/mocks/types";
 import { CategoryCard } from "../category-card";
 import { CategoriesToolbar } from "../categories-toolbar";
 import { getCategoryColumns } from "../category-columns";
 import { useCategoriesPanel } from "@/components/pages/categories/hooks/useCategoriesPanel";
+import { useConsoleText } from "@/lib/admin/use-console-text";
 
 interface CategoriesPanelProps {
   categories: Category[];
@@ -34,6 +35,7 @@ export function CategoriesPanel({
   onMoveNode,
   movingIds,
 }: CategoriesPanelProps) {
+  const t = useConsoleText();
   const panel = useCategoriesPanel({ categories, onDeleteClick });
 
   // Дерево (режим api): данные несут depth. Плоский каталог mock-режима
@@ -42,9 +44,18 @@ export function CategoriesPanel({
   const treeMode = isTree && panel.viewMode === "table" && Boolean(onMoveNode);
 
   const columns = useMemo(
-    () => getCategoryColumns({ onEditClick, onDeleteClick, onMoveClick, flat: treeMode }),
+    () => getCategoryColumns({ onEditClick, onDeleteClick, onMoveClick, flat: treeMode, categories }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [onEditClick, onDeleteClick, onMoveClick, categories, treeMode],
+  );
+
+  // Счётчик вложенных категорий для карточек — из того же плоского списка.
+  const childCounts = useMemo(
+    () =>
+      countChildren(
+        categories.map((category) => ({ id: category.id, parentId: category.parentId ?? null })),
+      ),
+    [categories],
   );
 
   const treeRows = useMemo(
@@ -94,9 +105,7 @@ export function CategoriesPanel({
             >
               <X />
             </IconButton>
-            <span className="font-medium">
-              {selectedCount} categor{selectedCount > 1 ? "ies" : "y"} selected
-            </span>
+            <span className="font-medium">{`${selectedCount} ${t("console.categories.footer-unit")} выбрано`}</span>
           </div>
           <Button
             variant="ghost"
@@ -112,7 +121,7 @@ export function CategoriesPanel({
               panel.handleBulkDelete();
             }}
           >
-            Delete
+            {t("console.common.delete")}
           </Button>
         </div>
       )}
@@ -126,7 +135,7 @@ export function CategoriesPanel({
           busyIds={movingIds}
           // Отфильтрованный список не отражает соседства — DnD в нём обманчив.
           dragDisabled={isFiltering}
-          emptyMessage="No categories found matching your criteria."
+          emptyMessage={t("console.categories.empty-filtered")}
         />
       ) : panel.viewMode === "table" ? (
         <DataGrid
@@ -139,7 +148,7 @@ export function CategoriesPanel({
           onSelectionChange={panel.setSelectedRowIds}
           emptyState={
             <div className="py-6 text-center text-xs text-muted-foreground-lighter">
-              No categories found matching your criteria.
+              {t("console.categories.empty-filtered")}
             </div>
           }
         />
@@ -149,6 +158,7 @@ export function CategoriesPanel({
             <CategoryCard
               key={category.id}
               category={category}
+              childrenCount={childCounts.get(category.id) ?? 0}
               onEditClick={onEditClick}
               onDeleteClick={onDeleteClick}
             />
@@ -156,7 +166,7 @@ export function CategoriesPanel({
         </div>
       ) : (
         <div className="col-span-full rounded-3xl border border-dashed border-border/60 bg-card p-6 py-12 text-center text-xs text-muted-foreground-lighter">
-          No categories found matching your criteria.
+          {t("console.categories.empty-filtered")}
         </div>
       )}
 
@@ -165,7 +175,7 @@ export function CategoriesPanel({
         <DataTableFooter
           currentPage={panel.currentPage}
           endItem={panel.endItem}
-          itemLabel="categories"
+          itemLabel={t("console.categories.footer-unit")}
           itemsPerPage={panel.itemsPerPage}
           onItemsPerPageChange={panel.setItemsPerPage}
           onPageChange={panel.setCurrentPage}

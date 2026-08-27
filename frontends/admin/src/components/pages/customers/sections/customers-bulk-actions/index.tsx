@@ -3,6 +3,7 @@
 import { Megaphone, X } from "lucide-react";
 import { Button } from "@/components/ui/inputs/button";
 import { IconButton } from "@/components/ui/inputs/icon-button";
+import { useConsoleText } from "@/lib/admin/use-console-text";
 
 interface CustomersBulkActionsProps {
   selectedCount: number;
@@ -15,6 +16,8 @@ export function CustomersBulkActions({
   onClearSelection,
   onEngage,
 }: CustomersBulkActionsProps) {
+  const t = useConsoleText();
+
   if (selectedCount === 0) return null;
 
   return (
@@ -24,11 +27,11 @@ export function CustomersBulkActions({
           <X />
         </IconButton>
         <span>
-          {selectedCount} customer{selectedCount > 1 ? "s" : ""} selected
+          {t("console.customers.bulk-selected").replace("{count}", String(selectedCount))}
         </span>
       </div>
       <Button variant="ghost" color="surface" startIcon={<Megaphone />} onClick={onEngage}>
-        Engage audience
+        {t("console.engage.title")}
       </Button>
     </div>
   );

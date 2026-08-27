@@ -3,47 +3,38 @@
 import { Newspaper, FolderTree, PenLine, Clock } from "lucide-react";
 import { KpiStatCard, type KpiStat } from "@/components/shared";
 import type { Article } from "@/lib/admin/mocks/magazine";
+import { computeBlogsKpiValues } from "@/lib/admin/blogs-kpi";
+import { tf } from "@/lib/admin/console-texts";
+import { useConsoleText } from "@/lib/admin/use-console-text";
 
 interface BlogsStatsProps {
   articles: Article[];
 }
 
 export function BlogsStats({ articles }: BlogsStatsProps) {
-  const categories = new Set(articles.map((a) => a.category)).size;
-  const authors = new Set(articles.map((a) => a.author.name)).size;
-  const avgRead =
-    articles.length > 0
-      ? Math.round(articles.reduce((sum, a) => sum + a.readingTimeMin, 0) / articles.length)
-      : 0;
+  const t = useConsoleText();
+  const values = computeBlogsKpiValues(articles);
 
   const kpis: KpiStat[] = [
     {
-      label: "Published Articles",
-      value: `${articles.length}`,
-      delta: "+3 this month",
+      label: t("console.blogs.stats.published"),
+      value: `${values.publishedCount}`,
       icon: Newspaper,
-      trend: [4, 6, 5, 7, 8, 9, 10, 11, 11, 12],
     },
     {
-      label: "Categories",
-      value: `${categories}`,
-      delta: "Active topics",
+      label: t("console.blogs.stats.categories"),
+      value: `${values.categoriesCount}`,
       icon: FolderTree,
-      trend: [2, 3, 3, 4, 4, 5, 5, 5, 5, 5],
     },
     {
-      label: "Contributors",
-      value: `${authors}`,
-      delta: "Editorial team",
+      label: t("console.blogs.stats.authors"),
+      value: `${values.authorsCount}`,
       icon: PenLine,
-      trend: [1, 2, 2, 3, 3, 4, 4, 4, 4, 4],
     },
     {
-      label: "Avg. Read Time",
-      value: `${avgRead} min`,
-      delta: "Per article",
+      label: t("console.blogs.stats.avg-read"),
+      value: tf("console.blogs.minutes", { count: values.averageReadMinutes }),
       icon: Clock,
-      trend: [6, 6, 7, 7, 8, 8, 7, 8, 8, 8],
       accent: true,
     },
   ];

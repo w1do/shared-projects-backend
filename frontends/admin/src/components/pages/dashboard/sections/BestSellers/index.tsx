@@ -15,7 +15,9 @@ export function BestSellers({ products }: BestSellersProps) {
           <h3 className="font-openrunde text-heading leading-tight text-foreground">
             Best-selling products
           </h3>
-          <p className="mt-2 text-xs text-muted-foreground">Trailing period · by revenue</p>
+          <p className="mt-2 text-xs text-muted-foreground">
+            Trailing period · by revenue
+          </p>
         </div>
         <Badge variant="soft" color="muted" shape="circle">
           {Math.min(products.length, 3)} products

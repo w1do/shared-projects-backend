@@ -12,6 +12,7 @@ import { ScrollArea } from "@/components/ui/layout/scroll-area";
 import { Avatar } from "@/components/ui/data-display/avatar";
 import { Badge } from "@/components/ui/data-display/badge";
 import type { Article } from "@/lib/admin/mocks/magazine";
+import { tf } from "@/lib/admin/console-texts";
 import { formatArticleDate } from "@/components/pages/blogs/utils";
 import { ArticleContent } from "./components/ArticleContent";
 
@@ -70,7 +71,8 @@ export function BlogPreviewModal({ article, isOpen, onClose }: BlogPreviewModalP
                 </div>
                 <span className="flex items-center gap-2 text-caption text-muted-foreground-lighter">
                   <Clock className="size-4" />
-                  {article.readingTimeMin} min · {formatArticleDate(article.publishedAt)}
+                  {tf("console.blogs.minutes", { count: article.readingTimeMin })} ·{" "}
+                  {formatArticleDate(article.publishedAt)}
                 </span>
               </div>
             </div>

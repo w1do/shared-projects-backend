@@ -1,4 +1,7 @@
+import type { RecentPostRow } from "@/components/pages/dashboard/sections/RecentPosts";
+import type { TopPageRow } from "@/components/pages/dashboard/sections/TopPages";
 import { kpis, recentOrders, revenueSeries } from "@/lib/admin/mocks/dashboard";
+import { mockArticles } from "@/lib/admin/mocks/magazine";
 import { bestSellers, campaigns as mockCampaigns, lowStock } from "@/lib/admin/mocks/products";
 import { brands as mockBrands } from "@/lib/admin/mocks/brands";
 import { mockCategories } from "@/lib/admin/mocks/taxonomy/categories";
@@ -24,6 +27,16 @@ import {
 } from "../mappers";
 import { fromSource } from "./shared";
 
+/* Свежие материалы дашборда — статьи вёрстки; топ страниц демо-данных не имеет. */
+const recentPosts: RecentPostRow[] = mockArticles.map((article) => ({
+  id: article.id,
+  title: article.title,
+  status: article.status ?? "published",
+  publishedAt: article.publishedAt,
+}));
+
+const topPages: TopPageRow[] = [];
+
 const mockDashboardData = {
   kpis,
   revenueSeries,
@@ -33,6 +46,8 @@ const mockDashboardData = {
   campaigns: mockCampaigns,
   brands: mockBrands,
   categories: mockCategories,
+  topPages,
+  recentPosts,
 };
 
 /**
@@ -113,6 +128,8 @@ export async function getAdminDashboardData() {
       campaigns: widgets.campaigns,
       brands: widgets.brands,
       categories: widgets.categories,
+      topPages,
+      recentPosts,
     };
   }, mockDashboardData);
 }

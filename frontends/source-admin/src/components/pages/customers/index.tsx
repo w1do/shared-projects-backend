@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/inputs/button";
 import { PageHeader } from "@/components/shared/layout/PageHeader";
 import type { DetailedCustomer } from "@/lib/admin/mocks/customers";
 import { useCustomersPage } from "@/hooks/admin/customers";
+import { useConsoleText } from "@/lib/admin/use-console-text";
 import { CustomersStats } from "@/components/pages/customers/sections/customers-stats";
 import { CustomersPanel } from "@/components/pages/customers/sections/customers-panel";
 import { CustomerDetailModal } from "@/components/pages/customers/sections/customer-detail-modal";
@@ -21,6 +22,7 @@ interface CustomersPageProps {
  * Full-page skeleton mirrors layout while the list query is pending.
  */
 export default function CustomersPage({ initialCustomers }: CustomersPageProps = {}) {
+  const t = useConsoleText();
   const {
     customers,
     isPending,
@@ -42,12 +44,12 @@ export default function CustomersPage({ initialCustomers }: CustomersPageProps =
   return (
     <div className="flex flex-col gap-8">
       <PageHeader
-        title="Customers"
-        description="View profiles, dermatology skin concerns, loyalty tiers, and customer lifetime value logs."
+        title={t("console.customers.title")}
+        description={t("console.customers.subtitle")}
         breadcrumbItems={[
-          { label: "Admin", href: "/admin" },
-          { label: "Commerce", href: "/admin/orders" },
-          { label: "Customers" },
+          { label: t("console.common.breadcrumb-admin"), href: "/admin" },
+          { label: t("console.nav.group.commerce"), href: "/admin/orders" },
+          { label: t("console.customers.title") },
         ]}
         actions={
           <Button
@@ -58,7 +60,7 @@ export default function CustomersPage({ initialCustomers }: CustomersPageProps =
             onClick={exportCustomers}
             startIcon={<Download />}
           >
-            Export Customers
+            {t("console.customers.export")}
           </Button>
         }
       />

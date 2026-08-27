@@ -5,12 +5,15 @@ import { AreaChart } from "@/components/ui/charts/area-chart";
 import { ButtonGroup } from "@/components/ui/inputs/button-group";
 import {
   tabs,
+  tabLabel,
   calculateTotals,
   formatTotalValue,
   METRIC_KEYS,
   CHART_FORMATTERS,
   type ChartDataPoint,
 } from "./helpers";
+import { t } from "@/lib/admin/console-texts";
+import { timeRangeLabel } from "../../utils/time-range";
 
 type RevenueChartProps = {
   data: ChartDataPoint[];
@@ -18,7 +21,7 @@ type RevenueChartProps = {
   rangeLabel?: string;
 };
 
-export function RevenueChart({ data, rangeLabel = "Selected range" }: RevenueChartProps) {
+export function RevenueChart({ data, rangeLabel }: RevenueChartProps) {
   const [active, setActive] = useState<(typeof tabs)[number]>("Revenue");
   const categoriesX = data.map((d) => d.week);
 
@@ -42,18 +45,26 @@ export function RevenueChart({ data, rangeLabel = "Selected range" }: RevenueCha
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <h3 className="font-openrunde text-heading leading-tight text-foreground">
-            Revenue overview
+            {t("console.dashboard.revenue-title")}
           </h3>
           <p className="mt-2 text-xs text-muted-foreground">
-            {rangeLabel} · trailing performance vs. prior period
+            {rangeLabel
+              ? timeRangeLabel(rangeLabel)
+              : timeRangeLabel("Last 90 days")}{" "}
+            · {t("console.dashboard.revenue-subtitle")}
           </p>
         </div>
-        <ButtonGroup options={tabs} value={active} onChange={setActive} size="sm" />
+        <ButtonGroup
+          options={tabs.map((tab) => ({ value: tab, label: tabLabel(tab) }))}
+          value={active}
+          onChange={(value) => setActive(value as (typeof tabs)[number])}
+          size="sm"
+        />
       </div>
       <div className="mt-6 flex flex-wrap items-end gap-8">
         <div>
           <div className="text-xs uppercase tracking-wider text-muted-foreground-lighter">
-            This period
+            {t("console.dashboard.this-period")}
           </div>
           <div className="font-openrunde text-heading-lg leading-none text-foreground">
             {currentTotal}
@@ -61,7 +72,7 @@ export function RevenueChart({ data, rangeLabel = "Selected range" }: RevenueCha
         </div>
         <div>
           <div className="text-xs uppercase tracking-wider text-muted-foreground-lighter">
-            Prior period
+            {t("console.dashboard.prior-period")}
           </div>
           <div className="font-openrunde text-heading leading-none text-muted-foreground">
             {priorTotal}
@@ -70,11 +81,11 @@ export function RevenueChart({ data, rangeLabel = "Selected range" }: RevenueCha
         <div className="ml-auto flex items-center gap-4 text-xs text-muted-foreground">
           <span className="inline-flex items-center gap-2">
             <span className="h-2 w-2 rounded-full bg-primary" />
-            Current
+            {t("console.dashboard.legend-current")}
           </span>
           <span className="inline-flex items-center gap-2">
             <span className="h-2 w-2 rounded-full bg-ring" />
-            Previous
+            {t("console.dashboard.legend-previous")}
           </span>
         </div>
       </div>

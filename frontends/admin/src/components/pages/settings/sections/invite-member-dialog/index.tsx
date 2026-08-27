@@ -23,6 +23,7 @@ import {
   type InviteMemberFormValues,
 } from "@/lib/admin/schemas/content/invite-member-schema";
 import { TEAM_ROLE_OPTIONS } from "@/components/pages/settings/config/options";
+import { useConsoleText } from "@/lib/admin/use-console-text";
 
 interface InviteMemberDialogProps {
   isOpen: boolean;
@@ -31,6 +32,7 @@ interface InviteMemberDialogProps {
 }
 
 export function InviteMemberDialog({ isOpen, onClose, onInvited }: InviteMemberDialogProps) {
+  const t = useConsoleText();
   const {
     register,
     control,
@@ -58,8 +60,10 @@ export function InviteMemberDialog({ isOpen, onClose, onInvited }: InviteMemberD
     };
 
     onInvited?.(member);
-    toast.success(`Invitation sent to ${member.email}`, {
-      description: `${member.name} joined as ${member.role}. Connect your backend to deliver real invites.`,
+    toast.success(t("console.settings.invite.sent").replace("{email}", member.email), {
+      description: t("console.settings.invite.sent-description")
+        .replace("{name}", member.name)
+        .replace("{role}", member.role),
     });
     onClose();
   };
@@ -68,15 +72,13 @@ export function InviteMemberDialog({ isOpen, onClose, onInvited }: InviteMemberD
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Invite member</DialogTitle>
-          <DialogDescription>
-            Send a workspace invite with a role. They will appear as Invited until they accept.
-          </DialogDescription>
+          <DialogTitle>{t("console.settings.invite.title")}</DialogTitle>
+          <DialogDescription>{t("console.settings.invite.description")}</DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit(submit)} className="flex flex-col gap-4">
           <Input
-            label="Full name"
+            label={t("console.settings.invite.name")}
             placeholder="Sofia Rossi"
             startIcon={<UserRound />}
             error={errors.name?.message}
@@ -85,7 +87,7 @@ export function InviteMemberDialog({ isOpen, onClose, onInvited }: InviteMemberD
 
           <Input
             type="email"
-            label="Work email"
+            label={t("console.settings.invite.email")}
             placeholder="sofia@aetheria.studio"
             startIcon={<Mail />}
             error={errors.email?.message}
@@ -97,18 +99,18 @@ export function InviteMemberDialog({ isOpen, onClose, onInvited }: InviteMemberD
             control={control}
             render={({ field }) => (
               <Select
-                label="Role"
+                label={t("console.settings.invite.role")}
                 value={field.value}
                 onChange={(e) => field.onChange(e.target.value)}
                 options={TEAM_ROLE_OPTIONS}
-                placeholder="Select a role"
+                placeholder={t("console.settings.invite.role-placeholder")}
                 error={errors.role?.message}
               />
             )}
           />
 
           <Textarea
-            label="Personal note (optional)"
+            label={t("console.settings.invite.note")}
             placeholder="Welcome to the Aetheria admin — start with Orders and Campaigns."
             rows={3}
             error={errors.note?.message}
@@ -124,7 +126,7 @@ export function InviteMemberDialog({ isOpen, onClose, onInvited }: InviteMemberD
               onClick={onClose}
               disabled={isSubmitting}
             >
-              Cancel
+              {t("console.common.cancel")}
             </Button>
             <Button
               type="submit"
@@ -134,7 +136,9 @@ export function InviteMemberDialog({ isOpen, onClose, onInvited }: InviteMemberD
               size="md"
               disabled={isSubmitting}
             >
-              {isSubmitting ? "Sending…" : "Send invite"}
+              {isSubmitting
+                ? t("console.settings.invite.sending")
+                : t("console.settings.invite.submit")}
             </Button>
           </div>
         </form>

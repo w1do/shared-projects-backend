@@ -1,9 +1,9 @@
 import CategoriesPage from "@/components/pages/categories";
+import { t } from "@/lib/admin/console-texts";
 
 export const metadata = {
-  title: "Categories · Ætheria Admin",
-  description:
-    "Manage cosmetic product catalog taxonomy, hierarchies, and category sales performance.",
+  title: `${t("console.nav.categories")} · Ætheria Admin`,
+  description: t("console.meta.categories-description"),
 };
 
 /**

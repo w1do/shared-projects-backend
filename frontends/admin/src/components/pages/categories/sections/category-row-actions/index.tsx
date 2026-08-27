@@ -9,6 +9,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/overlay/dropdown-menu";
 import type { Category } from "@/lib/admin/mocks/types";
+import { useConsoleText } from "@/lib/admin/use-console-text";
 
 interface CategoryRowActionsProps {
   category: Category;
@@ -23,6 +24,7 @@ export function CategoryRowActions({
   onDeleteClick,
   onMoveClick,
 }: CategoryRowActionsProps) {
+  const t = useConsoleText();
   // Об успехе сообщает страница после ответа платформы: здесь только открывается
   // диалог подтверждения, и прежний тост рапортовал об удалении заранее.
   const handleDelete = () => onDeleteClick(category.id);
@@ -37,17 +39,17 @@ export function CategoryRowActions({
       <DropdownMenuContent align="end" size="sm">
         <DropdownMenuItem onClick={() => onEditClick(category)}>
           <Edit2 className="size-4" />
-          <span>Edit details</span>
+          <span>{t("console.common.edit")}</span>
         </DropdownMenuItem>
         {onMoveClick && (
           <DropdownMenuItem onClick={() => onMoveClick(category)}>
             <FolderTree className="size-4" />
-            <span>Move to…</span>
+            <span>{t("console.categories.move.menu")}</span>
           </DropdownMenuItem>
         )}
         <DropdownMenuItem onClick={handleDelete} variant="destructive">
           <Trash2 className="size-4" />
-          <span>Delete category</span>
+          <span>{t("console.categories.delete")}</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

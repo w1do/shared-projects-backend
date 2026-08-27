@@ -58,6 +58,22 @@ export function descendantIds(nodes: readonly TreeNode[], id: string): Set<strin
 }
 
 /**
+ * Число прямых потомков каждого узла по плоскому списку. Узлы без потомков
+ * в карте отсутствуют — вызывающий трактует это как ноль.
+ */
+export function countChildren(nodes: readonly TreeNode[]): Map<string, number> {
+  const counts = new Map<string, number>();
+
+  for (const node of nodes) {
+    const parent = node.parentId ?? null;
+    if (parent === null) continue;
+    counts.set(parent, (counts.get(parent) ?? 0) + 1);
+  }
+
+  return counts;
+}
+
+/**
  * Родители, которых нельзя предложить для узла: он сам и всё его поддерево.
  * Иначе оператор мог бы замкнуть дерево на себя.
  */

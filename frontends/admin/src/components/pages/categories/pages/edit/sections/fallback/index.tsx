@@ -2,6 +2,7 @@
 
 import { ArrowLeft, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/inputs/button";
+import { useConsoleText } from "@/lib/admin/use-console-text";
 
 interface CategoryEditFallbackProps {
   variant: "loading" | "not-found";
@@ -9,6 +10,7 @@ interface CategoryEditFallbackProps {
 }
 
 export function CategoryEditFallback({ variant, categoryId }: CategoryEditFallbackProps) {
+  const t = useConsoleText();
   if (variant === "loading") {
     return (
       <div className="flex flex-col gap-8">
@@ -27,10 +29,11 @@ export function CategoryEditFallback({ variant, categoryId }: CategoryEditFallba
         <AlertCircle size={32} />
       </div>
       <div>
-        <h2 className="text-xl font-medium text-foreground">Category Not Found</h2>
+        <h2 className="text-xl font-medium text-foreground">
+          {t("console.categories.not-found.title")}
+        </h2>
         <p className="mt-1 max-w-sm text-xs text-muted-foreground-lighter">
-          We couldn&apos;t find a cosmetic category with the ID &quot;{categoryId}&quot;. It may
-          have been deleted or never existed.
+          {t("console.categories.not-found.text").replace("{id}", categoryId)}
         </p>
       </div>
       <Button
@@ -40,7 +43,7 @@ export function CategoryEditFallback({ variant, categoryId }: CategoryEditFallba
         shape="circle"
         startIcon={<ArrowLeft />}
       >
-        Back to categories
+        {t("console.categories.back")}
       </Button>
     </div>
   );

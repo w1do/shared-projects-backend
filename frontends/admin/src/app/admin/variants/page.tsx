@@ -1,8 +1,11 @@
-import VariantsPage from "@/components/pages/variants";
+import type { Metadata } from "next";
 
-export const metadata = {
-  title: "Variant Links · Ætheria Admin",
-  description: "Connect standalone catalog products into option switchers on the storefront.",
+import VariantsPage from "@/components/pages/variants";
+import { t } from "@/lib/admin/console-texts";
+
+export const metadata: Metadata = {
+  title: `${t("console.nav.variants")} · Ætheria Admin`,
+  description: t("console.meta.variants-description"),
 };
 
 /**

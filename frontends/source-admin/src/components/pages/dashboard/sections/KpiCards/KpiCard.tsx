@@ -1,6 +1,7 @@
 import { AreaChart } from "@/components/ui/charts/area-chart";
 import { Badge } from "@/components/ui/data-display/badge";
 import { ArrowDownRight, ArrowUpRight } from "lucide-react";
+import { t } from "@/lib/admin/console-texts";
 
 interface KpiItem {
   label: string;
@@ -27,7 +28,11 @@ export function KpiCard({ item }: KpiCardProps) {
       }
     >
       <div className="flex items-start justify-between">
-        <span className={"text-xs " + (accent ? "text-ring" : "text-muted-foreground")}>
+        <span
+          className={
+            "text-xs " + (accent ? "text-ring" : "text-muted-foreground")
+          }
+        >
           {item.label}
         </span>
         <Badge
@@ -45,9 +50,12 @@ export function KpiCard({ item }: KpiCardProps) {
             {item.value}
           </div>
           <div
-            className={"text-xs mt-1 " + (accent ? "text-ring" : "text-muted-foreground-lighter")}
+            className={
+              "text-xs mt-1 " +
+              (accent ? "text-ring" : "text-muted-foreground-lighter")
+            }
           >
-            vs. prior 30 days
+            {t("console.dashboard.kpi-vs-prior")}
           </div>
         </div>
         <div className="h-12 w-24 shrink-0">

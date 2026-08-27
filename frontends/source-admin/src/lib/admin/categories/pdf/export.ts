@@ -1,7 +1,7 @@
 import type { Category } from "@/lib/admin/mocks/types";
-import { formatCurrency } from "@/lib/utils";
 import { renderHtmlToPdf } from "@/lib/admin/pdf/load-html2pdf";
-import { generateCategoryRevenueChartSvg, generateCategorySwatchSvg } from "./chart";
+import { countChildren } from "@/lib/admin/data-source/category-tree";
+import { generateCategorySwatchSvg } from "./chart";
 import { generateCategoryReportHtml } from "./template";
 import { semanticColors } from "@/lib/theme-colors";
 import { siteConfig } from "@/lib/site-config";
@@ -16,18 +16,7 @@ function sortByDefaultOrder(categories: Category[]): Category[] {
   return [...categories].sort((a, b) => a.displayOrder - b.displayOrder);
 }
 
-function formatGrowth(value: number): string {
-  const color =
-    value > 0
-      ? semanticColors.success
-      : value < 0
-        ? semanticColors.destructive
-        : semanticColors.mutedForeground;
-  const sign = value > 0 ? "+" : "";
-  return `<span style="font-weight: 600; color: ${color};">${sign}${value}%</span>`;
-}
-
-function buildTableRows(categories: Category[]): string {
+function buildTableRows(categories: Category[], childCounts: Map<string, number>): string {
   return sortByDefaultOrder(categories)
     .map((category, index) => {
       return `
@@ -47,24 +36,31 @@ function buildTableRows(categories: Category[]): string {
             ${category.status}
           </span>
         </td>
-        <td class="col-products" style="font-weight: 500; color: ${semanticColors.foreground};">${category.productCount}</td>
-        <td class="col-revenue" style="font-weight: 600; color: ${semanticColors.foreground};">${formatCurrency(category.revenue)}</td>
-        <td class="col-growth">${formatGrowth(category.growthYoY)}</td>
+        <td class="col-children" style="font-weight: 500; color: ${semanticColors.foreground};">${childCounts.get(category.id) ?? 0}</td>
       </tr>
     `;
     })
     .join("");
 }
 
+/**
+ * PDF-отчёт по категориям: только структура дерева (реальные данные платформы),
+ * без долларовых показателей демо-шаблона.
+ */
 export async function exportCategoriesToPDF(categories: Category[]) {
   if (!categories || categories.length === 0) return;
 
-  const totalProducts = categories.reduce((sum, category) => sum + category.productCount, 0);
-  const totalRevenue = categories.reduce((sum, category) => sum + category.revenue, 0);
+  const childCounts = countChildren(
+    categories.map((category) => ({ id: category.id, parentId: category.parentId ?? null })),
+  );
+  const rootCategories = categories.filter((category) => !category.parentId).length;
+  const treeDepth = categories.reduce((max, category) => Math.max(max, (category.depth ?? 0) + 1), 1);
 
   const topCategory =
-    [...categories].sort((a, b) => b.revenue - a.revenue)[0] ??
-    ({ name: "N/A", revenue: 0 } as Category);
+    [...categories].sort(
+      (a, b) => (childCounts.get(b.id) ?? 0) - (childCounts.get(a.id) ?? 0),
+    )[0] ?? ({ id: "", name: "N/A" } as Category);
+  const topSubcount = childCounts.get(topCategory.id) ?? 0;
 
   const dateStr = new Date().toLocaleDateString("en-US", {
     year: "numeric",
@@ -76,12 +72,11 @@ export async function exportCategoriesToPDF(categories: Category[]) {
 
   const htmlContent = generateCategoryReportHtml({
     totalCategories: categories.length,
-    totalProductsStr: `${totalProducts} Items`,
-    totalRevenueStr: formatCurrency(totalRevenue),
+    rootCategories,
+    treeDepth,
     topCategoryName: topCategory.name,
-    topCategoryRevenueStr: formatCurrency(topCategory.revenue),
-    revenueChartSvg: generateCategoryRevenueChartSvg(categories),
-    tableRows: buildTableRows(categories),
+    topCategorySubtreeStr: `${topSubcount} direct subcategories`,
+    tableRows: buildTableRows(categories, childCounts),
     currentYear: new Date().getFullYear(),
     dateStr,
   });

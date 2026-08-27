@@ -25,9 +25,11 @@ import {
 } from "@/hooks/admin/localization";
 import type { PlatformTranslation } from "@/lib/admin/data-source/platform/localization";
 import { SettingsSection } from "./shared/SettingsSection";
+import { useConsoleText } from "@/lib/admin/use-console-text";
 
 /** Управление языками проекта: локали, словарь переводов, автоперевод. */
 export function LanguagesSection() {
+  const t = useConsoleText();
   const { data: locales = [], isPending: localesPending } = useProjectLocalesQuery();
   const saveLocales = useSaveProjectLocalesMutation();
   const { data: translations = [] } = useTranslationsQuery();
@@ -52,7 +54,7 @@ export function LanguagesSection() {
     if (locale === "" || locales.includes(locale)) return;
     saveLocales.mutate([...locales, locale], {
       onSuccess: () => {
-        toast.success(`Locale "${locale}" added.`);
+        toast.success(t("console.languages.locales.added").replace("{locale}", locale));
         setNewLocale("");
       },
       onError: (error: Error) => toast.error(error.message),
@@ -64,9 +66,7 @@ export function LanguagesSection() {
       locales.filter((item) => item !== locale),
       {
         onSuccess: () =>
-          toast.success(
-            `Locale "${locale}" removed. Saved translations for it are kept and will return if the locale is re-added.`,
-          ),
+          toast.success(t("console.languages.locales.removed").replace("{locale}", locale)),
         onError: (error: Error) => toast.error(error.message),
       },
     );
@@ -76,20 +76,24 @@ export function LanguagesSection() {
     <div className="flex flex-col gap-8" data-testid="languages-section">
       <SettingsSection
         icon={Languages}
-        title="Project locales"
-        description="Languages available for translations. The first locale is the default one."
+        title={t("console.languages.locales.title")}
+        description={t("console.languages.locales.description")}
       >
         <div className="flex flex-wrap items-center gap-2" data-testid="locale-list">
           {locales.map((locale, index) => (
             <Badge key={locale} color={index === 0 ? "primary" : "neutral"} variant="soft" shape="circle">
               <span className="uppercase">{locale}</span>
-              {index === 0 && <span className="ms-1 text-caption">· default</span>}
+              {index === 0 && (
+                <span className="ms-1 text-caption">
+                  {t("console.languages.locales.default")}
+                </span>
+              )}
               {index > 0 && (
                 <IconButton
                   variant="ghost"
                   size="sm"
                   shape="circle"
-                  aria-label={`Remove locale ${locale}`}
+                  aria-label={t("console.languages.locales.remove").replace("{locale}", locale)}
                   disabled={saveLocales.isPending}
                   onClick={() => removeLocale(locale)}
                 >
@@ -99,12 +103,14 @@ export function LanguagesSection() {
             </Badge>
           ))}
           {!localesPending && locales.length === 0 && (
-            <span className="text-caption text-muted-foreground-lighter">No locales configured.</span>
+            <span className="text-caption text-muted-foreground-lighter">
+              {t("console.languages.locales.empty")}
+            </span>
           )}
         </div>
         <div className="flex max-w-xs items-center gap-2">
           <Input
-            placeholder="e.g. en"
+            placeholder={t("console.languages.locales.placeholder")}
             value={newLocale}
             onChange={(event) => setNewLocale(event.target.value)}
             data-testid="locale-input"
@@ -118,20 +124,20 @@ export function LanguagesSection() {
             disabled={saveLocales.isPending}
             onClick={addLocale}
           >
-            Add
+            {t("console.languages.locales.add")}
           </Button>
         </div>
       </SettingsSection>
 
       <SettingsSection
         icon={Sparkles}
-        title="Translation dictionary"
-        description="Interface strings per locale. Machine-translated values are marked until reviewed."
+        title={t("console.languages.dictionary.title")}
+        description={t("console.languages.dictionary.description")}
       >
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div className="max-w-xs w-full">
             <Input
-              placeholder="Search keys…"
+              placeholder={t("console.languages.dictionary.search")}
               value={search}
               onChange={(event) => setSearch(event.target.value)}
               data-testid="dictionary-search"
@@ -146,19 +152,20 @@ export function LanguagesSection() {
             disabled={translateMissing.isPending}
             onClick={() =>
               translateMissing.mutate(undefined, {
-                onSuccess: () => toast.success("Auto-translation queued. Missing locales will be filled in the background."),
+                onSuccess: () =>
+                  toast.success(t("console.languages.dictionary.translate-queued")),
                 onError: (error: Error) => toast.error(error.message),
               })
             }
             data-testid="translate-missing"
           >
-            Translate missing
+            {t("console.languages.dictionary.translate-missing")}
           </Button>
         </div>
 
         <div className="flex max-w-md items-center gap-2">
           <Input
-            placeholder="New key, e.g. nav.dashboard"
+            placeholder={t("console.languages.dictionary.new-key")}
             value={newKey}
             onChange={(event) => setNewKey(event.target.value)}
             data-testid="dictionary-new-key"
@@ -175,7 +182,7 @@ export function LanguagesSection() {
                 { id: null, key: newKey.trim(), values: { [locales[0]]: newKey.trim() } },
                 {
                   onSuccess: () => {
-                    toast.success("Key added.");
+                    toast.success(t("console.languages.dictionary.key-added"));
                     setNewKey("");
                   },
                   onError: (error: Error) => toast.error(error.message),
@@ -183,27 +190,27 @@ export function LanguagesSection() {
               )
             }
           >
-            Add key
+            {t("console.languages.dictionary.add-key")}
           </Button>
         </div>
 
         <Table data-testid="dictionary-table">
           <TableHeader>
             <TableRow>
-              <TableHead>Key</TableHead>
+              <TableHead>{t("console.languages.dictionary.column-key")}</TableHead>
               {locales.map((locale) => (
                 <TableHead key={locale} className="uppercase">
                   {locale}
                 </TableHead>
               ))}
-              <TableHead className="w-24 text-right">Actions</TableHead>
+              <TableHead className="w-24 text-right">{t("console.common.actions")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {filtered.length === 0 && (
               <TableRow>
                 <TableCell colSpan={locales.length + 2} className="py-8 text-center text-caption text-muted-foreground-lighter">
-                  No dictionary keys yet.
+                  {t("console.languages.dictionary.empty")}
                 </TableCell>
               </TableRow>
             )}
@@ -218,6 +225,7 @@ export function LanguagesSection() {
 }
 
 function DictionaryRow({ row, locales }: { row: PlatformTranslation; locales: string[] }) {
+  const t = useConsoleText();
   const upsert = useUpsertTranslationMutation();
   const remove = useDeleteTranslationMutation();
   const [values, setValues] = React.useState<Record<string, string>>(row.values);
@@ -236,7 +244,8 @@ function DictionaryRow({ row, locales }: { row: PlatformTranslation; locales: st
     upsert.mutate(
       { id: row.id, key: row.key, values: next },
       {
-        onSuccess: () => toast.success(`"${row.key}" saved.`),
+        onSuccess: () =>
+          toast.success(t("console.languages.dictionary.saved").replace("{key}", row.key)),
         onError: (error: Error) => toast.error(error.message),
       },
     );
@@ -255,7 +264,7 @@ function DictionaryRow({ row, locales }: { row: PlatformTranslation; locales: st
             />
             {row.machine?.[locale] && (
               <Badge color="warning" variant="soft" shape="circle" data-testid="machine-badge">
-                machine
+                {t("console.languages.dictionary.machine")}
               </Badge>
             )}
           </div>
@@ -270,18 +279,21 @@ function DictionaryRow({ row, locales }: { row: PlatformTranslation; locales: st
             disabled={!dirty || upsert.isPending}
             onClick={save}
           >
-            Save
+            {t("console.common.save")}
           </Button>
           <IconButton
             variant="ghost"
             size="sm"
             shape="circle"
             color="error"
-            aria-label={`Delete ${row.key}`}
+            aria-label={t("console.languages.dictionary.delete").replace("{key}", row.key)}
             disabled={remove.isPending}
             onClick={() =>
               remove.mutate(row.id, {
-                onSuccess: () => toast.success(`"${row.key}" deleted.`),
+                onSuccess: () =>
+                  toast.success(
+                    t("console.languages.dictionary.deleted").replace("{key}", row.key),
+                  ),
                 onError: (error: Error) => toast.error(error.message),
               })
             }

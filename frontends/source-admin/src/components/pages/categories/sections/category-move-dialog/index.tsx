@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/overlay/dialog";
 import type { Category } from "@/lib/admin/mocks/types";
 import { descendantIds } from "@/lib/admin/data-source/category-tree";
+import { useConsoleText } from "@/lib/admin/use-console-text";
 
 type CategoryMoveDialogProps = {
   open: boolean;
@@ -31,6 +32,7 @@ export function CategoryMoveDialog({
   onClose,
   onConfirm,
 }: CategoryMoveDialogProps) {
+  const t = useConsoleText();
   const [parent, setParent] = React.useState<string | null>(null);
 
   const options = React.useMemo(
@@ -69,22 +71,23 @@ export function CategoryMoveDialog({
           <FolderTree className="size-6" />
         </div>
 
-        <DialogTitle className="text-heading-lg font-semibold">Move category</DialogTitle>
+        <DialogTitle className="text-heading-lg font-semibold">{t("console.categories.move.title")}</DialogTitle>
 
         <DialogDescription className="mt-2 text-xs text-muted-foreground leading-relaxed">
-          Choose a new parent for “{category.name}”. Its subcategories move with it.
+          {t("console.categories.move.subtitle").replace("{name}", category.name)}
         </DialogDescription>
 
         <div className="mt-4">
           <CategoryTreeSelect
             mode="single"
-            label="New parent"
+            label={t("console.categories.move.parent-label")}
             allowRoot
             options={options}
             disabledIds={disabledIds}
             value={parent}
             onChange={setParent}
             data-testid="category-move-parent"
+            rootLabel={t("console.categories.move.root")}
           />
         </div>
 
@@ -97,7 +100,7 @@ export function CategoryMoveDialog({
             disabled={isBusy}
             onClick={onClose}
           >
-            Cancel
+            {t("console.common.cancel")}
           </Button>
           <Button
             variant="contained"
@@ -108,7 +111,7 @@ export function CategoryMoveDialog({
             disabled={isBusy}
             onClick={() => onConfirm(parent ?? "")}
           >
-            {isBusy ? "Moving..." : "Move category"}
+            {isBusy ? t("console.categories.move.moving") : t("console.categories.move.submit")}
           </Button>
         </div>
       </DialogContent>

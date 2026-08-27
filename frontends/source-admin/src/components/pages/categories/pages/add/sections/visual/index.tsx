@@ -11,8 +11,10 @@ import { AdminDynamicStyles } from "@/components/admin/AdminDynamicStyles";
 import type { CategoryFormValues } from "@/lib/admin/schemas/catalog/category-form-schema";
 import { iconOptions } from "@/components/pages/categories/config/icons";
 import { gradientPresets } from "@/lib/admin/shared/gradient-presets";
+import { useConsoleText } from "@/lib/admin/use-console-text";
 
 export function VisualSection() {
+  const t = useConsoleText();
   const {
     register,
     control,
@@ -30,17 +32,17 @@ export function VisualSection() {
     <Card variant="form-section">
       <div>
         <h2 className="text-heading font-medium leading-tight text-foreground">
-          Visual & Performance
+          {t("console.categories.form.visual-title")}
         </h2>
         <p className="text-xs text-muted-foreground-lighter">
-          Pick a cover gradient and icon, then seed the merchandising metrics for this category.
+          {t("console.categories.form.visual-subtitle")}
         </p>
       </div>
 
       <div className="flex flex-col gap-4 border-t border-border/40 pt-8">
         <AdminDynamicStyles gradients={gradients} />
         <h4 className="text-xs font-bold text-foreground uppercase tracking-wider">
-          Visual Design
+          {t("console.categories.form.visual-design")}
         </h4>
 
         <Controller
@@ -49,15 +51,15 @@ export function VisualSection() {
           render={({ field }) => (
             <div className="space-y-2">
               <Label className="text-xs font-medium text-muted-foreground block">
-                Thumbnail Image (1:1)
+                {t("console.categories.form.thumbnail")}
               </Label>
               <ImageUploader
                 value={field.value ? [field.value] : []}
                 onChange={(images) => field.onChange(images[0] || "")}
                 maxFiles={1}
                 multiple={false}
-                placeholder="Upload category thumbnail"
-                description="Square cover shown on category cards (1:1)"
+                placeholder={t("console.categories.form.thumbnail-placeholder")}
+                description={t("console.categories.form.thumbnail-hint")}
                 aspectRatio="square"
                 previewClassName="aspect-square w-full max-w-48"
                 error={errors.thumbnail?.message}
@@ -68,7 +70,9 @@ export function VisualSection() {
 
         {/* Cover Gradient Presets */}
         <div className="flex flex-col gap-2">
-          <span className="text-xs font-semibold text-muted-foreground">Cover Gradient Preset</span>
+          <span className="text-xs font-semibold text-muted-foreground">
+            {t("console.categories.form.gradient-preset")}
+          </span>
           <div className="grid grid-cols-3 gap-2">
             {gradientPresets.map((preset) => (
               <Button
@@ -102,9 +106,13 @@ export function VisualSection() {
           render={({ field }) => (
             <div className="space-y-2">
               <Label className="text-xs font-medium text-muted-foreground block">
-                Category Icon
+                {t("console.categories.form.icon")}
               </Label>
-              <div className="grid grid-cols-6 gap-2" role="group" aria-label="Category icon">
+              <div
+                className="grid grid-cols-6 gap-2"
+                role="group"
+                aria-label={t("console.categories.form.icon")}
+              >
                 {iconOptions.map((opt) => {
                   const Icon = opt.icon;
                   const isSelected = field.value === opt.name;
@@ -131,34 +139,17 @@ export function VisualSection() {
           )}
         />
 
-        {/* Sort Order and Metrics */}
+        {/* Порядок сортировки. Торговых метрик у платформы нет — полей нет. */}
         <div className="grid grid-cols-2 gap-4">
           <Input
             type="number"
             min="1"
             className="text-xs"
             {...register("displayOrder")}
-            label="Display Order"
+            label={t("console.categories.form.display-order")}
             error={errors.displayOrder?.message}
           />
-
-          <Input
-            type="number"
-            step="0.1"
-            className="text-xs"
-            {...register("growthYoY")}
-            label="Growth YoY (%)"
-            error={errors.growthYoY?.message}
-          />
         </div>
-
-        <Input
-          type="number"
-          className="text-xs"
-          {...register("revenue")}
-          label="Revenue ($)"
-          error={errors.revenue?.message}
-        />
       </div>
     </Card>
   );

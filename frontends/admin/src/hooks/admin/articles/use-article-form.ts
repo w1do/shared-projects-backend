@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import type { BlogFormValues } from "@/lib/admin/schemas/content/blog-form-schema";
+import { t } from "@/lib/admin/console-texts";
 import { useCreateArticleMutation, useUpdateArticleMutation } from "./use-article-mutations";
 
 export function useCreateArticleForm() {
@@ -12,10 +13,10 @@ export function useCreateArticleForm() {
   const submit = async (values: BlogFormValues) => {
     try {
       await createMutation.mutateAsync(values);
-      toast.success("Article saved as a draft");
+      toast.success(t("console.blogs.toast.created"));
       router.push("/admin/blogs");
     } catch {
-      toast.error("Failed to create article.");
+      toast.error(t("console.blogs.toast.create-failed"));
       throw new Error("create-article-failed");
     }
   };
@@ -30,10 +31,10 @@ export function useUpdateArticleForm(articleId: string) {
   const submit = async (values: BlogFormValues) => {
     try {
       await updateMutation.mutateAsync(values);
-      toast.success("Article updated successfully");
+      toast.success(t("console.blogs.toast.updated"));
       router.push("/admin/blogs");
     } catch {
-      toast.error("Failed to update article.");
+      toast.error(t("console.blogs.toast.update-failed"));
       throw new Error("update-article-failed");
     }
   };

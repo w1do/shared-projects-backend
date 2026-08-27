@@ -24,6 +24,9 @@ export interface CustomerActivity {
   description: string;
 }
 
+/** Уровень лояльности демо-шаблона. Платформа лояльность не ведёт. */
+export type CustomerTier = "Bronze" | "Silver" | "Gold" | "Platinum";
+
 export interface DetailedCustomer {
   id: string;
   name: string;
@@ -32,7 +35,8 @@ export interface DetailedCustomer {
   avatar: string;
   avatarUrl?: string;
   gradient: [string, string];
-  tier: "Bronze" | "Silver" | "Gold" | "Platinum";
+  /** Отсутствует в живом режиме: платформа не ведёт уровни лояльности. */
+  tier?: CustomerTier;
   status: "Active" | "Inactive";
   skinProfile: CustomerSkinProfile;
   totalSpent: number;

@@ -2,12 +2,13 @@ import { ShieldCheck, Sparkles } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { Badge } from "@/components/ui/data-display/badge";
+import { t } from "@/lib/admin/console-texts";
 import { siteConfig } from "@/lib/site-config";
 
 const metrics = [
-  { value: "12", label: "Beauty houses" },
-  { value: "48K", label: "SKUs managed" },
-  { value: "99.9%", label: "Uptime SLA" },
+  { value: "12", label: t("console.login.metric-brands") },
+  { value: "48K", label: t("console.login.metric-skus") },
+  { value: "99.9%", label: t("console.login.metric-uptime") },
 ];
 
 export function LoginShowcase() {
@@ -19,7 +20,10 @@ export function LoginShowcase() {
       <div className="auth-glow-warm pointer-events-none absolute -right-16 -top-16" />
       <div className="auth-glow-cool pointer-events-none absolute -bottom-16 -left-16" />
 
-      <Link href="/frontends/source-admin/public" className="relative flex items-center gap-2">
+      <Link
+        href="/frontends/source-admin/public"
+        className="relative flex items-center gap-2"
+      >
         <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary-foreground/10 backdrop-blur-sm">
           <Image
             src={siteConfig.assets.logoSrc}
@@ -30,8 +34,12 @@ export function LoginShowcase() {
           />
         </div>
         <div className="leading-tight">
-          <p className="font-openrunde text-body-lg">{siteConfig.copy.showcaseTitle}</p>
-          <p className="text-caption text-primary-foreground/60">Operations console</p>
+          <p className="font-openrunde text-body-lg">
+            {siteConfig.copy.showcaseTitle}
+          </p>
+          <p className="text-caption text-primary-foreground/60">
+            {t("console.login.showcase-tagline")}
+          </p>
         </div>
       </Link>
 
@@ -44,14 +52,13 @@ export function LoginShowcase() {
           startIcon={<Sparkles />}
           className="backdrop-blur-sm"
         >
-          Multi-brand beauty commerce
+          {t("console.login.showcase-badge")}
         </Badge>
         <h2 className="mt-6 font-openrunde text-heading-xl leading-tight">
-          Run every brand from one calm, premium workspace.
+          {t("console.login.showcase-title")}
         </h2>
         <p className="mt-4 text-body-lg text-primary-foreground/70">
-          Catalogs, orders, promotions and insights — orchestrated with the clarity your team
-          deserves.
+          {t("console.login.showcase-subtitle")}
         </p>
       </div>
 
@@ -59,17 +66,21 @@ export function LoginShowcase() {
         <div className="flex items-center gap-6">
           {metrics.map((metric, index) => (
             <div key={metric.label} className="flex items-center gap-6">
-              {index > 0 && <div className="auth-metric-divider bg-primary-foreground/15" />}
+              {index > 0 && (
+                <div className="auth-metric-divider bg-primary-foreground/15" />
+              )}
               <div>
                 <p className="font-openrunde text-heading-sm">{metric.value}</p>
-                <p className="text-caption text-primary-foreground/60">{metric.label}</p>
+                <p className="text-caption text-primary-foreground/60">
+                  {metric.label}
+                </p>
               </div>
             </div>
           ))}
         </div>
         <div className="mt-8 flex items-center gap-2 text-caption text-primary-foreground/60">
           <ShieldCheck className="h-4 w-4" />
-          SOC 2 Type II compliant infrastructure
+          {t("console.login.showcase-compliance")}
         </div>
       </div>
     </aside>

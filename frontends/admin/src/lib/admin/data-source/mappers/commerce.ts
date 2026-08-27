@@ -13,34 +13,38 @@ import type {
 } from "../api-types";
 import { semanticColors } from "@/lib/theme-colors";
 import { initials, money, orderStatusMap, titleCase } from "./shared";
+import { t } from "@/lib/admin/console-texts";
 import { findCustomerByEmailOrName } from "@/lib/admin/mocks/customers";
 
-export function mapDashboard(stats: ApiDashboardStats, revenue: ApiRevenuePoint[]) {
+export function mapDashboard(
+  stats: ApiDashboardStats,
+  revenue: ApiRevenuePoint[],
+) {
   return {
     kpis: [
       {
-        label: "Revenue",
+        label: t("console.dashboard.kpi-revenue"),
         value: `$${money(stats.revenue).toLocaleString()}`,
         delta: 0,
         accent: true,
         spark: revenue.map((p) => money(p.revenue)),
       },
       {
-        label: "Orders",
+        label: t("console.dashboard.kpi-payments"),
         value: stats.orders.toLocaleString(),
         delta: 0,
         accent: false,
         spark: revenue.map((p) => p.orders),
       },
       {
-        label: "Average Order Value",
+        label: t("console.dashboard.kpi-average-payment"),
         value: `$${money(stats.averageOrderValue).toLocaleString()}`,
         delta: 0,
         accent: false,
         spark: revenue.map((p) => money(p.revenue) / Math.max(1, p.orders)),
       },
       {
-        label: "Customers",
+        label: t("console.dashboard.kpi-customers"),
         value: stats.customers.toLocaleString(),
         delta: 0,
         accent: false,
@@ -96,8 +100,20 @@ export function mapOrder(order: ApiOrder | ApiOrderSummary): DetailedOrder {
       phone: "",
       initials: initials(order.customer?.name ?? "Guest Customer"),
       avatarUrl: findCustomerByEmailOrName(order.customer?.email)?.avatarUrl,
-      shippingAddress: { street: "", city: "", state: "", postalCode: "", country: "" },
-      billingAddress: { street: "", city: "", state: "", postalCode: "", country: "" },
+      shippingAddress: {
+        street: "",
+        city: "",
+        state: "",
+        postalCode: "",
+        country: "",
+      },
+      billingAddress: {
+        street: "",
+        city: "",
+        state: "",
+        postalCode: "",
+        country: "",
+      },
     },
     items:
       "items" in order && order.items
@@ -112,7 +128,9 @@ export function mapOrder(order: ApiOrder | ApiOrderSummary): DetailedOrder {
           }))
         : [],
     status,
-    paymentMethod: titleCase(order.paymentMethod) as DetailedOrder["paymentMethod"],
+    paymentMethod: titleCase(
+      order.paymentMethod,
+    ) as DetailedOrder["paymentMethod"],
     shippingMethod: "Standard Shipping",
     trackingNumber: null,
     placedAt,
@@ -129,7 +147,14 @@ export function mapOrder(order: ApiOrder | ApiOrderSummary): DetailedOrder {
             description: event.description,
             done: event.done ?? true,
           }))
-        : [{ title: status, timestamp: placedAt, description: `Order is ${status}`, done: true }],
+        : [
+            {
+              title: status,
+              timestamp: placedAt,
+              description: `Order is ${status}`,
+              done: true,
+            },
+          ],
   } as DetailedOrder;
 }
 
@@ -140,17 +165,24 @@ export function mapCustomer(customer: ApiCustomer): DetailedCustomer {
     email: customer.email,
     phone: "",
     avatar: initials(customer.name),
-    avatarUrl: customer.avatarUrl || findCustomerByEmailOrName(customer.email)?.avatarUrl,
+    avatarUrl:
+      customer.avatarUrl ||
+      findCustomerByEmailOrName(customer.email)?.avatarUrl,
     gradient: [semanticColors.accent, semanticColors.brandAccentHover],
-    tier: titleCase(customer.tier) as DetailedCustomer["tier"],
+    tier: customer.tier
+      ? (titleCase(customer.tier) as NonNullable<DetailedCustomer["tier"]>)
+      : undefined,
     status: customer.status ?? "Active",
     skinProfile: {
-      skinType: titleCase(customer.skinType) as DetailedCustomer["skinProfile"]["skinType"],
+      skinType: titleCase(
+        customer.skinType,
+      ) as DetailedCustomer["skinProfile"]["skinType"],
       skinConcerns: customer.skinConcerns ?? [],
     },
     totalSpent: money(customer.totalSpent),
     totalOrders: customer.totalOrders,
-    joinedAt: customer.joinedAt ?? customer.createdAt ?? new Date().toISOString(),
+    joinedAt:
+      customer.joinedAt ?? customer.createdAt ?? new Date().toISOString(),
     addresses: {
       shipping: { street: "", city: "", country: "", zip: "" },
       billing: { street: "", city: "", country: "", zip: "" },

@@ -10,9 +10,9 @@ import { cn } from "@/lib/utils";
 export interface KpiStat {
   label: string;
   value: string;
-  delta: string;
+  delta?: string;
   icon: LucideIcon;
-  trend: number[];
+  trend?: number[];
   accent?: boolean;
 }
 
@@ -27,7 +27,7 @@ export function KpiStatCard({ label, value, delta, icon: Icon, trend, accent }: 
     },
   } satisfies ChartConfig;
 
-  const chartData = trend.map((val) => ({
+  const chartData = (trend ?? []).map((val) => ({
     value: val,
   }));
 
@@ -55,37 +55,41 @@ export function KpiStatCard({ label, value, delta, icon: Icon, trend, accent }: 
           <span className="font-sans text-3xl font-semibold tracking-tight text-foreground">
             {value}
           </span>
-          <span
-            className={cn(
-              "text-xs font-medium tracking-normal",
-              accent ? "font-semibold text-primary" : "text-success",
-            )}
-          >
-            {delta}
-          </span>
+          {delta && (
+            <span
+              className={cn(
+                "text-xs font-medium tracking-normal",
+                accent ? "font-semibold text-primary" : "text-success",
+              )}
+            >
+              {delta}
+            </span>
+          )}
         </div>
 
-        <div className="h-10 w-32 overflow-hidden">
-          <ChartContainer config={chartConfig} className="aspect-auto h-full w-full">
-            <AreaChart data={chartData} margin={{ top: 2, right: 2, bottom: 2, left: 2 }}>
-              <defs>
-                <linearGradient id={`kpi-gradient-${gradientId}`} x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="var(--color-value)" stopOpacity={0.15} />
-                  <stop offset="100%" stopColor="var(--color-value)" stopOpacity={0} />
-                </linearGradient>
-              </defs>
-              <Area
-                type="monotone"
-                dataKey="value"
-                stroke="var(--color-value)"
-                strokeWidth={1.5}
-                fill={`url(#kpi-gradient-${gradientId})`}
-                dot={false}
-                activeDot={false}
-              />
-            </AreaChart>
-          </ChartContainer>
-        </div>
+        {chartData.length > 0 && (
+          <div className="h-10 w-32 overflow-hidden">
+            <ChartContainer config={chartConfig} className="aspect-auto h-full w-full">
+              <AreaChart data={chartData} margin={{ top: 2, right: 2, bottom: 2, left: 2 }}>
+                <defs>
+                  <linearGradient id={`kpi-gradient-${gradientId}`} x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="var(--color-value)" stopOpacity={0.15} />
+                    <stop offset="100%" stopColor="var(--color-value)" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <Area
+                  type="monotone"
+                  dataKey="value"
+                  stroke="var(--color-value)"
+                  strokeWidth={1.5}
+                  fill={`url(#kpi-gradient-${gradientId})`}
+                  dot={false}
+                  activeDot={false}
+                />
+              </AreaChart>
+            </ChartContainer>
+          </div>
+        )}
       </CardContent>
     </Card>
   );

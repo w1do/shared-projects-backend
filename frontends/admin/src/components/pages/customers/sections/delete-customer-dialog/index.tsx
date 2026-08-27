@@ -9,6 +9,7 @@ import {
   DialogDescription,
 } from "@/components/ui/overlay/dialog";
 import type { DetailedCustomer } from "@/lib/admin/mocks/customers";
+import { useConsoleText } from "@/lib/admin/use-console-text";
 
 interface DeleteCustomerDialogProps {
   isOpen: boolean;
@@ -23,6 +24,8 @@ export function DeleteCustomerDialog({
   onConfirm,
   customer,
 }: DeleteCustomerDialogProps) {
+  const t = useConsoleText();
+
   if (!customer) return null;
 
   return (
@@ -37,16 +40,19 @@ export function DeleteCustomerDialog({
           <Trash2 className="size-6" />
         </div>
 
-        <DialogTitle className="text-heading-lg font-semibold">Delete Customer</DialogTitle>
+        <DialogTitle className="text-heading-lg font-semibold">
+          {t("console.customers.delete.title")}
+        </DialogTitle>
 
         <DialogDescription className="mt-2 max-w-xs text-xs text-muted-foreground leading-relaxed">
-          Are you sure you want to delete <strong>{customer.name}</strong>? This action is permanent
-          and cannot be undone. The account and its access to this project will be removed.
+          {`${t("console.customers.delete.question").replace("{name}", customer.name)} ${t(
+            "console.customers.delete.irreversible",
+          )}`}
         </DialogDescription>
 
         <div className="mt-6 grid w-full grid-cols-2 gap-4">
           <Button variant="outlined" shape="circle" size="sm" fullWidth onClick={onClose}>
-            Cancel
+            {t("console.common.cancel")}
           </Button>
           <Button
             variant="contained"
@@ -56,7 +62,7 @@ export function DeleteCustomerDialog({
             fullWidth
             onClick={onConfirm}
           >
-            Confirm Delete
+            {t("console.customers.delete.confirm")}
           </Button>
         </div>
       </DialogContent>

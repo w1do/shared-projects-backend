@@ -16,7 +16,9 @@ export function RecentOrders({ orders }: RecentOrdersProps) {
           <h3 className="font-openrunde text-heading leading-tight text-foreground">
             Recent orders
           </h3>
-          <p className="mt-2 text-xs text-muted-foreground">Latest activity from the storefront</p>
+          <p className="mt-2 text-xs text-muted-foreground">
+            Latest activity from the storefront
+          </p>
         </div>
         <Button variant="text" endIcon={<ArrowUpRight />}>
           View all

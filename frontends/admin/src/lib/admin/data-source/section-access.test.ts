@@ -6,9 +6,12 @@ import {
   SECTION_REQUIREMENTS,
   decodeSectionSnapshot,
   isDemoSection,
+  persistSectionSnapshot,
   sectionKeyOfPath,
+  sectionSnapshotRevision,
   selectVisibleQuickActions,
   selectVisibleSections,
+  subscribeSectionSnapshot,
   visibleSectionKeys,
 } from "./section-access.ts";
 
@@ -130,6 +133,24 @@ test("адрес раздела → ключ; служебные адреса к
   assert.equal(sectionKeyOfPath("/admin/products/add"), "products");
   assert.equal(sectionKeyOfPath("/admin/unauthorized"), undefined);
   assert.equal(sectionKeyOfPath("/login"), undefined);
+});
+
+test("запись снимка уведомляет подписчиков — меню перечитывает состав сразу", () => {
+  let notified = 0;
+  const unsubscribe = subscribeSectionSnapshot(() => {
+    notified += 1;
+  });
+
+  const before = sectionSnapshotRevision();
+  // Переключение сервиса из настроек: bootstrap перечитан → снимок переписан.
+  persistSectionSnapshot(["dashboard", "customers", "team", "settings"], 60);
+
+  assert.equal(notified, 1);
+  assert.ok(sectionSnapshotRevision() > before);
+
+  unsubscribe();
+  persistSectionSnapshot(["dashboard"], 60);
+  assert.equal(notified, 1);
 });
 
 test("отсутствующая cookie снимка не блокирует навигацию", () => {

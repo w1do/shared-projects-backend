@@ -3,6 +3,31 @@
 import * as React from "react";
 import { toast } from "sonner";
 import { mockUsers, type MockUser } from "@/lib/admin/mocks/auth";
+import { shouldUseAdminApi } from "@/lib/admin/data-source/config";
+import * as platformAuth from "@/lib/admin/data-source/platform/auth";
+import { t } from "@/lib/admin/console-texts";
+
+/** Человекочитаемое название роли участника для уведомлений. */
+function roleLabel(role: MockUser["role"]): string {
+  return t(`console.team.role.${role}`);
+}
+
+/** Роль платформы → роль, которой оперирует раздел team. */
+function toTeamRole(roles: string[]): MockUser["role"] {
+  return platformAuth.toConsoleRole(roles);
+}
+
+function memberToUser(member: platformAuth.PlatformMember): MockUser {
+  return {
+    id: String(member.id),
+    email: member.email,
+    name: member.name,
+    role: toTeamRole(member.roles),
+    position: member.roles[0] ?? "Operator",
+    phone: "",
+    status: "active",
+  };
+}
 
 /**
  * Custom hook to manage the state and actions of the team management page.
@@ -28,7 +53,16 @@ export function useTeamPage() {
       }
     }
 
-    // 2. Initialize mock users database in local storage
+    // 2. Участники проекта: платформа (auth-service) или демо-данные вёрстки
+    if (shouldUseAdminApi()) {
+      platformAuth
+        .listMembers()
+        .then((members) => setUsers(members.map(memberToUser)))
+        .catch(() => toast.error(t("console.team.toast.load-failed")))
+        .finally(() => setIsLoading(false));
+      return;
+    }
+
     const dbUsersStr = localStorage.getItem("mock_users");
     if (dbUsersStr) {
       try {
@@ -52,13 +86,36 @@ export function useTeamPage() {
 
   const saveToStorage = (updatedUsers: MockUser[]) => {
     setUsers(updatedUsers);
-    localStorage.setItem("mock_users", JSON.stringify(updatedUsers));
+    if (!shouldUseAdminApi()) {
+      localStorage.setItem("mock_users", JSON.stringify(updatedUsers));
+    }
+  };
+
+  /** Перечитать участников проекта после операции на бекенде. */
+  const reloadMembers = async () => {
+    const members = await platformAuth.listMembers();
+    setUsers(members.map(memberToUser));
   };
 
   /**
    * Invites/adds a new teammate to the workspace.
    */
   const handleAddMember = (name: string, email: string, role: "admin" | "manager" | "staff") => {
+    if (shouldUseAdminApi()) {
+      platformAuth
+        .inviteMember({ email, name, role })
+        .then(reloadMembers)
+        .then(() =>
+          toast.success(
+            t("console.team.toast.invited")
+              .replace("{name}", name)
+              .replace("{role}", roleLabel(role)),
+          ),
+        )
+        .catch((error: Error) => toast.error(error.message));
+      return;
+    }
+
     const newUser: MockUser = {
       id: `usr_${Date.now()}`,
       name,
@@ -74,14 +131,16 @@ export function useTeamPage() {
 
     const nextUsers = [newUser, ...users];
     saveToStorage(nextUsers);
-    toast.success(`Teammate ${name} invited successfully as ${role}`);
+    toast.success(
+      t("console.team.toast.invited").replace("{name}", name).replace("{role}", roleLabel(role)),
+    );
   };
 
   const executeToggleStatus = (target: MockUser) => {
     const updated = users.map((u) => {
       if (u.id === target.id) {
         const nextStatus: MockUser["status"] = u.status === "active" ? "inactive" : "active";
-        toast.success(`Account status updated to ${nextStatus} for ${u.name}`);
+        toast.success(t(`console.team.toast.status-${nextStatus}`).replace("{name}", u.name));
         return { ...u, status: nextStatus };
       }
       return u;
@@ -112,10 +171,21 @@ export function useTeamPage() {
   };
 
   const handleConfirmDelete = () => {
+    if (deleteTarget && shouldUseAdminApi()) {
+      const target = deleteTarget;
+      platformAuth
+        .removeMember(target.id)
+        .then(reloadMembers)
+        .then(() => toast.success(t("console.team.toast.deleted").replace("{name}", target.name)))
+        .catch((error: Error) => toast.error(error.message));
+      setDeleteTarget(null);
+      return;
+    }
+
     if (deleteTarget) {
       const updated = users.filter((u) => u.id !== deleteTarget.id);
       saveToStorage(updated);
-      toast.success(`Teammate ${deleteTarget.name} deleted successfully`);
+      toast.success(t("console.team.toast.deleted").replace("{name}", deleteTarget.name));
       setDeleteTarget(null);
     }
   };
@@ -133,9 +203,35 @@ export function useTeamPage() {
     return false;
   };
 
+  /** Назначение роли участнику проекта (auth-service). */
+  const handleAssignRole = (target: MockUser, role: MockUser["role"]) => {
+    if (!shouldUseAdminApi()) {
+      saveToStorage(users.map((u) => (u.id === target.id ? { ...u, role } : u)));
+      toast.success(
+        t("console.team.toast.role-updated")
+          .replace("{name}", target.name)
+          .replace("{role}", roleLabel(role)),
+      );
+      return;
+    }
+
+    platformAuth
+      .assignMemberRole(target.id, role)
+      .then(reloadMembers)
+      .then(() =>
+        toast.success(
+          t("console.team.toast.role-updated")
+            .replace("{name}", target.name)
+            .replace("{role}", roleLabel(role)),
+        ),
+      )
+      .catch((error: Error) => toast.error(error.message));
+  };
+
   return {
     users,
     currentUser,
+    handleAssignRole,
     isLoading,
     isInviteOpen,
     setIsInviteOpen,

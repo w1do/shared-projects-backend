@@ -1,8 +1,11 @@
-import ProductsPage from "@/components/pages/products";
+import type { Metadata } from "next";
 
-export const metadata = {
-  title: "Products · Ætheria Admin",
-  description: "Manage the multi-brand beauty catalog: pricing, stock health, and status.",
+import ProductsPage from "@/components/pages/products";
+import { t } from "@/lib/admin/console-texts";
+
+export const metadata: Metadata = {
+  title: `${t("console.nav.products")} · Ætheria Admin`,
+  description: t("console.meta.products-description"),
 };
 
 /**

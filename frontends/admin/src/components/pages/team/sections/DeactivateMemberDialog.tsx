@@ -9,6 +9,7 @@ import {
   DialogDescription,
 } from "@/components/ui/overlay/dialog";
 import type { MockUser } from "@/lib/admin/mocks/auth";
+import { useConsoleText } from "@/lib/admin/use-console-text";
 
 interface DeactivateMemberDialogProps {
   isOpen: boolean;
@@ -23,7 +24,11 @@ export function DeactivateMemberDialog({
   onConfirm,
   user,
 }: DeactivateMemberDialogProps) {
+  const t = useConsoleText();
+
   if (!user) return null;
+
+  const question = t("console.team.deactivate.question").replace("{name}", user.name);
 
   return (
     <Dialog open={isOpen} onOpenChange={(nextOpen) => !nextOpen && onClose()}>
@@ -37,16 +42,17 @@ export function DeactivateMemberDialog({
           <AlertTriangle className="size-6" />
         </div>
 
-        <DialogTitle className="text-heading-lg font-semibold">Deactivate Member</DialogTitle>
+        <DialogTitle className="text-heading-lg font-semibold">
+          {t("console.team.deactivate.title")}
+        </DialogTitle>
 
         <DialogDescription className="mt-2 max-w-xs text-xs text-muted-foreground leading-relaxed">
-          Are you sure you want to deactivate <strong>{user.name}</strong>? This user will no longer
-          be able to log in or access the admin dashboard until reactivated.
+          {`${question} ${t("console.team.deactivate.consequences")}`}
         </DialogDescription>
 
         <div className="mt-6 grid w-full grid-cols-2 gap-4">
           <Button variant="outlined" shape="circle" size="sm" fullWidth onClick={onClose}>
-            Cancel
+            {t("console.common.cancel")}
           </Button>
           <Button
             variant="contained"
@@ -56,7 +62,7 @@ export function DeactivateMemberDialog({
             fullWidth
             onClick={onConfirm}
           >
-            Confirm
+            {t("console.team.deactivate.confirm")}
           </Button>
         </div>
       </DialogContent>

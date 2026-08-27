@@ -3,6 +3,7 @@
 import { Check } from "lucide-react";
 import { Button } from "@/components/ui/inputs/button";
 import { PageHeader } from "@/components/shared/layout/PageHeader";
+import { useConsoleText } from "@/lib/admin/use-console-text";
 
 interface EditCategoryHeaderProps {
   categoryName: string;
@@ -10,15 +11,20 @@ interface EditCategoryHeaderProps {
 }
 
 export function EditCategoryHeader({ categoryName, isSubmitting }: EditCategoryHeaderProps) {
+  const t = useConsoleText();
   return (
     <PageHeader
-      title={`Edit category: ${categoryName}`}
-      description="Update this taxonomy node's hierarchy, visual identity, and merchandising metrics."
+      title={t("console.categories.edit.title").replace("{name}", categoryName)}
+      description={t("console.categories.edit.subtitle")}
       breadcrumbItems={[
-        { label: "Admin", href: "/admin" },
-        { label: "Catalog", href: "/admin/products" },
-        { label: "Categories", href: "/admin/categories" },
-        { label: `Edit ${categoryName || "category"}` },
+        { label: t("console.common.breadcrumb-admin"), href: "/admin" },
+        { label: t("console.nav.group.catalog"), href: "/admin/products" },
+        { label: t("console.nav.categories"), href: "/admin/categories" },
+        {
+          label: categoryName
+            ? t("console.categories.edit.breadcrumb").replace("{name}", categoryName)
+            : t("console.categories.edit.breadcrumb-plain"),
+        },
       ]}
       actions={
         <>
@@ -29,7 +35,9 @@ export function EditCategoryHeader({ categoryName, isSubmitting }: EditCategoryH
             startIcon={<Check />}
             disabled={isSubmitting}
           >
-            {isSubmitting ? "Saving..." : "Save changes"}
+            {isSubmitting
+              ? t("console.categories.saving")
+              : t("console.categories.edit.save")}
           </Button>
         </>
       }

@@ -7,6 +7,7 @@ interface SettingsToggleRowProps {
   onCheckedChange: (checked: boolean) => void;
   leading?: React.ReactNode;
   trailing?: React.ReactNode;
+  disabled?: boolean;
 }
 
 export function SettingsToggleRow({
@@ -16,6 +17,7 @@ export function SettingsToggleRow({
   onCheckedChange,
   leading,
   trailing,
+  disabled,
 }: SettingsToggleRowProps) {
   return (
     <div className="flex items-center gap-4 rounded-2xl border border-border/60 bg-muted/15 p-4 transition-colors duration-200 hover:border-border hover:bg-muted/30">
@@ -25,7 +27,7 @@ export function SettingsToggleRow({
         <p className="mt-2 text-caption text-muted-foreground">{description}</p>
       </div>
       {trailing}
-      <Switch checked={checked} onCheckedChange={onCheckedChange} />
+      <Switch checked={checked} onCheckedChange={onCheckedChange} disabled={disabled} />
     </div>
   );
 }

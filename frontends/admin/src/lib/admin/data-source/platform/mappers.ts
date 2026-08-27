@@ -84,8 +84,7 @@ export function projectUserToCustomer(user: PlatformProjectUser): ApiCustomer {
     code: String(user.id),
     name,
     email: user.email,
-    // Платформа не ведёт лояльность/заказы — поля остаются нейтральными.
-    tier: "SILVER",
+    // Платформа не ведёт лояльность — уровень не назначается вовсе.
     status: user.blocked ? "Inactive" : "Active",
     totalOrders: 0,
     totalSpent: 0,

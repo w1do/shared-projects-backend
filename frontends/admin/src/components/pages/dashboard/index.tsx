@@ -1,16 +1,12 @@
 "use client";
 
 import * as React from "react";
-import { BestSellers } from "./sections/BestSellers";
 import { DashboardHeader } from "./sections/DashboardHeader";
 import { KpiCards } from "./sections/KpiCards";
-import { LowStock } from "./sections/LowStock";
 import { QuickActions } from "./sections/QuickActions";
-import { RecentOrders } from "./sections/RecentOrders";
+import { RecentPosts } from "./sections/RecentPosts";
 import { RevenueChart } from "./sections/RevenueChart";
-import { BrandPerformance } from "./sections/BrandPerformance";
-import { CampaignPerformance } from "./sections/CampaignPerformance";
-import { CategorySales } from "./sections/CategorySales";
+import { TopPages } from "./sections/TopPages";
 import { DashboardLoadingState } from "./loading";
 import { useDashboardQuery } from "@/hooks/admin/dashboard";
 import { useApexChartsPainted } from "@/hooks/use-apex-charts-painted";
@@ -55,15 +51,6 @@ export function AdminDashboardClient() {
     [data?.revenueSeries, timeRange],
   );
 
-  const brands = React.useMemo(
-    () =>
-      (data?.brands ?? []).map((brand) => ({
-        ...brand,
-        trend: sliceSeriesByTimeRange(brand.trend, timeRange),
-      })),
-    [data?.brands, timeRange],
-  );
-
   // Query still in-flight — only skeleton (no chart mount yet).
   if (!dataReady || !data) {
     return <DashboardLoadingState />;
@@ -77,27 +64,24 @@ export function AdminDashboardClient() {
         Real dashboard mounts and Apex paints underneath a solid skeleton cover.
         Charts are already drawn when the cover lifts — no empty→chart pop-in.
       */}
-      <div ref={contentRef} className="flex flex-col gap-4" aria-hidden={showSkeleton}>
-        <DashboardHeader timeRange={timeRange} onTimeRangeChange={setTimeRange} />
+      <div
+        ref={contentRef}
+        className="flex flex-col gap-4"
+        aria-hidden={showSkeleton}
+      >
+        <DashboardHeader
+          timeRange={timeRange}
+          onTimeRangeChange={setTimeRange}
+        />
         <QuickActions timeRange={timeRange} onTimeRangeChange={setTimeRange} />
         <KpiCards items={kpis} />
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
           <div className="lg:col-span-2">
             <RevenueChart data={revenueSeries} rangeLabel={timeRange} />
           </div>
-          <CampaignPerformance campaigns={data.campaigns} />
+          <TopPages rows={data.topPages} />
         </div>
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-          <div className="lg:col-span-2">
-            <RecentOrders orders={data.recentOrders} />
-          </div>
-          <LowStock items={data.lowStock} />
-        </div>
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-          <BestSellers products={data.bestSellers} />
-          <CategorySales categories={data.categories} rangeLabel={timeRange} />
-        </div>
-        <BrandPerformance brands={brands} />
+        <RecentPosts posts={data.recentPosts} />
       </div>
 
       {showSkeleton ? (

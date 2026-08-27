@@ -1,18 +1,19 @@
 import * as z from "zod";
 import type { TaxSettings } from "@/lib/admin/mocks/settings";
+import { t } from "@/lib/admin/console-texts";
 
 export const taxesSettingsSchema = z.object({
   pricesIncludeTax: z.boolean(),
   autoCalculate: z.boolean(),
   defaultRate: z.coerce
-    .number({ message: "Enter a valid tax rate." })
-    .min(0, { message: "Rate cannot be negative." })
-    .max(100, { message: "Rate cannot exceed 100%." }),
+    .number({ message: t("console.settings.taxes.validation.rate-invalid") })
+    .min(0, { message: t("console.settings.taxes.validation.rate-min") })
+    .max(100, { message: t("console.settings.taxes.validation.rate-max") }),
   taxId: z
     .string()
     .trim()
-    .min(1, { message: "Tax registration ID is required." })
-    .max(40, { message: "Tax ID must be 40 characters or fewer." }),
+    .min(1, { message: t("console.settings.taxes.validation.tax-id-required") })
+    .max(40, { message: t("console.settings.taxes.validation.tax-id-max") }),
 });
 
 export type TaxesSettingsFormValues = z.infer<typeof taxesSettingsSchema>;
