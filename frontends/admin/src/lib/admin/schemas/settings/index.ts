@@ -8,13 +8,6 @@ export {
 } from "./general-settings-schema";
 
 export {
-  taxesSettingsSchema,
-  toTaxesSettingsFormValues,
-  fromTaxesSettingsFormValues,
-  type TaxesSettingsFormValues,
-} from "./taxes-settings-schema";
-
-export {
   sessionTimeoutMinutes,
   securitySettingsSchema,
   toSecuritySettingsFormValues,

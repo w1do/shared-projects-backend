@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Cms\Localization\Presentation\Http\Api\V1\Controllers\LocalizationController;
 use Cms\Localization\Presentation\Http\Api\V1\Controllers\TranslationController;
 use Cms\Shared\AuthClient\Middleware\AuthorizeOperator;
 use Cms\Shared\AuthClient\Middleware\EnsureServiceEnabled;
@@ -16,4 +17,5 @@ Route::prefix('api/admin/v1/projects/{project}/content')->group(function () use 
     Route::put('translations/{translation}', [TranslationController::class, 'update'])->middleware($authorize('content.translations.manage'));
     Route::delete('translations/{translation}', [TranslationController::class, 'destroy'])->middleware($authorize('content.translations.manage'));
     Route::post('translations/translate-missing', [TranslationController::class, 'translateMissing'])->middleware($authorize('content.translations.manage'));
+    Route::get('localizations', [LocalizationController::class, 'index'])->middleware($authorize('content.translations.view'));
 });

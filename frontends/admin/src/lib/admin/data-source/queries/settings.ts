@@ -14,8 +14,10 @@ function toTeamRole(roles: string[]): TeamMember["role"] {
 
 /**
  * settings → auth-service: данные проекта и его операторы.
- * Разделы без аналога в платформе (платежи/доставка/налоги/уведомления/безопасность)
- * остаются на демо-значениях вёрстки — см. docs/admin-console.md.
+ * Платежи и язык по умолчанию — отдельные self-fetching секции
+ * (pay/settings, site-settings); разделы без аналога в платформе
+ * (уведомления/безопасность) остаются на демо-значениях вёрстки —
+ * см. docs/admin-console.md.
  */
 export async function getAdminStoreSettings() {
   return fromSource(async () => {

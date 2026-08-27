@@ -45,6 +45,9 @@ Route::prefix('api/admin/v1')->group(function () {
             Route::get('settings/{service}', [Admin\SettingController::class, 'show'])->middleware(RequirePermission::class.':auth.settings.view');
             Route::put('settings/{service}', [Admin\SettingController::class, 'update'])->middleware(RequirePermission::class.':auth.settings.manage');
 
+            Route::get('site-settings', [Admin\SiteSettingController::class, 'show'])->middleware(RequirePermission::class.':auth.settings.view');
+            Route::put('site-settings', [Admin\SiteSettingController::class, 'update'])->middleware(RequirePermission::class.':auth.settings.manage');
+
             Route::get('audit', [Admin\AuditController::class, 'index'])->middleware(RequirePermission::class.':auth.audit.view');
 
             Route::get('users', [Admin\ProjectUserController::class, 'index'])->middleware(RequirePermission::class.':auth.users.view');

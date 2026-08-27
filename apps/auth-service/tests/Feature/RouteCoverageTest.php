@@ -58,6 +58,8 @@ function authRouteCoverageCoveredPairs(): array
         'PUT api/admin/v1/projects/{project}/services/{service}',    // auth/AdminServiceContractTest.php
         'GET api/admin/v1/projects/{project}/settings/{service}',    // auth/AdminSettingContractTest.php
         'PUT api/admin/v1/projects/{project}/settings/{service}',    // auth/AdminSettingContractTest.php
+        'GET api/admin/v1/projects/{project}/site-settings',         // auth/AdminSiteSettingContractTest.php
+        'PUT api/admin/v1/projects/{project}/site-settings',         // auth/AdminSiteSettingContractTest.php
         'GET api/admin/v1/projects/{project}/users',                 // auth/AdminProjectUserContractTest.php
         'DELETE api/admin/v1/projects/{project}/users/{user}',       // auth/AdminProjectUserContractTest.php
         'POST api/admin/v1/projects/{project}/users/{user}/block',   // auth/AdminProjectUserContractTest.php

@@ -22,6 +22,8 @@ final class AnalyticsManifest
                 new PermissionDefinition('analytics.reports.view', 'Просмотр отчётов', 'reports'),
                 new PermissionDefinition('analytics.reports.export', 'Экспорт отчётов', 'reports'),
                 new PermissionDefinition('analytics.history.view', 'История пользователя', 'history'),
+                new PermissionDefinition('analytics.settings.view', 'Просмотр настроек аналитики', 'settings'),
+                new PermissionDefinition('analytics.settings.manage', 'Управление настройками аналитики', 'settings'),
             ],
             navigation: [
                 new NavigationItem('analytics.overview', 'nav.analytics.overview', '/analytics', 'analytics.reports.view', 'bar-chart', 40),

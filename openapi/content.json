@@ -426,6 +426,26 @@
                 }
             }
         },
+        "/api/admin/v1/projects/{project}/content/localizations": {
+            "get": {
+                "tags": [
+                    "content"
+                ],
+                "summary": "GET /api/admin/v1/projects/{project}/content/localizations",
+                "operationId": "content_index_api_admin_v1_projects_project_content_localizations",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                }
+            }
+        },
         "/api/admin/v1/projects/{project}/content/translations": {
             "get": {
                 "tags": [

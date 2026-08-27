@@ -1,47 +1,32 @@
 "use client";
 
-import { useState } from "react";
 import { CreditCard } from "lucide-react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/data-display/badge";
-import type { PaymentProvider } from "@/lib/admin/mocks/settings";
-import { useSaveSettingsSectionMutation } from "@/hooks/admin/settings";
+import { Button } from "@/components/ui/inputs/button";
+import {
+  usePaymentsSettingsQuery,
+  useUpdatePaymentsSettingsMutation,
+} from "@/hooks/admin/settings";
 import { SettingsSection } from "./shared/SettingsSection";
-import { SettingsToggleRow } from "./shared/SettingsToggleRow";
 import { useConsoleText } from "@/lib/admin/use-console-text";
 
-export function PaymentsSection({ initial }: { initial: PaymentProvider[] }) {
-  const t = useConsoleText();
-  const [providers, setProviders] = useState<PaymentProvider[]>(initial);
-  const saveMutation = useSaveSettingsSectionMutation();
+const PLATEGA_PROVIDER = "platega";
 
-  const toggle = (id: string, enabled: boolean) => {
-    const next = providers.map((p) => (p.id === id ? { ...p, enabled } : p));
-    setProviders(next);
-    const provider = next.find((p) => p.id === id);
-    saveMutation.mutate(
-      { section: "payments", value: next },
-      {
-        onSuccess: (result) => {
-          if (!result.ok) {
-            toast.error(result.reason ?? t("console.settings.payments.save-failed"));
-            setProviders(providers);
-            return;
-          }
-          toast.success(
-            t(
-              enabled
-                ? "console.settings.payments.enabled"
-                : "console.settings.payments.disabled",
-            ).replace("{name}", provider?.name ?? ""),
-          );
-        },
-        onError: () => {
-          toast.error(t("console.settings.payments.save-failed"));
-          setProviders(providers);
-        },
-      },
-    );
+/** Платёжная система проекта: единственный поддерживаемый шлюз — Platega. */
+export function PaymentsSection() {
+  const t = useConsoleText();
+  const { data: settings } = usePaymentsSettingsQuery();
+  const update = useUpdatePaymentsSettingsMutation();
+
+  const isActive = settings?.provider === PLATEGA_PROVIDER;
+
+  const activate = () => {
+    update.mutate(PLATEGA_PROVIDER, {
+      onSuccess: () => toast.success(t("console.settings.payments.activated")),
+      onError: (error: Error) =>
+        toast.error(error.message || t("console.settings.payments.save-failed")),
+    });
   };
 
   return (
@@ -50,27 +35,28 @@ export function PaymentsSection({ initial }: { initial: PaymentProvider[] }) {
       title={t("console.settings.payments.title")}
       description={t("console.settings.payments.description")}
     >
-      {providers.map((provider) => (
-        <SettingsToggleRow
-          key={provider.id}
-          title={provider.name}
-          description={provider.description}
-          checked={provider.enabled}
-          onCheckedChange={(value) => toggle(provider.id, value)}
-          trailing={
-            <Badge
-              variant="soft"
-              color={provider.mode === "live" ? "success" : "muted"}
-              shape="circle"
-              size="sm"
-            >
-              {provider.mode === "live"
-                ? t("console.settings.payments.mode-live")
-                : t("console.settings.payments.mode-test")}
-            </Badge>
-          }
-        />
-      ))}
+      <div className="flex items-center gap-4 rounded-2xl border border-border/60 bg-muted/15 p-4">
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-body font-medium text-foreground">Platega</p>
+          <p className="mt-2 text-caption text-muted-foreground">
+            {t("console.settings.payments.platega-description")}
+          </p>
+        </div>
+        {isActive ? (
+          <Badge variant="soft" color="success" shape="circle" size="sm">
+            {t("console.settings.payments.active")}
+          </Badge>
+        ) : (
+          <Button
+            type="button"
+            variant="outlined"
+            disabled={!settings || update.isPending}
+            onClick={activate}
+          >
+            {t("console.settings.payments.activate")}
+          </Button>
+        )}
+      </div>
     </SettingsSection>
   );
 }

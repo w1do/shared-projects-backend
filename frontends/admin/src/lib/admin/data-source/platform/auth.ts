@@ -191,3 +191,21 @@ export function putServiceSettings(
     body: { values },
   });
 }
+
+/** Настройки сайта проекта: язык и валюты по умолчанию (auth-service). */
+export type PlatformSiteSettings = {
+  language: string;
+  currency_default: string;
+  currencies: string[];
+};
+
+export function getSiteSettings() {
+  return adminApiGet<PlatformSiteSettings>(`${base}/site-settings`);
+}
+
+export function putSiteSettings(body: PlatformSiteSettings) {
+  return adminApiSend<PlatformSiteSettings>(`${base}/site-settings`, {
+    method: "PUT",
+    body,
+  });
+}

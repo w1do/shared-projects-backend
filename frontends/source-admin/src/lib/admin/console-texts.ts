@@ -702,11 +702,11 @@ export const CONSOLE_TEXTS = {
   "console.capabilities.campaigns-no-backend":
     "API кампаний в платформе нет. Раздел работает на демо-данных.",
   "console.capabilities.settings-partial":
-    "Платформа хранит только данные проекта. Витринные разделы (платежи, доставка, налоги) аналога не имеют и остаются на демо-значениях.",
+    "Платформа хранит только данные проекта. Витринные разделы (уведомления, безопасность) аналога не имеют и остаются на демо-значениях.",
   "console.capabilities.homepage-mock-only":
     "Контент главной страницы — только демо. В API-режиме платформа отдаёт статические страницы без LANDING.",
   "console.settings.no-platform-counterpart":
-    "У этого раздела нет аналога в платформе (витринные платежи/доставка/налоги). Значения остаются демонстрационными.",
+    "У этого раздела нет аналога в платформе (витринные уведомления/безопасность). Значения остаются демонстрационными.",
 
   // Экран «доступ запрещён»
   "console.unauthorized.title": "Доступ запрещён",
@@ -717,7 +717,7 @@ export const CONSOLE_TEXTS = {
   // Настройки: шапка и вкладки
   "console.settings.title": "Настройки",
   "console.settings.subtitle":
-    "Профиль проекта, платежи, доставка, налоги, доступ команды и безопасность в одном месте.",
+    "Профиль проекта, платежи, доступ команды и безопасность в одном месте.",
   "console.settings.tab.general": "Основное",
   "console.settings.tab.payments": "Платежи",
   "console.settings.tab.shipping": "Доставка",
@@ -742,6 +742,11 @@ export const CONSOLE_TEXTS = {
   "console.settings.general.storefront-url": "Адрес витрины",
   "console.settings.general.store-description": "Описание магазина",
   "console.settings.general.saved": "Профиль магазина обновлён.",
+  "console.settings.general.language-title": "Язык по умолчанию",
+  "console.settings.general.language-description":
+    "Язык интерфейса и локализаций проекта по умолчанию.",
+  "console.settings.general.default-language": "Язык по умолчанию",
+  "console.settings.general.language-saved": "Язык по умолчанию: {locale}.",
   "console.settings.general.validation.store-name-required":
     "Укажите название магазина.",
   "console.settings.general.validation.store-name-max":
@@ -763,13 +768,15 @@ export const CONSOLE_TEXTS = {
     "Введите корректный адрес витрины.",
 
   // Настройки: платежи
-  "console.settings.payments.title": "Платёжные провайдеры",
+  "console.settings.payments.title": "Платёжная система",
   "console.settings.payments.description":
-    "Способы оплаты, доступные покупателям при оформлении заказа, и их режим работы.",
-  "console.settings.payments.mode-live": "Боевой",
-  "console.settings.payments.mode-test": "Тестовый",
-  "console.settings.payments.enabled": "«{name}» включён.",
-  "console.settings.payments.disabled": "«{name}» выключен.",
+    "Приём платежей в проекте идёт через выбранного платёжного провайдера.",
+  "console.settings.payments.platega-description":
+    "Платёжный шлюз Platega: приём и обработка платежей проекта.",
+  "console.settings.payments.active": "Активен",
+  "console.settings.payments.activate": "Сделать активным",
+  "console.settings.payments.activated":
+    "Platega назначен платёжным провайдером проекта.",
   "console.settings.payments.save-failed":
     "Не удалось сохранить настройки платежей.",
 

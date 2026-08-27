@@ -35,6 +35,9 @@ function analyticsRouteCoverageCoveredPairs(): array
         'GET api/admin/v1/projects/{project}/analytics/overview',             // analytics/ReportsContractTest.php
         'GET api/admin/v1/projects/{project}/analytics/revenue',              // analytics/ReportsContractTest.php
         'GET api/admin/v1/projects/{project}/analytics/top-pages',            // analytics/ReportsContractTest.php
+        'GET api/admin/v1/projects/{project}/analytics/settings',             // analytics/SettingsContractTest.php
+        'PUT api/admin/v1/projects/{project}/analytics/settings',             // analytics/SettingsContractTest.php
+        'GET api/v1/analytics/config',                                        // analytics/SettingsContractTest.php
         'POST api/v1/collect',                                                // analytics/CollectContractTest.php
         'POST internal/cache-bust',                                           // shared/CacheBustContractTest.php
         'POST internal/events',                                               // analytics/InternalEventsContractTest.php

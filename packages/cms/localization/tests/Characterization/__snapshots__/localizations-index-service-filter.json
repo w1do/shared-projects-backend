@@ -1,0 +1,16 @@
+{
+    "status": 200,
+    "content_type": "application/json",
+    "body": {
+        "data": [
+            {
+                "id": "<int>",
+                "service": "pay",
+                "key": "nav.pay.plans",
+                "locale": "ru",
+                "value": "Тарифы",
+                "default_value": "Планы"
+            }
+        ]
+    }
+}

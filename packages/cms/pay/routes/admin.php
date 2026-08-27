@@ -18,6 +18,9 @@ Route::prefix('api/admin/v1/projects/{project}/pay')->group(function () use ($au
     Route::post('payments/{payment}/confirm', [Admin\PaymentController::class, 'confirm'])->middleware($authorize('pay.payments.confirm'));
     Route::post('payments/{payment}/refund', [Admin\PaymentController::class, 'refund'])->middleware($authorize('pay.payments.refund'));
 
+    Route::get('settings', [Admin\SettingsController::class, 'show'])->middleware($authorize('pay.settings.view'));
+    Route::put('settings', [Admin\SettingsController::class, 'update'])->middleware($authorize('pay.settings.manage'));
+
     Route::get('subscriptions', [Admin\SubscriptionAdminController::class, 'index'])->middleware($authorize('pay.subscriptions.view'));
     Route::post('subscriptions/{subscription}/{action}', [Admin\SubscriptionAdminController::class, 'change'])
         // Оператору доступен полный набор, включая delete (И2/И7)

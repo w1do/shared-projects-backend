@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Store, CreditCard, Truck, Receipt, Bell, Users, ShieldCheck, Languages, Blocks } from "lucide-react";
+import { Store, CreditCard, Bell, Users, ShieldCheck, Languages, Blocks } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/data-display/tabs";
 import { PageHeader } from "@/components/shared/layout/PageHeader";
 import { useStoreSettingsQuery } from "@/hooks/admin/settings/use-settings-query";
@@ -11,9 +11,8 @@ import { useConsoleText } from "@/lib/admin/use-console-text";
 import { cn } from "@/lib/utils";
 
 import { GeneralSection } from "./sections/GeneralSection";
+import { SiteLanguageSection } from "./sections/SiteLanguageSection";
 import { PaymentsSection } from "./sections/PaymentsSection";
-import { ShippingSection } from "./sections/ShippingSection";
-import { TaxesSection } from "./sections/TaxesSection";
 import { NotificationsSection } from "./sections/NotificationsSection";
 import { SecuritySection } from "./sections/SecuritySection";
 import { LanguagesSection } from "./sections/LanguagesSection";
@@ -22,8 +21,6 @@ import { ServicesSection } from "./sections/ServicesSection";
 const TABS = [
   { value: "general", labelKey: "console.settings.tab.general", icon: Store },
   { value: "payments", labelKey: "console.settings.tab.payments", icon: CreditCard },
-  { value: "shipping", labelKey: "console.settings.tab.shipping", icon: Truck },
-  { value: "taxes", labelKey: "console.settings.tab.taxes", icon: Receipt },
   { value: "notifications", labelKey: "console.settings.tab.notifications", icon: Bell },
   { value: "security", labelKey: "console.settings.tab.security", icon: ShieldCheck },
   { value: "languages", labelKey: "console.settings.tab.languages", icon: Languages },
@@ -103,16 +100,13 @@ export default function SettingsPage({
             </TabsList>
 
             <TabsContent value="general">
-              <GeneralSection initial={settings.general} />
+              <div className="flex flex-col gap-8">
+                <GeneralSection initial={settings.general} />
+                <SiteLanguageSection />
+              </div>
             </TabsContent>
             <TabsContent value="payments">
-              <PaymentsSection initial={settings.payments} />
-            </TabsContent>
-            <TabsContent value="shipping">
-              <ShippingSection initial={settings.shipping} />
-            </TabsContent>
-            <TabsContent value="taxes">
-              <TaxesSection initial={settings.taxes} />
+              <PaymentsSection />
             </TabsContent>
             <TabsContent value="notifications">
               <NotificationsSection initial={settings.notifications} />

@@ -1,0 +1,12 @@
+{
+    "status": 200,
+    "content_type": "application/json",
+    "body": {
+        "data": {
+            "yandex_enabled": true,
+            "yandex_id": "<string>",
+            "google_enabled": false,
+            "google_id": null
+        }
+    }
+}

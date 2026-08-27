@@ -29,7 +29,7 @@
 		reverse_proxy content-service:8000
 	}
 
-	@analytics path /api/v1/collect
+	@analytics path /api/v1/collect /api/v1/analytics/*
 	handle @analytics {
 		reverse_proxy analytics-service:8000
 	}
