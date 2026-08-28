@@ -3,6 +3,7 @@ import {
   patchStoredStoreSettingsSection,
   readStoredStoreSettings,
 } from "@/lib/admin/settings/store";
+import { t } from "@/lib/admin/console-texts";
 import { getAdminStoreSettings } from "@/lib/admin/data-source/admin-data";
 import { shouldUseAdminApi } from "@/lib/admin/data-source/config";
 import * as platformAuth from "@/lib/admin/data-source/platform/auth";
@@ -52,8 +53,7 @@ export async function saveSettingsSection<K extends keyof StoreSettings>(
     return {
       ok: false,
       persisted: "none",
-      reason:
-        "This section has no counterpart in the platform (storefront payments/shipping/taxes). Values stay on demo data.",
+      reason: t("console.settings.no-platform-counterpart"),
     };
   }
 
@@ -72,7 +72,8 @@ export const projectApiKeys = {
 /** Сервисы проекта: включение/выключение и их настройки. */
 export const projectServices = {
   list: () => platformAuth.listServices(),
-  toggle: (service: string, enabled: boolean) => platformAuth.toggleService(service, enabled),
+  toggle: (service: string, enabled: boolean) =>
+    platformAuth.toggleService(service, enabled),
   getSettings: (service: string) => platformAuth.getServiceSettings(service),
   putSettings: (service: string, values: Record<string, unknown>) =>
     platformAuth.putServiceSettings(service, values),

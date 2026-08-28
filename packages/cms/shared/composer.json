@@ -11,7 +11,8 @@
         "illuminate/queue": "^13.0",
         "illuminate/contracts": "^13.0",
         "illuminate/cache": "^13.0",
-        "cms/contracts": "*"
+        "cms/contracts": "*",
+        "spatie/laravel-settings": "^3.9"
     },
     "autoload": {
         "psr-4": {

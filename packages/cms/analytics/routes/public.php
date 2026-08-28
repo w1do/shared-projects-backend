@@ -1,6 +1,7 @@
 <?php
 
 use Cms\Analytics\Presentation\Http\Api\V1\Controllers\Site\CollectController;
+use Cms\Analytics\Presentation\Http\Api\V1\Controllers\Site\ConfigController;
 use Cms\Analytics\Presentation\Http\Middleware\RejectBotTraffic;
 use Cms\Analytics\Presentation\Http\Middleware\ThrottleEventCollection;
 use Cms\Shared\AuthClient\Middleware\AuthorizeProjectKey;
@@ -15,4 +16,11 @@ Route::post('api/v1/collect', CollectController::class)
         EnsureServiceEnabled::class.':analytics',
         ThrottleEventCollection::class,
         RejectBotTraffic::class,
+    ]);
+
+// Конфиг счётчиков для сайта проекта: любой действующий ключ проекта.
+Route::get('api/v1/analytics/config', ConfigController::class)
+    ->middleware([
+        AuthorizeProjectKey::class,
+        EnsureServiceEnabled::class.':analytics',
     ]);

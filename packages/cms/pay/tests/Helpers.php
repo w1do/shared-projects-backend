@@ -7,6 +7,7 @@ use Cms\Contracts\Introspection\Subject;
 use Cms\Pay\Domain\Models\Plan;
 use Cms\Shared\AuthClient\Introspector;
 use Cms\Shared\Tenant\ProjectContext;
+use Illuminate\Support\Facades\DB;
 
 class FakePayIntrospector implements Introspector
 {
@@ -29,7 +30,7 @@ class FakePayIntrospector implements Introspector
 function actingAsPayOperator(string $projectId = 'proj-1', array $permissions = [
     'pay.plans.view', 'pay.plans.manage', 'pay.payments.view', 'pay.payments.confirm',
     'pay.payments.refund', 'pay.subscriptions.view', 'pay.subscriptions.manage',
-], array $services = ['pay']): array
+], array $services = ['pay', 'licensing']): array
 {
     // токен guard web для сайтовых сценариев: user 7 проекта
     $token = new IntrospectionResult(subject: Subject::ProjectUser, active: true, projectId: $projectId, userId: '7',
@@ -44,9 +45,16 @@ function actingAsPayOperator(string $projectId = 'proj-1', array $permissions = 
     return ['Authorization' => 'Bearer test-operator'];
 }
 
-/** Сайт + пользователь: introspector отдаёт ProjectUser для X-User-Token. */
+/**
+ * Сайт + пользователь: introspector отдаёт ProjectUser для X-User-Token.
+ * Провайдер платежей проекта — manual: дефолт настроек (platega) без
+ * настроенных credentials не даёт оформить подписку (Д7); тесты, которым
+ * нужен platega, переопределяют выбор через paySelectProvider('platega').
+ */
 function actingAsSiteUser(string $projectId = 'proj-1', string $userId = '7', array $services = ['pay']): array
 {
+    paySelectProvider('manual', $projectId);
+
     $user = new IntrospectionResult(subject: Subject::ProjectUser, active: true, projectId: $projectId, userId: $userId,
         enabledServices: $services);
     $key = new IntrospectionResult(subject: Subject::ApiKey, active: true, projectId: $projectId,
@@ -61,4 +69,16 @@ function makePlan(array $attrs = []): Plan
     app(ProjectContext::class)->set('proj-1');
 
     return Plan::factory()->create($attrs);
+}
+
+/**
+ * Выбранный провайдер платежей проекта (Д7): пишется прямо в settings-таблицу,
+ * чтобы не зависеть от кэша инстанса spatie-settings внутри теста.
+ */
+function paySelectProvider(string $provider = 'manual', string $projectId = 'proj-1'): void
+{
+    DB::table('settings')->updateOrInsert(
+        ['project_id' => $projectId, 'group' => 'payments', 'name' => 'provider'],
+        ['payload' => json_encode($provider), 'locked' => false, 'created_at' => now(), 'updated_at' => now()],
+    );
 }

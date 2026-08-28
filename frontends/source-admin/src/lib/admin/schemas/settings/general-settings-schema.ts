@@ -1,5 +1,6 @@
 import * as z from "zod";
 import type { GeneralSettings } from "@/lib/admin/mocks/settings";
+import { t } from "@/lib/admin/console-texts";
 
 export const currencyCodes = ["USD", "EUR", "GBP", "VND"] as const;
 export const weightUnits = ["kg", "lb"] as const;
@@ -8,30 +9,34 @@ export const generalSettingsSchema = z.object({
   storeName: z
     .string()
     .trim()
-    .min(1, { message: "Store name is required." })
-    .max(80, { message: "Store name must be 80 characters or fewer." }),
+    .min(1, { message: t("console.settings.general.validation.store-name-required") })
+    .max(80, { message: t("console.settings.general.validation.store-name-max") }),
   supportEmail: z
     .string()
     .trim()
-    .min(1, { message: "Support email is required." })
-    .email({ message: "Enter a valid email address." }),
+    .min(1, { message: t("console.settings.general.validation.email-required") })
+    .email({ message: t("console.settings.general.validation.email-invalid") }),
   phone: z
     .string()
     .trim()
-    .min(1, { message: "Phone number is required." })
-    .max(40, { message: "Phone number must be 40 characters or fewer." }),
+    .min(1, { message: t("console.settings.general.validation.phone-required") })
+    .max(40, { message: t("console.settings.general.validation.phone-max") }),
   description: z
     .string()
-    .max(500, { message: "Description must be 500 characters or fewer." })
+    .max(500, { message: t("console.settings.general.validation.description-max") })
     .default(""),
-  currency: z.enum(currencyCodes, { message: "Select a currency." }),
-  timezone: z.string().min(1, { message: "Select a timezone." }),
-  weightUnit: z.enum(weightUnits, { message: "Select a weight unit." }),
+  currency: z.enum(currencyCodes, {
+    message: t("console.settings.general.validation.currency"),
+  }),
+  timezone: z.string().min(1, { message: t("console.settings.general.validation.timezone") }),
+  weightUnit: z.enum(weightUnits, {
+    message: t("console.settings.general.validation.weight-unit"),
+  }),
   storefrontUrl: z
     .string()
     .trim()
     .refine((value) => value === "" || z.string().url().safeParse(value).success, {
-      message: "Enter a valid storefront URL.",
+      message: t("console.settings.general.validation.storefront-url"),
     })
     .default(""),
 });

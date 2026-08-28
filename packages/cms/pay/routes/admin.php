@@ -18,7 +18,16 @@ Route::prefix('api/admin/v1/projects/{project}/pay')->group(function () use ($au
     Route::post('payments/{payment}/confirm', [Admin\PaymentController::class, 'confirm'])->middleware($authorize('pay.payments.confirm'));
     Route::post('payments/{payment}/refund', [Admin\PaymentController::class, 'refund'])->middleware($authorize('pay.payments.refund'));
 
+    Route::get('settings', [Admin\SettingsController::class, 'show'])->middleware($authorize('pay.settings.view'));
+    Route::put('settings', [Admin\SettingsController::class, 'update'])->middleware($authorize('pay.settings.manage'));
+
+    Route::get('providers', [Admin\ProviderAccountsController::class, 'index'])->middleware($authorize('pay.providers.view'));
+    // show отдаёт расшифрованные credentials — поэтому manage, не view (Д3)
+    Route::get('providers/{provider}', [Admin\ProviderAccountsController::class, 'show'])->middleware($authorize('pay.providers.manage'));
+    Route::put('providers/{provider}', [Admin\ProviderAccountsController::class, 'update'])->middleware($authorize('pay.providers.manage'));
+
     Route::get('subscriptions', [Admin\SubscriptionAdminController::class, 'index'])->middleware($authorize('pay.subscriptions.view'));
+    Route::post('subscriptions', [Admin\SubscriptionAdminController::class, 'store'])->middleware($authorize('pay.subscriptions.manage'));
     Route::post('subscriptions/{subscription}/{action}', [Admin\SubscriptionAdminController::class, 'change'])
         // Оператору доступен полный набор, включая delete (И2/И7)
         ->whereIn('action', SubscriptionAction::adminValues())

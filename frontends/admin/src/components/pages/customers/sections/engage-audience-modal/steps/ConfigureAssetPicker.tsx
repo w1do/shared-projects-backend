@@ -5,6 +5,7 @@ import type { Promotion } from "@/lib/admin/mocks/promotions";
 import type { EngageAudienceFormValues } from "@/lib/admin/schemas/content/engage-audience-schema";
 import { SelectableEntityCard } from "../components/SelectableEntityCard";
 import { loyaltyTierOptions } from "../types";
+import { t } from "@/lib/admin/console-texts";
 
 type ConfigureAssetPickerProps = {
   intent: EngageAudienceFormValues["intent"];
@@ -40,9 +41,9 @@ export function ConfigureAssetPicker({
   if (intent === "campaign") {
     return (
       <AssetSection
-        label="Campaign"
+        label={t("console.engage.asset.campaign")}
         error={campaignError}
-        emptyMessage="No campaigns available yet. Create one under Campaigns first."
+        emptyMessage={t("console.engage.asset.campaign-empty")}
       >
         {campaigns.map((campaign) => (
           <SelectableEntityCard
@@ -62,9 +63,9 @@ export function ConfigureAssetPicker({
   if (intent === "promotion") {
     return (
       <AssetSection
-        label="Promotion"
+        label={t("console.engage.asset.promotion")}
         error={promotionError}
-        emptyMessage="No active promotions available."
+        emptyMessage={t("console.engage.asset.promotion-empty")}
       >
         {promotions.map((promo) => (
           <SelectableEntityCard
@@ -84,9 +85,9 @@ export function ConfigureAssetPicker({
   if (intent === "coupon") {
     return (
       <AssetSection
-        label="Coupon code"
+        label={t("console.engage.asset.coupon")}
         error={promotionError}
-        emptyMessage="No coupon codes available."
+        emptyMessage={t("console.engage.asset.coupon-empty")}
       >
         {coupons.map((promo) => (
           <SelectableEntityCard
@@ -105,13 +106,15 @@ export function ConfigureAssetPicker({
 
   return (
     <div className="flex flex-col gap-2">
-      <p className="text-caption font-semibold text-muted-foreground">Invite into tier</p>
+      <p className="text-caption font-semibold text-muted-foreground">
+        {t("console.engage.asset.loyalty")}
+      </p>
       <div className="grid gap-2 sm:grid-cols-2">
         {loyaltyTierOptions.map((tier) => (
           <SelectableEntityCard
             key={tier.value}
             title={tier.label}
-            subtitle="Loyalty membership invite"
+            subtitle={t("console.engage.asset.loyalty-subtitle")}
             selected={loyaltyTier === tier.value}
             onSelect={() =>
               onSelectLoyaltyTier(

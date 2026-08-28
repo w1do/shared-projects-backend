@@ -13,9 +13,11 @@ use Cms\Pay\Console\PublishManifestCommand;
 use Cms\Pay\Domain\Events\PaymentRefunded;
 use Cms\Pay\Domain\Events\PaymentStatusChanged;
 use Cms\Pay\Domain\Events\PaymentSucceeded;
+use Cms\Pay\Domain\Models\Plan;
 use Cms\Pay\Infrastructure\Jobs\RenewDueSubscriptionsJob;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Contracts\Events\Dispatcher;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\ServiceProvider;
 
 final class PayServiceProvider extends ServiceProvider
@@ -42,8 +44,16 @@ final class PayServiceProvider extends ServiceProvider
         ],
     ];
 
+    public function register(): void
+    {
+        $this->mergeConfigFrom(__DIR__.'/../../../config/cms-pay.php', 'cms-pay');
+    }
+
     public function boot(): void
     {
+        // Морф-алиас предмета подписки: в БД хранится 'plan', не FQCN
+        Relation::morphMap(['plan' => Plan::class]);
+
         $this->loadMigrationsFrom(__DIR__.'/../../../database/migrations');
         $this->loadRoutesFrom(__DIR__.'/../../../routes/admin.php');
         $this->loadRoutesFrom(__DIR__.'/../../../routes/public.php');

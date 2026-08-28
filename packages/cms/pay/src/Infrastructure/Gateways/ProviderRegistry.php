@@ -4,14 +4,18 @@ declare(strict_types=1);
 
 namespace Cms\Pay\Infrastructure\Gateways;
 
+use Cms\Pay\Application\Exceptions\ProviderNotConfigured;
+use Cms\Pay\Application\Exceptions\UnknownPaymentProvider;
 use Cms\Pay\Domain\Contracts\PaymentProvider;
 use Cms\Pay\Domain\Models\ProviderAccount;
-use Illuminate\Validation\ValidationException;
+use Cms\Pay\Domain\ValueObjects\GatewayConfig;
 
 /**
- * Фабрика провайдеров: адаптер получает пер-проектные креденшалы из
- * `provider_accounts` (encrypted) через `PaymentProvider::configure()`.
- * Проект без аккаунта — адаптер работает без конфига, как прежде.
+ * Фабрика провайдеров: адаптер получает пер-проектные настройки из
+ * `provider_accounts` (encrypted) типизированным `GatewayConfig` через
+ * `PaymentProvider::configure()` (Д4). Архивная запись настроек —
+ * доменная ошибка «провайдер не настроен/неактивен»; проект без
+ * записи — адаптер работает без конфига, как прежде.
  */
 final class ProviderRegistry
 {
@@ -26,13 +30,14 @@ final class ProviderRegistry
     private const PROVIDERS = [
         'manual' => ManualProvider::class,
         'null' => NullProvider::class,
+        'platega' => PlategaProvider::class,
     ];
 
     public function for(string $projectId, string $provider): PaymentProvider
     {
         $class = self::PROVIDERS[$provider] ?? null;
         if ($class === null) {
-            throw ValidationException::withMessages(['provider' => ["Unknown payment provider [{$provider}]."]]);
+            throw UnknownPaymentProvider::make($provider);
         }
 
         $adapter = app($class);
@@ -48,7 +53,15 @@ final class ProviderRegistry
             ->where('provider', $provider)
             ->first();
 
-        return $account === null ? $adapter : $adapter->configure($account->credentials ?? []);
+        if ($account === null) {
+            return $adapter;
+        }
+
+        if (! $account->status->isActive()) {
+            throw ProviderNotConfigured::make($provider);
+        }
+
+        return $adapter->configure(GatewayConfig::fromAccount($account));
     }
 
     /** @return list<string> */

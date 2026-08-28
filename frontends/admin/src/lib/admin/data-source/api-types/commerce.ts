@@ -22,7 +22,8 @@ export type ApiCustomer = {
   name: string;
   email: string;
   avatarUrl?: string | null;
-  tier: "BRONZE" | "SILVER" | "GOLD" | "PLATINUM";
+  /** Уровень лояльности демо-шаблона; живой режим уровня не имеет. */
+  tier?: "BRONZE" | "SILVER" | "GOLD" | "PLATINUM";
   skinType?: string | null;
   skinConcerns?: string[];
   totalOrders: number;

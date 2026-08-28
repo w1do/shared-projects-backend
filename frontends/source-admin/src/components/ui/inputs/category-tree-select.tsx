@@ -145,9 +145,9 @@ export function CategoryTreeSelect(props: CategoryTreeSelectProps) {
       <PopoverContent align="start" className="w-(--radix-popover-trigger-width) min-w-64 p-0">
         {/* Поиск и фильтрация — свои: cmdk сортирует по релевантности, а дереву нужен свой порядок. */}
         <Command shouldFilter={false}>
-          <CommandInput placeholder="Search categories…" value={query} onValueChange={setQuery} />
+          <CommandInput placeholder={placeholder ?? "Поиск категорий"} value={query} onValueChange={setQuery} />
           <CommandList className="max-h-64">
-            <CommandEmpty>No categories found.</CommandEmpty>
+            <CommandEmpty>Категорий не найдено.</CommandEmpty>
             {props.mode === "single" && props.allowRoot && !searching && (
               <CommandItem
                 value={ROOT_VALUE}
@@ -161,7 +161,7 @@ export function CategoryTreeSelect(props: CategoryTreeSelectProps) {
                 <Check
                   className={cn("size-4", props.value === null ? "opacity-100" : "opacity-0")}
                 />
-                {props.rootLabel ?? "No parent (root)"}
+                {props.rootLabel ?? "Без родителя (корень)"}
               </CommandItem>
             )}
             {options

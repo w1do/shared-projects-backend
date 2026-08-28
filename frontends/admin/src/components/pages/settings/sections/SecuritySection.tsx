@@ -17,8 +17,10 @@ import {
 import { SettingsSection } from "./shared/SettingsSection";
 import { SettingsToggleRow } from "./shared/SettingsToggleRow";
 import { SESSION_TIMEOUT_OPTIONS } from "@/components/pages/settings/config/options";
+import { useConsoleText } from "@/lib/admin/use-console-text";
 
 export function SecuritySection({ initial }: { initial: SecuritySettings }) {
+  const t = useConsoleText();
   const {
     control,
     handleSubmit,
@@ -39,21 +41,21 @@ export function SecuritySection({ initial }: { initial: SecuritySettings }) {
       value: fromSecuritySettingsFormValues(_values),
     });
     if (!result.ok) {
-      toast.error(result.reason ?? "Could not save settings.");
+      toast.error(result.reason ?? t("console.settings.save-failed"));
       return;
     }
-    toast.success("Security settings saved.");
+    toast.success(t("console.settings.security.saved"));
   };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <SettingsSection
         icon={ShieldCheck}
-        title="Security"
-        description="Protect the workspace with stronger sign-in requirements and alerts."
+        title={t("console.settings.security.title")}
+        description={t("console.settings.security.description")}
         footer={
           <Button type="submit" variant="contained" shape="circle" disabled={isSubmitting}>
-            {isSubmitting ? "Saving…" : "Save changes"}
+            {isSubmitting ? t("console.settings.saving") : t("console.settings.save")}
           </Button>
         }
       >
@@ -62,8 +64,8 @@ export function SecuritySection({ initial }: { initial: SecuritySettings }) {
           control={control}
           render={({ field }) => (
             <SettingsToggleRow
-              title="Two-factor authentication"
-              description="Require a verification code in addition to a password."
+              title={t("console.settings.security.two-factor")}
+              description={t("console.settings.security.two-factor-description")}
               checked={field.value}
               onCheckedChange={field.onChange}
             />
@@ -74,8 +76,8 @@ export function SecuritySection({ initial }: { initial: SecuritySettings }) {
           control={control}
           render={({ field }) => (
             <SettingsToggleRow
-              title="Login alerts"
-              description="Email the owner when a new device signs in."
+              title={t("console.settings.security.login-alerts")}
+              description={t("console.settings.security.login-alerts-description")}
               checked={field.value}
               onCheckedChange={field.onChange}
             />
@@ -86,7 +88,7 @@ export function SecuritySection({ initial }: { initial: SecuritySettings }) {
           control={control}
           render={({ field }) => (
             <Select
-              label="Session timeout"
+              label={t("console.settings.security.session-timeout")}
               options={SESSION_TIMEOUT_OPTIONS}
               value={String(field.value)}
               onChange={(e) => field.onChange(Number(e.target.value))}

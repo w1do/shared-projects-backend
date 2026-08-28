@@ -39,14 +39,15 @@ test('public catalog returns only active plans', function () {
 test('plan with subscriptions is archived instead of deleted', function () {
     $headers = actingAsPayOperator();
     $plan = makePlan(['code' => 'busy']);
-    Subscription::create(['project_id' => 'proj-1', 'user_key' => 'user:proj-1:1', 'plan_id' => $plan->id,
+    Subscription::create(['project_id' => 'proj-1', 'subscriber_type' => 'site_user', 'subscriber_id' => '1',
+        'subject_type' => 'plan', 'subject_id' => (string) $plan->id,
         'current_period_ends_at' => now()->addMonth()]);
 
     $this->postJson("/api/admin/v1/projects/proj-1/pay/plans/{$plan->id}/archive", [], $headers)
         ->assertOk()->assertJsonPath('data.archived', true);
 
     expect(Plan::acrossProjects()->whereKey($plan->id)->exists())->toBeTrue()
-        ->and(Subscription::acrossProjects()->where('plan_id', $plan->id)->exists())->toBeTrue();
+        ->and(Subscription::acrossProjects()->where('subject_type', 'plan')->where('subject_id', (string) $plan->id)->exists())->toBeTrue();
 });
 
 test('money is integers everywhere in responses', function () {

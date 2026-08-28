@@ -6,6 +6,7 @@ namespace Cms\Pay\Infrastructure\Gateways;
 
 use Cms\Pay\Domain\Contracts\PaymentProvider;
 use Cms\Pay\Domain\Models\Payment;
+use Cms\Pay\Domain\ValueObjects\GatewayConfig;
 use Cms\Shared\Values\Money;
 use Illuminate\Http\Request;
 
@@ -20,7 +21,7 @@ final class ManualProvider implements PaymentProvider
         return 'manual';
     }
 
-    public function configure(array $credentials): static
+    public function configure(GatewayConfig $config): static
     {
         // Ручному провайдеру внешний конфиг не нужен
         return $this;

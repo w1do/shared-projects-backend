@@ -14,6 +14,7 @@ import {
   FileText,
   Bell,
   Settings,
+  KeyRound,
   Plus,
   Tag,
   Upload,
@@ -21,53 +22,167 @@ import {
   UserPlus,
 } from "lucide-react";
 
+import { t } from "@/lib/admin/console-texts";
+
 export const quickActions = [
-  { title: "Add product", icon: Plus, url: "/admin/products/add", section: "products" },
-  { title: "New promotion", icon: Tag, action: "new-promotion", section: "promotions" },
-  { title: "Import inventory", icon: Upload, section: "inventory" },
   {
-    title: "Create collection",
+    title: t("console.quick-actions.add-product"),
+    icon: Plus,
+    url: "/admin/products/add",
+    section: "products",
+  },
+  {
+    title: t("console.quick-actions.new-promotion"),
+    icon: Tag,
+    action: "new-promotion",
+    section: "promotions",
+  },
+  {
+    title: t("console.quick-actions.import-inventory"),
+    icon: Upload,
+    section: "inventory",
+  },
+  {
+    title: t("console.quick-actions.create-collection"),
     icon: Layers,
     url: "/admin/collections/add",
     section: "collections",
   },
-  { title: "Launch campaign", icon: Megaphone, action: "launch-campaign", section: "campaigns" },
-  { title: "Invite teammate", icon: UserPlus, action: "invite-teammate", section: "team" },
+  {
+    title: t("console.quick-actions.launch-campaign"),
+    icon: Megaphone,
+    action: "launch-campaign",
+    section: "campaigns",
+  },
+  {
+    title: t("console.quick-actions.invite-teammate"),
+    icon: UserPlus,
+    action: "invite-teammate",
+    section: "team",
+  },
 ];
 
 export const sections = [
   {
-    label: "Overview",
-    items: [{ title: "Dashboard", url: "/admin", icon: LayoutDashboard, section: "dashboard" }],
-  },
-  {
-    label: "Catalog",
+    label: t("console.nav.group.overview"),
     items: [
-      { title: "Products", url: "/admin/products", icon: Package, section: "products" },
-      { title: "Variants", url: "/admin/variants", icon: Link2, section: "variants" },
-      { title: "Brands", url: "/admin/brands", icon: Sparkles, section: "brands" },
-      { title: "Categories", url: "/admin/categories", icon: FolderTree, section: "categories" },
-      { title: "Collections", url: "/admin/collections", icon: Layers, section: "collections" },
-      { title: "Inventory", url: "/admin/inventory", icon: Boxes, section: "inventory" },
+      {
+        title: t("console.nav.dashboard"),
+        url: "/admin",
+        icon: LayoutDashboard,
+        section: "dashboard",
+      },
     ],
   },
   {
-    label: "Commerce",
+    label: t("console.nav.group.catalog"),
     items: [
-      { title: "Orders", url: "/admin/orders", icon: ShoppingBag, section: "orders" },
-      { title: "Customers", url: "/admin/customers", icon: Users, section: "customers" },
-      { title: "Campaigns", url: "/admin/campaigns", icon: Megaphone, section: "campaigns" },
-      { title: "Promotions", url: "/admin/promotions", icon: BadgePercent, section: "promotions" },
-      { title: "Support", url: "/admin/support", icon: LifeBuoy, section: "support" },
+      {
+        title: t("console.nav.products"),
+        url: "/admin/products",
+        icon: Package,
+        section: "products",
+      },
+      {
+        title: t("console.nav.variants"),
+        url: "/admin/variants",
+        icon: Link2,
+        section: "variants",
+      },
+      {
+        title: t("console.nav.brands"),
+        url: "/admin/brands",
+        icon: Sparkles,
+        section: "brands",
+      },
+      {
+        title: t("console.nav.categories"),
+        url: "/admin/categories",
+        icon: FolderTree,
+        section: "categories",
+      },
+      {
+        title: t("console.nav.collections"),
+        url: "/admin/collections",
+        icon: Layers,
+        section: "collections",
+      },
+      {
+        title: t("console.nav.inventory"),
+        url: "/admin/inventory",
+        icon: Boxes,
+        section: "inventory",
+      },
     ],
   },
   {
-    label: "Workspace",
+    label: t("console.nav.group.commerce"),
     items: [
-      { title: "Blogs", url: "/admin/blogs", icon: Newspaper, section: "blogs" },
-      { title: "Notifications", url: "/admin/notifications", icon: Bell, section: "notifications" },
-      { title: "Team", url: "/admin/team", icon: Users, section: "team" },
-      { title: "Settings", url: "/admin/settings", icon: Settings, section: "settings" },
+      {
+        title: t("console.nav.orders"),
+        url: "/admin/orders",
+        icon: ShoppingBag,
+        section: "orders",
+      },
+      {
+        title: t("console.nav.customers"),
+        url: "/admin/customers",
+        icon: Users,
+        section: "customers",
+      },
+      {
+        title: t("console.nav.campaigns"),
+        url: "/admin/campaigns",
+        icon: Megaphone,
+        section: "campaigns",
+      },
+      {
+        title: t("console.nav.promotions"),
+        url: "/admin/promotions",
+        icon: BadgePercent,
+        section: "promotions",
+      },
+      {
+        title: t("console.nav.support"),
+        url: "/admin/support",
+        icon: LifeBuoy,
+        section: "support",
+      },
+      {
+        title: t("console.nav.licensing"),
+        url: "/admin/licensing",
+        icon: KeyRound,
+        section: "licensing",
+      },
+    ],
+  },
+  {
+    label: t("console.nav.group.workspace"),
+    items: [
+      {
+        title: t("console.nav.blogs"),
+        url: "/admin/blogs",
+        icon: Newspaper,
+        section: "blogs",
+      },
+      {
+        title: t("console.nav.notifications"),
+        url: "/admin/notifications",
+        icon: Bell,
+        section: "notifications",
+      },
+      {
+        title: t("console.nav.team"),
+        url: "/admin/team",
+        icon: Users,
+        section: "team",
+      },
+      {
+        title: t("console.nav.settings"),
+        url: "/admin/settings",
+        icon: Settings,
+        section: "settings",
+      },
     ],
   },
 ];

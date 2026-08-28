@@ -2,6 +2,7 @@
 
 import { adminApiGet, adminApiGetPage, adminApiSend } from "../api-client";
 import { rememberSectionSnapshot } from "../session";
+import { syncConsoleTexts } from "./console-texts-loader";
 import type { PlatformBootstrap, PlatformProject } from "./types";
 
 const base = "/api/admin/v1/projects/{project}";
@@ -46,11 +47,17 @@ export type PlatformServiceStatus = {
 
 export type PlatformSettingValue = { key: string; value: unknown };
 
-/** Успешный bootstrap заодно обновляет снимок видимых разделов (смена проекта и т.п.). */
+/**
+ * Успешный bootstrap заодно обновляет снимок видимых разделов (смена проекта
+ * и т.п.) и переопределения текстов консоли из словаря проекта.
+ */
 export async function getBootstrap(projectKey?: string) {
   const suffix = projectKey ? `?project=${encodeURIComponent(projectKey)}` : "";
-  const bootstrap = await adminApiGet<PlatformBootstrap>(`/api/admin/v1/bootstrap${suffix}`);
+  const bootstrap = await adminApiGet<PlatformBootstrap>(
+    `/api/admin/v1/bootstrap${suffix}`,
+  );
   rememberSectionSnapshot(bootstrap);
+  void syncConsoleTexts(bootstrap);
   return bootstrap;
 }
 
@@ -114,7 +121,11 @@ export function toConsoleRole(roles: string[]): "admin" | "manager" | "staff" {
   return "staff";
 }
 
-export function inviteMember(body: { email: string; name?: string; role: string }) {
+export function inviteMember(body: {
+  email: string;
+  name?: string;
+  role: string;
+}) {
   return adminApiSend<{ id: number; role: string }>(`${base}/members`, {
     method: "POST",
     body: { ...body, role: toPlatformRole(body.role) },
@@ -158,19 +169,43 @@ export function listServices() {
 }
 
 export function toggleService(service: string, enabled: boolean) {
-  return adminApiSend<{ service: string; enabled: boolean }>(`${base}/services/${service}`, {
-    method: "PUT",
-    body: { enabled },
-  });
+  return adminApiSend<{ service: string; enabled: boolean }>(
+    `${base}/services/${service}`,
+    {
+      method: "PUT",
+      body: { enabled },
+    },
+  );
 }
 
 export function getServiceSettings(service: string) {
   return adminApiGet<PlatformSettingValue[]>(`${base}/settings/${service}`);
 }
 
-export function putServiceSettings(service: string, values: Record<string, unknown>) {
+export function putServiceSettings(
+  service: string,
+  values: Record<string, unknown>,
+) {
   return adminApiSend<PlatformSettingValue[]>(`${base}/settings/${service}`, {
     method: "PUT",
     body: { values },
+  });
+}
+
+/** Настройки сайта проекта: язык и валюты по умолчанию (auth-service). */
+export type PlatformSiteSettings = {
+  language: string;
+  currency_default: string;
+  currencies: string[];
+};
+
+export function getSiteSettings() {
+  return adminApiGet<PlatformSiteSettings>(`${base}/site-settings`);
+}
+
+export function putSiteSettings(body: PlatformSiteSettings) {
+  return adminApiSend<PlatformSiteSettings>(`${base}/site-settings`, {
+    method: "PUT",
+    body,
   });
 }

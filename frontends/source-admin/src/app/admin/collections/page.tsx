@@ -1,9 +1,11 @@
-import CollectionsPage from "@/components/pages/collections";
+import type { Metadata } from "next";
 
-export const metadata = {
-  title: "Collections | Ætheria Admin",
-  description:
-    "Group products into themed sets: seasonal drops, curated routines, and editorial bundles.",
+import CollectionsPage from "@/components/pages/collections";
+import { t } from "@/lib/admin/console-texts";
+
+export const metadata: Metadata = {
+  title: `${t("console.nav.collections")} · Ætheria Admin`,
+  description: t("console.meta.collections-description"),
 };
 
 /**

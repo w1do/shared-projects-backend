@@ -1,25 +1,30 @@
 import type { EngageIntent } from "@/lib/admin/schemas/content/engage-audience-schema";
+import { t } from "@/lib/admin/console-texts";
 
 export type EngageModalStep = "audience" | "intent" | "configure" | "review";
 
-export const engageModalSteps: Array<{ id: EngageModalStep; label: string; index: number }> = [
-  { id: "audience", label: "Audience", index: 1 },
-  { id: "intent", label: "Intent", index: 2 },
-  { id: "configure", label: "Configure", index: 3 },
-  { id: "review", label: "Review", index: 4 },
+export const engageModalSteps: Array<{
+  id: EngageModalStep;
+  label: string;
+  index: number;
+}> = [
+  { id: "audience", label: t("console.engage.step.audience"), index: 1 },
+  { id: "intent", label: t("console.engage.step.intent"), index: 2 },
+  { id: "configure", label: t("console.engage.step.configure"), index: 3 },
+  { id: "review", label: t("console.engage.step.review"), index: 4 },
 ];
 
 export function engageStepDescription(step: EngageModalStep): string {
   if (step === "audience") {
-    return "Confirm who receives this outreach. Remove anyone who should not be included.";
+    return t("console.engage.step-hint.audience");
   }
   if (step === "intent") {
-    return "Choose what to send — campaign email, promotion, coupon code, or loyalty invite.";
+    return t("console.engage.step-hint.intent");
   }
   if (step === "configure") {
-    return "Pick the asset and craft the delivery details for this audience.";
+    return t("console.engage.step-hint.configure");
   }
-  return "Review audience, intent, and copy, then send now or schedule.";
+  return t("console.engage.step-hint.review");
 }
 
 export type IntentOption = {
@@ -32,40 +37,45 @@ export type IntentOption = {
 export const intentOptions: IntentOption[] = [
   {
     id: "campaign",
-    title: "Send campaign email",
-    description: "Queue a store campaign to this hand-picked audience.",
-    badge: "Recommended",
+    title: t("console.engage.intent.campaign.title"),
+    description: t("console.engage.intent.campaign.description"),
+    badge: t("console.engage.intent.campaign.badge"),
   },
   {
     id: "promotion",
-    title: "Send promotion",
-    description: "Share an active offer program with selected customers.",
-    badge: "Offer",
+    title: t("console.engage.intent.promotion.title"),
+    description: t("console.engage.intent.promotion.description"),
+    badge: t("console.engage.intent.promotion.badge"),
   },
   {
     id: "coupon",
-    title: "Send discount code",
-    description: "Email a coupon code from your promotion catalog.",
-    badge: "Coupon",
+    title: t("console.engage.intent.coupon.title"),
+    description: t("console.engage.intent.coupon.description"),
+    badge: t("console.engage.intent.coupon.badge"),
   },
   {
     id: "loyalty",
-    title: "Invite to loyalty",
-    description: "Invite customers into a membership tier with a welcome note.",
-    badge: "Loyalty",
+    title: t("console.engage.intent.loyalty.title"),
+    description: t("console.engage.intent.loyalty.description"),
+    badge: t("console.engage.intent.loyalty.badge"),
   },
 ];
 
 export const engageChannelOptions = [
-  { value: "Email", label: "Email" },
-  { value: "SMS", label: "SMS" },
-  { value: "Push", label: "Push notification" },
-  { value: "In-app", label: "In-app message" },
+  { value: "Email", label: t("console.engage.channel.email") },
+  { value: "SMS", label: t("console.engage.channel.sms") },
+  { value: "Push", label: t("console.engage.channel.push") },
+  { value: "In-app", label: t("console.engage.channel.in-app") },
 ];
 
+/** Подпись канала доставки по сохранённому значению формы. */
+export function engageChannelLabel(value: string): string {
+  return engageChannelOptions.find((option) => option.value === value)?.label ?? value;
+}
+
 export const loyaltyTierOptions = [
-  { value: "Bronze", label: "Bronze" },
-  { value: "Silver", label: "Silver" },
-  { value: "Gold", label: "Gold" },
-  { value: "Platinum", label: "Platinum" },
+  { value: "Bronze", label: t("console.customers.tier.bronze") },
+  { value: "Silver", label: t("console.customers.tier.silver") },
+  { value: "Gold", label: t("console.customers.tier.gold") },
+  { value: "Platinum", label: t("console.customers.tier.platinum") },
 ];

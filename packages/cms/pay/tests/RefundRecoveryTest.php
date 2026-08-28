@@ -18,7 +18,7 @@ use Psr\Log\AbstractLogger;
 test('refund persist failure after provider success leaves a critical log and rethrows', function () {
     app(ProjectContext::class)->set('proj-1');
     $payment = Payment::create([
-        'user_key' => 'user:proj-1:7',
+        'subject_key' => 'user:proj-1:7',
         'amount_minor' => 5000,
         'currency' => 'RUB',
         'status' => 'succeeded',

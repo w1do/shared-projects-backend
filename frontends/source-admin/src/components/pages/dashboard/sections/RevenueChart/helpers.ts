@@ -1,5 +1,14 @@
+import { t } from "@/lib/admin/console-texts";
+
 export const tabs = ["Revenue", "Orders", "AOV"] as const;
 export type TabType = (typeof tabs)[number];
+
+/** Подписи вкладок; внутренние значения остаются ключами METRIC_KEYS/CHART_FORMATTERS. */
+export function tabLabel(tab: TabType): string {
+  if (tab === "Revenue") return t("console.dashboard.tab-revenue");
+  if (tab === "Orders") return t("console.dashboard.tab-orders");
+  return t("console.dashboard.tab-aov");
+}
 
 export const METRIC_KEYS = {
   Revenue: { current: "revenue", previous: "prev" },

@@ -5,11 +5,15 @@
         "data": {
             "subscription": {
                 "id": "<string>",
-                "user_key": "user:proj-1:7",
+                "subscriber": {
+                    "type": "site_user",
+                    "id": "<string>"
+                },
                 "status": "active",
                 "grants_access": true,
                 "current_period_ends_at": "<string>",
-                "plan": {
+                "subject": {
+                    "type": "plan",
                     "id": "<int>",
                     "code": "pro",
                     "name": "Pro",
@@ -23,12 +27,13 @@
             },
             "payment": {
                 "id": "<string>",
-                "user_key": "user:proj-1:7",
+                "subject_key": "user:proj-1:7",
                 "amount_minor": 19900,
                 "refunded_minor": 0,
                 "currency": "RUB",
                 "status": "pending",
                 "provider": "manual",
+                "redirect_url": null,
                 "description": "Subscription pro",
                 "subscription_id": "<string>",
                 "created_at": "<string>"

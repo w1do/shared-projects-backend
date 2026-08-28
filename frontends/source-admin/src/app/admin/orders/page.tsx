@@ -1,8 +1,11 @@
-import OrdersPage from "@/components/pages/orders";
+import type { Metadata } from "next";
 
-export const metadata = {
-  title: "Orders | Ætheria Admin",
-  description: "Fulfill shipments, process returns, and capture payments.",
+import OrdersPage from "@/components/pages/orders";
+import { t } from "@/lib/admin/console-texts";
+
+export const metadata: Metadata = {
+  title: `${t("console.nav.orders")} · Ætheria Admin`,
+  description: t("console.meta.orders-description"),
 };
 
 /**

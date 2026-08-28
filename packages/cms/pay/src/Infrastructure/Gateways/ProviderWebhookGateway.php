@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Cms\Pay\Infrastructure\Gateways;
 
+use Cms\Pay\Domain\Contracts\DeferredWebhookAuth;
 use Cms\Pay\Domain\Contracts\PaymentProvider;
 use Illuminate\Http\Request;
 
@@ -39,6 +40,33 @@ final class ProviderWebhookGateway
     public function parse(string $provider, array $payload): array
     {
         return $this->adapter($provider)->parseWebhook($payload);
+    }
+
+    /**
+     * Слепок авторизации callback для отложенной верификации (Д6); null —
+     * провайдер проверяет подпись целиком на приёме.
+     *
+     * @return array<string, string>|null
+     */
+    public function authSnapshot(string $provider, Request $request): ?array
+    {
+        $adapter = $this->adapter($provider);
+
+        return $adapter instanceof DeferredWebhookAuth ? $adapter->webhookAuthSnapshot($request) : null;
+    }
+
+    /**
+     * Фаза обработки (Д6): адаптер, сконфигурированный credentials проекта,
+     * сверяет слепок авторизации. Провайдеры без отложенной проверки уже
+     * верифицировали подпись на приёме.
+     *
+     * @param  array<string, mixed>|null  $auth
+     */
+    public function verifyDeferredAuth(string $provider, string $projectId, ?array $auth): bool
+    {
+        $adapter = $this->providers->for($projectId, $provider);
+
+        return $adapter instanceof DeferredWebhookAuth ? $adapter->verifyWebhookAuth($auth) : true;
     }
 
     private function adapter(string $provider): PaymentProvider

@@ -7,10 +7,12 @@ import { Switch } from "@/components/ui/inputs/switch";
 import type { NotificationPref } from "@/lib/admin/mocks/settings";
 import { useSaveSettingsSectionMutation } from "@/hooks/admin/settings";
 import { SettingsSection } from "./shared/SettingsSection";
+import { useConsoleText } from "@/lib/admin/use-console-text";
 
 type Channel = "email" | "push";
 
 export function NotificationsSection({ initial }: { initial: NotificationPref[] }) {
+  const t = useConsoleText();
   const [prefs, setPrefs] = useState<NotificationPref[]>(initial);
   const saveMutation = useSaveSettingsSectionMutation();
 
@@ -22,14 +24,14 @@ export function NotificationsSection({ initial }: { initial: NotificationPref[] 
       {
         onSuccess: (result) => {
           if (!result.ok) {
-            toast.error(result.reason ?? "Could not save notification preferences.");
+            toast.error(result.reason ?? t("console.settings.notifications.save-failed"));
             setPrefs(prefs);
             return;
           }
-          toast.success("Notification preference updated.");
+          toast.success(t("console.settings.notifications.saved"));
         },
         onError: () => {
-          toast.error("Could not save notification preferences.");
+          toast.error(t("console.settings.notifications.save-failed"));
           setPrefs(prefs);
         },
       },
@@ -39,15 +41,15 @@ export function NotificationsSection({ initial }: { initial: NotificationPref[] 
   return (
     <SettingsSection
       icon={Bell}
-      title="Notifications"
-      description="Pick which operational events reach your team by email and push."
+      title={t("console.settings.notifications.title")}
+      description={t("console.settings.notifications.description")}
     >
       <div className="flex items-center justify-end gap-6 px-4 text-caption font-semibold uppercase tracking-widest text-muted-foreground-lighter">
         <span className="flex items-center gap-2">
-          <Mail className="size-4" /> Email
+          <Mail className="size-4" /> {t("console.settings.notifications.email")}
         </span>
         <span className="flex items-center gap-2">
-          <Smartphone className="size-4" /> Push
+          <Smartphone className="size-4" /> {t("console.settings.notifications.push")}
         </span>
       </div>
       {prefs.map((pref) => (

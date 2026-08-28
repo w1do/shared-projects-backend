@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { descendantIds, flattenTree, invalidParentIds } from "./category-tree.ts";
+import { countChildren, descendantIds, flattenTree, invalidParentIds } from "./category-tree.ts";
 
 /** Три уровня, как в демо-дереве: Аналитика → Рынок → Обзоры/Прогнозы. */
 const TREE = [
@@ -75,4 +75,14 @@ test("лист можно перенести куда угодно, кроме �
   const flat = flattenTree(TREE);
 
   assert.deepEqual([...invalidParentIds(flat, "6")], ["6"]);
+});
+
+test("прямые потомки считаются по плоскому списку, листья в карте отсутствуют", () => {
+  const counts = countChildren(flattenTree(TREE));
+
+  assert.equal(counts.get("1"), 2, "Новости: Компания и Продукт");
+  assert.equal(counts.get("4"), 2, "Аналитика: Рынок и Исследования — без внуков");
+  assert.equal(counts.get("5"), 2);
+  assert.equal(counts.get("6"), undefined, "лист");
+  assert.deepEqual(countChildren([]), new Map());
 });

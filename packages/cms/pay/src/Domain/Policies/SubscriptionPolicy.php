@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Cms\Pay\Domain\Policies;
 
 use Cms\Pay\Domain\Models\Subscription;
-use Cms\Pay\Domain\ValueObjects\SiteUserKey;
+use Cms\Shared\Billing\Subscriber;
 use Illuminate\Database\Eloquent\Builder;
 
 /**
- * Владение подпиской пользователем сайта — единственное место, где это
- * правило описано.
+ * Владение подпиской подписчиком — единственное место, где это правило
+ * описано. Подписчик — полиморфная пара type+id (VO `Subscriber`).
  *
  * Правило применяется как УСЛОВИЕ ВЫБОРКИ (`ownedBy`), а не как проверка
  * после загрузки: чужая подписка обязана давать 404, а не 403 (Safety
@@ -26,14 +26,16 @@ final class SubscriptionPolicy
      * @param  Builder<Subscription>  $query
      * @return Builder<Subscription>
      */
-    public function ownedBy(Builder $query, SiteUserKey $userKey): Builder
+    public function ownedBy(Builder $query, Subscriber $subscriber): Builder
     {
-        return $query->where('user_key', $userKey->value);
+        return $query
+            ->where('subscriber_type', $subscriber->type)
+            ->where('subscriber_id', $subscriber->id);
     }
 
     /** То же правило как предикат — для проверок вне выборки. */
-    public function owns(Subscription $subscription, SiteUserKey $userKey): bool
+    public function owns(Subscription $subscription, Subscriber $subscriber): bool
     {
-        return $subscription->user_key === $userKey->value;
+        return $subscription->subscriber()->is($subscriber);
     }
 }

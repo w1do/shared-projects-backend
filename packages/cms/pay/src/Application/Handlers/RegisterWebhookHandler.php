@@ -33,6 +33,7 @@ final class RegisterWebhookHandler
                 'provider' => $command->provider,
                 'external_id' => $command->externalId,
                 'payload' => $command->payload,
+                'auth' => $command->auth,
             ]);
         } catch (UniqueConstraintViolationException) {
             return WebhookRegistrationDTO::duplicate();

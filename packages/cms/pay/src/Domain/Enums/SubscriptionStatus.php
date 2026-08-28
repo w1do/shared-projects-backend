@@ -23,7 +23,9 @@ enum SubscriptionStatus: string
             self::Active => in_array($target, [self::Paused, self::Canceled, self::PastDue, self::Expired], true),
             self::Paused => in_array($target, [self::Active, self::Canceled], true),
             self::Canceled => $target === self::Active, // возобновление до конца периода
-            self::PastDue => in_array($target, [self::Active, self::Expired, self::Canceled], true),
+            // self-переход past_due → past_due разрешён (Д17): повторное
+            // неуспешное продление инкрементирует renewal_attempts, не роняя ретраи
+            self::PastDue => in_array($target, [self::Active, self::Expired, self::Canceled, self::PastDue], true),
             self::Expired => $target === self::Active,
         };
     }

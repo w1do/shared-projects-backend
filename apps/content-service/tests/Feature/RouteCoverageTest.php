@@ -57,6 +57,7 @@ function contentRouteCoverageCoveredPairs(): array
         'POST api/admin/v1/projects/{project}/content/translations/translate-missing',            // localization/TranslationContractTest.php
         'DELETE api/admin/v1/projects/{project}/content/translations/{translation}',              // localization/TranslationContractTest.php
         'PUT api/admin/v1/projects/{project}/content/translations/{translation}',                 // localization/TranslationContractTest.php
+        'GET api/admin/v1/projects/{project}/content/localizations',                              // localization/LocalizationContractTest.php
         'GET api/v1/content/categories',                                                          // content/PublicContractTest.php
         'GET api/v1/content/pages/{slug}',                                                        // content/PublicContractTest.php
         'GET api/v1/content/posts',                                                               // content/PublicContractTest.php

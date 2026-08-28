@@ -1,0 +1,16 @@
+{
+    "status": 200,
+    "content_type": "application/json",
+    "body": {
+        "data": {
+            "yandex": {
+                "enabled": true,
+                "id": "<string>"
+            },
+            "google": {
+                "enabled": true,
+                "id": "<string>"
+            }
+        }
+    }
+}

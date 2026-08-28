@@ -5,11 +5,12 @@ declare(strict_types=1);
 namespace Cms\Pay\Infrastructure\Jobs;
 
 use Cms\Pay\Application\Commands\ApplyPaymentStatusCommand;
+use Cms\Pay\Application\Exceptions\ProviderNotConfigured;
 use Cms\Pay\Application\Handlers\ApplyPaymentStatusHandler;
 use Cms\Pay\Domain\Enums\PaymentStatus;
 use Cms\Pay\Domain\Models\Payment;
 use Cms\Pay\Domain\Models\WebhookEvent;
-use Cms\Pay\Infrastructure\Gateways\ProviderRegistry;
+use Cms\Pay\Infrastructure\Gateways\ProviderWebhookGateway;
 use Cms\Shared\Tenant\ProjectContext;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
@@ -51,18 +52,27 @@ final class ProcessWebhookEventJob implements ShouldBeUnique, ShouldQueue
         return (string) $this->webhookEventId;
     }
 
-    public function handle(ProviderRegistry $providers, ApplyPaymentStatusHandler $apply): void
+    public function handle(ProviderWebhookGateway $gateway, ApplyPaymentStatusHandler $apply): void
     {
         $event = WebhookEvent::query()->find($this->webhookEventId);
         if ($event === null || $event->status === 'processed') {
             return;
         }
 
-        $payment = null;
-        $parsed = ['payment_id' => $event->payload['payment_id'] ?? null, 'status' => $event->payload['status'] ?? null];
+        $parsed = $gateway->parse($event->provider, $event->payload);
 
+        $payment = null;
         if (is_string($parsed['payment_id'])) {
             $payment = Payment::acrossProjects()->whereKey($parsed['payment_id'])->first();
+        }
+
+        // Реальные провайдеры не знают внутренний payment_id: платёж
+        // резолвится по внешнему идентификатору транзакции (Д6)
+        if ($payment === null && $parsed['external_id'] !== '') {
+            $payment = Payment::acrossProjects()
+                ->where('provider', $event->provider)
+                ->where('provider_ref', $parsed['external_id'])
+                ->first();
         }
 
         if ($payment === null) {
@@ -75,6 +85,21 @@ final class ProcessWebhookEventJob implements ShouldBeUnique, ShouldQueue
         // Тенант-колонка проставляется при обработке: регистрация могла
         // не увидеть платёж (сохранится вместе с финальным статусом)
         $event->forceFill(['project_id' => $payment->project_id]);
+
+        // Д6: подлинность секрета — только теперь, с credentials проекта;
+        // невалидный секрет (или архив/отсутствие настроек) отклоняет
+        // событие до применения статуса
+        try {
+            $verified = $gateway->verifyDeferredAuth($event->provider, $payment->project_id, $event->auth);
+        } catch (ProviderNotConfigured) {
+            $verified = false;
+        }
+
+        if (! $verified) {
+            $event->forceFill(['status' => 'failed'])->save();
+
+            return;
+        }
 
         $status = PaymentStatus::tryFrom((string) $parsed['status']);
         if ($status !== null) {

@@ -4,7 +4,7 @@ export * from "./types";
 
 /**
  * Default store configuration surfaced in the admin settings workspace —
- * general profile, payments, shipping, taxes, notifications, team, and security.
+ * general profile, notifications, team, and security.
  */
 export const mockStoreSettings: StoreSettings = {
   general: {
@@ -17,82 +17,6 @@ export const mockStoreSettings: StoreSettings = {
     timezone: "America/Los_Angeles",
     weightUnit: "kg",
     storefrontUrl: "https://aetheria.studio",
-  },
-  payments: [
-    {
-      id: "stripe",
-      name: "Stripe",
-      description: "Cards, Apple Pay, and Google Pay with instant payouts.",
-      enabled: true,
-      mode: "live",
-    },
-    {
-      id: "paypal",
-      name: "PayPal",
-      description: "Wallet checkout and Pay in 4 installments.",
-      enabled: true,
-      mode: "live",
-    },
-    {
-      id: "klarna",
-      name: "Klarna",
-      description: "Buy now, pay later across eligible markets.",
-      enabled: false,
-      mode: "test",
-    },
-    {
-      id: "cod",
-      name: "Cash on delivery",
-      description: "Collect payment at the doorstep for local orders.",
-      enabled: false,
-      mode: "live",
-    },
-  ],
-  shipping: [
-    {
-      id: "domestic",
-      name: "Domestic standard",
-      regions: "United States",
-      rate: 6,
-      freeThreshold: 60,
-      enabled: true,
-    },
-    {
-      id: "express",
-      name: "Express overnight",
-      regions: "United States",
-      rate: 18,
-      freeThreshold: null,
-      enabled: true,
-    },
-    {
-      id: "europe",
-      name: "Europe tracked",
-      regions: "EU · United Kingdom",
-      rate: 14,
-      freeThreshold: 120,
-      enabled: true,
-    },
-    {
-      id: "apac",
-      name: "Asia Pacific",
-      regions: "Japan · Singapore · Australia",
-      rate: 22,
-      freeThreshold: null,
-      enabled: false,
-    },
-  ],
-  taxes: {
-    pricesIncludeTax: false,
-    autoCalculate: true,
-    defaultRate: 8.5,
-    taxId: "US-93-2841576",
-    regions: [
-      { id: "ca", name: "California", rate: 8.5 },
-      { id: "ny", name: "New York", rate: 8.875 },
-      { id: "eu", name: "European Union", rate: 20 },
-      { id: "uk", name: "United Kingdom", rate: 20 },
-    ],
   },
   notifications: [
     {

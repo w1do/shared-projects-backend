@@ -1,16 +1,19 @@
 "use client";
 
 import type { DetailedCustomer } from "@/lib/admin/mocks/customers";
+import { useConsoleText } from "@/lib/admin/use-console-text";
 
 interface CustomerActivitiesLogProps {
   customer: DetailedCustomer;
 }
 
 export function ActivitiesLogSection({ customer }: CustomerActivitiesLogProps) {
+  const t = useConsoleText();
+
   return (
     <div className="flex flex-col gap-4">
       <span className="text-caption font-semibold uppercase tracking-wider text-muted-foreground">
-        Activity History
+        {t("console.customers.detail.activity")}
       </span>
       <div className="flex flex-col">
         {customer.activities.map((act, idx) => {

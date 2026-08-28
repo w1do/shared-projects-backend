@@ -10,6 +10,7 @@ use Cms\Pay\Application\DTOs\Payment\CreatePaymentDTO;
 use Cms\Pay\Domain\Enums\PaymentStatus;
 use Cms\Pay\Domain\Enums\SubscriptionStatus;
 use Cms\Pay\Domain\Models\Payment;
+use Cms\Shared\Billing\Subscribable;
 
 /** Продление: идемпотентный платёж за период; неуспех → past_due и ретраи. */
 final class RenewSubscriptionHandler
@@ -18,20 +19,20 @@ final class RenewSubscriptionHandler
 
     public function handle(RenewSubscriptionCommand $command): Payment
     {
-        $subscription = $command->subscription->loadMissing('plan');
-        $plan = $subscription->plan;
-        if ($plan === null) {
-            throw new \LogicException("Subscription {$subscription->id} has no plan.");
+        $subscription = $command->subscription->loadMissing('subject');
+        $subject = $subscription->subject;
+        if (! $subject instanceof Subscribable) {
+            throw new \LogicException("Subscription {$subscription->id} has no subscribable subject.");
         }
         $periodKey = $subscription->current_period_ends_at->format('Ymd');
 
-        $price = $plan->price();
+        $price = $subject->subscriptionPrice();
         $payment = $this->createPayment->handle(new CreatePaymentCommand(
-            userKey: $subscription->user_key,
+            subjectKey: $subscription->subscriber()->subjectKey($subscription->project_id),
             data: CreatePaymentDTO::from([
                 'amount_minor' => $price->amountMinor,
                 'currency' => $price->currency->code,
-                'description' => "Renewal {$plan->code}",
+                'description' => "Renewal {$subject->subscriptionCode()}",
             ]),
             idempotencyKey: "sub:{$subscription->id}:renew:{$periodKey}",
             subscriptionId: $subscription->id,

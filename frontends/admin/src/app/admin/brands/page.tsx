@@ -1,8 +1,11 @@
-import BrandsPage from "@/components/pages/brands";
+import type { Metadata } from "next";
 
-export const metadata = {
-  title: "Brands · Ætheria Admin",
-  description: "Manage luxury cosmetics brand portfolio and portfolio statistics.",
+import BrandsPage from "@/components/pages/brands";
+import { t } from "@/lib/admin/console-texts";
+
+export const metadata: Metadata = {
+  title: `${t("console.nav.brands")} · Ætheria Admin`,
+  description: t("console.meta.brands-description"),
 };
 
 /**

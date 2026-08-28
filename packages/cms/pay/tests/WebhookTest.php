@@ -10,7 +10,7 @@ use Cms\Pay\Application\Handlers\CreatePaymentHandler;
 use Cms\Pay\Domain\Enums\PaymentStatus;
 use Cms\Pay\Domain\Models\Payment;
 use Cms\Pay\Domain\Models\WebhookEvent;
-use Cms\Pay\Infrastructure\Gateways\ProviderRegistry;
+use Cms\Pay\Infrastructure\Gateways\ProviderWebhookGateway;
 use Cms\Pay\Infrastructure\Jobs\ProcessWebhookEventJob;
 use Cms\Shared\Analytics\AnalyticsRecorder;
 use Cms\Shared\Jobs\SendAnalyticsEventJob;
@@ -23,7 +23,7 @@ function nullPayment(): Payment
     app(ProjectContext::class)->set('proj-1');
 
     return app(CreatePaymentHandler::class)->handle(new CreatePaymentCommand(
-        userKey: 'user:proj-1:7',
+        subjectKey: 'user:proj-1:7',
         data: CreatePaymentDTO::from(['amount_minor' => 100, 'currency' => 'RUB', 'provider' => 'null']),
     ));
 }
@@ -56,8 +56,8 @@ test('webhook processing applies the payment status idempotently', function () {
     ]);
 
     $job = new ProcessWebhookEventJob($event->id);
-    $job->handle(app(ProviderRegistry::class), app(ApplyPaymentStatusHandler::class));
-    $job->handle(app(ProviderRegistry::class), app(ApplyPaymentStatusHandler::class));
+    $job->handle(app(ProviderWebhookGateway::class), app(ApplyPaymentStatusHandler::class));
+    $job->handle(app(ProviderWebhookGateway::class), app(ApplyPaymentStatusHandler::class));
 
     app(ProjectContext::class)->set('proj-1');
     $fresh = $payment->fresh();

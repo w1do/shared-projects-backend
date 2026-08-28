@@ -16,7 +16,10 @@ export function BrandPerformanceSkeleton() {
 
       <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {Array.from({ length: BRAND_CARD_COUNT }, (_, index) => (
-          <div key={index} className="rounded-2xl border border-border/70 bg-card p-4">
+          <div
+            key={index}
+            className="rounded-2xl border border-border/70 bg-card p-4"
+          >
             <div className="flex items-start gap-4">
               <Skeleton className="size-10 shrink-0 rounded-full" />
               <div className="min-w-0 flex-1 flex flex-col gap-2">

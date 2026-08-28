@@ -16,7 +16,7 @@ cd "$ROOT"
 STRICT=0
 [ "${1:-}" = "--strict" ] && STRICT=1
 
-MODULES="auth content pay analytics localization ai"
+MODULES="auth content pay analytics localization ai licensing"
 FAILED=0
 TOTAL=0
 

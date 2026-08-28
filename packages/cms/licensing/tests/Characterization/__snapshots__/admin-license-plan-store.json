@@ -1,0 +1,16 @@
+{
+    "status": 201,
+    "content_type": "application/json",
+    "body": {
+        "data": {
+            "id": "<int>",
+            "code": "enterprise",
+            "name": "Enterprise",
+            "price_minor": 49900,
+            "currency": "RUB",
+            "interval": "month",
+            "features": [],
+            "overrides": []
+        }
+    }
+}

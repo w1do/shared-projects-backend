@@ -1,0 +1,31 @@
+{
+    "status": 201,
+    "content_type": "application/json",
+    "body": {
+        "data": {
+            "id": "<string>",
+            "key_prefix": "<string>",
+            "status": "active",
+            "organization": {
+                "id": "<int>",
+                "name": "Acme LLC"
+            },
+            "plan": {
+                "id": "<int>",
+                "code": "enterprise",
+                "name": "Enterprise"
+            },
+            "edition": "enterprise",
+            "features": [],
+            "entitled_version": "1.4.7",
+            "updates_until": "2030-01-01",
+            "max_installations": 3,
+            "active_installations": 0,
+            "reveal_available": false,
+            "note": null,
+            "issued_at": "<string>",
+            "revoked_at": null,
+            "key": "<string>"
+        }
+    }
+}

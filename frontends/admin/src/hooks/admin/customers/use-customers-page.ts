@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import type { DetailedCustomer } from "@/lib/admin/mocks/customers";
 import { deleteCustomer, setCustomerBlocked } from "@/lib/admin/services";
 import { adminQueryKeys } from "@/lib/admin/query/keys";
+import { t } from "@/lib/admin/console-texts";
 import { useCustomersQuery } from "./use-customers-query";
 
 type Options = {
@@ -46,14 +47,18 @@ export function useCustomersPage(options: Options = {}) {
   const [deleteTarget, setDeleteTarget] = useState<DetailedCustomer | null>(null);
 
   const refreshList = () =>
-    queryClient.invalidateQueries({ queryKey: adminQueryKeys.customers.list() });
+    queryClient.invalidateQueries({
+      queryKey: adminQueryKeys.customers.list(),
+    });
 
   const blockMutation = useMutation({
     mutationFn: ({ id, blocked }: { id: string; blocked: boolean }) =>
       setCustomerBlocked(id, blocked),
     onSuccess: (_result, { blocked }) => {
       void refreshList();
-      toast.success(blocked ? "Customer blocked." : "Customer unblocked.");
+      toast.success(
+        blocked ? t("console.customers.toast.blocked") : t("console.customers.toast.unblocked"),
+      );
     },
     onError: (error: Error) => toast.error(error.message),
   });
@@ -62,14 +67,17 @@ export function useCustomersPage(options: Options = {}) {
     mutationFn: (id: string) => deleteCustomer(id),
     onSuccess: () => {
       void refreshList();
-      toast.success("Customer deleted.");
+      toast.success(t("console.customers.toast.deleted"));
     },
     onError: (error: Error) => toast.error(error.message),
   });
 
   /** Блокировка/разблокировка пользователя проекта (auth-service). */
   const toggleCustomerBlocked = (customer: DetailedCustomer) => {
-    blockMutation.mutate({ id: customer.id, blocked: customer.status === "Active" });
+    blockMutation.mutate({
+      id: customer.id,
+      blocked: customer.status === "Active",
+    });
   };
 
   const confirmDelete = () => {
@@ -80,9 +88,9 @@ export function useCustomersPage(options: Options = {}) {
 
   const exportCustomers = () => {
     toast.promise(new Promise((resolve) => setTimeout(resolve, 1500)), {
-      loading: "Preparing customer logs and generating CSV...",
-      success: () => "Customer directory CSV exported successfully.",
-      error: "Failed to generate export file.",
+      loading: t("console.customers.toast.export-loading"),
+      success: () => t("console.customers.toast.export-success"),
+      error: t("console.customers.toast.export-failed"),
     });
   };
 

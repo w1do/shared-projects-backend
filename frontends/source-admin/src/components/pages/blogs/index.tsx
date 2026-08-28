@@ -5,6 +5,7 @@ import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/inputs/button";
 import { PageHeader } from "@/components/shared/layout/PageHeader";
 import type { Article } from "@/lib/admin/mocks/magazine";
+import { useConsoleText } from "@/lib/admin/use-console-text";
 import { useBlogsPage } from "@/hooks/admin/articles";
 import { BlogsStats } from "./sections/blogs-stats";
 import { BlogsFeatured } from "./sections/blogs-featured";
@@ -19,6 +20,7 @@ interface BlogsPageProps {
 
 /** Blogs page — list/delete/preview via useBlogsPage (TanStack Query). */
 export default function BlogsPage({ initialArticles }: BlogsPageProps = {}) {
+  const t = useConsoleText();
   const {
     articles,
     featured,
@@ -64,12 +66,12 @@ export default function BlogsPage({ initialArticles }: BlogsPageProps = {}) {
       >
         <div className="flex flex-col gap-10">
           <PageHeader
-            title="Blogs"
-            description="Publish editorial beauty journals, ingredient guides, and brand stories."
+            title={t("console.nav.blogs")}
+            description={t("console.blogs.subtitle")}
             breadcrumbItems={[
-              { label: "Admin", href: "/admin" },
-              { label: "Workspace", href: "/admin/blogs" },
-              { label: "Blogs" },
+              { label: t("console.common.breadcrumb-admin"), href: "/admin" },
+              { label: t("console.nav.group.workspace"), href: "/admin/blogs" },
+              { label: t("console.nav.blogs") },
             ]}
             actions={
               <Button
@@ -80,7 +82,7 @@ export default function BlogsPage({ initialArticles }: BlogsPageProps = {}) {
                 startIcon={<Plus />}
                 onClick={openCreate}
               >
-                New Article
+                {t("console.blogs.new-article")}
               </Button>
             }
           />

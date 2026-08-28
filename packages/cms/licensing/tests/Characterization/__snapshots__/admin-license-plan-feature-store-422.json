@@ -1,0 +1,16 @@
+{
+    "status": 422,
+    "content_type": "application/json",
+    "body": {
+        "error": {
+            "code": "validation_failed",
+            "message": "The given data was invalid.",
+            "details": {
+                "code": [
+                    "Feature code is already present for this plan."
+                ]
+            },
+            "trace_id": "<string>"
+        }
+    }
+}

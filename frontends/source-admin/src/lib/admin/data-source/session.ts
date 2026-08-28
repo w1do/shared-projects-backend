@@ -9,6 +9,7 @@
  */
 
 import { adminApiConfig, shouldUseAdminApi } from "./config";
+import { t, tf } from "@/lib/admin/console-texts";
 import { type MockUser, authenticateMockUser } from "@/lib/admin/mocks/auth";
 
 export const AUTH_TOKEN_COOKIE = "auth_token";
@@ -142,20 +143,20 @@ async function signInAgainstPlatform(
       cache: "no-store",
     });
   } catch {
-    throw new AdminAuthError("Sign in failed. The platform is unreachable.");
+    throw new AdminAuthError(t("console.login.platform-unreachable"));
   }
 
   if (response.status === 401 || response.status === 422) {
     // Существование аккаунта не раскрываем.
-    throw new AdminAuthError("Invalid email or password.");
+    throw new AdminAuthError(t("console.login.invalid-credentials"));
   }
   if (!response.ok) {
-    throw new AdminAuthError(`Sign in failed with ${response.status}.`);
+    throw new AdminAuthError(tf("console.login.failed-with-status", { status: response.status }));
   }
 
   const payload = (await response.json()) as { data?: PlatformLoginData };
   if (!payload.data?.token) {
-    throw new AdminAuthError("Sign in failed. Unexpected response from the platform.");
+    throw new AdminAuthError(t("console.login.unexpected-response"));
   }
 
   return { profile: toOperatorProfile(payload.data.admin), token: payload.data.token };
@@ -164,10 +165,10 @@ async function signInAgainstPlatform(
 function signInAgainstMocks(email: string, password: string) {
   const user = authenticateMockUser(email);
   if (!user || user.password !== password) {
-    throw new AdminAuthError("Invalid email or password.");
+    throw new AdminAuthError(t("console.login.invalid-credentials"));
   }
   if (user.status === "inactive") {
-    throw new AdminAuthError("This account has been deactivated.");
+    throw new AdminAuthError(t("console.login.account-deactivated"));
   }
 
   const { password: _password, ...profile } = user;

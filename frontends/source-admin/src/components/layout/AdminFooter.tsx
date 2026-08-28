@@ -1,4 +1,5 @@
 import { StatusDot } from "@/components/ui/feedback/status-dot";
+import { t } from "@/lib/admin/console-texts";
 import { siteConfig } from "@/lib/site-config";
 
 export function AdminFooter() {
@@ -17,7 +18,7 @@ export function AdminFooter() {
         <span className="text-border/60">•</span>
         <div className="flex items-center gap-2">
           <StatusDot color="success" ping />
-          <span>System healthy</span>
+          <span>{t("console.footer.system-healthy")}</span>
         </div>
       </div>
     </footer>

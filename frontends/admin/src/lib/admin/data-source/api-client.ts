@@ -10,7 +10,14 @@
  *  - `{project}` в путях подставляется из текущего проекта оператора.
  */
 
-import { apiBaseUrl, clearClientSession, getAuthToken, getProjectKey } from "./session";
+import { t } from "../console-texts";
+import { messageFor } from "./api-messages";
+import {
+  apiBaseUrl,
+  clearClientSession,
+  getAuthToken,
+  getProjectKey,
+} from "./session";
 
 export type ApiPage<T> = {
   items: T[];
@@ -30,8 +37,17 @@ export type ApiEnvelope<T> = {
 /** Ответ платформы: данные + необязательная мета курсорной пагинации. */
 type PlatformResponse<T> = {
   data?: T;
-  meta?: { per_page?: number; next_cursor?: string | null; prev_cursor?: string | null };
-  error?: { code?: string; message?: string; details?: unknown; trace_id?: string };
+  meta?: {
+    per_page?: number;
+    next_cursor?: string | null;
+    prev_cursor?: string | null;
+  };
+  error?: {
+    code?: string;
+    message?: string;
+    details?: unknown;
+    trace_id?: string;
+  };
 };
 
 export class AdminApiError extends Error {
@@ -52,7 +68,7 @@ export function resolvePath(path: string) {
   const project = getProjectKey();
   if (!project) {
     throw new AdminApiError(
-      "No project is selected for this operator.",
+      t("console.api.project-missing"),
       "project_missing",
       400,
     );
@@ -60,22 +76,32 @@ export function resolvePath(path: string) {
   return path.replace("{project}", encodeURIComponent(project));
 }
 
-function messageFor(status: number, payload: PlatformResponse<unknown> | undefined) {
-  if (payload?.error?.message) return payload.error.message;
-  if (status === 403) return "You do not have permission to perform this action.";
-  if (status === 404) return "Requested resource was not found.";
-  if (status === 422) return "Submitted data is invalid.";
-  return `Request failed with status ${status}.`;
-}
-
 /**
  * Ответ платформы → конверт вёрстки.
  * 401 завершает сессию и уводит на страницу входа.
  */
-export async function toEnvelope<T>(response: Response): Promise<ApiEnvelope<T>> {
+/**
+ * Первое сообщение из `error.details`: 422-конверт платформы всегда несёт
+ * generic `message`, а текст доменной ошибки (занятый слаг, «есть лицензии»)
+ * лежит в details по полю — оператору показывается именно он.
+ */
+function firstDetailMessage(details: unknown): string | undefined {
+  if (details === null || typeof details !== "object") return undefined;
+  for (const value of Object.values(details as Record<string, unknown>)) {
+    if (Array.isArray(value) && typeof value[0] === "string") return value[0];
+  }
+  return undefined;
+}
+
+export async function toEnvelope<T>(
+  response: Response,
+): Promise<ApiEnvelope<T>> {
   let payload: PlatformResponse<T> | undefined;
   try {
-    payload = response.status === 204 ? undefined : ((await response.json()) as PlatformResponse<T>);
+    payload =
+      response.status === 204
+        ? undefined
+        : ((await response.json()) as PlatformResponse<T>);
   } catch {
     payload = undefined;
   }
@@ -83,12 +109,19 @@ export async function toEnvelope<T>(response: Response): Promise<ApiEnvelope<T>>
   if (response.status === 401) {
     clearClientSession();
     if (typeof window !== "undefined") window.location.href = "/login";
-    throw new AdminApiError("Session expired. Please sign in again.", "unauthenticated", 401);
+    throw new AdminApiError(
+      t("console.api.session-expired"),
+      "unauthenticated",
+      401,
+    );
   }
 
   if (!response.ok) {
     throw new AdminApiError(
-      messageFor(response.status, payload),
+      messageFor(
+        response.status,
+        firstDetailMessage(payload?.error?.details) ?? payload?.error?.message,
+      ),
       payload?.error?.code ?? `http_${response.status}`,
       response.status,
     );
@@ -98,7 +131,10 @@ export async function toEnvelope<T>(response: Response): Promise<ApiEnvelope<T>>
 }
 
 /** Курсорный ответ платформы → страница в форме, ожидаемой вёрсткой. */
-export function toPage<T>(items: T[], meta?: PlatformResponse<T>["meta"]): ApiPage<T> {
+export function toPage<T>(
+  items: T[],
+  meta?: PlatformResponse<T>["meta"],
+): ApiPage<T> {
   const size = meta?.per_page ?? items.length;
   // Курсорная пагинация не знает общего числа записей: страница всегда первая,
   // а общее число — то, что реально получено.
@@ -125,9 +161,14 @@ async function request<T>(
   init: { method: string; body?: unknown; auth?: boolean },
 ): Promise<T> {
   const url = `${apiBaseUrl()}${resolvePath(path)}`;
-  const headers = init.auth === false
-    ? { Accept: "application/json" }
-    : authHeaders(init.body === undefined ? undefined : { "Content-Type": "application/json" });
+  const headers =
+    init.auth === false
+      ? { Accept: "application/json" }
+      : authHeaders(
+          init.body === undefined
+            ? undefined
+            : { "Content-Type": "application/json" },
+        );
 
   let response: Response;
   try {
@@ -138,14 +179,17 @@ async function request<T>(
       cache: "no-store",
     });
   } catch {
-    throw new AdminApiError("The platform is unreachable. Please try again.", "network", 0);
+    throw new AdminApiError(t("console.api.unreachable"), "network", 0);
   }
 
   const envelope = await toEnvelope<T>(response);
   return envelope.data;
 }
 
-export async function adminApiGet<T>(path: string, options?: { auth?: boolean }) {
+export async function adminApiGet<T>(
+  path: string,
+  options?: { auth?: boolean },
+) {
   return request<T>(path, { method: "GET", auth: options?.auth });
 }
 
@@ -157,7 +201,7 @@ export async function adminApiGetPage<T>(path: string): Promise<ApiPage<T>> {
   try {
     response = await fetch(url, { headers: authHeaders(), cache: "no-store" });
   } catch {
-    throw new AdminApiError("The platform is unreachable. Please try again.", "network", 0);
+    throw new AdminApiError(t("console.api.unreachable"), "network", 0);
   }
 
   let payload: PlatformResponse<T[]> | undefined;

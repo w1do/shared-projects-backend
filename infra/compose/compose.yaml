@@ -54,6 +54,17 @@ services:
       - path: ./infra/services/content-service/.env.local
         required: false
 
+  # Планировщик content: nightly localize:sync и прочие расписания пакетов.
+  content-scheduler:
+    <<: *php-service
+    command: ["php", "artisan", "schedule:work"]
+    environment:
+      APP_SERVICE: content-service
+    env_file:
+      - ./infra/services/content-service/.env
+      - path: ./infra/services/content-service/.env.local
+        required: false
+
   # Воркер очередей auth: аудит и рассылка cache-bust после переноса в Jobs (этап 6).
   auth-worker:
     <<: *php-service

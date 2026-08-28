@@ -72,10 +72,44 @@ export const adminQueryKeys = {
   settings: {
     all: ["admin", "settings"] as const,
     store: () => ["admin", "settings", "store"] as const,
+    payments: () => ["admin", "settings", "payments"] as const,
+    paymentProviders: () => ["admin", "settings", "payment-providers"] as const,
+    paymentProvider: (provider: string) =>
+      ["admin", "settings", "payment-providers", provider] as const,
+    projects: () => ["admin", "settings", "projects"] as const,
+    site: () => ["admin", "settings", "site"] as const,
   },
   dashboard: {
     all: ["admin", "dashboard"] as const,
     data: () => ["admin", "dashboard", "data"] as const,
+  },
+  licensing: {
+    all: ["admin", "licensing"] as const,
+    organizations: (cursor?: string) =>
+      ["admin", "licensing", "organizations", cursor ?? ""] as const,
+    plans: (cursor?: string) => ["admin", "licensing", "plans", cursor ?? ""] as const,
+    plan: (id: number) => ["admin", "licensing", "plan", id] as const,
+    licenses: (filters?: { organizationId?: number; status?: string; cursor?: string }) =>
+      [
+        "admin",
+        "licensing",
+        "licenses",
+        filters?.organizationId ?? "",
+        filters?.status ?? "",
+        filters?.cursor ?? "",
+      ] as const,
+    installations: (licenseId: string, appVersionBelow?: string) =>
+      [
+        "admin",
+        "licensing",
+        "installations",
+        licenseId,
+        appVersionBelow ?? "",
+      ] as const,
+    releases: (cursor?: string) =>
+      ["admin", "licensing", "releases", cursor ?? ""] as const,
+    signingKey: () => ["admin", "licensing", "signing-key"] as const,
+    access: () => ["admin", "licensing", "access"] as const,
   },
   content: {
     all: ["admin", "content"] as const,

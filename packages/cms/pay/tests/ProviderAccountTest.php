@@ -2,9 +2,11 @@
 
 declare(strict_types=1);
 
+use Cms\Pay\Application\Exceptions\ProviderNotConfigured;
 use Cms\Pay\Domain\Contracts\PaymentProvider;
 use Cms\Pay\Domain\Models\Payment;
 use Cms\Pay\Domain\Models\ProviderAccount;
+use Cms\Pay\Domain\ValueObjects\GatewayConfig;
 use Cms\Pay\Infrastructure\Gateways\NullProvider;
 use Cms\Pay\Infrastructure\Gateways\ProviderRegistry;
 use Cms\Shared\Values\Money;
@@ -19,18 +21,22 @@ final class SpyPaymentProvider implements PaymentProvider
 {
     public bool $configured = false;
 
-    /** @var array<string, mixed> */
-    public array $credentials = [];
+    public GatewayConfig $config;
+
+    public function __construct()
+    {
+        $this->config = GatewayConfig::empty();
+    }
 
     public function key(): string
     {
         return 'null';
     }
 
-    public function configure(array $credentials): static
+    public function configure(GatewayConfig $config): static
     {
         $this->configured = true;
-        $this->credentials = $credentials;
+        $this->config = $config;
 
         return $this;
     }
@@ -64,15 +70,24 @@ function spyProvider(): SpyPaymentProvider
     return $spy;
 }
 
-test('registry configures the adapter with the credentials of its project', function () {
-    ProviderAccount::create(['project_id' => 'proj-1', 'provider' => 'null', 'credentials' => ['api_key' => 'secret-1']]);
+test('registry configures the adapter with the gateway config of its project', function () {
+    ProviderAccount::create([
+        'project_id' => 'proj-1', 'provider' => 'null',
+        'credentials' => ['api_key' => 'secret-1'],
+        'return_url' => 'https://shop.example/ok',
+        'fail_url' => 'https://shop.example/fail',
+        'properties' => ['note' => 'x'],
+    ]);
     ProviderAccount::create(['project_id' => 'proj-2', 'provider' => 'null', 'credentials' => ['api_key' => 'secret-2']]);
 
     $spy = spyProvider();
     app(ProviderRegistry::class)->for('proj-1', 'null');
 
     expect($spy->configured)->toBeTrue()
-        ->and($spy->credentials)->toBe(['api_key' => 'secret-1']);
+        ->and($spy->config->credentials)->toBe(['api_key' => 'secret-1'])
+        ->and($spy->config->returnUrl)->toBe('https://shop.example/ok')
+        ->and($spy->config->failUrl)->toBe('https://shop.example/fail')
+        ->and($spy->config->properties)->toBe(['note' => 'x']);
 });
 
 test('registry skips configuration for the webhook verify placeholder and for a project without an account', function () {
@@ -83,7 +98,7 @@ test('registry skips configuration for the webhook verify placeholder and for a 
     app(ProviderRegistry::class)->for('proj-without-account', 'null');
 
     expect($spy->configured)->toBeFalse()
-        ->and($spy->credentials)->toBe([]);
+        ->and($spy->config->credentials)->toBe([]);
 });
 
 test('registry passes empty credentials when the account stores none', function () {
@@ -93,5 +108,19 @@ test('registry passes empty credentials when the account stores none', function 
     app(ProviderRegistry::class)->for('proj-1', 'null');
 
     expect($spy->configured)->toBeTrue()
-        ->and($spy->credentials)->toBe([]);
+        ->and($spy->config->credentials)->toBe([]);
+});
+
+test('registry rejects the archived provider account with a domain error', function () {
+    ProviderAccount::create([
+        'project_id' => 'proj-1', 'provider' => 'null',
+        'credentials' => ['api_key' => 'secret-1'], 'status' => 'archived',
+    ]);
+
+    $spy = spyProvider();
+
+    expect(fn () => app(ProviderRegistry::class)->for('proj-1', 'null'))
+        ->toThrow(ProviderNotConfigured::class);
+
+    expect($spy->configured)->toBeFalse();
 });

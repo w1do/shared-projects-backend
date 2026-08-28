@@ -17,6 +17,7 @@ import { IntentStep } from "./steps/IntentStep";
 import { ReviewStep } from "./steps/ReviewStep";
 import { engageStepDescription } from "./types";
 import { useEngageAudienceModal } from "./useEngageAudienceModal";
+import { useConsoleText } from "@/lib/admin/use-console-text";
 
 interface EngageAudienceModalProps {
   isOpen: boolean;
@@ -31,6 +32,7 @@ export function EngageAudienceModal({
   onClose,
   onSent,
 }: EngageAudienceModalProps) {
+  const t = useConsoleText();
   const modal = useEngageAudienceModal(isOpen, customers, onClose, onSent);
 
   const canContinue =
@@ -52,7 +54,7 @@ export function EngageAudienceModal({
       >
         <DialogHeader className="shrink-0 space-y-2 border-b border-border/50 p-6 text-left">
           <DialogTitle className="font-openrunde text-heading tracking-tight text-foreground">
-            Engage audience
+            {t("console.engage.title")}
           </DialogTitle>
           <DialogDescription className="text-caption text-muted-foreground">
             {engageStepDescription(modal.step)}

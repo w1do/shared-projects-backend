@@ -1,0 +1,13 @@
+{
+    "status": 201,
+    "content_type": "application/json",
+    "body": {
+        "data": {
+            "id": "<int>",
+            "plan_id": "<int>",
+            "organization_id": null,
+            "code": "api-access",
+            "name": "API access"
+        }
+    }
+}

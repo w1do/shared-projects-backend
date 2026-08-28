@@ -4,9 +4,11 @@ import * as React from "react";
 import { useRouter } from "next/navigation";
 import { ShieldAlert, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/inputs/button";
+import { useConsoleText } from "@/lib/admin/use-console-text";
 
 export function UnauthorizedScreen() {
   const router = useRouter();
+  const t = useConsoleText();
 
   return (
     <main className="flex min-h-screen w-full flex-col items-center justify-center px-6 py-12 text-center">
@@ -17,11 +19,10 @@ export function UnauthorizedScreen() {
 
         <div className="flex flex-col gap-2">
           <h1 className="font-openrunde text-3xl font-semibold tracking-tight text-foreground">
-            Access Denied
+            {t("console.unauthorized.title")}
           </h1>
           <p className="text-body text-muted-foreground mt-2">
-            You do not have the required permissions to view this section of the console. Please
-            contact your system administrator if you believe this is an error.
+            {t("console.unauthorized.description")}
           </p>
         </div>
 
@@ -33,7 +34,7 @@ export function UnauthorizedScreen() {
             startIcon={<ArrowLeft />}
             onClick={() => router.push("/admin")}
           >
-            Back to Dashboard
+            {t("console.unauthorized.back")}
           </Button>
         </div>
       </div>

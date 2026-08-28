@@ -11,6 +11,7 @@ enum ServiceName: string
     case Content = 'content';
     case Analytics = 'analytics';
     case Pay = 'pay';
+    case Licensing = 'licensing';
 
     /**
      * Сервисы, которые включаются на проект. `auth` в список не входит:
@@ -20,6 +21,6 @@ enum ServiceName: string
      */
     public static function toggleable(): array
     {
-        return [self::Content->value, self::Analytics->value, self::Pay->value];
+        return [self::Content->value, self::Analytics->value, self::Pay->value, self::Licensing->value];
     }
 }

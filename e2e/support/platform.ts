@@ -43,7 +43,8 @@ export async function bootstrap(token: string): Promise<Bootstrap> {
   return (await json(response, "bootstrap")).data;
 }
 
-async function setService(token: string, service: string, enabled: boolean): Promise<void> {
+/** Прямое переключение сервиса — страховочное восстановление UI-сценариев. */
+export async function setService(token: string, service: string, enabled: boolean): Promise<void> {
   const response = await fetch(
     `${env.baseUrl}/api/admin/v1/projects/${env.projectKey}/services/${service}`,
     {

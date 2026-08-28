@@ -1,0 +1,16 @@
+{
+    "status": 422,
+    "content_type": "application/json",
+    "body": {
+        "error": {
+            "code": "validation_failed",
+            "message": "The given data was invalid.",
+            "details": {
+                "currency_default": [
+                    "The currency default field must exist in currencies.*."
+                ]
+            },
+            "trace_id": "<string>"
+        }
+    }
+}

@@ -6,26 +6,38 @@ import {
   SECTION_REQUIREMENTS,
   decodeSectionSnapshot,
   isDemoSection,
+  persistSectionSnapshot,
   sectionKeyOfPath,
+  sectionSnapshotRevision,
   selectVisibleQuickActions,
   selectVisibleSections,
+  subscribeSectionSnapshot,
   visibleSectionKeys,
 } from "./section-access.ts";
 
 /** Порядок — каталожный (`CONSOLE_SECTION_KEYS`), а не алфавитный. */
-const LIVE = ["dashboard", "categories", "customers", "blogs", "team", "settings"];
+const LIVE = [
+  "dashboard",
+  "categories",
+  "customers",
+  "blogs",
+  "team",
+  "settings",
+  "licensing",
+];
 
 /**
  * `bootstrap.services[]` содержит только переключаемые сервисы
- * (`cms-auth.php`: content, analytics, pay). `auth` — ядро, его там нет никогда.
+ * (`cms-auth.php`: content, analytics, pay, licensing). `auth` — ядро, его там нет никогда.
  */
 const ALL_SERVICES = [
   { key: "content", enabled: true },
   { key: "analytics", enabled: true },
   { key: "pay", enabled: true },
+  { key: "licensing", enabled: true },
 ];
 
-test("требование объявлено ровно для шести живых разделов", () => {
+test("требование объявлено ровно для семи живых разделов", () => {
   assert.deepEqual(
     CONSOLE_SECTION_KEYS.filter((key) => key in SECTION_REQUIREMENTS),
     LIVE,
@@ -58,7 +70,38 @@ test("выключенный сервис убирает свои разделы
   });
 
   // Blogs и Categories ушли вместе с `content`; разделы `auth` остались.
-  assert.deepEqual(keys, ["dashboard", "customers", "team", "settings"]);
+  assert.deepEqual(keys, ["dashboard", "customers", "team", "settings", "licensing"]);
+});
+
+test("licensing виден при включённом сервисе и праве pay.licensing.view", () => {
+  const keys = visibleSectionKeys({
+    services: [{ key: "licensing", enabled: true }],
+    permissions: ["pay.licensing.view"],
+  });
+
+  assert.deepEqual(keys, ["licensing"]);
+});
+
+test("выключенный сервис licensing скрывает раздел даже при полном доступе", () => {
+  const keys = visibleSectionKeys({
+    services: ALL_SERVICES.map((s) =>
+      s.key === "licensing" ? { ...s, enabled: false } : s,
+    ),
+    permissions: ["*"],
+  });
+
+  assert.ok(!keys.includes("licensing"));
+  assert.ok(keys.includes("settings"));
+});
+
+test("licensing скрыт без права view, сервис при этом включён", () => {
+  const keys = visibleSectionKeys({
+    services: ALL_SERVICES,
+    permissions: ["pay.licensing.manage", "auth.settings.view"],
+  });
+
+  assert.ok(!keys.includes("licensing"));
+  assert.ok(keys.includes("settings"));
 });
 
 test("разделы ядра `auth` видны, хотя сервиса нет в bootstrap.services[]", () => {
@@ -68,6 +111,7 @@ test("разделы ядра `auth` видны, хотя сервиса нет 
       { key: "content", enabled: true },
       { key: "analytics", enabled: true },
       { key: "pay", enabled: true },
+      { key: "licensing", enabled: true },
     ],
     permissions: ["*"],
   });
@@ -130,6 +174,24 @@ test("адрес раздела → ключ; служебные адреса к
   assert.equal(sectionKeyOfPath("/admin/products/add"), "products");
   assert.equal(sectionKeyOfPath("/admin/unauthorized"), undefined);
   assert.equal(sectionKeyOfPath("/login"), undefined);
+});
+
+test("запись снимка уведомляет подписчиков — меню перечитывает состав сразу", () => {
+  let notified = 0;
+  const unsubscribe = subscribeSectionSnapshot(() => {
+    notified += 1;
+  });
+
+  const before = sectionSnapshotRevision();
+  // Переключение сервиса из настроек: bootstrap перечитан → снимок переписан.
+  persistSectionSnapshot(["dashboard", "customers", "team", "settings"], 60);
+
+  assert.equal(notified, 1);
+  assert.ok(sectionSnapshotRevision() > before);
+
+  unsubscribe();
+  persistSectionSnapshot(["dashboard"], 60);
+  assert.equal(notified, 1);
 });
 
 test("отсутствующая cookie снимка не блокирует навигацию", () => {

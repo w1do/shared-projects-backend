@@ -25,6 +25,8 @@ $COMPOSE exec -T -w /var/www/apps/auth-service auth-service php artisan manifest
 $COMPOSE exec -T -w /var/www/apps/content-service content-service php artisan manifest:publish
 $COMPOSE exec -T -w /var/www/apps/analytics-service analytics-service php artisan manifest:publish
 $COMPOSE exec -T -w /var/www/apps/pay-service pay-service php artisan manifest:publish
+# licensing живёт в pay-service; сигнатура отдельная — manifest:publish занят PayManifest
+$COMPOSE exec -T -w /var/www/apps/pay-service pay-service php artisan manifest:publish-licensing
 
 echo "== login"
 TOKEN=$(curl -fsS -X POST "$BASE/api/admin/v1/auth/login" -H 'Content-Type: application/json' \
@@ -82,6 +84,32 @@ PAY_ID=$(echo "$SUB" | jqr "['data']['payment']['id']")
 curl -fsS -X POST "$BASE/api/admin/v1/projects/demo/pay/payments/$PAY_ID/confirm" -H "$AUTH" | jqr "['data']['status']"
 curl -fsS -X POST "$BASE/api/v1/pay/subscriptions/$SUB_ID/cancel" -H "X-Api-Key: $SK" -H "X-User-Token: $USER_TOKEN" | jqr "['data']['status']"
 curl -fsS -X POST "$BASE/api/v1/pay/subscriptions/$SUB_ID/resume" -H "X-Api-Key: $SK" -H "X-User-Token: $USER_TOKEN" | jqr "['data']['status']"
+
+echo "== licensing: issue → activate → refresh → updates/check"
+curl -fsS -X PUT "$BASE/api/admin/v1/projects/demo/services/licensing" -H "$AUTH" \
+    -H 'Content-Type: application/json' -d '{"enabled":true}' >/dev/null
+ORG_ID=$(curl -fsS -X POST "$BASE/api/admin/v1/projects/demo/pay/licensing/organizations" -H "$AUTH" \
+    -H 'Content-Type: application/json' \
+    -d "{\"name\":\"Smoke Org $RUN\",\"contact_first_name\":\"Ivan\",\"contact_last_name\":\"Petrov\",\"email\":\"org-$RUN@example.com\"}" \
+    | jqr "['data']['id']")
+LPLAN_ID=$(curl -fsS -X POST "$BASE/api/admin/v1/projects/demo/pay/licensing/plans" -H "$AUTH" \
+    -H 'Content-Type: application/json' -d "{\"code\":\"box-$RUN\",\"name\":\"Box\"}" | jqr "['data']['id']")
+curl -fsS -X POST "$BASE/api/admin/v1/projects/demo/pay/licensing/releases" -H "$AUTH" \
+    -H 'Content-Type: application/json' \
+    -d "{\"version\":\"1.0.$((RUN % 100000))\",\"train\":\"1.0\",\"repository\":\"crm/app-1.0\",\"released_at\":\"2026-01-10T00:00:00+00:00\"}" >/dev/null
+LKEY=$(curl -fsS -X POST "$BASE/api/admin/v1/projects/demo/pay/licensing/licenses" -H "$AUTH" \
+    -H 'Content-Type: application/json' \
+    -d "{\"organization_id\":$ORG_ID,\"plan_id\":$LPLAN_ID,\"updates_until\":\"2030-01-01\"}" | jqr "['data']['key']")
+INSTALL_ID=$(python3 -c "import secrets; print(secrets.token_hex(32))")
+curl -fsS -X POST "$BASE/api/v1/pay/licensing/license/activate" -H 'Content-Type: application/json' \
+    -d "{\"key\":\"$LKEY\",\"install_id\":\"$INSTALL_ID\",\"domain\":\"smoke.example\",\"app_version\":\"1.0.0\"}" \
+    | jqr "['data']['state']"
+curl -fsS -X POST "$BASE/api/v1/pay/licensing/license/refresh" -H 'Content-Type: application/json' \
+    -d "{\"key\":\"$LKEY\",\"install_id\":\"$INSTALL_ID\",\"domain\":\"smoke.example\",\"app_version\":\"1.0.0\"}" \
+    | jqr "['data']['state']"
+curl -fsS -X POST "$BASE/api/v1/pay/licensing/updates/check" -H 'Content-Type: application/json' \
+    -d "{\"key\":\"$LKEY\",\"install_id\":\"$INSTALL_ID\",\"app_version\":\"1.0.0\"}" \
+    | python3 -c "import json,sys; d=json.load(sys.stdin)['data']; print('updates:', d['latest_entitled'], '/', d['latest_available'])"
 
 echo "== analytics history of the user"
 # события auth/pay лежат в очередях — прогоняем воркеры и flush

@@ -106,6 +106,44 @@
                 }
             }
         },
+        "/api/admin/v1/projects/{project}/analytics/settings": {
+            "get": {
+                "tags": [
+                    "analytics"
+                ],
+                "summary": "GET /api/admin/v1/projects/{project}/analytics/settings",
+                "operationId": "analytics_show_api_admin_v1_projects_project_analytics_settings",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "analytics"
+                ],
+                "summary": "PUT /api/admin/v1/projects/{project}/analytics/settings",
+                "operationId": "analytics_update_api_admin_v1_projects_project_analytics_settings",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                }
+            }
+        },
         "/internal/events": {
             "post": {
                 "tags": [
@@ -142,6 +180,23 @@
                     },
                     "422": {
                         "description": "Validation error"
+                    }
+                }
+            }
+        },
+        "/api/v1/analytics/config": {
+            "get": {
+                "tags": [
+                    "analytics"
+                ],
+                "summary": "GET /api/v1/analytics/config",
+                "operationId": "analytics_config_api_v1_analytics_config",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
                     }
                 }
             }

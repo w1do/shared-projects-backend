@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import type { CategoryFormValues } from "@/lib/admin/schemas/catalog/category-form-schema";
 import { useCreateCategoryMutation, useUpdateCategoryMutation } from "./use-category-mutations";
+import { t } from "@/lib/admin/console-texts";
 
 export function useCreateCategoryForm() {
   const router = useRouter();
@@ -12,10 +13,10 @@ export function useCreateCategoryForm() {
   const submit = async (values: CategoryFormValues) => {
     try {
       const category = await createMutation.mutateAsync(values);
-      toast.success(`${category.name} category created successfully`);
+      toast.success(t("console.categories.toast.created").replace("{name}", category.name));
       router.push("/admin/categories");
     } catch {
-      toast.error("Failed to create category.");
+      toast.error(t("console.categories.toast.create-failed"));
       throw new Error("create-category-failed");
     }
   };
@@ -31,13 +32,13 @@ export function useUpdateCategoryForm(categoryId: string) {
     try {
       const category = await updateMutation.mutateAsync(values);
       if (!category) {
-        toast.error("Category not found.");
+        toast.error(t("console.categories.toast.not-found"));
         return;
       }
-      toast.success(`${category.name} updated successfully`);
+      toast.success(t("console.categories.toast.updated").replace("{name}", category.name));
       router.push("/admin/categories");
     } catch {
-      toast.error("Failed to update category.");
+      toast.error(t("console.categories.toast.update-failed"));
       throw new Error("update-category-failed");
     }
   };

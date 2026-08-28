@@ -18,6 +18,11 @@ final class BootstrapCache
 
     public static function bump(): void
     {
+        // Холодный кэш (после flush): ключа нет, а key() подставляет 1 по
+        // умолчанию. Голый increment создал бы ключ со значением 1 — ключ кэша
+        // не изменился бы, и первый bump не инвалидировал бы записи. add+increment
+        // гарантируют, что версия после bump всегда отличается от версии по умолчанию.
+        Cache::add('bootstrap:version', 1);
         Cache::increment('bootstrap:version');
     }
 }

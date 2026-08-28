@@ -7,6 +7,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/inputs/button";
 import type { Article } from "@/lib/admin/mocks/magazine";
 import { blogFormSchema, type BlogFormValues } from "@/lib/admin/schemas/content/blog-form-schema";
+import { tf } from "@/lib/admin/console-texts";
+import { useConsoleText } from "@/lib/admin/use-console-text";
 import { useEditArticlePage, useUpdateArticleForm } from "@/hooks/admin/articles";
 import { articleToFormValues } from "../add/constants";
 import {
@@ -22,6 +24,7 @@ interface EditBlogFormProps {
 }
 
 export function EditBlogForm({ slug, initialArticle = null }: EditBlogFormProps) {
+  const t = useConsoleText();
   const [isSticky, setIsSticky] = React.useState(false);
   const { article, isResolving, notFound } = useEditArticlePage({ slug, initialArticle });
   const { submit, isSubmitting } = useUpdateArticleForm(article?.id ?? "");
@@ -60,7 +63,9 @@ export function EditBlogForm({ slug, initialArticle = null }: EditBlogFormProps)
   if (isResolving) {
     return (
       <div className="flex flex-col items-center justify-center gap-4 rounded-3xl border border-border/60 bg-background p-16 text-center shadow-subtle-3">
-        <p className="font-openrunde text-heading text-foreground">Loading article…</p>
+        <p className="font-openrunde text-heading text-foreground">
+          {t("console.blogs.loading-article")}
+        </p>
       </div>
     );
   }
@@ -68,12 +73,14 @@ export function EditBlogForm({ slug, initialArticle = null }: EditBlogFormProps)
   if (notFound || !article) {
     return (
       <div className="flex flex-col items-center justify-center gap-4 rounded-3xl border border-border/60 bg-background p-16 text-center shadow-subtle-3">
-        <p className="font-openrunde text-heading text-foreground">Article not found</p>
+        <p className="font-openrunde text-heading text-foreground">
+          {t("console.blogs.not-found-title")}
+        </p>
         <p className="max-w-sm text-caption text-muted-foreground">
-          The article “{slug}” could not be located in the journal.
+          {tf("console.blogs.not-found-description", { slug })}
         </p>
         <Button component="Link" href="/admin/blogs" variant="contained" shape="circle" size="sm">
-          Back to blogs
+          {t("console.blogs.back")}
         </Button>
       </div>
     );
@@ -84,20 +91,20 @@ export function EditBlogForm({ slug, initialArticle = null }: EditBlogFormProps)
       <form onSubmit={methods.handleSubmit(onSubmit)} className="relative">
         <BlogFormStickyHeader
           title={article.title}
-          submitLabel="Save changes"
-          submitLabelShort="Save"
-          submittingLabel="Saving…"
+          submitLabel={t("console.blogs.form.save-changes")}
+          submitLabelShort={t("console.common.save")}
+          submittingLabel={t("console.blogs.form.saving")}
           isSticky={isSticky}
           isSubmitting={isSubmitting}
           backHref="/admin/blogs"
-          backLabel="Back to blogs"
+          backLabel={t("console.blogs.back")}
         />
 
         <div className="flex flex-col gap-8">
           <BlogFormHeader
-            title="Edit article"
-            submitLabel="Save changes"
-            submittingLabel="Saving…"
+            title={t("console.blogs.form.edit-title")}
+            submitLabel={t("console.blogs.form.save-changes")}
+            submittingLabel={t("console.blogs.form.saving")}
             isSubmitting={isSubmitting}
           />
 

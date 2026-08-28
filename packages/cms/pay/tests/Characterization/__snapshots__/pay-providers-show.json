@@ -1,0 +1,22 @@
+{
+    "status": 200,
+    "content_type": "application/json",
+    "body": {
+        "data": {
+            "provider": "platega",
+            "group": "payments",
+            "label": "Платёжные системы",
+            "name": "Platega",
+            "credentials": {
+                "merchant_id": "<string>",
+                "secret": "secret-1"
+            },
+            "properties": {
+                "payment_method": 2
+            },
+            "return_url": "https://shop.example/ok",
+            "fail_url": "https://shop.example/fail",
+            "status": "active"
+        }
+    }
+}

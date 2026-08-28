@@ -26,6 +26,13 @@ final class PayManifest
                 new PermissionDefinition('pay.payments.refund', 'Возвраты', 'payments'),
                 new PermissionDefinition('pay.subscriptions.view', 'Просмотр подписок', 'subscriptions'),
                 new PermissionDefinition('pay.subscriptions.manage', 'Управление подписками', 'subscriptions'),
+                new PermissionDefinition('pay.settings.view', 'Просмотр настроек платежей', 'settings'),
+                new PermissionDefinition('pay.settings.manage', 'Управление настройками платежей', 'settings'),
+                new PermissionDefinition('pay.providers.view', 'Просмотр настроек провайдеров', 'settings'),
+                new PermissionDefinition('pay.providers.manage', 'Управление настройками провайдеров', 'settings'),
+                // строки, не классы licensing: зависимость pay → licensing не возникает (Д7)
+                new PermissionDefinition('pay.licensing.view', 'Просмотр лицензирования', 'licensing'),
+                new PermissionDefinition('pay.licensing.manage', 'Управление лицензированием', 'licensing'),
             ],
             navigation: [
                 new NavigationItem('pay.plans', 'nav.pay.plans', '/pay/plans', 'pay.plans.view', 'layers', 60),

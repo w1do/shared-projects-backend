@@ -1,9 +1,10 @@
 import { Metadata } from "next";
 import { UnauthorizedScreen } from "@/components/pages/unauthorized/UnauthorizedScreen";
+import { t } from "@/lib/admin/console-texts";
 
 export const metadata: Metadata = {
-  title: "Access Denied | Ætheria Admin",
-  description: "You do not have the required permissions to view this page.",
+  title: `${t("console.unauthorized.title")} | Ætheria Admin`,
+  description: t("console.meta.unauthorized-description"),
 };
 
 export default function UnauthorizedPage() {

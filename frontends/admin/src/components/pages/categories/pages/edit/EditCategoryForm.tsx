@@ -4,8 +4,10 @@ import * as React from "react";
 import { useForm, FormProvider, Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
+import { shouldUseAdminApi } from "@/lib/admin/data-source/config";
 import {
   categoryFormSchema,
+  mockCategoryFormSchema,
   CategoryFormValues,
 } from "@/lib/admin/schemas/catalog/category-form-schema";
 import { createCategoryFormValues, defaultCategoryFormValues } from "@/lib/admin/categories/form";
@@ -43,8 +45,11 @@ export function EditCategoryForm({
   });
   const { submit, isSubmitting } = useUpdateCategoryForm(categoryId);
 
+  // Живой режим — базовая схема без денежных полей; демо-шаблон хранит метрики.
   const methods = useForm<CategoryFormValues>({
-    resolver: zodResolver(categoryFormSchema) as Resolver<CategoryFormValues>,
+    resolver: zodResolver(
+      shouldUseAdminApi() ? categoryFormSchema : mockCategoryFormSchema,
+    ) as Resolver<CategoryFormValues>,
     defaultValues: defaultCategoryFormValues,
   });
 

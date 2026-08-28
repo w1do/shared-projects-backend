@@ -1,0 +1,14 @@
+{
+    "status": 200,
+    "content_type": "application/json",
+    "body": {
+        "data": {
+            "language": "ru",
+            "currency_default": "RUB",
+            "currencies": [
+                "RUB",
+                "USD"
+            ]
+        }
+    }
+}

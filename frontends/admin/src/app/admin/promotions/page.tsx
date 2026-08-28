@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 
 import PromotionsPage from "@/components/pages/promotions";
+import { t } from "@/lib/admin/console-texts";
 
 export const metadata: Metadata = {
-  title: "Promotions | Ætheria Admin",
-  description: "Run discount programs, coupon codes, and tier rewards across the catalog.",
+  title: `${t("console.nav.promotions")} · Ætheria Admin`,
+  description: t("console.meta.promotions-description"),
 };
 
 interface PageProps {

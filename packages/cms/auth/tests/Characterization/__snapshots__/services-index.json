@@ -14,6 +14,10 @@
             {
                 "service": "pay",
                 "enabled": false
+            },
+            {
+                "service": "licensing",
+                "enabled": true
             }
         ]
     }

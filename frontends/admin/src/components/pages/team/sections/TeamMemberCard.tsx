@@ -14,6 +14,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/overlay/dropdown-menu";
 import type { MockUser } from "@/lib/admin/mocks/auth";
+import { useConsoleText } from "@/lib/admin/use-console-text";
 
 interface TeamMemberCardProps {
   user: MockUser;
@@ -32,6 +33,9 @@ export function TeamMemberCard({
   onToggleStatus,
   onDelete,
 }: TeamMemberCardProps) {
+  const t = useConsoleText();
+  const isActive = user.status === "active";
+
   return (
     <Card className="flex items-center gap-4 p-4 bg-card border border-border/40 rounded-3xl relative shadow-subtle hover:shadow-subtle-2 transition-shadow">
       <Avatar
@@ -44,7 +48,7 @@ export function TeamMemberCard({
           <span className="font-medium text-foreground truncate">{user.name}</span>
           {isSelf && (
             <Badge variant="soft" color="accent" size="sm" className="scale-90">
-              You
+              {t("console.team.card.you")}
             </Badge>
           )}
         </div>
@@ -59,10 +63,10 @@ export function TeamMemberCard({
             }
             size="sm"
           >
-            {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
+            {t(`console.team.role.${user.role}`)}
           </Badge>
-          <Badge variant="soft" color={user.status === "active" ? "success" : "error"} size="sm">
-            {user.status === "active" ? "Active" : "Inactive"}
+          <Badge variant="soft" color={isActive ? "success" : "error"} size="sm">
+            {t(`console.team.status.${user.status}`)}
           </Badge>
         </div>
       </div>
@@ -71,22 +75,27 @@ export function TeamMemberCard({
         <div className="absolute top-4 right-4">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <IconButton variant="ghost" size="sm" shape="circle" aria-label="Member actions">
+              <IconButton
+                variant="ghost"
+                size="sm"
+                shape="circle"
+                aria-label={t("console.team.card.actions")}
+              >
                 <MoreVertical className="size-4" />
               </IconButton>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem onClick={() => onToggleStatus(user)}>
-                {user.status === "active" ? (
+                {isActive ? (
                   <ToggleRight className="text-destructive size-4" />
                 ) : (
                   <ToggleLeft className="text-success size-4" />
                 )}
-                {user.status === "active" ? "Deactivate account" : "Activate account"}
+                {isActive ? t("console.team.card.deactivate") : t("console.team.card.activate")}
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem variant="destructive" onClick={() => onDelete(user)}>
-                <Trash2 className="size-4" /> Delete member
+                <Trash2 className="size-4" /> {t("console.team.card.delete")}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/inputs/input";
 import { Select } from "@/components/ui/inputs/select";
 import { DataTableFooter } from "@/components/shared/data-table/DataTableFooter";
 import type { Article } from "@/lib/admin/mocks/magazine";
+import { useConsoleText } from "@/lib/admin/use-console-text";
 import { ArticleCard } from "./components/ArticleCard";
 import { categoryOptions, filterArticles, statusOptions } from "@/components/pages/blogs/utils";
 
@@ -17,6 +18,7 @@ interface BlogsPanelProps {
 }
 
 export function BlogsPanel({ articles, onOpen, onEdit, onDelete }: BlogsPanelProps) {
+  const t = useConsoleText();
   const [searchTerm, setSearchTerm] = useState("");
   const [category, setCategory] = useState("all");
   const [status, setStatus] = useState("all");
@@ -44,7 +46,7 @@ export function BlogsPanel({ articles, onOpen, onEdit, onDelete }: BlogsPanelPro
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div className="max-w-sm w-full">
           <Input
-            placeholder="Search articles, authors, or tags..."
+            placeholder={t("console.blogs.search-placeholder")}
             startIcon={<Search />}
             value={searchTerm}
             onChange={(e) => {
@@ -62,7 +64,7 @@ export function BlogsPanel({ articles, onOpen, onEdit, onDelete }: BlogsPanelPro
                 setCurrentPage(1);
               }}
               options={statuses}
-              placeholder="All statuses"
+              placeholder={t("console.blogs.filter.all-statuses")}
               className="w-40"
               data-testid="blogs-status-filter"
             />
@@ -74,7 +76,7 @@ export function BlogsPanel({ articles, onOpen, onEdit, onDelete }: BlogsPanelPro
               setCurrentPage(1);
             }}
             options={options}
-            placeholder="All Categories"
+            placeholder={t("console.blogs.filter.all-categories")}
             className="w-40"
           />
         </div>
@@ -82,7 +84,7 @@ export function BlogsPanel({ articles, onOpen, onEdit, onDelete }: BlogsPanelPro
 
       {paginated.length === 0 ? (
         <div className="rounded-3xl border border-dashed border-border py-12 text-center text-xs text-muted-foreground-lighter">
-          No articles match your filters.
+          {t("console.blogs.empty-filtered")}
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
@@ -101,7 +103,7 @@ export function BlogsPanel({ articles, onOpen, onEdit, onDelete }: BlogsPanelPro
       <DataTableFooter
         currentPage={currentPage}
         endItem={Math.min(startIndex + itemsPerPage, filtered.length)}
-        itemLabel="articles"
+        itemLabel={t("console.blogs.footer-unit")}
         itemsPerPage={itemsPerPage}
         onItemsPerPageChange={(value) => {
           setItemsPerPage(value);

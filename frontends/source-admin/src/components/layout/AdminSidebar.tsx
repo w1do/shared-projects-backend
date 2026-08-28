@@ -21,6 +21,7 @@ import * as React from "react";
 import { StatusDot } from "@/components/ui/feedback/status-dot";
 import { Button } from "@/components/ui/inputs/button";
 import { useVisibleNavigation } from "@/lib/admin/data-source/use-visible-navigation";
+import { useConsoleText } from "@/lib/admin/use-console-text";
 import { siteConfig } from "@/lib/site-config";
 import { useAdminModals } from "./modals";
 import { SidebarCampaignBanner } from "./components/SidebarCampaignBanner";
@@ -30,6 +31,7 @@ export function AdminSidebar() {
   const { openModal } = useAdminModals();
   const [currentUserRole, setCurrentUserRole] = React.useState<string>("");
   const { sections, quickActions } = useVisibleNavigation();
+  const t = useConsoleText();
 
   React.useEffect(() => {
     const userStr = localStorage.getItem("current_user");
@@ -46,7 +48,7 @@ export function AdminSidebar() {
   const filteredQuickActions = React.useMemo(() => {
     return quickActions.filter((action) => {
       if (currentUserRole === "staff") {
-        return !["New promotion", "Launch campaign", "Invite teammate"].includes(action.title);
+        return !["promotions", "campaigns", "team"].includes(action.section);
       }
       return true;
     });
@@ -59,10 +61,12 @@ export function AdminSidebar() {
           ...section,
           items: section.items.filter((item) => {
             if (currentUserRole === "staff") {
-              return !["Settings", "Team", "Campaigns", "Promotions"].includes(item.title);
+              return !["settings", "team", "campaigns", "promotions"].includes(
+                item.section,
+              );
             }
             if (currentUserRole === "manager") {
-              return !["Settings"].includes(item.title);
+              return !["settings"].includes(item.section);
             }
             return true;
           }),
@@ -90,7 +94,9 @@ export function AdminSidebar() {
             priority
           />
           <div className="flex min-w-0 flex-col leading-tight group-data-[collapsible=icon]:hidden">
-            <span className="font-openrunde text-lg text-foreground">{siteConfig.brand.name}</span>
+            <span className="font-openrunde text-lg text-foreground">
+              {siteConfig.brand.name}
+            </span>
             <span className="truncate text-xs text-muted-foreground-lighter">
               {siteConfig.admin.shortLabel}
             </span>
@@ -102,7 +108,7 @@ export function AdminSidebar() {
         <SidebarGroup className="md:hidden py-2 border-b border-border/50 mb-2">
           <SidebarGroupLabel className="px-4 text-xs uppercase tracking-wider text-brand-accent font-semibold flex items-center gap-2">
             <StatusDot color="secondary" ping />
-            Quick Actions
+            {t("console.nav.quick-actions")}
           </SidebarGroupLabel>
           <SidebarGroupContent className="px-2 pt-2">
             <SidebarMenu className="grid grid-cols-2 gap-2">
@@ -158,7 +164,9 @@ export function AdminSidebar() {
                         startIcon={<item.icon />}
                         className="justify-start group-data-[collapsible=icon]:size-8 group-data-[collapsible=icon]:p-0 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:rounded-full"
                       >
-                        <span className="group-data-[collapsible=icon]:sr-only">{item.title}</span>
+                        <span className="group-data-[collapsible=icon]:sr-only">
+                          {item.title}
+                        </span>
                       </Button>
                     </SidebarMenuItem>
                   );

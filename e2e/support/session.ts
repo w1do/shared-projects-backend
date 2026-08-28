@@ -15,7 +15,7 @@ export async function signIn(page: Page): Promise<void> {
 
   await page.locator('input[name="email"]').fill(env.operator.email);
   await page.locator('input[name="password"]').fill(env.operator.password);
-  await page.getByRole("button", { name: "Sign in" }).click();
+  await page.getByRole("button", { name: "Войти" }).click();
 
   await page.waitForURL("**/admin");
 }

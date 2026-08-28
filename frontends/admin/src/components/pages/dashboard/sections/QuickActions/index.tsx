@@ -23,14 +23,40 @@ import {
 } from "@/components/ui/overlay/dropdown-menu";
 import { ImportInventoryDialog } from "@/components/admin/ImportInventoryDialog";
 import { useAdminModals } from "@/components/layout/modals";
+import { t } from "@/lib/admin/console-texts";
+import { DASHBOARD_TIME_RANGES, timeRangeLabel } from "../../utils/time-range";
 
 const actions = [
-  { label: "Add product", icon: Plus, href: "/admin/products/add" },
-  { label: "New promotion", icon: Tag, action: "new-promotion" },
-  { label: "Import inventory", icon: Upload, action: "import-inventory" },
-  { label: "Create collection", icon: Layers, href: "/admin/collections/add" },
-  { label: "Launch campaign", icon: Megaphone, action: "launch-campaign" },
-  { label: "Invite teammate", icon: UserPlus, action: "invite-teammate" },
+  {
+    label: t("console.quick-actions.add-product"),
+    icon: Plus,
+    href: "/admin/products/add",
+  },
+  {
+    label: t("console.quick-actions.new-promotion"),
+    icon: Tag,
+    action: "new-promotion",
+  },
+  {
+    label: t("console.quick-actions.import-inventory"),
+    icon: Upload,
+    action: "import-inventory",
+  },
+  {
+    label: t("console.quick-actions.create-collection"),
+    icon: Layers,
+    href: "/admin/collections/add",
+  },
+  {
+    label: t("console.quick-actions.launch-campaign"),
+    icon: Megaphone,
+    action: "launch-campaign",
+  },
+  {
+    label: t("console.quick-actions.invite-teammate"),
+    icon: UserPlus,
+    action: "invite-teammate",
+  },
 ];
 
 interface QuickActionsProps {
@@ -38,7 +64,10 @@ interface QuickActionsProps {
   onTimeRangeChange: (val: string) => void;
 }
 
-export function QuickActions({ timeRange, onTimeRangeChange }: QuickActionsProps) {
+export function QuickActions({
+  timeRange,
+  onTimeRangeChange,
+}: QuickActionsProps) {
   const [isStuck, setIsStuck] = useState(false);
   const [isImportOpen, setIsImportOpen] = useState(false);
   const sentinelRef = useRef<HTMLDivElement>(null);
@@ -68,7 +97,10 @@ export function QuickActions({ timeRange, onTimeRangeChange }: QuickActionsProps
   return (
     <>
       {/* Invisible sentinel for scroll detection */}
-      <div ref={sentinelRef} className="hidden md:block h-0 w-full pointer-events-none" />
+      <div
+        ref={sentinelRef}
+        className="hidden md:block h-0 w-full pointer-events-none"
+      />
 
       <div
         className={cn(
@@ -87,7 +119,7 @@ export function QuickActions({ timeRange, onTimeRangeChange }: QuickActionsProps
                 isStuck ? "animate-pulse scale-110" : "",
               )}
             />
-            Quick actions
+            {t("console.nav.quick-actions")}
           </div>
           <div className="flex flex-nowrap items-center gap-2 overflow-x-auto no-scrollbar py-1 min-w-0 flex-1">
             {actions.map((a) => {
@@ -134,15 +166,19 @@ export function QuickActions({ timeRange, onTimeRangeChange }: QuickActionsProps
                   startIcon={<CalendarDays className="text-muted-foreground" />}
                   endIcon={<ChevronDown className="text-muted-foreground" />}
                 >
-                  {timeRange}
+                  {timeRangeLabel(timeRange)}
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" matchTriggerWidth>
-                <DropdownMenuRadioGroup value={timeRange} onValueChange={onTimeRangeChange}>
-                  <DropdownMenuRadioItem value="Last 7 days">Last 7 days</DropdownMenuRadioItem>
-                  <DropdownMenuRadioItem value="Last 30 days">Last 30 days</DropdownMenuRadioItem>
-                  <DropdownMenuRadioItem value="Last 90 days">Last 90 days</DropdownMenuRadioItem>
-                  <DropdownMenuRadioItem value="This year">This year</DropdownMenuRadioItem>
+                <DropdownMenuRadioGroup
+                  value={timeRange}
+                  onValueChange={onTimeRangeChange}
+                >
+                  {DASHBOARD_TIME_RANGES.map((range) => (
+                    <DropdownMenuRadioItem key={range} value={range}>
+                      {timeRangeLabel(range)}
+                    </DropdownMenuRadioItem>
+                  ))}
                 </DropdownMenuRadioGroup>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -154,12 +190,15 @@ export function QuickActions({ timeRange, onTimeRangeChange }: QuickActionsProps
               shape="circle"
               startIcon={<Download />}
             >
-              Export
+              {t("console.dashboard.export")}
             </Button>
           </div>
         )}
       </div>
-      <ImportInventoryDialog open={isImportOpen} onOpenChange={setIsImportOpen} />
+      <ImportInventoryDialog
+        open={isImportOpen}
+        onOpenChange={setIsImportOpen}
+      />
     </>
   );
 }

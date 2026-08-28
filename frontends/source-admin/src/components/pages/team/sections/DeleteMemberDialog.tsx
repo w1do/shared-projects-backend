@@ -9,6 +9,7 @@ import {
   DialogDescription,
 } from "@/components/ui/overlay/dialog";
 import type { MockUser } from "@/lib/admin/mocks/auth";
+import { useConsoleText } from "@/lib/admin/use-console-text";
 
 interface DeleteMemberDialogProps {
   isOpen: boolean;
@@ -18,7 +19,11 @@ interface DeleteMemberDialogProps {
 }
 
 export function DeleteMemberDialog({ isOpen, onClose, onConfirm, user }: DeleteMemberDialogProps) {
+  const t = useConsoleText();
+
   if (!user) return null;
+
+  const question = t("console.team.delete.question").replace("{name}", user.name);
 
   return (
     <Dialog open={isOpen} onOpenChange={(nextOpen) => !nextOpen && onClose()}>
@@ -32,16 +37,17 @@ export function DeleteMemberDialog({ isOpen, onClose, onConfirm, user }: DeleteM
           <Trash2 className="size-6" />
         </div>
 
-        <DialogTitle className="text-heading-lg font-semibold">Delete Member</DialogTitle>
+        <DialogTitle className="text-heading-lg font-semibold">
+          {t("console.team.delete.title")}
+        </DialogTitle>
 
         <DialogDescription className="mt-2 max-w-xs text-xs text-muted-foreground leading-relaxed">
-          Are you sure you want to delete <strong>{user.name}</strong>? This action is permanent and
-          cannot be undone. All workspace access for this member will be permanently revoked.
+          {`${question} ${t("console.team.delete.irreversible")}`}
         </DialogDescription>
 
         <div className="mt-6 grid w-full grid-cols-2 gap-4">
           <Button variant="outlined" shape="circle" size="sm" fullWidth onClick={onClose}>
-            Cancel
+            {t("console.common.cancel")}
           </Button>
           <Button
             variant="contained"
@@ -51,7 +57,7 @@ export function DeleteMemberDialog({ isOpen, onClose, onConfirm, user }: DeleteM
             fullWidth
             onClick={onConfirm}
           >
-            Confirm Delete
+            {t("console.team.delete.confirm")}
           </Button>
         </div>
       </DialogContent>

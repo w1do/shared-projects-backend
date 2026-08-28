@@ -1,25 +1,28 @@
 import type { BlogFormValues } from "@/lib/admin/schemas/content/blog-form-schema";
 import type { Article } from "@/lib/admin/mocks/magazine";
+import { t } from "@/lib/admin/console-texts";
 
+// Значения option — стабильные данные (хранятся в статье и участвуют в
+// сравнениях), переводятся только подписи.
 export const CATEGORY_OPTIONS = [
-  { value: "Rituals", label: "Rituals" },
-  { value: "Ingredients", label: "Ingredients" },
-  { value: "Science", label: "Science" },
-  { value: "Wellness", label: "Wellness" },
-  { value: "Trends", label: "Trends" },
+  { value: "Rituals", label: t("console.blogs.form.category.rituals") },
+  { value: "Ingredients", label: t("console.blogs.form.category.ingredients") },
+  { value: "Science", label: t("console.blogs.form.category.science") },
+  { value: "Wellness", label: t("console.blogs.form.category.wellness") },
+  { value: "Trends", label: t("console.blogs.form.category.trends") },
 ];
 
 export const LAYOUT_OPTIONS = [
-  { value: "minimalist", label: "Minimalist" },
-  { value: "editorial", label: "Editorial" },
-  { value: "botanical", label: "Botanical" },
+  { value: "minimalist", label: t("console.blogs.form.layout.minimalist") },
+  { value: "editorial", label: t("console.blogs.form.layout.editorial") },
+  { value: "botanical", label: t("console.blogs.form.layout.botanical") },
 ];
 
 export const BLOCK_TYPE_OPTIONS = [
-  { value: "heading", label: "Heading" },
-  { value: "paragraph", label: "Paragraph" },
-  { value: "quote", label: "Quote" },
-  { value: "image", label: "Image" },
+  { value: "heading", label: t("console.blogs.form.block-type.heading") },
+  { value: "paragraph", label: t("console.blogs.form.block-type.paragraph") },
+  { value: "quote", label: t("console.blogs.form.block-type.quote") },
+  { value: "image", label: t("console.blogs.form.block-type.image") },
 ];
 
 export const blogFormDefaults: BlogFormValues = {

@@ -11,6 +11,7 @@
         "key_type": null,
         "scopes": [],
         "enabled_services": [
+            "licensing",
             "content"
         ],
         "locales": [

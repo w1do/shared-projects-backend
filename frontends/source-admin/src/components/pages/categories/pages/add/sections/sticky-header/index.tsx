@@ -1,6 +1,7 @@
 "use client";
 
 import { FormStickyHeader } from "@/components/shared/layout/FormStickyHeader";
+import { useConsoleText } from "@/lib/admin/use-console-text";
 
 interface AddCategoryStickyHeaderProps {
   isSticky: boolean;
@@ -13,16 +14,17 @@ export function AddCategoryStickyHeader({
   isSubmitting,
   onAutoFill,
 }: AddCategoryStickyHeaderProps) {
+  const t = useConsoleText();
   return (
     <FormStickyHeader
       isSticky={isSticky}
       isSubmitting={isSubmitting}
-      title="Create category"
+      title={t("console.categories.add")}
       backHref="/admin/categories"
-      backLabel="Back to categories"
-      submitLabel="Save category"
-      submitLabelShort="Save"
-      submittingLabel="Saving…"
+      backLabel={t("console.categories.back")}
+      submitLabel={t("console.categories.save")}
+      submitLabelShort={t("console.common.save")}
+      submittingLabel={t("console.categories.saving-ellipsis")}
       submitIcon="check"
       onAutoFill={onAutoFill}
       disableBackWhileSubmitting

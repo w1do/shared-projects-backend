@@ -36,6 +36,7 @@ final class AnalyticsServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        $this->loadMigrationsFrom(__DIR__.'/../../../database/migrations');
         $this->loadRoutesFrom(__DIR__.'/../../../routes/public.php');
         $this->loadRoutesFrom(__DIR__.'/../../../routes/admin.php');
         $this->loadRoutesFrom(__DIR__.'/../../../routes/internal.php');

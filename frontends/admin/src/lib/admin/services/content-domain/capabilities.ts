@@ -1,4 +1,5 @@
 import { shouldUseAdminApi } from "@/lib/admin/data-source/config";
+import { t } from "@/lib/admin/console-texts";
 
 /**
  * Domain capability flags for honest UI in mock vs API mode.
@@ -34,8 +35,7 @@ export function getCampaignCapabilities(): DomainCapability {
       read: true,
       write: false,
       autoFill: false,
-      writeReason:
-        "Campaigns API is not implemented on the backend yet. Switch to mock data source or add /api/v1/campaigns server-side.",
+      writeReason: t("console.capabilities.campaigns-no-backend"),
     };
   }
   return { read: true, write: true, autoFill: true };
@@ -47,8 +47,7 @@ export function getSettingsCapabilities(): DomainCapability {
       read: true,
       write: true,
       autoFill: false,
-      writeReason:
-        "Only project data is stored by the platform. Storefront sections (payments, shipping, taxes) have no counterpart and stay on demo values.",
+      writeReason: t("console.capabilities.settings-partial"),
     };
   }
   return { read: true, write: true, autoFill: true };
@@ -60,8 +59,7 @@ export function getContentHomepageCapabilities(): DomainCapability {
       read: false,
       write: false,
       autoFill: false,
-      writeReason:
-        "Landing/homepage content is mock-only. API mode lists static storefront pages without LANDING.",
+      writeReason: t("console.capabilities.homepage-mock-only"),
     };
   }
   return { read: true, write: true, autoFill: true };

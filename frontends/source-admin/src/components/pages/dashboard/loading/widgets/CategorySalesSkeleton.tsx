@@ -16,7 +16,10 @@ export function CategorySalesSkeleton() {
 
       <ul className="mt-6 flex flex-col gap-4">
         {Array.from({ length: CATEGORY_ROW_COUNT }, (_, index) => (
-          <li key={index} className="grid items-center gap-2 grid-cols-category-sales-row">
+          <li
+            key={index}
+            className="grid items-center gap-2 grid-cols-category-sales-row"
+          >
             <Skeleton className="h-4 w-24" />
             <Skeleton className="h-2 w-full rounded-full" />
             <Skeleton className="ml-auto h-4 w-10" />

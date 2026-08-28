@@ -1,9 +1,10 @@
 import { Metadata } from "next";
 import { LoginScreen } from "@/components/pages/auth/LoginScreen";
+import { t } from "@/lib/admin/console-texts";
 
 export const metadata: Metadata = {
-  title: "Sign in | Ætheria Admin",
-  description: "Sign in to the Ætheria operations console for multi-brand beauty commerce.",
+  title: `${t("console.login.title")} | Ætheria Admin`,
+  description: t("console.meta.login-description"),
 };
 
 export default function LoginPage() {

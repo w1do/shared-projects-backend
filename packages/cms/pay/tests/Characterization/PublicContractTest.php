@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 use Cms\Pay\Domain\Models\Feature;
 use Cms\Pay\Domain\Models\Plan;
+use Cms\Pay\Domain\Models\ProviderAccount;
 use Cms\Pay\Domain\Models\Subscription;
 use Cms\Shared\Tenant\ProjectContext;
 use Cms\Shared\Testing\ResponseSnapshot;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Http;
 
 /**
  * Характеризационные снимки публичного контракта pay (routes/public.php).
@@ -27,13 +29,15 @@ function payPublicPlan(array $attrs = []): Plan
     ], $attrs));
 }
 
-function payPublicSubscription(Plan $plan, string $userKey = 'user:proj-1:7'): Subscription
+function payPublicSubscription(Plan $plan, string $userId = '7'): Subscription
 {
     app(ProjectContext::class)->set('proj-1');
 
     return Subscription::create([
-        'user_key' => $userKey,
-        'plan_id' => $plan->id,
+        'subscriber_type' => 'site_user',
+        'subscriber_id' => $userId,
+        'subject_type' => 'plan',
+        'subject_id' => (string) $plan->id,
         'status' => 'active',
         'current_period_ends_at' => now()->addMonth(),
     ]);
@@ -83,6 +87,33 @@ test('contract: pay public subscribe', function () {
     ResponseSnapshot::assertMatches(
         $this->postJson('/api/v1/pay/subscriptions', ['plan_code' => 'pro'], $site),
         'public-subscribe',
+    );
+});
+
+test('contract: pay public subscribe via redirect gateway carries redirect_url', function () {
+    Http::fake([
+        'https://app.platega.io/v2/transaction/process' => Http::response([
+            'transactionId' => 'tx-contract-1',
+            'status' => 'PENDING',
+            'url' => 'https://pay.platega.io/?id=tx-contract-1',
+        ]),
+    ]);
+
+    payPublicPlan();
+    $site = actingAsSiteUser();
+
+    app(ProjectContext::class)->set('proj-1');
+    paySelectProvider('platega');
+    ProviderAccount::create([
+        'provider' => 'platega',
+        'credentials' => ['merchant_id' => 'merchant-1', 'secret' => 'secret-1'],
+        'return_url' => 'https://shop.example/ok',
+    ]);
+    app(ProjectContext::class)->clear();
+
+    ResponseSnapshot::assertMatches(
+        $this->postJson('/api/v1/pay/subscriptions', ['plan_code' => 'pro'], $site),
+        'public-subscribe-platega-redirect',
     );
 });
 
@@ -220,7 +251,7 @@ test('contract: pay public subscription not found', function () {
 test('contract: pay public subscription of another user', function () {
     $subscription = payPublicSubscription(payPublicPlan());
 
-    // владение зашито в where user_key: чужая подписка — 404, не 403
+    // владение зашито в where по паре подписчика: чужая подписка — 404, не 403
     $other = actingAsSiteUser(userId: '8');
 
     ResponseSnapshot::assertMatches(
@@ -253,7 +284,7 @@ test('contract: pay public subscriptions mine', function () {
 });
 
 test('contract: pay public subscriptions mine empty', function () {
-    payPublicSubscription(payPublicPlan(), 'user:proj-1:99');
+    payPublicSubscription(payPublicPlan(), '99');
     $site = actingAsSiteUser();
 
     ResponseSnapshot::assertMatches(

@@ -1,0 +1,43 @@
+{
+    "status": 201,
+    "content_type": "application/json",
+    "body": {
+        "data": {
+            "subscription": {
+                "id": "<string>",
+                "subscriber": {
+                    "type": "site_user",
+                    "id": "<string>"
+                },
+                "status": "active",
+                "grants_access": true,
+                "current_period_ends_at": "<string>",
+                "subject": {
+                    "type": "plan",
+                    "id": "<int>",
+                    "code": "pro",
+                    "name": "Pro",
+                    "price_minor": 19900,
+                    "currency": "RUB",
+                    "interval": "month",
+                    "archived": false,
+                    "options": [],
+                    "features": []
+                }
+            },
+            "payment": {
+                "id": "<string>",
+                "subject_key": "user:proj-1:7",
+                "amount_minor": 19900,
+                "refunded_minor": 0,
+                "currency": "RUB",
+                "status": "pending",
+                "provider": "platega",
+                "redirect_url": "https://pay.platega.io/?id=tx-contract-1",
+                "description": "Subscription pro",
+                "subscription_id": "<string>",
+                "created_at": "<string>"
+            }
+        }
+    }
+}

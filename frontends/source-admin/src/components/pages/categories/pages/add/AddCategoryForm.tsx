@@ -5,8 +5,10 @@ import { useForm, FormProvider, Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { getCatalogCapabilities } from "@/lib/admin/services";
+import { shouldUseAdminApi } from "@/lib/admin/data-source/config";
 import {
   categoryFormSchema,
+  mockCategoryFormSchema,
   CategoryFormValues,
 } from "@/lib/admin/schemas/catalog/category-form-schema";
 import {
@@ -17,6 +19,7 @@ import {
 import type { Category } from "@/lib/admin/mocks/types";
 import { useCreateCategoryForm } from "@/hooks/admin/categories";
 import { useStickyThreshold } from "@/hooks/use-sticky-threshold";
+import { useConsoleText } from "@/lib/admin/use-console-text";
 
 // Sections
 import { AddCategoryHeader } from "./sections/header";
@@ -28,6 +31,7 @@ import { useCategoriesQuery } from "@/hooks/admin/categories";
 import { useProjectLocalesQuery } from "@/hooks/admin/localization";
 
 export function AddCategoryForm({ initialCategories }: { initialCategories?: Category[] } = {}) {
+  const t = useConsoleText();
   const isSticky = useStickyThreshold();
   // Дерево для выбора родителя грузится на клиенте: серверный рендер не знает
   // текущего проекта (он в cookie браузера).
@@ -38,8 +42,11 @@ export function AddCategoryForm({ initialCategories }: { initialCategories?: Cat
   const [autoSlug, setAutoSlug] = React.useState(true);
   const { submit, isSubmitting } = useCreateCategoryForm();
 
+  // Живой режим — базовая схема без денежных полей; демо-шаблон хранит метрики.
   const methods = useForm<CategoryFormValues>({
-    resolver: zodResolver(categoryFormSchema) as Resolver<CategoryFormValues>,
+    resolver: zodResolver(
+      shouldUseAdminApi() ? categoryFormSchema : mockCategoryFormSchema,
+    ) as Resolver<CategoryFormValues>,
     defaultValues: defaultCategoryFormValues,
   });
 
@@ -77,12 +84,12 @@ export function AddCategoryForm({ initialCategories }: { initialCategories?: Cat
 
   const handleAutoFill = () => {
     if (!getCatalogCapabilities().autoFill) {
-      toast.info("Auto-fill is only available in mock template mode.");
+      toast.info(t("console.categories.autofill-mock-only"));
       return;
     }
     setAutoSlug(false);
     methods.reset(sampleCategoryFormValues);
-    toast.success("Auto-filled with a sample skincare category (Night Repair Rituals)");
+    toast.success(t("console.categories.autofill-applied"));
   };
 
   return (

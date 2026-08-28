@@ -16,6 +16,10 @@ return [
     // Сервисы платформы, которые можно включать на проект
     'services' => ServiceName::toggleable(),
 
+    // Сервисы, включаемые автоматически при создании проекта.
+    // Явное выключение администратором сохраняется — авто-включение его не перезаписывает.
+    'default_enabled_services' => [ServiceName::Licensing->value],
+
     // Rate limit входа: попыток в минуту
     'login_rate_limit' => (int) env('AUTH_LOGIN_RATE_LIMIT', 5),
 

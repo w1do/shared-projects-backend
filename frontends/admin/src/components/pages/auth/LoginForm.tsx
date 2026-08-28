@@ -20,7 +20,12 @@ import {
   type LoginFormValues,
 } from "@/lib/admin/schemas/content/login-form-schema";
 import { siteConfig } from "@/lib/site-config";
-import { AdminAuthError, signInOperator } from "@/lib/admin/data-source/session";
+import { tf } from "@/lib/admin/console-texts";
+import { useConsoleText } from "@/lib/admin/use-console-text";
+import {
+  AdminAuthError,
+  signInOperator,
+} from "@/lib/admin/data-source/session";
 
 interface LoginFormProps {
   showDemo?: boolean;
@@ -28,6 +33,7 @@ interface LoginFormProps {
 
 export function LoginForm({ showDemo = false }: LoginFormProps) {
   const router = useRouter();
+  const t = useConsoleText();
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [showPassword, setShowPassword] = React.useState(false);
 
@@ -47,15 +53,19 @@ export function LoginForm({ showDemo = false }: LoginFormProps) {
     try {
       // Аутентификация выполняется слоем данных: режим api — auth-service, mock — данные вёрстки.
       // Сессия (cookies auth_token/auth_role и current_user) сохраняется там же.
-      const user = await signInOperator(data.email, data.password, data.rememberMe);
+      const user = await signInOperator(
+        data.email,
+        data.password,
+        data.rememberMe,
+      );
 
-      toast.success(`Welcome back, ${user.name}`);
+      toast.success(tf("console.login.welcome", { name: user.name }));
       router.push("/admin");
     } catch (error) {
       toast.error(
         error instanceof AdminAuthError
           ? error.message
-          : "Sign in failed. Please check your credentials.",
+          : t("console.login.failed"),
       );
     } finally {
       setIsSubmitting(false);
@@ -84,17 +94,17 @@ export function LoginForm({ showDemo = false }: LoginFormProps) {
           />
         </div>
         <h1 className="font-openrunde text-heading-lg text-foreground">
-          {siteConfig.copy.signInTitle}
+          {t("console.login.title")}
         </h1>
         <p className="text-body text-muted-foreground">
-          Enter your credentials to access the operations console.
+          {t("console.login.subtitle")}
         </p>
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
         <Input
           type="email"
-          label="Work email"
+          label={t("console.login.email-label")}
           placeholder={siteConfig.urls.demoUserEmail}
           autoComplete="email"
           startIcon={<Mail />}
@@ -104,8 +114,8 @@ export function LoginForm({ showDemo = false }: LoginFormProps) {
 
         <Input
           type={showPassword ? "text" : "password"}
-          label="Password"
-          placeholder="Enter your password"
+          label={t("console.login.password-label")}
+          placeholder={t("console.login.password-placeholder")}
           autoComplete="current-password"
           startIcon={<Lock />}
           endIcon={
@@ -115,7 +125,11 @@ export function LoginForm({ showDemo = false }: LoginFormProps) {
               size="sm"
               onClick={() => setShowPassword((prev) => !prev)}
               className="pointer-events-auto"
-              aria-label={showPassword ? "Hide password" : "Show password"}
+              aria-label={
+                showPassword
+                  ? t("console.login.hide-password")
+                  : t("console.login.show-password")
+              }
             >
               {showPassword ? <EyeOff /> : <Eye />}
             </IconButton>
@@ -125,7 +139,7 @@ export function LoginForm({ showDemo = false }: LoginFormProps) {
               href="#"
               className="text-xs font-medium text-brand-accent transition-colors hover:text-brand-accent-hover"
             >
-              Forgot password?
+              {t("console.login.forgot-password")}
             </a>
           }
           error={errors.password?.message}
@@ -137,9 +151,16 @@ export function LoginForm({ showDemo = false }: LoginFormProps) {
           name="rememberMe"
           render={({ field }) => (
             <div className="flex items-center gap-2">
-              <Checkbox id="rememberMe" checked={field.value} onCheckedChange={field.onChange} />
-              <Label htmlFor="rememberMe" className="text-body text-muted-foreground">
-                Keep me signed in for 30 days
+              <Checkbox
+                id="rememberMe"
+                checked={field.value}
+                onCheckedChange={field.onChange}
+              />
+              <Label
+                htmlFor="rememberMe"
+                className="text-body text-muted-foreground"
+              >
+                {t("console.login.remember-me")}
               </Label>
             </div>
           )}
@@ -153,17 +174,19 @@ export function LoginForm({ showDemo = false }: LoginFormProps) {
           startIcon={<LogIn />}
           disabled={isSubmitting}
         >
-          {isSubmitting ? "Signing in..." : "Sign in"}
+          {isSubmitting
+            ? t("console.login.submitting")
+            : t("console.login.submit")}
         </Button>
       </form>
 
       <p className="text-center text-body text-muted-foreground">
-        Need an account?{" "}
+        {t("console.login.need-account")}{" "}
         <a
           href="#"
           className="font-medium text-foreground transition-colors hover:text-brand-accent"
         >
-          Request access
+          {t("console.login.request-access")}
         </a>
       </p>
     </div>

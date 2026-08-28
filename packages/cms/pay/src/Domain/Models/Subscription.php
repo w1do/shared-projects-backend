@@ -4,30 +4,40 @@ declare(strict_types=1);
 
 namespace Cms\Pay\Domain\Models;
 
+use Cms\Pay\Database\Factories\SubscriptionFactory;
 use Cms\Pay\Domain\Enums\SubscriptionStatus;
+use Cms\Shared\Billing\Subscriber;
 use Cms\Shared\Tenant\BelongsToProject;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 use Illuminate\Validation\ValidationException;
 
 /**
+ * Подписка: полиморфный подписчик (пара subscriber_type/subscriber_id,
+ * VO `Subscriber` — тип может не иметь локальной модели) на полиморфный
+ * предмет (morphTo `subject`, реализует `Subscribable`).
+ *
  * @property string $id
  * @property string $project_id
- * @property string $user_key
- * @property int $plan_id
+ * @property string $subscriber_type
+ * @property string $subscriber_id
+ * @property string $subject_type
+ * @property string $subject_id
  * @property SubscriptionStatus $status
  * @property Carbon $current_period_ends_at
  * @property ?Carbon $paused_at
  * @property ?Carbon $canceled_at
  * @property int $renewal_attempts
- * @property-read ?Plan $plan
+ * @property-read ?Model $subject
  */
 class Subscription extends Model
 {
     use BelongsToProject;
+    use HasFactory;
     use HasUlids;
     use SoftDeletes;
 
@@ -35,7 +45,10 @@ class Subscription extends Model
 
     public $incrementing = false;
 
-    protected $fillable = ['project_id', 'user_key', 'plan_id', 'status', 'current_period_ends_at'];
+    protected $fillable = [
+        'project_id', 'subscriber_type', 'subscriber_id',
+        'subject_type', 'subject_id', 'status', 'current_period_ends_at',
+    ];
 
     protected $attributes = ['status' => 'active'];
 
@@ -49,10 +62,16 @@ class Subscription extends Model
         ];
     }
 
-    /** @return BelongsTo<Plan, $this> */
-    public function plan(): BelongsTo
+    /** Предмет подписки: тарифный план, лицензионный план, … (морф-алиасы). */
+    public function subject(): MorphTo
     {
-        return $this->belongsTo(Plan::class);
+        return $this->morphTo();
+    }
+
+    /** Подписчик как VO: у типа может не быть локальной модели (site_user). */
+    public function subscriber(): Subscriber
+    {
+        return new Subscriber($this->subscriber_type, $this->subscriber_id);
     }
 
     public function transitionTo(SubscriptionStatus $target): void
@@ -63,5 +82,10 @@ class Subscription extends Model
             ]);
         }
         $this->status = $target;
+    }
+
+    protected static function newFactory(): SubscriptionFactory
+    {
+        return SubscriptionFactory::new();
     }
 }

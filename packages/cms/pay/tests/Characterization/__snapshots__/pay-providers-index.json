@@ -1,0 +1,38 @@
+{
+    "status": 200,
+    "content_type": "application/json",
+    "body": {
+        "data": [
+            {
+                "provider": "manual",
+                "group": "payments",
+                "label": null,
+                "name": "manual",
+                "status": "active",
+                "return_url": null,
+                "fail_url": null,
+                "has_credentials": false
+            },
+            {
+                "provider": "null",
+                "group": "payments",
+                "label": null,
+                "name": "null",
+                "status": "active",
+                "return_url": null,
+                "fail_url": null,
+                "has_credentials": false
+            },
+            {
+                "provider": "platega",
+                "group": "payments",
+                "label": "Платёжные системы",
+                "name": "Platega",
+                "status": "active",
+                "return_url": "https://shop.example/ok",
+                "fail_url": "https://shop.example/fail",
+                "has_credentials": true
+            }
+        ]
+    }
+}

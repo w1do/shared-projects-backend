@@ -6,6 +6,8 @@ import { Badge } from "@/components/ui/data-display/badge";
 import { IconButton } from "@/components/ui/inputs/icon-button";
 import { AdminDynamicStyles } from "@/components/admin/AdminDynamicStyles";
 import type { DetailedCustomer } from "@/lib/admin/mocks/customers";
+import { useConsoleText } from "@/lib/admin/use-console-text";
+import { customerTierLabel } from "@/components/pages/customers/utils";
 
 type AudienceStepProps = {
   customers: DetailedCustomer[];
@@ -13,12 +15,16 @@ type AudienceStepProps = {
 };
 
 export function AudienceStep({ customers, onRemove }: AudienceStepProps) {
+  const t = useConsoleText();
+
   if (customers.length === 0) {
     return (
       <div className="rounded-2xl border border-dashed border-border/60 bg-muted/20 p-8 text-center">
-        <p className="text-body font-medium text-foreground">No customers selected</p>
+        <p className="text-body font-medium text-foreground">
+          {t("console.engage.audience.empty-title")}
+        </p>
         <p className="mt-2 text-caption text-muted-foreground">
-          Close this dialog and select customers from the directory first.
+          {t("console.engage.audience.empty-hint")}
         </p>
       </div>
     );
@@ -27,12 +33,14 @@ export function AudienceStep({ customers, onRemove }: AudienceStepProps) {
   return (
     <div className="flex flex-col gap-4">
       <div className="rounded-2xl border border-border/60 bg-muted/20 p-4">
-        <p className="text-caption font-semibold text-muted-foreground">Estimated reach</p>
+        <p className="text-caption font-semibold text-muted-foreground">
+          {t("console.engage.audience.reach")}
+        </p>
         <p className="mt-2 text-heading font-semibold text-foreground">
-          {customers.length} customer{customers.length === 1 ? "" : "s"}
+          {t("console.engage.audience.reach-count").replace("{count}", String(customers.length))}
         </p>
         <p className="mt-2 text-caption text-muted-foreground-lighter">
-          Remove anyone who should not receive this outreach before continuing.
+          {t("console.engage.audience.reach-hint")}
         </p>
       </div>
 
@@ -46,7 +54,11 @@ export function AudienceStep({ customers, onRemove }: AudienceStepProps) {
             >
               <AdminDynamicStyles
                 gradients={[
-                  { id: gradientId, start: customer.gradient[0], end: customer.gradient[1] },
+                  {
+                    id: gradientId,
+                    start: customer.gradient[0],
+                    end: customer.gradient[1],
+                  },
                 ]}
               />
               <Avatar src={customer.avatarUrl} data-admin-gradient={gradientId}>
@@ -56,16 +68,18 @@ export function AudienceStep({ customers, onRemove }: AudienceStepProps) {
                 <p className="truncate text-body font-medium text-foreground">{customer.name}</p>
                 <p className="mt-2 truncate text-caption text-muted-foreground">{customer.email}</p>
               </div>
-              <Badge variant="soft" color="neutral" shape="circle" size="sm">
-                {customer.tier}
-              </Badge>
+              {customer.tier && (
+                <Badge variant="soft" color="neutral" shape="circle" size="sm">
+                  {customerTierLabel(customer.tier)}
+                </Badge>
+              )}
               <IconButton
                 type="button"
                 variant="ghost"
                 shape="circle"
                 size="sm"
                 onClick={() => onRemove(customer.id)}
-                aria-label={`Remove ${customer.name}`}
+                aria-label={t("console.engage.audience.remove").replace("{name}", customer.name)}
               >
                 <X className="size-4" />
               </IconButton>

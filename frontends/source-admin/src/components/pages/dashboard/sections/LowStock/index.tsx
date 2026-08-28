@@ -14,9 +14,13 @@ export function LowStock({ items }: LowStockProps) {
         <div>
           <div className="flex items-center gap-2">
             <AlertCircle className="h-4 w-4 text-ring" />
-            <h3 className="font-openrunde text-heading leading-tight text-foreground">Low stock</h3>
+            <h3 className="font-openrunde text-heading leading-tight text-foreground">
+              Low stock
+            </h3>
           </div>
-          <p className="mt-2 text-xs text-muted-foreground">{items.length} SKUs below threshold</p>
+          <p className="mt-2 text-xs text-muted-foreground">
+            {items.length} SKUs below threshold
+          </p>
         </div>
         <Button variant="text">Restock all</Button>
       </div>

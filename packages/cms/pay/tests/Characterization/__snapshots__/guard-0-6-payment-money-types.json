@@ -5,12 +5,13 @@
         "data": [
             {
                 "id": "<string>",
-                "user_key": "user:proj-1:7",
+                "subject_key": "user:proj-1:7",
                 "amount_minor": 10000,
                 "refunded_minor": 2500,
                 "currency": "RUB",
                 "status": "refunded_partial",
                 "provider": "manual",
+                "redirect_url": null,
                 "description": "Guard invoice",
                 "subscription_id": null,
                 "created_at": "<string>"

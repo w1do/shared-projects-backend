@@ -37,7 +37,7 @@ function payAdminPayment(array $attrs = []): Payment
     app(ProjectContext::class)->set('proj-1');
 
     return Payment::create(array_merge([
-        'user_key' => 'user:proj-1:7',
+        'subject_key' => 'user:proj-1:7',
         'amount_minor' => 5000,
         'currency' => 'RUB',
         'status' => 'succeeded',
@@ -52,8 +52,10 @@ function payAdminSubscription(Plan $plan, array $attrs = []): Subscription
     app(ProjectContext::class)->set('proj-1');
 
     return Subscription::create(array_merge([
-        'user_key' => 'user:proj-1:7',
-        'plan_id' => $plan->id,
+        'subscriber_type' => 'site_user',
+        'subscriber_id' => '7',
+        'subject_type' => 'plan',
+        'subject_id' => (string) $plan->id,
         'status' => 'active',
         'current_period_ends_at' => now()->addMonth(),
     ], $attrs));
@@ -356,6 +358,50 @@ test('contract: pay admin subscriptions index', function () {
     ResponseSnapshot::assertMatches(
         $this->getJson(payAdminUrl('subscriptions'), $headers),
         'admin-subscriptions-index',
+    );
+});
+
+test('contract: pay admin subscribe', function () {
+    $headers = actingAsPayOperator();
+    $plan = payAdminPlan();
+
+    ResponseSnapshot::assertMatches(
+        $this->postJson(payAdminUrl('subscriptions'), [
+            'subscriber_type' => 'site_user',
+            'subscriber_id' => '7',
+            'subject_type' => 'plan',
+            'subject_id' => (string) $plan->id,
+            'provider' => 'manual',
+        ], $headers),
+        'admin-subscribe',
+    );
+});
+
+test('contract: pay admin subscribe unresolvable subject', function () {
+    $headers = actingAsPayOperator();
+
+    ResponseSnapshot::assertMatches(
+        $this->postJson(payAdminUrl('subscriptions'), [
+            'subscriber_type' => 'site_user',
+            'subscriber_id' => '7',
+            'subject_type' => 'plan',
+            'subject_id' => '999',
+        ], $headers),
+        'admin-subscribe-422-subject',
+    );
+});
+
+test('contract: pay admin subscribe forbidden', function () {
+    $headers = actingAsPayOperator(permissions: ['pay.subscriptions.view']);
+
+    ResponseSnapshot::assertMatches(
+        $this->postJson(payAdminUrl('subscriptions'), [
+            'subscriber_type' => 'site_user',
+            'subscriber_id' => '7',
+            'subject_type' => 'plan',
+            'subject_id' => '1',
+        ], $headers),
+        'admin-subscribe-403',
     );
 });
 

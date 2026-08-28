@@ -9,6 +9,8 @@ import type { Promotion } from "@/lib/admin/mocks/promotions";
 import type { EngageAudienceFormValues } from "@/lib/admin/schemas/content/engage-audience-schema";
 import { engageChannelOptions } from "../types";
 import { ConfigureAssetPicker } from "./ConfigureAssetPicker";
+import { useConsoleText } from "@/lib/admin/use-console-text";
+import { customerTierLabel } from "@/components/pages/customers/utils";
 
 type ConfigureStepProps = {
   campaigns: Campaign[];
@@ -17,6 +19,7 @@ type ConfigureStepProps = {
 };
 
 export function ConfigureStep({ campaigns, promotions, coupons }: ConfigureStepProps) {
+  const t = useConsoleText();
   const {
     register,
     control,
@@ -44,25 +47,35 @@ export function ConfigureStep({ campaigns, promotions, coupons }: ConfigureStepP
         loyaltyError={errors.loyaltyTier?.message}
         onSelectCampaign={(campaign) => {
           setValue("campaignId", campaign.id, { shouldValidate: true });
-          setValue("subject", `You're invited: ${campaign.name}`, {
-            shouldValidate: true,
-            shouldDirty: true,
-          });
+          setValue(
+            "subject",
+            t("console.engage.subject.campaign").replace("{name}", campaign.name),
+            {
+              shouldValidate: true,
+              shouldDirty: true,
+            },
+          );
         }}
         onSelectPromotion={(promo, kind) => {
           setValue("promotionId", promo.id, { shouldValidate: true });
           setValue(
             "subject",
-            kind === "coupon" ? `Your code: ${promo.code}` : `Exclusive offer: ${promo.title}`,
+            kind === "coupon"
+              ? t("console.engage.subject.coupon").replace("{code}", promo.code)
+              : t("console.engage.subject.promotion").replace("{name}", promo.title),
             { shouldValidate: true, shouldDirty: true },
           );
         }}
         onSelectLoyaltyTier={(tier) => {
           setValue("loyaltyTier", tier, { shouldValidate: true });
-          setValue("subject", `You're invited to ${tier}`, {
-            shouldValidate: true,
-            shouldDirty: true,
-          });
+          setValue(
+            "subject",
+            t("console.engage.subject.loyalty").replace("{tier}", customerTierLabel(tier)),
+            {
+              shouldValidate: true,
+              shouldDirty: true,
+            },
+          );
         }}
       />
 
@@ -72,7 +85,7 @@ export function ConfigureStep({ campaigns, promotions, coupons }: ConfigureStepP
           control={control}
           render={({ field }) => (
             <Select
-              label="Channel"
+              label={t("console.engage.form.channel")}
               value={field.value}
               onChange={(e) => field.onChange(e.target.value)}
               options={engageChannelOptions}
@@ -82,22 +95,22 @@ export function ConfigureStep({ campaigns, promotions, coupons }: ConfigureStepP
         />
         <Input
           type="date"
-          label="Schedule date (optional)"
+          label={t("console.engage.form.schedule-date")}
           error={errors.scheduleAt?.message}
           {...register("scheduleAt")}
         />
       </div>
 
       <Input
-        label="Subject line"
-        placeholder="A note from Aetheria…"
+        label={t("console.engage.form.subject")}
+        placeholder={t("console.engage.form.subject-placeholder")}
         error={errors.subject?.message}
         {...register("subject")}
       />
 
       <Textarea
-        label="Message (optional)"
-        placeholder="Add a short note customers will see with this outreach."
+        label={t("console.engage.form.message")}
+        placeholder={t("console.engage.form.message-placeholder")}
         rows={4}
         error={errors.message?.message}
         {...register("message")}

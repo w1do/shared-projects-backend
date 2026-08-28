@@ -9,6 +9,8 @@
  * - Aggregate list widgets (campaigns, categories, recent orders) are not re-queried;
  *   only their sparkline/series fields are sliced when present.
  */
+import { t } from "@/lib/admin/console-texts";
+
 export const DASHBOARD_TIME_RANGES = [
   "Last 7 days",
   "Last 30 days",
@@ -26,8 +28,23 @@ const RANGE_FRACTION: Record<DashboardTimeRange, number> = {
   "This year": 1,
 };
 
-export function isDashboardTimeRange(value: string): value is DashboardTimeRange {
+export function isDashboardTimeRange(
+  value: string,
+): value is DashboardTimeRange {
   return (DASHBOARD_TIME_RANGES as readonly string[]).includes(value);
+}
+
+/**
+ * Подпись пресета для интерфейса. Внутренние значения состояния остаются
+ * английскими константами (`RANGE_FRACTION` ключуется ими) — переводится
+ * только отображение.
+ */
+export function timeRangeLabel(value: string): string {
+  if (value === "Last 7 days") return t("console.dashboard.range-7d");
+  if (value === "Last 30 days") return t("console.dashboard.range-30d");
+  if (value === "Last 90 days") return t("console.dashboard.range-90d");
+  if (value === "This year") return t("console.dashboard.range-year");
+  return value;
 }
 
 /**
@@ -36,7 +53,9 @@ export function isDashboardTimeRange(value: string): value is DashboardTimeRange
  */
 export function sliceSeriesByTimeRange<T>(series: T[], timeRange: string): T[] {
   if (series.length === 0) return series;
-  const fraction = isDashboardTimeRange(timeRange) ? RANGE_FRACTION[timeRange] : 1;
+  const fraction = isDashboardTimeRange(timeRange)
+    ? RANGE_FRACTION[timeRange]
+    : 1;
   const count = Math.max(1, Math.round(series.length * fraction));
   return series.slice(-count);
 }

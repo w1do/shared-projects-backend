@@ -1,0 +1,19 @@
+{
+    "status": 422,
+    "content_type": "application/json",
+    "body": {
+        "error": {
+            "code": "validation_failed",
+            "message": "The given data was invalid.",
+            "details": {
+                "currency": [
+                    "The currency field is required when price minor / interval is present."
+                ],
+                "interval": [
+                    "The interval field is required when price minor / currency is present."
+                ]
+            },
+            "trace_id": "<string>"
+        }
+    }
+}

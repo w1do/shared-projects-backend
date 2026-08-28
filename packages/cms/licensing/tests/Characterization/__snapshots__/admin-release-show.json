@@ -1,0 +1,16 @@
+{
+    "status": 200,
+    "content_type": "application/json",
+    "body": {
+        "data": {
+            "id": "<int>",
+            "version": "1.4.7",
+            "train": "1.4",
+            "repository": "crm/app-1.4",
+            "released_at": "<string>",
+            "is_security": false,
+            "min_upgrade_from": null,
+            "changelog_url": "https://changelog.example/1.4.7"
+        }
+    }
+}

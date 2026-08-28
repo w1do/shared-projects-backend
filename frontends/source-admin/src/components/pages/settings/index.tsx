@@ -1,37 +1,38 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Store, CreditCard, Truck, Receipt, Bell, Users, ShieldCheck, Languages } from "lucide-react";
+import { Store, CreditCard, Bell, Users, ShieldCheck, Languages, Blocks } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/data-display/tabs";
 import { PageHeader } from "@/components/shared/layout/PageHeader";
 import { useStoreSettingsQuery } from "@/hooks/admin/settings/use-settings-query";
 import { mockStoreSettings, type StoreSettings } from "@/lib/admin/mocks/settings";
 import { SettingsLoadingState } from "./loading";
+import { useConsoleText } from "@/lib/admin/use-console-text";
 import { cn } from "@/lib/utils";
 
 import { GeneralSection } from "./sections/GeneralSection";
+import { SiteLanguageSection } from "./sections/SiteLanguageSection";
 import { PaymentsSection } from "./sections/PaymentsSection";
-import { ShippingSection } from "./sections/ShippingSection";
-import { TaxesSection } from "./sections/TaxesSection";
 import { NotificationsSection } from "./sections/NotificationsSection";
 import { SecuritySection } from "./sections/SecuritySection";
 import { LanguagesSection } from "./sections/LanguagesSection";
+import { ServicesSection } from "./sections/ServicesSection";
 
 const TABS = [
-  { value: "general", label: "General", icon: Store },
-  { value: "payments", label: "Payments", icon: CreditCard },
-  { value: "shipping", label: "Shipping", icon: Truck },
-  { value: "taxes", label: "Taxes", icon: Receipt },
-  { value: "notifications", label: "Notifications", icon: Bell },
-  { value: "security", label: "Security", icon: ShieldCheck },
-  { value: "languages", label: "Languages", icon: Languages },
-];
+  { value: "general", labelKey: "console.settings.tab.general", icon: Store },
+  { value: "payments", labelKey: "console.settings.tab.payments", icon: CreditCard },
+  { value: "notifications", labelKey: "console.settings.tab.notifications", icon: Bell },
+  { value: "security", labelKey: "console.settings.tab.security", icon: ShieldCheck },
+  { value: "languages", labelKey: "console.settings.tab.languages", icon: Languages },
+  { value: "services", labelKey: "console.settings.tab.services", icon: Blocks },
+] as const;
 
 export default function SettingsPage({
   initialSettings,
 }: {
   initialSettings?: StoreSettings;
 } = {}) {
+  const t = useConsoleText();
   const hasSeed = initialSettings !== undefined;
   const { data, isPending } = useStoreSettingsQuery({
     initialData: hasSeed ? initialSettings : undefined,
@@ -70,12 +71,12 @@ export default function SettingsPage({
       >
         <div className="flex flex-col gap-8">
           <PageHeader
-            title="Settings"
-            description="Configure your store profile, payments, shipping, taxes, team access, and security in one workspace."
+            title={t("console.settings.title")}
+            description={t("console.settings.subtitle")}
             breadcrumbItems={[
-              { label: "Admin", href: "/admin" },
-              { label: "Workspace", href: "/admin/settings" },
-              { label: "Settings" },
+              { label: t("console.common.breadcrumb-admin"), href: "/admin" },
+              { label: t("console.nav.group.workspace"), href: "/admin/settings" },
+              { label: t("console.settings.title") },
             ]}
           />
 
@@ -92,23 +93,20 @@ export default function SettingsPage({
                 return (
                   <TabsTrigger key={tab.value} value={tab.value} className="gap-1">
                     <Icon className="size-4" />
-                    {tab.label}
+                    {t(tab.labelKey)}
                   </TabsTrigger>
                 );
               })}
             </TabsList>
 
             <TabsContent value="general">
-              <GeneralSection initial={settings.general} />
+              <div className="flex flex-col gap-8">
+                <GeneralSection initial={settings.general} />
+                <SiteLanguageSection />
+              </div>
             </TabsContent>
             <TabsContent value="payments">
-              <PaymentsSection initial={settings.payments} />
-            </TabsContent>
-            <TabsContent value="shipping">
-              <ShippingSection initial={settings.shipping} />
-            </TabsContent>
-            <TabsContent value="taxes">
-              <TaxesSection initial={settings.taxes} />
+              <PaymentsSection />
             </TabsContent>
             <TabsContent value="notifications">
               <NotificationsSection initial={settings.notifications} />
@@ -118,6 +116,9 @@ export default function SettingsPage({
             </TabsContent>
             <TabsContent value="languages">
               <LanguagesSection />
+            </TabsContent>
+            <TabsContent value="services">
+              <ServicesSection />
             </TabsContent>
           </Tabs>
         </div>

@@ -6,6 +6,7 @@ import { CategoryTreeSelect } from "@/components/ui/inputs/category-tree-select"
 import { Input } from "@/components/ui/inputs/input";
 import { Textarea } from "@/components/ui/inputs/textarea";
 import type { BlogFormValues } from "@/lib/admin/schemas/content/blog-form-schema";
+import { useConsoleText } from "@/lib/admin/use-console-text";
 import { CATEGORY_OPTIONS } from "@/components/pages/blogs/pages/add/constants";
 import { FormSelectField } from "@/components/pages/blogs/pages/add/components/FormSelectField";
 
@@ -22,6 +23,7 @@ export function GeneralInfoSection({
   /** Дерево категорий проекта (режим api); в mock-режиме не передаётся. */
   platformCategories?: PlatformCategoryOption[];
 }) {
+  const t = useConsoleText();
   const {
     register,
     control,
@@ -31,15 +33,21 @@ export function GeneralInfoSection({
   return (
     <Card variant="form-section">
       <div className="flex flex-col gap-2">
-        <h2 className="text-heading font-medium text-foreground leading-tight">Article basics</h2>
+        <h2 className="text-heading font-medium text-foreground leading-tight">
+          {t("console.blogs.form.basics-title")}
+        </h2>
         <p className="text-xs text-muted-foreground-lighter">
-          The headline, hook, and how readers will find this story.
+          {t("console.blogs.form.basics-subtitle")}
         </p>
       </div>
 
-      <Input label="Title" error={errors.title?.message} {...register("title")} />
+      <Input
+        label={t("console.blogs.form.title-label")}
+        error={errors.title?.message}
+        {...register("title")}
+      />
       <Textarea
-        label="Subtitle"
+        label={t("console.blogs.form.subtitle-label")}
         rows={2}
         error={errors.subtitle?.message}
         {...register("subtitle")}
@@ -51,18 +59,20 @@ export function GeneralInfoSection({
         {!platformCategories && (
           <FormSelectField
             name="category"
-            label="Category"
+            label={t("console.blogs.form.category-label")}
             options={CATEGORY_OPTIONS}
-            ariaLabel="Article category"
+            ariaLabel={t("console.blogs.form.category-aria")}
             error={errors.category?.message}
           />
         )}
         <Input
-          label="Tags"
+          label={t("console.blogs.form.tags-label")}
           labelRight={
-            <span className="text-caption text-muted-foreground-lighter">comma separated</span>
+            <span className="text-caption text-muted-foreground-lighter">
+              {t("console.blogs.form.tags-hint")}
+            </span>
           }
-          placeholder="skincare, guide, serum"
+          placeholder={t("console.blogs.form.tags-placeholder")}
           error={errors.tags?.message}
           {...register("tags")}
         />
@@ -76,7 +86,7 @@ export function GeneralInfoSection({
             render={({ field }) => (
               <CategoryTreeSelect
                 mode="multiple"
-                label="Project categories"
+                label={t("console.blogs.form.project-categories")}
                 options={platformCategories}
                 value={field.value ?? []}
                 onChange={field.onChange}

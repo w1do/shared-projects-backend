@@ -6,9 +6,15 @@ import { Avatar } from "@/components/ui/data-display/avatar";
 import { Badge } from "@/components/ui/data-display/badge";
 import { AdminDynamicStyles } from "@/components/admin/AdminDynamicStyles";
 import type { ColumnDef } from "@/components/ui/data-display/data-grid.types";
-import type { DetailedCustomer } from "@/lib/admin/mocks/customers";
+import type { CustomerTier, DetailedCustomer } from "@/lib/admin/mocks/customers";
+import { t } from "@/lib/admin/console-texts";
+import {
+  customerSkinConcernLabel,
+  customerSkinTypeLabel,
+  customerTierLabel,
+} from "@/components/pages/customers/utils";
 
-const tierColorSystemMap: Record<DetailedCustomer["tier"], "primary" | "warning" | "neutral"> = {
+const tierColorSystemMap: Record<CustomerTier, "primary" | "warning" | "neutral"> = {
   Platinum: "primary",
   Gold: "warning",
   Silver: "neutral",
@@ -31,16 +37,19 @@ interface CustomerColumnsOptions {
   /** Блокировка/разблокировка пользователя проекта. */
   onToggleBlocked: (customer: DetailedCustomer) => void;
   onDeleteCustomer: (customer: DetailedCustomer) => void;
+  /** Колонка уровня лояльности — только когда данные её несут (демо-шаблон). */
+  showTier?: boolean;
 }
 
 export const getCustomerColumns = ({
   onCustomerClick,
   onToggleBlocked,
   onDeleteCustomer,
+  showTier = true,
 }: CustomerColumnsOptions): ColumnDef<DetailedCustomer>[] => [
   {
     field: "id",
-    headerName: "Customer ID",
+    headerName: t("console.customers.column.id"),
     width: 144,
     headerClassName: "pl-4 md:pl-6",
     cellClassName: "pl-4 md:pl-6",
@@ -50,7 +59,7 @@ export const getCustomerColumns = ({
   },
   {
     field: "name",
-    headerName: "Customer",
+    headerName: t("console.customers.column.name"),
     width: 256,
     renderCell: ({ row }) => {
       const gradientId = `customer-row-${row.id}`;
@@ -70,51 +79,56 @@ export const getCustomerColumns = ({
       );
     },
   },
-  {
-    field: "tier",
-    headerName: "Loyalty Tier",
-    width: 160,
-    renderCell: ({ row }) => (
-      <Badge
-        variant="soft"
-        shape="circle"
-        size="sm"
-        color={tierColorSystemMap[row.tier]}
-        className="font-semibold border-transparent"
-      >
-        {row.tier}
-      </Badge>
-    ),
-  },
+  ...(showTier
+    ? [
+        {
+          field: "tier",
+          headerName: t("console.customers.column.tier"),
+          width: 160,
+          renderCell: ({ row }) =>
+            row.tier ? (
+              <Badge
+                variant="soft"
+                shape="circle"
+                size="sm"
+                color={tierColorSystemMap[row.tier]}
+                className="font-semibold border-transparent"
+              >
+                {customerTierLabel(row.tier)}
+              </Badge>
+            ) : null,
+        } satisfies ColumnDef<DetailedCustomer>,
+      ]
+    : []),
   {
     field: "skinProfile",
-    headerName: "Skin Profile",
+    headerName: t("console.customers.column.skin-profile"),
     width: 224,
     renderCell: ({ row }) => (
       <div className="flex flex-col gap-2 items-start text-caption">
         <Badge variant="soft" size="sm" color={skinTypeColorSystemMap[row.skinProfile.skinType]}>
-          {row.skinProfile.skinType}
+          {customerSkinTypeLabel(row.skinProfile.skinType)}
         </Badge>
         <span className="text-muted-foreground-lighter truncate max-w-48">
-          {row.skinProfile.skinConcerns.join(", ")}
+          {row.skinProfile.skinConcerns.map(customerSkinConcernLabel).join(", ")}
         </span>
       </div>
     ),
   },
   {
     field: "totalOrders",
-    headerName: "Orders",
+    headerName: t("console.customers.column.orders"),
     width: 128,
     sortable: true,
     renderCell: ({ row }) => (
       <span className="text-foreground font-semibold text-xs">
-        {row.totalOrders} order{row.totalOrders > 1 ? "s" : ""}
+        {t("console.customers.orders-count").replace("{count}", String(row.totalOrders))}
       </span>
     ),
   },
   {
     field: "totalSpent",
-    headerName: "Total Spent",
+    headerName: t("console.customers.column.spent"),
     width: 128,
     sortable: true,
     renderCell: ({ row }) => (
@@ -123,12 +137,12 @@ export const getCustomerColumns = ({
   },
   {
     field: "joinedAt",
-    headerName: "Joined Date",
+    headerName: t("console.customers.column.joined"),
     width: 160,
     sortable: true,
     renderCell: ({ row }) => (
       <span className="text-muted-foreground text-caption">
-        {new Date(row.joinedAt).toLocaleDateString("en-US", {
+        {new Date(row.joinedAt).toLocaleDateString("ru-RU", {
           month: "short",
           day: "numeric",
           year: "numeric",
@@ -138,7 +152,7 @@ export const getCustomerColumns = ({
   },
   {
     field: "actions",
-    headerName: "Actions",
+    headerName: t("console.common.actions"),
     width: 168,
     align: "right",
     headerClassName: "pr-4 md:pr-6",
@@ -150,7 +164,7 @@ export const getCustomerColumns = ({
           size="sm"
           shape="circle"
           onClick={() => onCustomerClick(row)}
-          aria-label="View profile"
+          aria-label={t("console.customers.action.view")}
         >
           <Eye />
         </IconButton>
@@ -159,7 +173,11 @@ export const getCustomerColumns = ({
           size="sm"
           shape="circle"
           onClick={() => onToggleBlocked(row)}
-          aria-label={row.status === "Active" ? "Block customer" : "Unblock customer"}
+          aria-label={
+            row.status === "Active"
+              ? t("console.customers.action.block")
+              : t("console.customers.action.unblock")
+          }
         >
           {row.status === "Active" ? <Ban /> : <Undo2 />}
         </IconButton>
@@ -169,7 +187,7 @@ export const getCustomerColumns = ({
           shape="circle"
           color="error"
           onClick={() => onDeleteCustomer(row)}
-          aria-label="Delete customer"
+          aria-label={t("console.customers.action.delete")}
         >
           <Trash2 />
         </IconButton>

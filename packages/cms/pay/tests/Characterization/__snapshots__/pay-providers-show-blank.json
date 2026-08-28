@@ -1,0 +1,17 @@
+{
+    "status": 200,
+    "content_type": "application/json",
+    "body": {
+        "data": {
+            "provider": "platega",
+            "group": "payments",
+            "label": "Платёжные системы",
+            "name": "Platega",
+            "credentials": {},
+            "properties": {},
+            "return_url": null,
+            "fail_url": null,
+            "status": "active"
+        }
+    }
+}

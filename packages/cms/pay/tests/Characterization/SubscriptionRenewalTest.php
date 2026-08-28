@@ -8,7 +8,7 @@ use Cms\Pay\Domain\Models\Payment;
 use Cms\Pay\Domain\Models\Plan;
 use Cms\Pay\Domain\Models\Subscription;
 use Cms\Pay\Domain\Models\WebhookEvent;
-use Cms\Pay\Infrastructure\Gateways\ProviderRegistry;
+use Cms\Pay\Infrastructure\Gateways\ProviderWebhookGateway;
 use Cms\Pay\Infrastructure\Jobs\ProcessWebhookEventJob;
 use Cms\Pay\Infrastructure\Jobs\RenewDueSubscriptionsJob;
 use Cms\Shared\Tenant\ProjectContext;
@@ -47,10 +47,13 @@ function payRenewalPlan(array $attrs = []): Plan
 function payRenewalSubscription(Plan $plan, string $endsAt, int $attempts = 0): Subscription
 {
     app(ProjectContext::class)->set('proj-1');
+    paySelectProvider('manual');
 
     $subscription = Subscription::create([
-        'user_key' => 'user:proj-1:7',
-        'plan_id' => $plan->id,
+        'subscriber_type' => 'site_user',
+        'subscriber_id' => '7',
+        'subject_type' => 'plan',
+        'subject_id' => (string) $plan->id,
         'status' => 'active',
         'current_period_ends_at' => $endsAt,
     ]);
@@ -204,7 +207,7 @@ test('guard: 0.7 webhook succeeded payload renews the subscription', function ()
 
     // джоба сама ставит и чистит ProjectContext (ProcessWebhookEventJob:64,68)
     (new ProcessWebhookEventJob($event->id))
-        ->handle(app(ProviderRegistry::class), app(ApplyPaymentStatusHandler::class));
+        ->handle(app(ProviderWebhookGateway::class), app(ApplyPaymentStatusHandler::class));
 
     app(ProjectContext::class)->set('proj-1');
 
@@ -240,7 +243,7 @@ test('guard: 0.7 second webhook for the same payment does not shift the period a
         'payload' => $payload + ['id' => 'evt-renew-1'],
     ]);
     (new ProcessWebhookEventJob($first->id))
-        ->handle(app(ProviderRegistry::class), app(ApplyPaymentStatusHandler::class));
+        ->handle(app(ProviderWebhookGateway::class), app(ApplyPaymentStatusHandler::class));
 
     app(ProjectContext::class)->set('proj-1');
     expect($subscription->fresh()->current_period_ends_at->toDateTimeString())->toBe('2026-04-10 12:00:00');
@@ -253,7 +256,7 @@ test('guard: 0.7 second webhook for the same payment does not shift the period a
         'payload' => $payload + ['id' => 'evt-renew-2'],
     ]);
     (new ProcessWebhookEventJob($second->id))
-        ->handle(app(ProviderRegistry::class), app(ApplyPaymentStatusHandler::class));
+        ->handle(app(ProviderWebhookGateway::class), app(ApplyPaymentStatusHandler::class));
 
     app(ProjectContext::class)->set('proj-1');
     $fresh = $subscription->fresh();

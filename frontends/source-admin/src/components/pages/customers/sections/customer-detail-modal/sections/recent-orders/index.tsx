@@ -2,16 +2,19 @@
 
 import type { DetailedCustomer } from "@/lib/admin/mocks/customers";
 import { StatusBadge } from "@/components/pages/orders/sections/order-status-badge";
+import { useConsoleText } from "@/lib/admin/use-console-text";
 
 interface CustomerRecentOrdersProps {
   customer: DetailedCustomer;
 }
 
 export function RecentOrdersSection({ customer }: CustomerRecentOrdersProps) {
+  const t = useConsoleText();
+
   return (
     <div className="flex flex-col gap-4">
       <span className="text-caption font-semibold uppercase tracking-wider text-muted-foreground">
-        Recent Orders
+        {t("console.customers.detail.recent-orders")}
       </span>
       <div className="flex flex-col gap-4">
         {customer.recentOrders.map((order) => (
@@ -22,7 +25,7 @@ export function RecentOrdersSection({ customer }: CustomerRecentOrdersProps) {
             <div className="flex flex-col gap-2">
               <span className="font-mono font-semibold text-foreground">{order.id}</span>
               <span className="text-muted-foreground-lighter">
-                {new Date(order.placedAt).toLocaleDateString("en-US", {
+                {new Date(order.placedAt).toLocaleDateString("ru-RU", {
                   month: "short",
                   day: "numeric",
                   year: "numeric",

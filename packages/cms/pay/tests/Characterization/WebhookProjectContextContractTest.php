@@ -36,7 +36,7 @@ function guardPaymentWithoutContext(): Payment
     app(ProjectContext::class)->set('proj-1');
 
     $payment = app(CreatePaymentHandler::class)->handle(new CreatePaymentCommand(
-        userKey: 'user:proj-1:7',
+        subjectKey: 'user:proj-1:7',
         data: CreatePaymentDTO::from(['amount_minor' => 100, 'currency' => 'RUB', 'provider' => 'null']),
     ));
 

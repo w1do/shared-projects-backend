@@ -1,0 +1,30 @@
+{
+    "status": 200,
+    "content_type": "application/json",
+    "body": {
+        "data": {
+            "id": "<int>",
+            "code": "enterprise",
+            "name": "Enterprise",
+            "price_minor": 49900,
+            "currency": "RUB",
+            "interval": "month",
+            "features": [
+                {
+                    "id": "<int>",
+                    "organization_id": null,
+                    "code": "api-access",
+                    "name": "API access"
+                }
+            ],
+            "overrides": [
+                {
+                    "id": "<int>",
+                    "organization_id": "<int>",
+                    "code": "audit-log",
+                    "name": "Audit log"
+                }
+            ]
+        }
+    }
+}

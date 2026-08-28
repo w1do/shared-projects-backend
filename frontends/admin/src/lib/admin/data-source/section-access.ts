@@ -29,6 +29,7 @@ export const CONSOLE_SECTION_KEYS = [
   "notifications",
   "team",
   "settings",
+  "licensing",
 ] as const;
 
 export type ConsoleSectionKey = (typeof CONSOLE_SECTION_KEYS)[number];
@@ -50,6 +51,8 @@ export const SECTION_REQUIREMENTS: Partial<Record<ConsoleSectionKey, SectionRequ
   customers: { service: "auth", permission: "auth.users.view" },
   team: { service: "auth", permission: "auth.members.view" },
   settings: { service: "auth", permission: "auth.settings.view" },
+  // Право — из группы licensing PayManifest'а, сервис — собственный ключ licensing.
+  licensing: { service: "licensing", permission: "pay.licensing.view" },
 };
 
 /**
@@ -110,6 +113,30 @@ export function visibleSectionKeys(bootstrap: BootstrapAccess): ConsoleSectionKe
 export const CONSOLE_SECTIONS_COOKIE = "console_sections";
 export const CONSOLE_SECTIONS_STORAGE_KEY = "console_sections";
 
+// Подписка на смену снимка: сайдбар и быстрые действия перечитывают снимок
+// сразу после записи (например, после переключения сервиса из настроек),
+// без повторного входа. События ограничены вкладкой — этого достаточно:
+// снимок пишется тем же клиентом, который его читает.
+const snapshotListeners = new Set<() => void>();
+let snapshotRevision = 0;
+
+function notifySnapshotListeners() {
+  snapshotRevision += 1;
+  for (const listener of snapshotListeners) listener();
+}
+
+export function subscribeSectionSnapshot(listener: () => void): () => void {
+  snapshotListeners.add(listener);
+  return () => {
+    snapshotListeners.delete(listener);
+  };
+}
+
+/** Монотонная версия снимка — снапшот для useSyncExternalStore. */
+export function sectionSnapshotRevision() {
+  return snapshotRevision;
+}
+
 /** Компактный формат cookie: ключи через запятую. */
 export function encodeSectionSnapshot(keys: readonly string[]): string {
   return keys.join(",");
@@ -131,6 +158,7 @@ export function persistSectionSnapshot(keys: readonly string[], maxAgeSeconds: n
   if (typeof window !== "undefined") {
     window.localStorage.setItem(CONSOLE_SECTIONS_STORAGE_KEY, value);
   }
+  notifySnapshotListeners();
 }
 
 export function clearSectionSnapshot() {
@@ -140,6 +168,7 @@ export function clearSectionSnapshot() {
   if (typeof window !== "undefined") {
     window.localStorage.removeItem(CONSOLE_SECTIONS_STORAGE_KEY);
   }
+  notifySnapshotListeners();
 }
 
 /**

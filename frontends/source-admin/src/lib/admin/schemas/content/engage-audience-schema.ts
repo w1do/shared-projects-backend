@@ -1,5 +1,7 @@
 import * as z from "zod";
 
+import { t } from "@/lib/admin/console-texts";
+
 export const engageIntentOptions = ["campaign", "promotion", "coupon", "loyalty"] as const;
 
 export type EngageIntent = (typeof engageIntentOptions)[number];
@@ -10,8 +12,11 @@ export const engageAudienceSchema = z
     campaignId: z.string().optional().default(""),
     promotionId: z.string().optional().default(""),
     loyaltyTier: z.enum(["Bronze", "Silver", "Gold", "Platinum"]).optional(),
-    channel: z.string().min(1, { message: "Choose a delivery channel." }),
-    subject: z.string().min(1, { message: "Add a subject line." }).max(120),
+    channel: z.string().min(1, { message: t("console.engage.validation.channel") }),
+    subject: z
+      .string()
+      .min(1, { message: t("console.engage.validation.subject") })
+      .max(120),
     message: z.string().max(500).optional().default(""),
     scheduleAt: z.string().optional().default(""),
   })
@@ -20,21 +25,21 @@ export const engageAudienceSchema = z
       ctx.addIssue({
         code: "custom",
         path: ["campaignId"],
-        message: "Select a campaign to send.",
+        message: t("console.engage.validation.campaign"),
       });
     }
     if ((values.intent === "promotion" || values.intent === "coupon") && !values.promotionId) {
       ctx.addIssue({
         code: "custom",
         path: ["promotionId"],
-        message: "Select a promotion or coupon code.",
+        message: t("console.engage.validation.promotion"),
       });
     }
     if (values.intent === "loyalty" && !values.loyaltyTier) {
       ctx.addIssue({
         code: "custom",
         path: ["loyaltyTier"],
-        message: "Choose the loyalty tier to invite into.",
+        message: t("console.engage.validation.loyalty"),
       });
     }
   });

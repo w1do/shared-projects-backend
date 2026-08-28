@@ -5,11 +5,15 @@
         "data": [
             {
                 "id": "<string>",
-                "user_key": "user:proj-1:7",
+                "subscriber": {
+                    "type": "site_user",
+                    "id": "<string>"
+                },
                 "status": "active",
                 "grants_access": true,
                 "current_period_ends_at": "<string>",
-                "plan": {
+                "subject": {
+                    "type": "plan",
                     "id": "<int>",
                     "code": "basic",
                     "name": "Basic",

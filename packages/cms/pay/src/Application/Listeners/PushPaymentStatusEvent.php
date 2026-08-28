@@ -21,11 +21,14 @@ final class PushPaymentStatusEvent
         $status = $event->status;
         $amount = $payment->amount();
 
-        Analytics::push($payment->user_key, [
+        // Неуспех обогащается кодом ошибки провайдера из last_error (Д8)
+        $failed = in_array($status, [PaymentStatus::Failed, PaymentStatus::Canceled], true);
+
+        Analytics::push($payment->subject_key, [
             'name' => $status === PaymentStatus::Succeeded ? 'payment.succeeded' : "payment.{$status->value}",
             'value_minor' => $status === PaymentStatus::Succeeded ? $amount->amountMinor : 0,
             'currency' => $amount->currency->code,
-            'props' => ['payment_id' => $payment->id],
+            'props' => PaymentAnalyticsProps::for($payment, withError: $failed),
         ], $payment->project_id);
     }
 }

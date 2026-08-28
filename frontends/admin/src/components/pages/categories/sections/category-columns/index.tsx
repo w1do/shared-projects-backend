@@ -1,11 +1,12 @@
 "use client";
 
-import { formatCurrency } from "@/lib/utils";
 import type { ColumnDef } from "@/components/ui/data-display/data-grid.types";
 import type { Category } from "@/lib/admin/mocks/types";
+import { countChildren } from "@/lib/admin/data-source/category-tree";
 import { CategoryRowActions } from "../category-row-actions";
 import { getCategoryIcon } from "@/components/pages/categories/config/icons";
 import { CategoryStatusBadge } from "../category-status-badge";
+import { t } from "@/lib/admin/console-texts";
 
 export interface CategoryColumnsOptions {
   onEditClick: (category: Category) => void;
@@ -13,6 +14,8 @@ export interface CategoryColumnsOptions {
   onMoveClick?: (category: Category) => void;
   /** Без собственного отступа по уровню — его рисует TreeTable. */
   flat?: boolean;
+  /** Полный список — для счётчика вложенных категорий строки. */
+  categories?: Category[];
 }
 
 export const getCategoryColumns = ({
@@ -20,10 +23,16 @@ export const getCategoryColumns = ({
   onDeleteClick,
   onMoveClick,
   flat = false,
-}: CategoryColumnsOptions): ColumnDef<Category>[] => [
+  categories = [],
+}: CategoryColumnsOptions): ColumnDef<Category>[] => {
+  const childCounts = countChildren(
+    categories.map((category) => ({ id: category.id, parentId: category.parentId ?? null })),
+  );
+
+  return [
   {
     field: "name",
-    headerName: "Category Name",
+    headerName: t("console.categories.column.name"),
     width: "288px",
     sortable: true,
     renderCell: ({ row }) => {
@@ -54,7 +63,7 @@ export const getCategoryColumns = ({
   },
   {
     field: "slug",
-    headerName: "URL Slug",
+    headerName: t("console.categories.column.slug"),
     width: "176px",
     renderCell: ({ row }) => (
       <span className="font-mono text-xs text-muted-foreground">/{row.slug}</span>
@@ -62,42 +71,22 @@ export const getCategoryColumns = ({
   },
   {
     field: "status",
-    headerName: "Status",
+    headerName: t("console.categories.column.status"),
     width: "112px",
     renderCell: ({ row }) => <CategoryStatusBadge status={row.status} />,
   },
   {
-    field: "productCount",
-    headerName: "Product Count",
+    // Торговых метрик (выручка, рост) у платформы нет — вместо них показатель
+    // из реальных данных дерева: число вложенных категорий.
+    field: "children",
+    headerName: t("console.categories.column.children"),
     width: "144px",
-    sortable: true,
     cellClassName: "text-body-lg font-medium text-foreground",
-    renderCell: ({ row }) =>
-      `${row.productCount} ${row.productCount === 1 ? "product" : "products"}`,
-  },
-  {
-    field: "revenue",
-    headerName: "Revenue",
-    width: "144px",
-    sortable: true,
-    cellClassName: "text-body-lg text-foreground",
-    renderCell: ({ value }) => formatCurrency(value as number),
-  },
-  {
-    field: "growthYoY",
-    headerName: "Growth YoY",
-    width: "128px",
-    sortable: true,
-    renderCell: ({ row }) =>
-      row.status === "Active" ? (
-        <span className="text-xs font-semibold text-success">+{row.growthYoY}% YoY</span>
-      ) : (
-        <span className="text-xs text-muted-foreground-lighter">&mdash;</span>
-      ),
+    renderCell: ({ row }) => `${childCounts.get(row.id) ?? 0}`,
   },
   {
     field: "actions",
-    headerName: "Actions",
+    headerName: t("console.common.actions"),
     width: "80px",
     align: "right",
     headerClassName: "pr-16 md:pr-6",
@@ -111,4 +100,5 @@ export const getCategoryColumns = ({
       />
     ),
   },
-];
+  ];
+};

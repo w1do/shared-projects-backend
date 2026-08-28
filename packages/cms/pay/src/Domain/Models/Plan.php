@@ -5,12 +5,14 @@ declare(strict_types=1);
 namespace Cms\Pay\Domain\Models;
 
 use Cms\Pay\Database\Factories\PlanFactory;
+use Cms\Shared\Billing\Subscribable;
 use Cms\Shared\Tenant\BelongsToProject;
 use Cms\Shared\Values\Money;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Carbon;
 
 /**
@@ -23,7 +25,7 @@ use Illuminate\Support\Carbon;
  * @property string $interval
  * @property ?Carbon $archived_at
  */
-class Plan extends Model
+class Plan extends Model implements Subscribable
 {
     use BelongsToProject;
     use HasFactory;
@@ -47,10 +49,10 @@ class Plan extends Model
         return $this->belongsToMany(Feature::class);
     }
 
-    /** @return HasMany<Subscription, $this> */
-    public function subscriptions(): HasMany
+    /** @return MorphMany<Subscription, $this> */
+    public function subscriptions(): MorphMany
     {
-        return $this->hasMany(Subscription::class);
+        return $this->morphMany(Subscription::class, 'subject');
     }
 
     /**
@@ -75,6 +77,26 @@ class Plan extends Model
             'year' => new \DateInterval('P1Y'),
             default => new \DateInterval('P1M'),
         };
+    }
+
+    public function subscriptionPrice(): Money
+    {
+        return $this->price();
+    }
+
+    public function subscriptionInterval(): \DateInterval
+    {
+        return $this->periodInterval();
+    }
+
+    public function subscriptionCode(): string
+    {
+        return $this->code;
+    }
+
+    public function subscriptionName(): string
+    {
+        return $this->name;
     }
 
     protected static function newFactory(): PlanFactory
