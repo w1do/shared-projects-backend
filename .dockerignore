@@ -29,6 +29,8 @@ package-lock.json
 **/storage/framework/cache/data/*
 **/storage/framework/sessions/*
 **/storage/framework/views/*
+**/storage/app/private/*
+**/storage/app/public/*
 
 # секреты и локальные env — в образ только через compose env_file
 **/.env

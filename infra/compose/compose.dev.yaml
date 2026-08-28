@@ -1,0 +1,39 @@
+# Dev-override: исходники монтируются в контейнеры, панель собирается из исходников.
+# Запуск: docker compose -f infra/compose/compose.yaml -f infra/compose/compose.dev.yaml up -d
+# (`./tools/cms up` делает это сам).
+services:
+  auth-service:
+    volumes: &src-mount
+      - ../..:/var/www
+  auth-worker:
+    volumes: *src-mount
+  content-service:
+    volumes: *src-mount
+  content-worker:
+    volumes: *src-mount
+  content-scheduler:
+    volumes: *src-mount
+  analytics-service:
+    volumes: *src-mount
+  analytics-worker:
+    volumes: *src-mount
+  pay-service:
+    volumes: *src-mount
+  pay-worker:
+    volumes: *src-mount
+
+  docs:
+    volumes:
+      - ../../openapi/openapi.json:/spec/openapi.json:ro
+
+  admin-front:
+    image: oven/bun:1.2.21-alpine
+    build: !reset null
+    working_dir: /app
+    command: sh -c "bun install --frozen-lockfile && bun run build && bun run start"
+    environment:
+      NEXT_PUBLIC_ADMIN_DATA_SOURCE: api
+      NEXT_PUBLIC_ADMIN_API_BASE_URL: ""
+      NEXT_PUBLIC_ADMIN_MOCK_DELAY_MS: 0
+    volumes:
+      - ../../frontends/admin:/app

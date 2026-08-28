@@ -1,0 +1,24 @@
+# Статическая конфигурация Traefik-gateway платформы.
+# Матрица маршрутов — в dynamic.yml (file-provider), не в docker-labels.
+entryPoints:
+  web:
+    address: ":80"
+    # За внешним прокси (Dokploy) доверяем X-Forwarded-*: порт 80 не публикуется наружу.
+    forwardedHeaders:
+      insecure: true
+    http:
+      middlewares:
+        - compress@file
+
+providers:
+  file:
+    filename: /etc/traefik/dynamic.yml
+    watch: true
+
+accessLog: {}
+
+log:
+  level: INFO
+
+api:
+  dashboard: false

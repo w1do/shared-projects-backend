@@ -4,7 +4,8 @@
 set -euo pipefail
 
 BASE="${BASE:-http://localhost:8080}"
-COMPOSE="docker compose -f infra/compose/compose.yaml --project-directory ."
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+COMPOSE="docker compose -f $ROOT/infra/compose/compose.yaml"
 
 jqr() { python3 -c "import json,sys; d=json.load(sys.stdin); print(d$1)"; }
 RUN=$(date +%s)   # уникальный суффикс: smoke можно гонять повторно
@@ -40,6 +41,10 @@ for svc in content analytics pay; do
     curl -fsS -X PUT "$BASE/api/admin/v1/projects/demo/services/$svc" -H "$AUTH" \
         -H 'Content-Type: application/json' -d '{"enabled":true}' >/dev/null
 done
+# свежий стек: дефолтный провайдер оплат — platega (требует аккаунт);
+# smoke идёт по manual-циклу (subscribe → confirm оператором)
+curl -fsS -X PUT "$BASE/api/admin/v1/projects/demo/pay/settings" -H "$AUTH" \
+    -H 'Content-Type: application/json' -d '{"provider":"manual"}' >/dev/null
 
 PK=$(curl -fsS -X POST "$BASE/api/admin/v1/projects/demo/api-keys" -H "$AUTH" \
     -H 'Content-Type: application/json' -d '{"type":"public"}' | jqr "['data']['key']")

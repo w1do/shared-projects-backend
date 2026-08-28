@@ -11,7 +11,7 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-COMPOSE="docker compose -f $ROOT/infra/compose/compose.yaml --project-directory $ROOT"
+COMPOSE="docker compose -f $ROOT/infra/compose/compose.yaml -f $ROOT/infra/compose/compose.dev.yaml"
 SERVICES=(auth-service content-service analytics-service pay-service)
 
 usage() { grep '^#   ' "$0" | sed 's/^#   //'; exit 1; }
@@ -19,11 +19,8 @@ usage() { grep '^#   ' "$0" | sed 's/^#   //'; exit 1; }
 cmd="${1:-}"; shift || true
 case "$cmd" in
     bootstrap)
-        # Разворот с нуля одной командой: env из примеров → стек → миграции
+        # Разворот с нуля одной командой: стек (env-дефолты в compose) → миграции
         # (AUTO_MIGRATE) → оператор/проект/манифесты → демо-контент.
-        for d in "$ROOT"/infra/services/*/; do
-            [ -f "$d/.env" ] || { cp "$d/.env.example" "$d/.env"; echo "env: $(basename "$d")/.env создан из примера"; }
-        done
         $COMPOSE up -d --build
         echo "==> жду готовности сервисов…"
         for s in auth content analytics pay; do
@@ -34,7 +31,7 @@ case "$cmd" in
         "$0" seed-demo
         echo ""
         echo "Готово: http://localhost:8080/login  (root@example.com / secret-123)"
-        echo "AI-переводы: положите OPENAI_API_KEY=... в infra/services/content-service/.env.local"
+        echo "AI-переводы: положите OPENAI_API_KEY=... в infra/compose/.env"
         ;;
     up)       $COMPOSE up -d --build "${@}" ;;
     down)     $COMPOSE down "${@}" ;;
