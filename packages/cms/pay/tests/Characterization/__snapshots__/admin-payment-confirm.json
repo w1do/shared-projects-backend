@@ -10,6 +10,7 @@
             "currency": "RUB",
             "status": "succeeded",
             "provider": "manual",
+            "redirect_url": null,
             "description": "Invoice 1",
             "subscription_id": null,
             "created_at": "<string>"

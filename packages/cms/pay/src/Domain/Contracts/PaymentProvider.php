@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Cms\Pay\Domain\Contracts;
 
 use Cms\Pay\Domain\Models\Payment;
+use Cms\Pay\Domain\ValueObjects\GatewayConfig;
 use Cms\Shared\Values\Money;
 use Illuminate\Http\Request;
 
@@ -14,13 +15,12 @@ interface PaymentProvider
     public function key(): string;
 
     /**
-     * Пер-проектные креденшалы из `provider_accounts` (расшифрованные).
-     * Адаптеры без внешнего конфига (manual, null) реализуют no-op;
-     * реальные провайдеры берут отсюда ключи API и секреты подписи.
-     *
-     * @param  array<string, mixed>  $credentials
+     * Пер-проектные настройки из `provider_accounts` (Д4): расшифрованные
+     * credentials, URL-ы возврата и properties одним VO. Адаптеры без
+     * внешнего конфига (manual, null) реализуют no-op; реальные провайдеры
+     * берут отсюда ключи API и секреты подписи.
      */
-    public function configure(array $credentials): static;
+    public function configure(GatewayConfig $config): static;
 
     /** @return array{external_id: ?string, redirect_url: ?string, status: string} */
     public function createPayment(Payment $payment): array;

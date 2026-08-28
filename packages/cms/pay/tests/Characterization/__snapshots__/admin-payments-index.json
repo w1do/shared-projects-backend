@@ -11,6 +11,7 @@
                 "currency": "EUR",
                 "status": "succeeded",
                 "provider": "null",
+                "redirect_url": null,
                 "description": null,
                 "subscription_id": null,
                 "created_at": "<string>"
@@ -23,6 +24,7 @@
                 "currency": "RUB",
                 "status": "pending",
                 "provider": "manual",
+                "redirect_url": null,
                 "description": "Invoice 1",
                 "subscription_id": null,
                 "created_at": "<string>"

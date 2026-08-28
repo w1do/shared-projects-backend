@@ -15,6 +15,7 @@ use Illuminate\Validation\ValidationException;
 function createPayment(?string $idem = null): Payment
 {
     app(ProjectContext::class)->set('proj-1');
+    paySelectProvider('manual');
 
     return app(CreatePaymentHandler::class)->handle(new CreatePaymentCommand(
         userKey: 'user:proj-1:7',

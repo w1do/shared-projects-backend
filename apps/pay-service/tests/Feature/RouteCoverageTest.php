@@ -37,6 +37,9 @@ function payRouteCoverageCoveredPairs(): array
         'POST api/admin/v1/projects/{project}/pay/plans',                                 // pay/AdminContractTest.php
         'PUT api/admin/v1/projects/{project}/pay/plans/{plan}',                           // pay/AdminContractTest.php
         'POST api/admin/v1/projects/{project}/pay/plans/{plan}/archive',                  // pay/AdminContractTest.php
+        'GET api/admin/v1/projects/{project}/pay/providers',                              // pay/ProviderSettingsContractTest.php
+        'GET api/admin/v1/projects/{project}/pay/providers/{provider}',                   // pay/ProviderSettingsContractTest.php
+        'PUT api/admin/v1/projects/{project}/pay/providers/{provider}',                   // pay/ProviderSettingsContractTest.php
         'GET api/admin/v1/projects/{project}/pay/settings',                               // pay/SettingsContractTest.php
         'PUT api/admin/v1/projects/{project}/pay/settings',                               // pay/SettingsContractTest.php
         'GET api/admin/v1/projects/{project}/pay/subscriptions',                          // pay/AdminContractTest.php

@@ -43,7 +43,12 @@ final class ProviderWebhookController
             return ErrorEnvelope::validation(['payload' => ['Missing external id.']]);
         }
 
-        $handler->handle(new RegisterWebhookCommand($provider, $parsed['external_id'], $request->all()));
+        $handler->handle(new RegisterWebhookCommand(
+            $provider,
+            $parsed['external_id'],
+            $request->all(),
+            $this->gateway->authSnapshot($provider, $request),
+        ));
 
         // Дубль тоже получает 200 — провайдер не должен ретраить
         return new JsonResponse(['received' => true]);

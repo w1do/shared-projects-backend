@@ -11,6 +11,7 @@
                 "currency": "RUB",
                 "status": "pending",
                 "provider": "manual",
+                "redirect_url": null,
                 "description": "Invoice",
                 "subscription_id": null,
                 "created_at": "<string>"
@@ -23,6 +24,7 @@
                 "currency": "RUB",
                 "status": "pending",
                 "provider": "manual",
+                "redirect_url": null,
                 "description": "Invoice",
                 "subscription_id": null,
                 "created_at": "<string>"
@@ -35,6 +37,7 @@
                 "currency": "RUB",
                 "status": "pending",
                 "provider": "manual",
+                "redirect_url": null,
                 "description": "Invoice",
                 "subscription_id": null,
                 "created_at": "<string>"
@@ -47,6 +50,7 @@
                 "currency": "RUB",
                 "status": "pending",
                 "provider": "manual",
+                "redirect_url": null,
                 "description": "Invoice",
                 "subscription_id": null,
                 "created_at": "<string>"
@@ -59,6 +63,7 @@
                 "currency": "RUB",
                 "status": "pending",
                 "provider": "manual",
+                "redirect_url": null,
                 "description": "Invoice",
                 "subscription_id": null,
                 "created_at": "<string>"
@@ -71,6 +76,7 @@
                 "currency": "RUB",
                 "status": "pending",
                 "provider": "manual",
+                "redirect_url": null,
                 "description": "Invoice",
                 "subscription_id": null,
                 "created_at": "<string>"
@@ -83,6 +89,7 @@
                 "currency": "RUB",
                 "status": "pending",
                 "provider": "manual",
+                "redirect_url": null,
                 "description": "Invoice",
                 "subscription_id": null,
                 "created_at": "<string>"
@@ -95,6 +102,7 @@
                 "currency": "RUB",
                 "status": "pending",
                 "provider": "manual",
+                "redirect_url": null,
                 "description": "Invoice",
                 "subscription_id": null,
                 "created_at": "<string>"
@@ -107,6 +115,7 @@
                 "currency": "RUB",
                 "status": "pending",
                 "provider": "manual",
+                "redirect_url": null,
                 "description": "Invoice",
                 "subscription_id": null,
                 "created_at": "<string>"
@@ -119,6 +128,7 @@
                 "currency": "RUB",
                 "status": "pending",
                 "provider": "manual",
+                "redirect_url": null,
                 "description": "Invoice",
                 "subscription_id": null,
                 "created_at": "<string>"
@@ -131,6 +141,7 @@
                 "currency": "RUB",
                 "status": "pending",
                 "provider": "manual",
+                "redirect_url": null,
                 "description": "Invoice",
                 "subscription_id": null,
                 "created_at": "<string>"
@@ -143,6 +154,7 @@
                 "currency": "RUB",
                 "status": "pending",
                 "provider": "manual",
+                "redirect_url": null,
                 "description": "Invoice",
                 "subscription_id": null,
                 "created_at": "<string>"
@@ -155,6 +167,7 @@
                 "currency": "RUB",
                 "status": "pending",
                 "provider": "manual",
+                "redirect_url": null,
                 "description": "Invoice",
                 "subscription_id": null,
                 "created_at": "<string>"
@@ -167,6 +180,7 @@
                 "currency": "RUB",
                 "status": "pending",
                 "provider": "manual",
+                "redirect_url": null,
                 "description": "Invoice",
                 "subscription_id": null,
                 "created_at": "<string>"
@@ -179,6 +193,7 @@
                 "currency": "RUB",
                 "status": "pending",
                 "provider": "manual",
+                "redirect_url": null,
                 "description": "Invoice",
                 "subscription_id": null,
                 "created_at": "<string>"
@@ -191,6 +206,7 @@
                 "currency": "RUB",
                 "status": "pending",
                 "provider": "manual",
+                "redirect_url": null,
                 "description": "Invoice",
                 "subscription_id": null,
                 "created_at": "<string>"
@@ -203,6 +219,7 @@
                 "currency": "RUB",
                 "status": "pending",
                 "provider": "manual",
+                "redirect_url": null,
                 "description": "Invoice",
                 "subscription_id": null,
                 "created_at": "<string>"
@@ -215,6 +232,7 @@
                 "currency": "RUB",
                 "status": "pending",
                 "provider": "manual",
+                "redirect_url": null,
                 "description": "Invoice",
                 "subscription_id": null,
                 "created_at": "<string>"
@@ -227,6 +245,7 @@
                 "currency": "RUB",
                 "status": "pending",
                 "provider": "manual",
+                "redirect_url": null,
                 "description": "Invoice",
                 "subscription_id": null,
                 "created_at": "<string>"
@@ -239,6 +258,7 @@
                 "currency": "RUB",
                 "status": "pending",
                 "provider": "manual",
+                "redirect_url": null,
                 "description": "Invoice",
                 "subscription_id": null,
                 "created_at": "<string>"
@@ -251,6 +271,7 @@
                 "currency": "RUB",
                 "status": "pending",
                 "provider": "manual",
+                "redirect_url": null,
                 "description": "Invoice",
                 "subscription_id": null,
                 "created_at": "<string>"
@@ -263,6 +284,7 @@
                 "currency": "RUB",
                 "status": "pending",
                 "provider": "manual",
+                "redirect_url": null,
                 "description": "Invoice",
                 "subscription_id": null,
                 "created_at": "<string>"
@@ -275,6 +297,7 @@
                 "currency": "RUB",
                 "status": "pending",
                 "provider": "manual",
+                "redirect_url": null,
                 "description": "Invoice",
                 "subscription_id": null,
                 "created_at": "<string>"
@@ -287,6 +310,7 @@
                 "currency": "RUB",
                 "status": "pending",
                 "provider": "manual",
+                "redirect_url": null,
                 "description": "Invoice",
                 "subscription_id": null,
                 "created_at": "<string>"
@@ -299,6 +323,7 @@
                 "currency": "RUB",
                 "status": "pending",
                 "provider": "manual",
+                "redirect_url": null,
                 "description": "Invoice",
                 "subscription_id": null,
                 "created_at": "<string>"
@@ -311,6 +336,7 @@
                 "currency": "RUB",
                 "status": "pending",
                 "provider": "manual",
+                "redirect_url": null,
                 "description": "Invoice",
                 "subscription_id": null,
                 "created_at": "<string>"
@@ -323,6 +349,7 @@
                 "currency": "RUB",
                 "status": "pending",
                 "provider": "manual",
+                "redirect_url": null,
                 "description": "Invoice",
                 "subscription_id": null,
                 "created_at": "<string>"
@@ -335,6 +362,7 @@
                 "currency": "RUB",
                 "status": "pending",
                 "provider": "manual",
+                "redirect_url": null,
                 "description": "Invoice",
                 "subscription_id": null,
                 "created_at": "<string>"
@@ -347,6 +375,7 @@
                 "currency": "RUB",
                 "status": "pending",
                 "provider": "manual",
+                "redirect_url": null,
                 "description": "Invoice",
                 "subscription_id": null,
                 "created_at": "<string>"
@@ -359,6 +388,7 @@
                 "currency": "RUB",
                 "status": "pending",
                 "provider": "manual",
+                "redirect_url": null,
                 "description": "Invoice",
                 "subscription_id": null,
                 "created_at": "<string>"
@@ -371,6 +401,7 @@
                 "currency": "RUB",
                 "status": "pending",
                 "provider": "manual",
+                "redirect_url": null,
                 "description": "Invoice",
                 "subscription_id": null,
                 "created_at": "<string>"
@@ -383,6 +414,7 @@
                 "currency": "RUB",
                 "status": "pending",
                 "provider": "manual",
+                "redirect_url": null,
                 "description": "Invoice",
                 "subscription_id": null,
                 "created_at": "<string>"
@@ -395,6 +427,7 @@
                 "currency": "RUB",
                 "status": "pending",
                 "provider": "manual",
+                "redirect_url": null,
                 "description": "Invoice",
                 "subscription_id": null,
                 "created_at": "<string>"
@@ -407,6 +440,7 @@
                 "currency": "RUB",
                 "status": "pending",
                 "provider": "manual",
+                "redirect_url": null,
                 "description": "Invoice",
                 "subscription_id": null,
                 "created_at": "<string>"
@@ -419,6 +453,7 @@
                 "currency": "RUB",
                 "status": "pending",
                 "provider": "manual",
+                "redirect_url": null,
                 "description": "Invoice",
                 "subscription_id": null,
                 "created_at": "<string>"
@@ -431,6 +466,7 @@
                 "currency": "RUB",
                 "status": "pending",
                 "provider": "manual",
+                "redirect_url": null,
                 "description": "Invoice",
                 "subscription_id": null,
                 "created_at": "<string>"
@@ -443,6 +479,7 @@
                 "currency": "RUB",
                 "status": "pending",
                 "provider": "manual",
+                "redirect_url": null,
                 "description": "Invoice",
                 "subscription_id": null,
                 "created_at": "<string>"
@@ -455,6 +492,7 @@
                 "currency": "RUB",
                 "status": "pending",
                 "provider": "manual",
+                "redirect_url": null,
                 "description": "Invoice",
                 "subscription_id": null,
                 "created_at": "<string>"
@@ -467,6 +505,7 @@
                 "currency": "RUB",
                 "status": "pending",
                 "provider": "manual",
+                "redirect_url": null,
                 "description": "Invoice",
                 "subscription_id": null,
                 "created_at": "<string>"
@@ -479,6 +518,7 @@
                 "currency": "RUB",
                 "status": "pending",
                 "provider": "manual",
+                "redirect_url": null,
                 "description": "Invoice",
                 "subscription_id": null,
                 "created_at": "<string>"
@@ -491,6 +531,7 @@
                 "currency": "RUB",
                 "status": "pending",
                 "provider": "manual",
+                "redirect_url": null,
                 "description": "Invoice",
                 "subscription_id": null,
                 "created_at": "<string>"
@@ -503,6 +544,7 @@
                 "currency": "RUB",
                 "status": "pending",
                 "provider": "manual",
+                "redirect_url": null,
                 "description": "Invoice",
                 "subscription_id": null,
                 "created_at": "<string>"
@@ -515,6 +557,7 @@
                 "currency": "RUB",
                 "status": "pending",
                 "provider": "manual",
+                "redirect_url": null,
                 "description": "Invoice",
                 "subscription_id": null,
                 "created_at": "<string>"
@@ -527,6 +570,7 @@
                 "currency": "RUB",
                 "status": "pending",
                 "provider": "manual",
+                "redirect_url": null,
                 "description": "Invoice",
                 "subscription_id": null,
                 "created_at": "<string>"
@@ -539,6 +583,7 @@
                 "currency": "RUB",
                 "status": "pending",
                 "provider": "manual",
+                "redirect_url": null,
                 "description": "Invoice",
                 "subscription_id": null,
                 "created_at": "<string>"
@@ -551,6 +596,7 @@
                 "currency": "RUB",
                 "status": "pending",
                 "provider": "manual",
+                "redirect_url": null,
                 "description": "Invoice",
                 "subscription_id": null,
                 "created_at": "<string>"
@@ -563,6 +609,7 @@
                 "currency": "RUB",
                 "status": "pending",
                 "provider": "manual",
+                "redirect_url": null,
                 "description": "Invoice",
                 "subscription_id": null,
                 "created_at": "<string>"
@@ -575,6 +622,7 @@
                 "currency": "RUB",
                 "status": "pending",
                 "provider": "manual",
+                "redirect_url": null,
                 "description": "Invoice",
                 "subscription_id": null,
                 "created_at": "<string>"
@@ -587,6 +635,7 @@
                 "currency": "RUB",
                 "status": "pending",
                 "provider": "manual",
+                "redirect_url": null,
                 "description": "Invoice",
                 "subscription_id": null,
                 "created_at": "<string>"
@@ -599,6 +648,7 @@
                 "currency": "RUB",
                 "status": "pending",
                 "provider": "manual",
+                "redirect_url": null,
                 "description": "Invoice",
                 "subscription_id": null,
                 "created_at": "<string>"

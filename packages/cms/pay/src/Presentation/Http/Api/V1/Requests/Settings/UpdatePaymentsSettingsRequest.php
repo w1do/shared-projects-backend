@@ -13,13 +13,10 @@ final class UpdatePaymentsSettingsRequest extends FormRequest
     /** @return array<string, list<mixed>> */
     public function rules(): array
     {
-        // platega — выбираемый провайдер раздела «Платежи»; шлюзы из
-        // ProviderRegistry остаются доступными для обратной совместимости.
+        // Допустимые значения — только реально зарегистрированные шлюзы:
+        // никакого хардкода вне реестра (спека payments/provider-config).
         return [
-            'provider' => ['required', 'string', Rule::in(array_values(array_unique([
-                'platega',
-                ...ProviderRegistry::available(),
-            ])))],
+            'provider' => ['required', 'string', Rule::in(ProviderRegistry::available())],
         ];
     }
 }

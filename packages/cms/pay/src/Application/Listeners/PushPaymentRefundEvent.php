@@ -18,7 +18,7 @@ final class PushPaymentRefundEvent
             'name' => 'payment.refunded',
             'value_minor' => -$event->amount->amountMinor,
             'currency' => $event->amount->currency->code,
-            'props' => ['payment_id' => $payment->id],
+            'props' => PaymentAnalyticsProps::for($payment),
         ], $payment->project_id);
     }
 }

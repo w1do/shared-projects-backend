@@ -9,6 +9,7 @@ use Cms\Shared\Tenant\BelongsToProject;
 use Cms\Shared\Values\Money;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 
@@ -22,10 +23,12 @@ use Illuminate\Support\Carbon;
  * @property PaymentStatus $status
  * @property string $provider
  * @property ?string $provider_ref
+ * @property ?string $redirect_url
  * @property ?string $description
  * @property ?string $idempotency_key
  * @property ?string $subscription_id
  * @property ?Carbon $created_at
+ * @property-read ?Subscription $subscription
  */
 class Payment extends Model
 {
@@ -56,6 +59,12 @@ class Payment extends Model
     public function transactions(): HasMany
     {
         return $this->hasMany(PaymentTransaction::class);
+    }
+
+    /** @return BelongsTo<Subscription, $this> */
+    public function subscription(): BelongsTo
+    {
+        return $this->belongsTo(Subscription::class);
     }
 
     /**

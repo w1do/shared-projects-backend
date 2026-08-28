@@ -27,7 +27,13 @@ enum EventType: string
 
     case UserPasswordReset = 'user.password_reset';
 
+    case PaymentInitiated = 'payment.initiated';
+
     case PaymentSucceeded = 'payment.succeeded';
+
+    case PaymentFailed = 'payment.failed';
+
+    case PaymentCanceled = 'payment.canceled';
 
     case PaymentRefunded = 'payment.refunded';
 

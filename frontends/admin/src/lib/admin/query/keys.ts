@@ -73,6 +73,10 @@ export const adminQueryKeys = {
     all: ["admin", "settings"] as const,
     store: () => ["admin", "settings", "store"] as const,
     payments: () => ["admin", "settings", "payments"] as const,
+    paymentProviders: () => ["admin", "settings", "payment-providers"] as const,
+    paymentProvider: (provider: string) =>
+      ["admin", "settings", "payment-providers", provider] as const,
+    projects: () => ["admin", "settings", "projects"] as const,
     site: () => ["admin", "settings", "site"] as const,
   },
   dashboard: {

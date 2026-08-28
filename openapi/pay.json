@@ -145,6 +145,70 @@
                 }
             }
         },
+        "/api/admin/v1/projects/{project}/pay/providers": {
+            "get": {
+                "tags": [
+                    "pay"
+                ],
+                "summary": "GET /api/admin/v1/projects/{project}/pay/providers",
+                "operationId": "pay_index_api_admin_v1_projects_project_pay_providers",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                }
+            }
+        },
+        "/api/admin/v1/projects/{project}/pay/providers/{provider}": {
+            "get": {
+                "tags": [
+                    "pay"
+                ],
+                "summary": "GET /api/admin/v1/projects/{project}/pay/providers/{provider}",
+                "operationId": "pay_show_api_admin_v1_projects_project_pay_providers_provider",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "pay"
+                ],
+                "summary": "PUT /api/admin/v1/projects/{project}/pay/providers/{provider}",
+                "operationId": "pay_update_api_admin_v1_projects_project_pay_providers_provider",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                }
+            }
+        },
         "/api/admin/v1/projects/{project}/pay/settings": {
             "get": {
                 "tags": [

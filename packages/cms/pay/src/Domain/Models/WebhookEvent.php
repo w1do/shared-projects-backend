@@ -21,16 +21,17 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $provider
  * @property string $external_id
  * @property array<string, mixed> $payload
+ * @property ?array<string, mixed> $auth
  * @property string $status
  */
 class WebhookEvent extends Model
 {
     protected $table = 'payment_webhook_events';
 
-    protected $fillable = ['project_id', 'provider', 'external_id', 'payload', 'status'];
+    protected $fillable = ['project_id', 'provider', 'external_id', 'payload', 'auth', 'status'];
 
     protected function casts(): array
     {
-        return ['payload' => 'array'];
+        return ['payload' => 'array', 'auth' => 'array'];
     }
 }

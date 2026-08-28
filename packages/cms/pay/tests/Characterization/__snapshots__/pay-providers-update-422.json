@@ -1,0 +1,16 @@
+{
+    "status": 422,
+    "content_type": "application/json",
+    "body": {
+        "error": {
+            "code": "validation_failed",
+            "message": "The given data was invalid.",
+            "details": {
+                "return_url": [
+                    "The return url field must be a valid URL."
+                ]
+            },
+            "trace_id": "<string>"
+        }
+    }
+}

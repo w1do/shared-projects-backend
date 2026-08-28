@@ -9,6 +9,13 @@ export {
   useUpdatePaymentsSettingsMutation,
 } from "./use-payments-settings";
 export {
+  usePaymentProvidersQuery,
+  usePaymentProviderQuery,
+  useUpdatePaymentProviderMutation,
+  useCopyPaymentProviderMutation,
+  useProjectListQuery,
+} from "./use-payment-providers";
+export {
   useSiteSettingsQuery,
   useUpdateSiteSettingsMutation,
 } from "./use-site-settings";

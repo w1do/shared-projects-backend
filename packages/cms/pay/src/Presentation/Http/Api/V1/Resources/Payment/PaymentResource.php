@@ -27,6 +27,7 @@ final class PaymentResource extends ApiResource
             'currency' => $this->resource->currency,
             'status' => $this->resource->status,
             'provider' => $this->resource->provider,
+            'redirect_url' => $this->resource->redirect_url,
             'description' => $this->resource->description,
             'subscription_id' => $this->resource->subscription_id,
             'created_at' => $this->resource->created_at,

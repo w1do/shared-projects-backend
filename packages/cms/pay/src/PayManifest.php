@@ -28,6 +28,8 @@ final class PayManifest
                 new PermissionDefinition('pay.subscriptions.manage', 'Управление подписками', 'subscriptions'),
                 new PermissionDefinition('pay.settings.view', 'Просмотр настроек платежей', 'settings'),
                 new PermissionDefinition('pay.settings.manage', 'Управление настройками платежей', 'settings'),
+                new PermissionDefinition('pay.providers.view', 'Просмотр настроек провайдеров', 'settings'),
+                new PermissionDefinition('pay.providers.manage', 'Управление настройками провайдеров', 'settings'),
             ],
             navigation: [
                 new NavigationItem('pay.plans', 'nav.pay.plans', '/pay/plans', 'pay.plans.view', 'layers', 60),

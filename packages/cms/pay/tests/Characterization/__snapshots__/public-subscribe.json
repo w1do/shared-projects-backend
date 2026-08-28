@@ -29,6 +29,7 @@
                 "currency": "RUB",
                 "status": "pending",
                 "provider": "manual",
+                "redirect_url": null,
                 "description": "Subscription pro",
                 "subscription_id": "<string>",
                 "created_at": "<string>"

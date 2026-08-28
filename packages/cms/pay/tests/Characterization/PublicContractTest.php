@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 use Cms\Pay\Domain\Models\Feature;
 use Cms\Pay\Domain\Models\Plan;
+use Cms\Pay\Domain\Models\ProviderAccount;
 use Cms\Pay\Domain\Models\Subscription;
 use Cms\Shared\Tenant\ProjectContext;
 use Cms\Shared\Testing\ResponseSnapshot;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Http;
 
 /**
  * Характеризационные снимки публичного контракта pay (routes/public.php).
@@ -83,6 +85,33 @@ test('contract: pay public subscribe', function () {
     ResponseSnapshot::assertMatches(
         $this->postJson('/api/v1/pay/subscriptions', ['plan_code' => 'pro'], $site),
         'public-subscribe',
+    );
+});
+
+test('contract: pay public subscribe via redirect gateway carries redirect_url', function () {
+    Http::fake([
+        'https://app.platega.io/v2/transaction/process' => Http::response([
+            'transactionId' => 'tx-contract-1',
+            'status' => 'PENDING',
+            'url' => 'https://pay.platega.io/?id=tx-contract-1',
+        ]),
+    ]);
+
+    payPublicPlan();
+    $site = actingAsSiteUser();
+
+    app(ProjectContext::class)->set('proj-1');
+    paySelectProvider('platega');
+    ProviderAccount::create([
+        'provider' => 'platega',
+        'credentials' => ['merchant_id' => 'merchant-1', 'secret' => 'secret-1'],
+        'return_url' => 'https://shop.example/ok',
+    ]);
+    app(ProjectContext::class)->clear();
+
+    ResponseSnapshot::assertMatches(
+        $this->postJson('/api/v1/pay/subscriptions', ['plan_code' => 'pro'], $site),
+        'public-subscribe-platega-redirect',
     );
 });
 

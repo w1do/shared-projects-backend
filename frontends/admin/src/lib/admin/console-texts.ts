@@ -780,6 +780,43 @@ export const CONSOLE_TEXTS = {
   "console.settings.payments.save-failed":
     "Не удалось сохранить настройки платежей.",
 
+  // Настройки: платежи — модальное окно настроек провайдера
+  "console.settings.payments.provider.configure": "Настройки провайдера",
+  "console.settings.payments.provider.title": "Настройки {name}",
+  "console.settings.payments.provider.description":
+    "Ключи доступа, URL-ы возврата и статус платёжного шлюза этого проекта.",
+  "console.settings.payments.provider.credentials": "Ключи доступа (credentials)",
+  "console.settings.payments.provider.properties":
+    "Дополнительные параметры (properties)",
+  "console.settings.payments.provider.return-url": "URL успешной оплаты",
+  "console.settings.payments.provider.fail-url": "URL неуспешной оплаты",
+  "console.settings.payments.provider.status": "Провайдер активен",
+  "console.settings.payments.provider.status-hint":
+    "В архиве данные сохраняются, но платежи через провайдера не принимаются.",
+  "console.settings.payments.provider.mode-pairs": "Ключ → значение",
+  "console.settings.payments.provider.mode-json": "JSON",
+  "console.settings.payments.provider.add-pair": "Добавить пару",
+  "console.settings.payments.provider.key-placeholder": "ключ",
+  "console.settings.payments.provider.value-placeholder": "значение",
+  "console.settings.payments.provider.invalid-json":
+    "Невалидный JSON — исправьте, чтобы сохранить.",
+  "console.settings.payments.provider.json-not-object":
+    "JSON должен быть объектом «ключ → значение».",
+  "console.settings.payments.provider.copy-from": "Скопировать с проекта",
+  "console.settings.payments.provider.copy-source-placeholder":
+    "Проект-источник",
+  "console.settings.payments.provider.copy-loaded":
+    "Настройки подставлены в форму — проверьте и сохраните.",
+  "console.settings.payments.provider.copy-failed":
+    "Не удалось получить настройки проекта-источника.",
+  "console.settings.payments.provider.save": "Сохранить",
+  "console.settings.payments.provider.cancel": "Отмена",
+  "console.settings.payments.provider.saved": "Настройки провайдера сохранены.",
+  "console.settings.payments.provider.save-failed":
+    "Не удалось сохранить настройки провайдера.",
+  "console.settings.payments.provider.load-failed":
+    "Не удалось загрузить настройки провайдера.",
+
   // Настройки: доставка
   "console.settings.shipping.title": "Зоны доставки",
   "console.settings.shipping.description":

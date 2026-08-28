@@ -42,6 +42,11 @@ final class PayServiceProvider extends ServiceProvider
         ],
     ];
 
+    public function register(): void
+    {
+        $this->mergeConfigFrom(__DIR__.'/../../../config/cms-pay.php', 'cms-pay');
+    }
+
     public function boot(): void
     {
         $this->loadMigrationsFrom(__DIR__.'/../../../database/migrations');

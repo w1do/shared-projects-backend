@@ -74,6 +74,7 @@ test('user cannot manage a subscription of another user', function () {
 
 test('renewal is idempotent per period', function () {
     actingAsPayOperator();
+    paySelectProvider('manual');
     $plan = makePlan(['code' => 'pro', 'price_minor' => 1000]);
     $subscription = Subscription::create([
         'project_id' => 'proj-1', 'user_key' => 'user:proj-1:7', 'plan_id' => $plan->id,
