@@ -11,6 +11,6 @@ final class ListSubscriptionsQuery
 {
     public function handle(int $perPage = 50): CursorPaginator
     {
-        return Subscription::query()->with('plan')->orderByDesc('created_at')->cursorPaginate($perPage);
+        return Subscription::query()->with('subject')->orderByDesc('created_at')->cursorPaginate($perPage);
     }
 }

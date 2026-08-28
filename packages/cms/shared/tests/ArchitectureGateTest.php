@@ -18,7 +18,7 @@ function cmsPackagesRoot(): string
 /** @return list<string> */
 function modulePackages(): array
 {
-    return ['auth', 'content', 'pay', 'analytics', 'localization', 'ai'];
+    return ['auth', 'content', 'pay', 'analytics', 'localization', 'ai', 'licensing'];
 }
 
 /** @return list<string> php-файлы каталога рекурсивно */

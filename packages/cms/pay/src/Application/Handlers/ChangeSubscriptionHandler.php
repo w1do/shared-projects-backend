@@ -26,12 +26,12 @@ final class ChangeSubscriptionHandler
             SubscriptionAction::Delete => $subscription->delete(), // история и леджер сохраняются
         };
 
-        Analytics::push($subscription->user_key, [
+        Analytics::push($subscription->subscriber()->subjectKey($subscription->project_id), [
             'name' => "subscription.{$command->action->value}",
             'props' => ['subscription_id' => $subscription->id],
         ], $subscription->project_id);
 
-        return $subscription->fresh('plan') ?? $subscription;
+        return $subscription->fresh('subject') ?? $subscription;
     }
 
     private function apply(Subscription $subscription, SubscriptionStatus $status, string $stampField): void

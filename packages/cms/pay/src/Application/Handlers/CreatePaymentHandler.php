@@ -52,7 +52,7 @@ final class CreatePaymentHandler
         $provider = $this->providers->for($this->context->required(), $providerKey);
 
         $payment = Payment::create([
-            'user_key' => $command->userKey,
+            'subject_key' => $command->subjectKey,
             'amount_minor' => $data->amount_minor,
             'currency' => $data->currency,
             'description' => $data->description instanceof Optional ? null : $data->description,
@@ -95,7 +95,7 @@ final class CreatePaymentHandler
 
     private function pushInitiated(Payment $payment): void
     {
-        Analytics::push($payment->user_key, [
+        Analytics::push($payment->subject_key, [
             'name' => 'payment.initiated',
             'value_minor' => $payment->amount_minor,
             'currency' => $payment->currency,

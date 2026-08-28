@@ -1,0 +1,14 @@
+{
+    "status": 200,
+    "content_type": "application/json",
+    "body": {
+        "data": {
+            "status": "active",
+            "plan": "enterprise",
+            "features": [
+                "api-access"
+            ],
+            "expires_at": "<string>"
+        }
+    }
+}

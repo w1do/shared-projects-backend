@@ -11,7 +11,7 @@ final class PaymentDTO extends Data
 {
     public function __construct(
         public string $id,
-        public string $user_key,
+        public string $subject_key,
         public int $amount_minor,
         public int $refunded_minor,
         public string $currency,
@@ -27,7 +27,7 @@ final class PaymentDTO extends Data
     {
         return new self(
             id: $payment->id,
-            user_key: $payment->user_key,
+            subject_key: $payment->subject_key,
             amount_minor: $payment->amount_minor,
             refunded_minor: $payment->refunded_minor,
             currency: $payment->currency,

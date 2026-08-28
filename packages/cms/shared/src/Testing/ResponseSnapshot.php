@@ -171,6 +171,7 @@ final class ResponseSnapshot
             '/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i',
             '/^\d+\|[A-Za-z0-9]{20,}$/',
             '/^(?:sk|pk)_(?:live|test)_[A-Za-z0-9]{16,}$/',
+            '/^LIC(-[0-9A-HJKMNP-TV-Z]{5}){5}$/', // активационные ключи лицензий
         ];
 
         foreach ($patterns as $pattern) {

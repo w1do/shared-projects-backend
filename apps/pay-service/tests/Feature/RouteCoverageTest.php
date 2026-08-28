@@ -40,9 +40,30 @@ function payRouteCoverageCoveredPairs(): array
         'GET api/admin/v1/projects/{project}/pay/providers',                              // pay/ProviderSettingsContractTest.php
         'GET api/admin/v1/projects/{project}/pay/providers/{provider}',                   // pay/ProviderSettingsContractTest.php
         'PUT api/admin/v1/projects/{project}/pay/providers/{provider}',                   // pay/ProviderSettingsContractTest.php
+        'GET api/admin/v1/projects/{project}/pay/licensing/organizations',                // licensing/LicensingContractTest.php
+        'POST api/admin/v1/projects/{project}/pay/licensing/organizations',               // licensing/LicensingContractTest.php
+        'GET api/admin/v1/projects/{project}/pay/licensing/organizations/{organization}', // licensing/LicensingContractTest.php
+        'PUT api/admin/v1/projects/{project}/pay/licensing/organizations/{organization}', // licensing/LicensingContractTest.php
+        'DELETE api/admin/v1/projects/{project}/pay/licensing/organizations/{organization}', // licensing/LicensingContractTest.php
+        'GET api/admin/v1/projects/{project}/pay/licensing/plans',                        // licensing/LicensingContractTest.php
+        'POST api/admin/v1/projects/{project}/pay/licensing/plans',                       // licensing/LicensingContractTest.php
+        'GET api/admin/v1/projects/{project}/pay/licensing/plans/{plan}',                 // licensing/LicensingContractTest.php
+        'PUT api/admin/v1/projects/{project}/pay/licensing/plans/{plan}',                 // licensing/LicensingContractTest.php
+        'DELETE api/admin/v1/projects/{project}/pay/licensing/plans/{plan}',              // licensing/LicensingContractTest.php
+        'GET api/admin/v1/projects/{project}/pay/licensing/licenses',                     // licensing/LicensingContractTest.php
+        'POST api/admin/v1/projects/{project}/pay/licensing/licenses',                    // licensing/LicensingContractTest.php
+        'GET api/admin/v1/projects/{project}/pay/licensing/licenses/{license}',           // licensing/LicensingContractTest.php
+        'GET api/admin/v1/projects/{project}/pay/licensing/licenses/{license}/file',      // licensing/LicensingContractTest.php
+        'POST api/admin/v1/projects/{project}/pay/licensing/licenses/{license}/revoke',   // licensing/LicensingContractTest.php
+        'GET api/admin/v1/projects/{project}/pay/licensing/signing-key',                  // licensing/LicensingContractTest.php
+        'POST api/v1/pay/licensing/validate',                                             // licensing/LicensingContractTest.php
+        'POST api/admin/v1/projects/{project}/pay/licensing/plans/{plan}/features',       // licensing/LicensingContractTest.php
+        'PUT api/admin/v1/projects/{project}/pay/licensing/plans/{plan}/features/{feature}', // licensing/LicensingContractTest.php
+        'DELETE api/admin/v1/projects/{project}/pay/licensing/plans/{plan}/features/{feature}', // licensing/LicensingContractTest.php
         'GET api/admin/v1/projects/{project}/pay/settings',                               // pay/SettingsContractTest.php
         'PUT api/admin/v1/projects/{project}/pay/settings',                               // pay/SettingsContractTest.php
         'GET api/admin/v1/projects/{project}/pay/subscriptions',                          // pay/AdminContractTest.php
+        'POST api/admin/v1/projects/{project}/pay/subscriptions',                         // pay/AdminContractTest.php
         'POST api/admin/v1/projects/{project}/pay/subscriptions/{subscription}/{action}', // pay/AdminContractTest.php
         'GET api/v1/pay/plans',                                                           // pay/PublicContractTest.php
         'GET api/v1/pay/subscriptions',                                                   // pay/PublicContractTest.php

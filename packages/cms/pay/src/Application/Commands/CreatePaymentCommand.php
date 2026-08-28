@@ -8,8 +8,9 @@ use Cms\Pay\Application\DTOs\Payment\CreatePaymentDTO;
 
 final readonly class CreatePaymentCommand
 {
+    /** @param string $subjectKey субъект-ключ плательщика для аналитики/антифрода (Д13) */
     public function __construct(
-        public string $userKey,
+        public string $subjectKey,
         public CreatePaymentDTO $data,
         public ?string $idempotencyKey = null,
         public ?string $subscriptionId = null,

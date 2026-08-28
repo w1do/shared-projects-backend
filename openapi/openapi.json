@@ -854,6 +854,395 @@
                 }
             }
         },
+        "/api/admin/v1/projects/{project}/pay/licensing/licenses": {
+            "get": {
+                "tags": [
+                    "pay"
+                ],
+                "summary": "GET /api/admin/v1/projects/{project}/pay/licensing/licenses",
+                "operationId": "licensing_index_licenses",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "pay"
+                ],
+                "summary": "POST /api/admin/v1/projects/{project}/pay/licensing/licenses",
+                "operationId": "licensing_issue_license",
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "404": {
+                        "description": "Not found"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                }
+            }
+        },
+        "/api/admin/v1/projects/{project}/pay/licensing/licenses/{license}": {
+            "get": {
+                "tags": [
+                    "pay"
+                ],
+                "summary": "GET /api/admin/v1/projects/{project}/pay/licensing/licenses/{license}",
+                "operationId": "licensing_show_license",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "404": {
+                        "description": "Not found"
+                    }
+                }
+            }
+        },
+        "/api/admin/v1/projects/{project}/pay/licensing/licenses/{license}/file": {
+            "get": {
+                "tags": [
+                    "pay"
+                ],
+                "summary": "GET /api/admin/v1/projects/{project}/pay/licensing/licenses/{license}/file",
+                "description": "Лицензионный файл — base64-конверт `{data, signature}` (Д3).",
+                "operationId": "licensing_license_file",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "404": {
+                        "description": "Not found"
+                    }
+                }
+            }
+        },
+        "/api/admin/v1/projects/{project}/pay/licensing/licenses/{license}/revoke": {
+            "post": {
+                "tags": [
+                    "pay"
+                ],
+                "summary": "POST /api/admin/v1/projects/{project}/pay/licensing/licenses/{license}/revoke",
+                "operationId": "licensing_revoke_license",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "404": {
+                        "description": "Not found"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                }
+            }
+        },
+        "/api/admin/v1/projects/{project}/pay/licensing/organizations": {
+            "get": {
+                "tags": [
+                    "pay"
+                ],
+                "summary": "GET /api/admin/v1/projects/{project}/pay/licensing/organizations",
+                "operationId": "licensing_index_organizations",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "pay"
+                ],
+                "summary": "POST /api/admin/v1/projects/{project}/pay/licensing/organizations",
+                "operationId": "licensing_store_organization",
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                }
+            }
+        },
+        "/api/admin/v1/projects/{project}/pay/licensing/organizations/{organization}": {
+            "get": {
+                "tags": [
+                    "pay"
+                ],
+                "summary": "GET /api/admin/v1/projects/{project}/pay/licensing/organizations/{organization}",
+                "operationId": "licensing_show_organization",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "404": {
+                        "description": "Not found"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "pay"
+                ],
+                "summary": "PUT /api/admin/v1/projects/{project}/pay/licensing/organizations/{organization}",
+                "operationId": "licensing_update_organization",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "404": {
+                        "description": "Not found"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "pay"
+                ],
+                "summary": "DELETE /api/admin/v1/projects/{project}/pay/licensing/organizations/{organization}",
+                "operationId": "licensing_delete_organization",
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "404": {
+                        "description": "Not found"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                }
+            }
+        },
+        "/api/admin/v1/projects/{project}/pay/licensing/plans": {
+            "get": {
+                "tags": [
+                    "pay"
+                ],
+                "summary": "GET /api/admin/v1/projects/{project}/pay/licensing/plans",
+                "operationId": "licensing_index_plans",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "pay"
+                ],
+                "summary": "POST /api/admin/v1/projects/{project}/pay/licensing/plans",
+                "operationId": "licensing_store_plan",
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                }
+            }
+        },
+        "/api/admin/v1/projects/{project}/pay/licensing/plans/{plan}": {
+            "get": {
+                "tags": [
+                    "pay"
+                ],
+                "summary": "GET /api/admin/v1/projects/{project}/pay/licensing/plans/{plan}",
+                "operationId": "licensing_show_plan",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "404": {
+                        "description": "Not found"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "pay"
+                ],
+                "summary": "PUT /api/admin/v1/projects/{project}/pay/licensing/plans/{plan}",
+                "operationId": "licensing_update_plan",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "404": {
+                        "description": "Not found"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "pay"
+                ],
+                "summary": "DELETE /api/admin/v1/projects/{project}/pay/licensing/plans/{plan}",
+                "operationId": "licensing_delete_plan",
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "404": {
+                        "description": "Not found"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                }
+            }
+        },
+        "/api/admin/v1/projects/{project}/pay/licensing/plans/{plan}/features": {
+            "post": {
+                "tags": [
+                    "pay"
+                ],
+                "summary": "POST /api/admin/v1/projects/{project}/pay/licensing/plans/{plan}/features",
+                "operationId": "licensing_store_plan_feature",
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "404": {
+                        "description": "Not found"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                }
+            }
+        },
+        "/api/admin/v1/projects/{project}/pay/licensing/plans/{plan}/features/{feature}": {
+            "put": {
+                "tags": [
+                    "pay"
+                ],
+                "summary": "PUT /api/admin/v1/projects/{project}/pay/licensing/plans/{plan}/features/{feature}",
+                "operationId": "licensing_update_plan_feature",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "404": {
+                        "description": "Not found"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "pay"
+                ],
+                "summary": "DELETE /api/admin/v1/projects/{project}/pay/licensing/plans/{plan}/features/{feature}",
+                "operationId": "licensing_delete_plan_feature",
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "404": {
+                        "description": "Not found"
+                    }
+                }
+            }
+        },
+        "/api/admin/v1/projects/{project}/pay/licensing/signing-key": {
+            "get": {
+                "tags": [
+                    "pay"
+                ],
+                "summary": "GET /api/admin/v1/projects/{project}/pay/licensing/signing-key",
+                "operationId": "licensing_signing_key",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                }
+            }
+        },
         "/api/admin/v1/projects/{project}/pay/payments": {
             "get": {
                 "tags": [
@@ -1108,6 +1497,28 @@
                     },
                     "401": {
                         "description": "Unauthenticated"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "pay"
+                ],
+                "summary": "POST /api/admin/v1/projects/{project}/pay/subscriptions",
+                "description": "Оформление подписки оператором: полиморфные подписчик и предмет (Д16).",
+                "operationId": "pay_store_api_admin_v1_projects_project_pay_subscriptions",
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
                     },
                     "422": {
                         "description": "Validation error"
@@ -1587,6 +1998,26 @@
                     },
                     "422": {
                         "description": "Validation error"
+                    }
+                }
+            }
+        },
+        "/api/v1/pay/licensing/validate": {
+            "post": {
+                "tags": [
+                    "pay"
+                ],
+                "summary": "POST /api/v1/pay/licensing/validate",
+                "operationId": "licensing_validate_key",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    },
+                    "429": {
+                        "description": "Too many requests"
                     }
                 }
             }

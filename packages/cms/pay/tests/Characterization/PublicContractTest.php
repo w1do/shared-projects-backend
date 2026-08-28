@@ -29,13 +29,15 @@ function payPublicPlan(array $attrs = []): Plan
     ], $attrs));
 }
 
-function payPublicSubscription(Plan $plan, string $userKey = 'user:proj-1:7'): Subscription
+function payPublicSubscription(Plan $plan, string $userId = '7'): Subscription
 {
     app(ProjectContext::class)->set('proj-1');
 
     return Subscription::create([
-        'user_key' => $userKey,
-        'plan_id' => $plan->id,
+        'subscriber_type' => 'site_user',
+        'subscriber_id' => $userId,
+        'subject_type' => 'plan',
+        'subject_id' => (string) $plan->id,
         'status' => 'active',
         'current_period_ends_at' => now()->addMonth(),
     ]);
@@ -249,7 +251,7 @@ test('contract: pay public subscription not found', function () {
 test('contract: pay public subscription of another user', function () {
     $subscription = payPublicSubscription(payPublicPlan());
 
-    // владение зашито в where user_key: чужая подписка — 404, не 403
+    // владение зашито в where по паре подписчика: чужая подписка — 404, не 403
     $other = actingAsSiteUser(userId: '8');
 
     ResponseSnapshot::assertMatches(
@@ -282,7 +284,7 @@ test('contract: pay public subscriptions mine', function () {
 });
 
 test('contract: pay public subscriptions mine empty', function () {
-    payPublicSubscription(payPublicPlan(), 'user:proj-1:99');
+    payPublicSubscription(payPublicPlan(), '99');
     $site = actingAsSiteUser();
 
     ResponseSnapshot::assertMatches(

@@ -21,7 +21,7 @@ final class PaymentResource extends ApiResource
     {
         return [
             'id' => $this->resource->id,
-            'user_key' => $this->resource->user_key,
+            'subject_key' => $this->resource->subject_key,
             'amount_minor' => $this->resource->amount_minor,
             'refunded_minor' => $this->resource->refunded_minor,
             'currency' => $this->resource->currency,

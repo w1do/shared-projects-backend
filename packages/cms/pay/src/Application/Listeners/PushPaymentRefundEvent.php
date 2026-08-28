@@ -14,7 +14,7 @@ final class PushPaymentRefundEvent
     {
         $payment = $event->payment;
 
-        Analytics::push($payment->user_key, [
+        Analytics::push($payment->subject_key, [
             'name' => 'payment.refunded',
             'value_minor' => -$event->amount->amountMinor,
             'currency' => $event->amount->currency->code,

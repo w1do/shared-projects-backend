@@ -28,7 +28,7 @@ function payGuardPayment(array $attrs = []): Payment
     app(ProjectContext::class)->set('proj-1');
 
     return Payment::create(array_merge([
-        'user_key' => 'user:proj-1:7',
+        'subject_key' => 'user:proj-1:7',
         'amount_minor' => 10000,
         'currency' => 'RUB',
         'status' => 'succeeded',
@@ -124,8 +124,10 @@ test('guard: 0.6 site subscriptions list has no meta while admin subscriptions l
     ]);
     app(ProjectContext::class)->set('proj-1');
     Subscription::create([
-        'user_key' => 'user:proj-1:7',
-        'plan_id' => $plan->id,
+        'subscriber_type' => 'site_user',
+        'subscriber_id' => '7',
+        'subject_type' => 'plan',
+        'subject_id' => (string) $plan->id,
         'status' => 'active',
         'current_period_ends_at' => now()->addMonth(),
     ]);
@@ -136,7 +138,7 @@ test('guard: 0.6 site subscriptions list has no meta while admin subscriptions l
     expect(array_keys($mine->json()))->toBe(['data'])
         ->and($mine->json())->not->toHaveKey('meta')
         ->and($mine->json('data'))->toHaveCount(1)
-        ->and($mine->json('data.0.plan.price_minor'))->toBeInt()->toBe(5500);
+        ->and($mine->json('data.0.subject.price_minor'))->toBeInt()->toBe(5500);
 
     $headers = actingAsPayOperator();
     $admin = $this->getJson('/api/admin/v1/projects/proj-1/pay/subscriptions', $headers)->assertOk();
@@ -186,7 +188,7 @@ test('guard: 0.6 subscribe response money fields are integers', function () {
 
     expect($response->json('data.payment.amount_minor'))->toBeInt()->toBe(19900)
         ->and($response->json('data.payment.refunded_minor'))->toBeInt()->toBe(0)
-        ->and($response->json('data.subscription.plan.price_minor'))->toBeInt()->toBe(19900);
+        ->and($response->json('data.subscription.subject.price_minor'))->toBeInt()->toBe(19900);
 
     $raw = (string) $response->getContent();
     expect($raw)->toContain('"amount_minor":19900')

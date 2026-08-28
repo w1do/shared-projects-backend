@@ -61,7 +61,7 @@ final class PlategaProvider implements DeferredWebhookAuth, PaymentProvider
             'description' => $payment->description ?? "Payment {$payment->id}",
             // Локальный ID платежа — в payload; антифрод Platega требует metadata.userId
             'payload' => $payment->id,
-            'metadata' => ['userId' => $payment->user_key],
+            'metadata' => ['userId' => $payment->subject_key],
         ];
 
         if ($this->config->returnUrl !== null) {

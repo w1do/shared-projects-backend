@@ -24,7 +24,7 @@ final class PushPaymentStatusEvent
         // Неуспех обогащается кодом ошибки провайдера из last_error (Д8)
         $failed = in_array($status, [PaymentStatus::Failed, PaymentStatus::Canceled], true);
 
-        Analytics::push($payment->user_key, [
+        Analytics::push($payment->subject_key, [
             'name' => $status === PaymentStatus::Succeeded ? 'payment.succeeded' : "payment.{$status->value}",
             'value_minor' => $status === PaymentStatus::Succeeded ? $amount->amountMinor : 0,
             'currency' => $amount->currency->code,

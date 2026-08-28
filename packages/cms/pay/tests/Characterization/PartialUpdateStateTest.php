@@ -18,7 +18,7 @@ function guard04SucceededPayment(): Payment
     app(ProjectContext::class)->set('proj-1');
 
     return Payment::create([
-        'user_key' => 'user:proj-1:7',
+        'subject_key' => 'user:proj-1:7',
         'amount_minor' => 10000,
         'currency' => 'RUB',
         'status' => 'succeeded',

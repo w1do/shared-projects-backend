@@ -50,8 +50,10 @@ function payRenewalSubscription(Plan $plan, string $endsAt, int $attempts = 0): 
     paySelectProvider('manual');
 
     $subscription = Subscription::create([
-        'user_key' => 'user:proj-1:7',
-        'plan_id' => $plan->id,
+        'subscriber_type' => 'site_user',
+        'subscriber_id' => '7',
+        'subject_type' => 'plan',
+        'subject_id' => (string) $plan->id,
         'status' => 'active',
         'current_period_ends_at' => $endsAt,
     ]);

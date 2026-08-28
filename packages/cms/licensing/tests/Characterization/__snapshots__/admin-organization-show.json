@@ -1,0 +1,19 @@
+{
+    "status": 200,
+    "content_type": "application/json",
+    "body": {
+        "data": {
+            "id": "<int>",
+            "name": "Acme LLC",
+            "contact_first_name": "Ivan",
+            "contact_last_name": "Petrov",
+            "phone": "+79000000000",
+            "email": "ivan@acme.example",
+            "telegram": "@acme",
+            "activity": "E-commerce",
+            "employees_count": 42,
+            "usage_purpose": "Self-hosted shop",
+            "created_at": "<string>"
+        }
+    }
+}

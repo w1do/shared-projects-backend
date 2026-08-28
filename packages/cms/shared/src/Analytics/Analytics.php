@@ -11,7 +11,8 @@ use Illuminate\Support\Str;
 
 /**
  * Фасад истории пользователя: Analytics::push($key, $history).
- * $key — субъект: "user:{project}:{id}", "anon:{anon_id}", "admin:{id}".
+ * $key — субъект: "user:{project}:{id}", "organization:{project}:{id}",
+ * "anon:{anon_id}", "admin:{id}".
  * $history — имя события либо массив с name/props/value_minor/currency.
  *
  * @method static void record(AnalyticsEvent $event)
@@ -28,7 +29,7 @@ final class Analytics extends Facade
         $data = is_string($history) ? ['name' => $history] : $history;
 
         $projectId ??= $data['project_id']
-            ?? (str_starts_with($key, 'user:') ? explode(':', $key)[1] : null)
+            ?? self::projectIdFromKey($key)
             ?? app(ProjectContext::class)->id();
 
         if ($projectId === null) {
@@ -46,5 +47,20 @@ final class Analytics extends Facade
             valueMinor: (int) ($data['value_minor'] ?? 0),
             currency: $data['currency'] ?? null,
         ));
+    }
+
+    /**
+     * project_id из субъект-ключа шаблона `{type}:{project}:{id}`
+     * (`user:*`, `organization:*`, …); ключ вне шаблона проекта не даёт.
+     */
+    private static function projectIdFromKey(string $key): ?string
+    {
+        $parts = explode(':', $key, 3);
+
+        if (count($parts) !== 3 || $parts[0] === '' || $parts[1] === '' || $parts[2] === '') {
+            return null;
+        }
+
+        return $parts[1];
     }
 }

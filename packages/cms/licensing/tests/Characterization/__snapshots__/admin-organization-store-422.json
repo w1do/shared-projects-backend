@@ -1,0 +1,25 @@
+{
+    "status": 422,
+    "content_type": "application/json",
+    "body": {
+        "error": {
+            "code": "validation_failed",
+            "message": "The given data was invalid.",
+            "details": {
+                "name": [
+                    "The name field is required."
+                ],
+                "contact_first_name": [
+                    "The contact first name field is required."
+                ],
+                "contact_last_name": [
+                    "The contact last name field is required."
+                ],
+                "email": [
+                    "The email field is required."
+                ]
+            },
+            "trace_id": "<string>"
+        }
+    }
+}

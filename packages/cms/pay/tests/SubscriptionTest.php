@@ -15,7 +15,9 @@ test('site user subscribes to a plan and gets a pending first payment', function
     $response = $this->postJson('/api/v1/pay/subscriptions', ['plan_code' => 'pro'], $site)->assertCreated();
 
     expect($response->json('data.subscription.status'))->toBe('active')
-        ->and($response->json('data.subscription.plan.code'))->toBe('pro')
+        ->and($response->json('data.subscription.subscriber'))->toBe(['type' => 'site_user', 'id' => '7'])
+        ->and($response->json('data.subscription.subject.type'))->toBe('plan')
+        ->and($response->json('data.subscription.subject.code'))->toBe('pro')
         ->and($response->json('data.payment.amount_minor'))->toBe(19900)
         ->and($response->json('data.payment.status'))->toBe('pending');
 });
@@ -77,7 +79,8 @@ test('renewal is idempotent per period', function () {
     paySelectProvider('manual');
     $plan = makePlan(['code' => 'pro', 'price_minor' => 1000]);
     $subscription = Subscription::create([
-        'project_id' => 'proj-1', 'user_key' => 'user:proj-1:7', 'plan_id' => $plan->id,
+        'project_id' => 'proj-1', 'subscriber_type' => 'site_user', 'subscriber_id' => '7',
+        'subject_type' => 'plan', 'subject_id' => (string) $plan->id,
         'current_period_ends_at' => now()->subDay(),
     ]);
 

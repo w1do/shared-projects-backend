@@ -28,7 +28,7 @@ function plategaPayment(array $attrs = []): Payment
     app(ProjectContext::class)->set('proj-1');
 
     return Payment::create(array_replace([
-        'user_key' => 'user:proj-1:7',
+        'subject_key' => 'user:proj-1:7',
         'amount_minor' => 150050,
         'currency' => 'RUB',
         'provider' => 'platega',

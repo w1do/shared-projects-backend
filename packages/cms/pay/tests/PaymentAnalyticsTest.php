@@ -106,7 +106,7 @@ test('payment.succeeded props include provider, plan and subscription', function
         ->and($event['currency'])->toBe('RUB')
         ->and($event['props']['payment_id'])->toBe($payment->id)
         ->and($event['props']['provider'])->toBe('platega')
-        ->and($event['props']['plan_name'])->toBe($payment->subscription->plan->name)
+        ->and($event['props']['plan_name'])->toBe($payment->subscription->subject->name)
         ->and($event['props']['subscription_id'])->toBe($payment->subscription_id)
         ->and($event['props'])->not->toHaveKey('error');
 });

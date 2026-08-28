@@ -27,6 +27,7 @@ Route::prefix('api/admin/v1/projects/{project}/pay')->group(function () use ($au
     Route::put('providers/{provider}', [Admin\ProviderAccountsController::class, 'update'])->middleware($authorize('pay.providers.manage'));
 
     Route::get('subscriptions', [Admin\SubscriptionAdminController::class, 'index'])->middleware($authorize('pay.subscriptions.view'));
+    Route::post('subscriptions', [Admin\SubscriptionAdminController::class, 'store'])->middleware($authorize('pay.subscriptions.manage'));
     Route::post('subscriptions/{subscription}/{action}', [Admin\SubscriptionAdminController::class, 'change'])
         // Оператору доступен полный набор, включая delete (И2/И7)
         ->whereIn('action', SubscriptionAction::adminValues())
