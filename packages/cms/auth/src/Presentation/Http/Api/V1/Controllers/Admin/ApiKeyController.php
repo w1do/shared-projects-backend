@@ -28,6 +28,20 @@ final class ApiKeyController
         return ApiKeyResource::collection($query->handle($request->attributes->get('project')))->toResponse($request);
     }
 
+    #[OA\Post(
+        path: '/api/admin/v1/projects/{project}/api-keys',
+        operationId: 'auth_store_api_admin_v1_projects_project_api_keys',
+        tags: ['auth'],
+        summary: 'POST /api/admin/v1/projects/{project}/api-keys',
+        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(
+            required: ['type'],
+            properties: [
+                new OA\Property(property: 'type', type: 'string', enum: ['public', 'secret']),
+                new OA\Property(property: 'scopes', type: 'array', items: new OA\Items(type: 'string', maxLength: 64)),
+            ],
+        )),
+        responses: [new OA\Response(response: 201, description: 'Created'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')],
+    )]
     public function store(IssueApiKeyRequest $request, IssueApiKeyHandler $command): JsonResponse
     {
         $issued = $command->handle(new IssueApiKeyCommand(

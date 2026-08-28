@@ -26,7 +26,19 @@ final class CollectController
         private readonly ProjectContext $context,
     ) {}
 
-    #[OA\Post(path: '/api/v1/collect', operationId: 'analytics___invoke_api_v1_collect', tags: ['analytics'], summary: 'POST /api/v1/collect', responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')])]
+    #[OA\Post(
+        path: '/api/v1/collect',
+        operationId: 'analytics___invoke_api_v1_collect',
+        tags: ['analytics'],
+        summary: 'POST /api/v1/collect',
+        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(
+            required: ['events'],
+            properties: [
+                new OA\Property(property: 'events', type: 'array', items: new OA\Items(type: 'object'), minItems: 1, maxItems: 100),
+            ],
+        )),
+        responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')],
+    )]
     public function __invoke(CollectEventsRequest $request): JsonResponse
     {
         $this->record->handle(new RecordEventsCommand(

@@ -13,6 +13,26 @@
                 ],
                 "summary": "GET /api/admin/v1/projects/{project}/analytics/overview",
                 "operationId": "analytics_overview_api_admin_v1_projects_project_analytics_overview",
+                "parameters": [
+                    {
+                        "name": "from",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    },
+                    {
+                        "name": "to",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK"
@@ -33,6 +53,26 @@
                 ],
                 "summary": "GET /api/admin/v1/projects/{project}/analytics/top-pages",
                 "operationId": "analytics_topPages_api_admin_v1_projects_project_analytics_top_pages",
+                "parameters": [
+                    {
+                        "name": "from",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    },
+                    {
+                        "name": "to",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK"
@@ -53,6 +93,26 @@
                 ],
                 "summary": "GET /api/admin/v1/projects/{project}/analytics/revenue",
                 "operationId": "analytics_revenue_api_admin_v1_projects_project_analytics_revenue",
+                "parameters": [
+                    {
+                        "name": "from",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    },
+                    {
+                        "name": "to",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK"
@@ -93,9 +153,29 @@
                 ],
                 "summary": "POST /api/admin/v1/projects/{project}/analytics/export",
                 "operationId": "analytics_export_api_admin_v1_projects_project_analytics_export",
+                "parameters": [
+                    {
+                        "name": "from",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    },
+                    {
+                        "name": "to",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    }
+                ],
                 "responses": {
-                    "200": {
-                        "description": "OK"
+                    "202": {
+                        "description": "Accepted"
                     },
                     "401": {
                         "description": "Unauthenticated"
@@ -131,6 +211,38 @@
                 ],
                 "summary": "PUT /api/admin/v1/projects/{project}/analytics/settings",
                 "operationId": "analytics_update_api_admin_v1_projects_project_analytics_settings",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "yandex_enabled",
+                                    "google_enabled"
+                                ],
+                                "properties": {
+                                    "yandex_enabled": {
+                                        "type": "boolean"
+                                    },
+                                    "yandex_id": {
+                                        "type": "string",
+                                        "nullable": true,
+                                        "maxLength": 64
+                                    },
+                                    "google_enabled": {
+                                        "type": "boolean"
+                                    },
+                                    "google_id": {
+                                        "type": "string",
+                                        "nullable": true,
+                                        "maxLength": 64
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
                 "responses": {
                     "200": {
                         "description": "OK"
@@ -151,6 +263,29 @@
                 ],
                 "summary": "POST /internal/events",
                 "operationId": "analytics___invoke_internal_events",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "events"
+                                ],
+                                "properties": {
+                                    "events": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "object"
+                                        },
+                                        "maxItems": 100,
+                                        "minItems": 1
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
                 "responses": {
                     "200": {
                         "description": "OK"
@@ -171,6 +306,29 @@
                 ],
                 "summary": "POST /api/v1/collect",
                 "operationId": "analytics___invoke_api_v1_collect",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "events"
+                                ],
+                                "properties": {
+                                    "events": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "object"
+                                        },
+                                        "maxItems": 100,
+                                        "minItems": 1
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
                 "responses": {
                     "200": {
                         "description": "OK"

@@ -15,7 +15,20 @@ use OpenApi\Attributes as OA;
 
 final class ManifestController
 {
-    #[OA\Post(path: '/internal/manifests', operationId: 'auth_store_internal_manifests', tags: ['auth'], summary: 'POST /internal/manifests', responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')])]
+    #[OA\Post(
+        path: '/internal/manifests',
+        operationId: 'auth_store_internal_manifests',
+        tags: ['auth'],
+        summary: 'POST /internal/manifests',
+        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(
+            required: ['key', 'version'],
+            properties: [
+                new OA\Property(property: 'key', type: 'string', maxLength: 32),
+                new OA\Property(property: 'version', type: 'string', maxLength: 32),
+            ],
+        )),
+        responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')],
+    )]
     public function store(PublishManifestRequest $request, PublishManifestHandler $command): JsonResponse
     {
         $manifest = ServiceManifest::fromArray($request->manifestPayload());

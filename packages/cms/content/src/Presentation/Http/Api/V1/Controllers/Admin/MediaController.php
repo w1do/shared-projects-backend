@@ -23,6 +23,20 @@ final class MediaController
         return (new MediaCursorCollection($query->handle()))->toResponse($request);
     }
 
+    #[OA\Post(
+        path: '/api/admin/v1/projects/{project}/content/media',
+        operationId: 'content_store_api_admin_v1_projects_project_content_media',
+        tags: ['content'],
+        summary: 'POST /api/admin/v1/projects/{project}/content/media',
+        requestBody: new OA\RequestBody(required: true, content: new OA\MediaType(mediaType: 'multipart/form-data', schema: new OA\Schema(
+            required: ['file'],
+            properties: [
+                new OA\Property(property: 'file', type: 'string', format: 'binary'),
+                new OA\Property(property: 'alt', type: 'string', maxLength: 255, nullable: true),
+            ],
+        ))),
+        responses: [new OA\Response(response: 201, description: 'Created'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')],
+    )]
     public function store(UploadMediaRequest $request, UploadMediaHandler $command): JsonResponse
     {
         $media = $command->handle(new UploadMediaCommand($request->uploadedFile(), $request->alt()));

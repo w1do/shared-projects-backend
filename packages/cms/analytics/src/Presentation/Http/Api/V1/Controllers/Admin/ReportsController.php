@@ -26,7 +26,7 @@ final class ReportsController
 {
     public function __construct(private readonly ProjectContext $context) {}
 
-    #[OA\Get(path: '/api/admin/v1/projects/{project}/analytics/overview', operationId: 'analytics_overview_api_admin_v1_projects_project_analytics_overview', tags: ['analytics'], summary: 'GET /api/admin/v1/projects/{project}/analytics/overview', responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')])]
+    #[OA\Get(path: '/api/admin/v1/projects/{project}/analytics/overview', operationId: 'analytics_overview_api_admin_v1_projects_project_analytics_overview', tags: ['analytics'], summary: 'GET /api/admin/v1/projects/{project}/analytics/overview', parameters: [new OA\Parameter(name: 'from', in: 'query', required: false, schema: new OA\Schema(type: 'string', format: 'date')), new OA\Parameter(name: 'to', in: 'query', required: false, schema: new OA\Schema(type: 'string', format: 'date'))], responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')])]
     public function overview(ReportPeriodRequest $request, OverviewQuery $query): AnonymousResourceCollection
     {
         $period = $request->period();
@@ -34,7 +34,7 @@ final class ReportsController
         return OverviewRowResource::collection($query->handle($this->context->required(), $period->from, $period->to));
     }
 
-    #[OA\Get(path: '/api/admin/v1/projects/{project}/analytics/top-pages', operationId: 'analytics_topPages_api_admin_v1_projects_project_analytics_top_pages', tags: ['analytics'], summary: 'GET /api/admin/v1/projects/{project}/analytics/top-pages', responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')])]
+    #[OA\Get(path: '/api/admin/v1/projects/{project}/analytics/top-pages', operationId: 'analytics_topPages_api_admin_v1_projects_project_analytics_top_pages', tags: ['analytics'], summary: 'GET /api/admin/v1/projects/{project}/analytics/top-pages', parameters: [new OA\Parameter(name: 'from', in: 'query', required: false, schema: new OA\Schema(type: 'string', format: 'date')), new OA\Parameter(name: 'to', in: 'query', required: false, schema: new OA\Schema(type: 'string', format: 'date'))], responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')])]
     public function topPages(ReportPeriodRequest $request, TopPagesQuery $query): AnonymousResourceCollection
     {
         $period = $request->period();
@@ -42,7 +42,7 @@ final class ReportsController
         return TopPageRowResource::collection($query->handle($this->context->required(), $period->from, $period->to));
     }
 
-    #[OA\Get(path: '/api/admin/v1/projects/{project}/analytics/revenue', operationId: 'analytics_revenue_api_admin_v1_projects_project_analytics_revenue', tags: ['analytics'], summary: 'GET /api/admin/v1/projects/{project}/analytics/revenue', responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')])]
+    #[OA\Get(path: '/api/admin/v1/projects/{project}/analytics/revenue', operationId: 'analytics_revenue_api_admin_v1_projects_project_analytics_revenue', tags: ['analytics'], summary: 'GET /api/admin/v1/projects/{project}/analytics/revenue', parameters: [new OA\Parameter(name: 'from', in: 'query', required: false, schema: new OA\Schema(type: 'string', format: 'date')), new OA\Parameter(name: 'to', in: 'query', required: false, schema: new OA\Schema(type: 'string', format: 'date'))], responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')])]
     public function revenue(ReportPeriodRequest $request, RevenueQuery $query): AnonymousResourceCollection
     {
         $period = $request->period();
@@ -59,7 +59,7 @@ final class ReportsController
         return UserHistoryRowResource::collection($query->handle($this->context->required(), $subjectKey));
     }
 
-    #[OA\Post(path: '/api/admin/v1/projects/{project}/analytics/export', operationId: 'analytics_export_api_admin_v1_projects_project_analytics_export', tags: ['analytics'], summary: 'POST /api/admin/v1/projects/{project}/analytics/export', responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')])]
+    #[OA\Post(path: '/api/admin/v1/projects/{project}/analytics/export', operationId: 'analytics_export_api_admin_v1_projects_project_analytics_export', tags: ['analytics'], summary: 'POST /api/admin/v1/projects/{project}/analytics/export', parameters: [new OA\Parameter(name: 'from', in: 'query', required: false, schema: new OA\Schema(type: 'string', format: 'date')), new OA\Parameter(name: 'to', in: 'query', required: false, schema: new OA\Schema(type: 'string', format: 'date'))], responses: [new OA\Response(response: 202, description: 'Accepted'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')])]
     public function export(ReportPeriodRequest $request, ExportReportHandler $handler): JsonResponse
     {
         $handler->handle(new ExportReportCommand($this->context->required(), $request->period()));

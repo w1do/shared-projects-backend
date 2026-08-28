@@ -19,6 +19,27 @@ use OpenApi\Attributes as OA;
 /** Полиморфное SEO: PUT /content/seo/{type}/{id}, type ∈ post|page|category. */
 final class SeoController
 {
+    #[OA\Put(
+        path: '/api/admin/v1/projects/{project}/content/seo/{type}/{id}',
+        operationId: 'content_update_api_admin_v1_projects_project_content_seo_type_id',
+        tags: ['content'],
+        summary: 'PUT /api/admin/v1/projects/{project}/content/seo/{type}/{id}',
+        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(
+            properties: [
+                new OA\Property(property: 'title', type: 'string', maxLength: 255, nullable: true),
+                new OA\Property(property: 'description', type: 'string', maxLength: 500, nullable: true),
+                new OA\Property(property: 'keywords', type: 'string', maxLength: 500, nullable: true),
+                new OA\Property(property: 'canonical', type: 'string', format: 'uri', maxLength: 255, nullable: true),
+                new OA\Property(property: 'robots', type: 'string', maxLength: 64, nullable: true),
+                new OA\Property(property: 'og_title', type: 'string', maxLength: 255, nullable: true),
+                new OA\Property(property: 'og_description', type: 'string', maxLength: 500, nullable: true),
+                new OA\Property(property: 'og_image', type: 'string', maxLength: 255, nullable: true),
+                new OA\Property(property: 'twitter_card', type: 'string', maxLength: 32, nullable: true),
+                new OA\Property(property: 'json_ld', type: 'object', nullable: true),
+            ],
+        )),
+        responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')],
+    )]
     public function update(UpsertSeoRequest $request, string $project, string $type, int $id, FindSeoableQuery $seoable, UpsertSeoHandler $command): JsonResponse
     {
         $seo = $command->handle(new UpsertSeoCommand($seoable->handle($type, $id), $request->upsert()));

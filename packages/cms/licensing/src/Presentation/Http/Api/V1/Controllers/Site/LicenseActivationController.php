@@ -23,7 +23,22 @@ use OpenApi\Attributes as OA;
  */
 final class LicenseActivationController
 {
-    #[OA\Post(path: '/api/v1/pay/licensing/license/activate', operationId: 'licensing_activate_license', tags: ['pay'], summary: 'POST /api/v1/pay/licensing/license/activate', responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 404, description: 'Not found'), new OA\Response(response: 409, description: 'Installation limit reached'), new OA\Response(response: 422, description: 'Validation error'), new OA\Response(response: 429, description: 'Too many requests')])]
+    #[OA\Post(
+        path: '/api/v1/pay/licensing/license/activate',
+        operationId: 'licensing_activate_license',
+        tags: ['pay'],
+        summary: 'POST /api/v1/pay/licensing/license/activate',
+        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(
+            required: ['key', 'install_id', 'domain', 'app_version'],
+            properties: [
+                new OA\Property(property: 'key', type: 'string', maxLength: 64),
+                new OA\Property(property: 'install_id', type: 'string'),
+                new OA\Property(property: 'domain', type: 'string', maxLength: 255),
+                new OA\Property(property: 'app_version', type: 'string'),
+            ],
+        )),
+        responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 404, description: 'Not found'), new OA\Response(response: 409, description: 'Installation limit reached'), new OA\Response(response: 422, description: 'Validation error'), new OA\Response(response: 429, description: 'Too many requests')],
+    )]
     public function activate(ActivationRequest $request, ActivateLicenseHandler $handler): JsonResponse
     {
         $validated = $request->validated();
@@ -39,7 +54,22 @@ final class LicenseActivationController
         return (new ActivationResource($result))->toResponse($request);
     }
 
-    #[OA\Post(path: '/api/v1/pay/licensing/license/refresh', operationId: 'licensing_refresh_license', tags: ['pay'], summary: 'POST /api/v1/pay/licensing/license/refresh', responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 404, description: 'Not found'), new OA\Response(response: 422, description: 'Validation error'), new OA\Response(response: 429, description: 'Too many requests')])]
+    #[OA\Post(
+        path: '/api/v1/pay/licensing/license/refresh',
+        operationId: 'licensing_refresh_license',
+        tags: ['pay'],
+        summary: 'POST /api/v1/pay/licensing/license/refresh',
+        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(
+            required: ['key', 'install_id', 'domain', 'app_version'],
+            properties: [
+                new OA\Property(property: 'key', type: 'string', maxLength: 64),
+                new OA\Property(property: 'install_id', type: 'string'),
+                new OA\Property(property: 'domain', type: 'string', maxLength: 255),
+                new OA\Property(property: 'app_version', type: 'string'),
+            ],
+        )),
+        responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 404, description: 'Not found'), new OA\Response(response: 422, description: 'Validation error'), new OA\Response(response: 429, description: 'Too many requests')],
+    )]
     public function refresh(ActivationRequest $request, RefreshLicenseHandler $handler): JsonResponse
     {
         $validated = $request->validated();
@@ -55,7 +85,20 @@ final class LicenseActivationController
         return (new ActivationResource($result))->toResponse($request);
     }
 
-    #[OA\Post(path: '/api/v1/pay/licensing/license/deactivate', operationId: 'licensing_deactivate_license', tags: ['pay'], summary: 'POST /api/v1/pay/licensing/license/deactivate', responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 404, description: 'Not found'), new OA\Response(response: 422, description: 'Validation error'), new OA\Response(response: 429, description: 'Too many requests')])]
+    #[OA\Post(
+        path: '/api/v1/pay/licensing/license/deactivate',
+        operationId: 'licensing_deactivate_license',
+        tags: ['pay'],
+        summary: 'POST /api/v1/pay/licensing/license/deactivate',
+        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(
+            required: ['key', 'install_id'],
+            properties: [
+                new OA\Property(property: 'key', type: 'string', maxLength: 64),
+                new OA\Property(property: 'install_id', type: 'string'),
+            ],
+        )),
+        responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 404, description: 'Not found'), new OA\Response(response: 422, description: 'Validation error'), new OA\Response(response: 429, description: 'Too many requests')],
+    )]
     public function deactivate(DeactivationRequest $request, DeactivateInstallationHandler $handler): JsonResponse
     {
         $validated = $request->validated();

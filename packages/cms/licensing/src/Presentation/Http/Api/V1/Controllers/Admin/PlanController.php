@@ -35,7 +35,23 @@ final class PlanController
         return (new PlanResource(PlanDTO::fromModel($plans->handle($planId))))->toResponse($request);
     }
 
-    #[OA\Post(path: '/api/admin/v1/projects/{project}/pay/licensing/plans', operationId: 'licensing_store_plan', tags: ['pay'], summary: 'POST /api/admin/v1/projects/{project}/pay/licensing/plans', responses: [new OA\Response(response: 201, description: 'Created'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')])]
+    #[OA\Post(
+        path: '/api/admin/v1/projects/{project}/pay/licensing/plans',
+        operationId: 'licensing_store_plan',
+        tags: ['pay'],
+        summary: 'POST /api/admin/v1/projects/{project}/pay/licensing/plans',
+        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(
+            required: ['code', 'name'],
+            properties: [
+                new OA\Property(property: 'code', type: 'string', maxLength: 64),
+                new OA\Property(property: 'name', type: 'string', maxLength: 255),
+                new OA\Property(property: 'price_minor', type: 'integer', minimum: 0, nullable: true),
+                new OA\Property(property: 'currency', type: 'string', minLength: 3, maxLength: 3, nullable: true),
+                new OA\Property(property: 'interval', type: 'string', enum: ['day', 'month', 'year'], nullable: true),
+            ],
+        )),
+        responses: [new OA\Response(response: 201, description: 'Created'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')],
+    )]
     public function store(UpsertPlanRequest $request, UpsertPlanHandler $handler): JsonResponse
     {
         $plan = $handler->handle(new UpsertPlanCommand(UpsertPlanDTO::from($request->validated())));
@@ -43,7 +59,23 @@ final class PlanController
         return (new PlanResource(PlanDTO::fromModel($plan)))->toCreatedResponse($request);
     }
 
-    #[OA\Put(path: '/api/admin/v1/projects/{project}/pay/licensing/plans/{plan}', operationId: 'licensing_update_plan', tags: ['pay'], summary: 'PUT /api/admin/v1/projects/{project}/pay/licensing/plans/{plan}', responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 404, description: 'Not found'), new OA\Response(response: 422, description: 'Validation error')])]
+    #[OA\Put(
+        path: '/api/admin/v1/projects/{project}/pay/licensing/plans/{plan}',
+        operationId: 'licensing_update_plan',
+        tags: ['pay'],
+        summary: 'PUT /api/admin/v1/projects/{project}/pay/licensing/plans/{plan}',
+        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(
+            required: ['code', 'name'],
+            properties: [
+                new OA\Property(property: 'code', type: 'string', maxLength: 64),
+                new OA\Property(property: 'name', type: 'string', maxLength: 255),
+                new OA\Property(property: 'price_minor', type: 'integer', minimum: 0, nullable: true),
+                new OA\Property(property: 'currency', type: 'string', minLength: 3, maxLength: 3, nullable: true),
+                new OA\Property(property: 'interval', type: 'string', enum: ['day', 'month', 'year'], nullable: true),
+            ],
+        )),
+        responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 404, description: 'Not found'), new OA\Response(response: 422, description: 'Validation error')],
+    )]
     public function update(
         UpsertPlanRequest $request,
         string $project,

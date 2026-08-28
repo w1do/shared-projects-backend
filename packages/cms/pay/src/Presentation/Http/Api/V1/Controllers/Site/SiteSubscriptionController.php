@@ -33,7 +33,19 @@ final class SiteSubscriptionController
 {
     public function __construct(private readonly RequestIntrospection $introspection) {}
 
-    #[OA\Post(path: '/api/v1/pay/subscriptions', operationId: 'pay_subscribe_api_v1_pay_subscriptions', tags: ['pay'], summary: 'POST /api/v1/pay/subscriptions', responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')])]
+    #[OA\Post(
+        path: '/api/v1/pay/subscriptions',
+        operationId: 'pay_subscribe_api_v1_pay_subscriptions',
+        tags: ['pay'],
+        summary: 'POST /api/v1/pay/subscriptions',
+        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(
+            required: ['plan_code'],
+            properties: [
+                new OA\Property(property: 'plan_code', type: 'string', maxLength: 64),
+            ],
+        )),
+        responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')],
+    )]
     public function subscribe(SubscribeRequest $request, FindSitePlanQuery $plans, SubscribeHandler $handler): JsonResponse
     {
         $subscriber = $this->subscriber($request);

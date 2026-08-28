@@ -47,7 +47,24 @@ final class LicenseController
         return (new LicenseDetailsResource($licenses->handle($licenseId)))->toResponse($request);
     }
 
-    #[OA\Post(path: '/api/admin/v1/projects/{project}/pay/licensing/licenses', operationId: 'licensing_issue_license', tags: ['pay'], summary: 'POST /api/admin/v1/projects/{project}/pay/licensing/licenses', responses: [new OA\Response(response: 201, description: 'Created'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 404, description: 'Not found'), new OA\Response(response: 422, description: 'Validation error')])]
+    #[OA\Post(
+        path: '/api/admin/v1/projects/{project}/pay/licensing/licenses',
+        operationId: 'licensing_issue_license',
+        tags: ['pay'],
+        summary: 'POST /api/admin/v1/projects/{project}/pay/licensing/licenses',
+        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(
+            required: ['organization_id', 'plan_id', 'updates_until'],
+            properties: [
+                new OA\Property(property: 'organization_id', type: 'integer'),
+                new OA\Property(property: 'plan_id', type: 'integer'),
+                new OA\Property(property: 'updates_until', type: 'string', format: 'date'),
+                new OA\Property(property: 'max_installations', type: 'integer', minimum: 1, maximum: 1000),
+                new OA\Property(property: 'entitled_version', type: 'string', nullable: true),
+                new OA\Property(property: 'note', type: 'string', maxLength: 2000, nullable: true),
+            ],
+        )),
+        responses: [new OA\Response(response: 201, description: 'Created'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 404, description: 'Not found'), new OA\Response(response: 422, description: 'Validation error')],
+    )]
     public function store(
         IssueLicenseRequest $request,
         FindOrganizationQuery $organizations,
@@ -68,7 +85,19 @@ final class LicenseController
         return (new IssuedLicenseResource($issued))->toCreatedResponse($request);
     }
 
-    #[OA\Post(path: '/api/admin/v1/projects/{project}/pay/licensing/licenses/{license}/renew', operationId: 'licensing_renew_license', tags: ['pay'], summary: 'POST /api/admin/v1/projects/{project}/pay/licensing/licenses/{license}/renew', responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 404, description: 'Not found'), new OA\Response(response: 422, description: 'Validation error')])]
+    #[OA\Post(
+        path: '/api/admin/v1/projects/{project}/pay/licensing/licenses/{license}/renew',
+        operationId: 'licensing_renew_license',
+        tags: ['pay'],
+        summary: 'POST /api/admin/v1/projects/{project}/pay/licensing/licenses/{license}/renew',
+        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(
+            required: ['updates_until'],
+            properties: [
+                new OA\Property(property: 'updates_until', type: 'string', format: 'date'),
+            ],
+        )),
+        responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 404, description: 'Not found'), new OA\Response(response: 422, description: 'Validation error')],
+    )]
     public function renew(
         RenewLicenseRequest $request,
         string $project,
@@ -98,7 +127,21 @@ final class LicenseController
         return (new RevealedKeyResource($revealed))->toResponse($request);
     }
 
-    #[OA\Post(path: '/api/admin/v1/projects/{project}/pay/licensing/licenses/{license}/offline-activation', operationId: 'licensing_offline_activation', tags: ['pay'], summary: 'POST /api/admin/v1/projects/{project}/pay/licensing/licenses/{license}/offline-activation', responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 404, description: 'Not found'), new OA\Response(response: 422, description: 'Validation error')])]
+    #[OA\Post(
+        path: '/api/admin/v1/projects/{project}/pay/licensing/licenses/{license}/offline-activation',
+        operationId: 'licensing_offline_activation',
+        tags: ['pay'],
+        summary: 'POST /api/admin/v1/projects/{project}/pay/licensing/licenses/{license}/offline-activation',
+        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(
+            required: ['install_id', 'domain'],
+            properties: [
+                new OA\Property(property: 'install_id', type: 'string'),
+                new OA\Property(property: 'domain', type: 'string', maxLength: 255),
+                new OA\Property(property: 'app_version', type: 'string', nullable: true),
+            ],
+        )),
+        responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 404, description: 'Not found'), new OA\Response(response: 422, description: 'Validation error')],
+    )]
     public function offlineActivation(
         OfflineActivationRequest $request,
         string $project,

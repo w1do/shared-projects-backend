@@ -30,6 +30,23 @@ final class PageController
         return PageResource::collection($query->handle())->toResponse($request);
     }
 
+    #[OA\Post(
+        path: '/api/admin/v1/projects/{project}/content/pages',
+        operationId: 'content_store_api_admin_v1_projects_project_content_pages',
+        tags: ['content'],
+        summary: 'POST /api/admin/v1/projects/{project}/content/pages',
+        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(
+            required: ['title'],
+            properties: [
+                new OA\Property(property: 'title', type: 'string', maxLength: 255),
+                new OA\Property(property: 'slug', type: 'string', maxLength: 255),
+                new OA\Property(property: 'body', type: 'string', nullable: true),
+                new OA\Property(property: 'locale', type: 'string', maxLength: 10),
+                new OA\Property(property: 'is_index', type: 'boolean'),
+            ],
+        )),
+        responses: [new OA\Response(response: 201, description: 'Created'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')],
+    )]
     public function store(UpsertPageRequest $request, UpsertPageHandler $command): JsonResponse
     {
         $page = $command->handle(new UpsertPageCommand($request->upsert()));
@@ -37,7 +54,23 @@ final class PageController
         return (new PageResource(PageDTO::fromModel($page)))->toCreatedResponse($request);
     }
 
-    #[OA\Put(path: '/api/admin/v1/projects/{project}/content/pages/{page}', operationId: 'content_update_api_admin_v1_projects_project_content_pages_page', tags: ['content'], summary: 'PUT /api/admin/v1/projects/{project}/content/pages/{page}', responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')])]
+    #[OA\Put(
+        path: '/api/admin/v1/projects/{project}/content/pages/{page}',
+        operationId: 'content_update_api_admin_v1_projects_project_content_pages_page',
+        tags: ['content'],
+        summary: 'PUT /api/admin/v1/projects/{project}/content/pages/{page}',
+        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(
+            required: ['title'],
+            properties: [
+                new OA\Property(property: 'title', type: 'string', maxLength: 255),
+                new OA\Property(property: 'slug', type: 'string', maxLength: 255),
+                new OA\Property(property: 'body', type: 'string', nullable: true),
+                new OA\Property(property: 'locale', type: 'string', maxLength: 10),
+                new OA\Property(property: 'is_index', type: 'boolean'),
+            ],
+        )),
+        responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')],
+    )]
     public function update(UpsertPageRequest $request, string $project, int $pageId, UpsertPageHandler $command): JsonResponse
     {
         $page = Page::query()->findOrFail($pageId);
@@ -46,7 +79,20 @@ final class PageController
         return (new PageResource(PageDTO::fromModel($updated)))->toResponse($request);
     }
 
-    #[OA\Post(path: '/api/admin/v1/projects/{project}/content/pages/{page}/status', operationId: 'content_changeStatus_api_admin_v1_projects_project_content_pages_page_status', tags: ['content'], summary: 'POST /api/admin/v1/projects/{project}/content/pages/{page}/status', responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')])]
+    #[OA\Post(
+        path: '/api/admin/v1/projects/{project}/content/pages/{page}/status',
+        operationId: 'content_changeStatus_api_admin_v1_projects_project_content_pages_page_status',
+        tags: ['content'],
+        summary: 'POST /api/admin/v1/projects/{project}/content/pages/{page}/status',
+        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(
+            required: ['status'],
+            properties: [
+                new OA\Property(property: 'status', type: 'string', enum: ['draft', 'scheduled', 'published', 'archived']),
+                new OA\Property(property: 'scheduled_at', type: 'string', format: 'date-time', nullable: true),
+            ],
+        )),
+        responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')],
+    )]
     public function changeStatus(ChangeStatusRequest $request, string $project, int $pageId, ChangeStatusHandler $command): JsonResponse
     {
         $page = Page::query()->findOrFail($pageId);

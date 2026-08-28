@@ -36,6 +36,20 @@ final class RoleController
         return RoleResource::collection($query->handle($request->attributes->get('project')))->toResponse($request);
     }
 
+    #[OA\Post(
+        path: '/api/admin/v1/projects/{project}/roles',
+        operationId: 'auth_store_api_admin_v1_projects_project_roles',
+        tags: ['auth'],
+        summary: 'POST /api/admin/v1/projects/{project}/roles',
+        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(
+            required: ['name', 'permissions'],
+            properties: [
+                new OA\Property(property: 'name', type: 'string', maxLength: 64),
+                new OA\Property(property: 'permissions', type: 'array', items: new OA\Items(type: 'string')),
+            ],
+        )),
+        responses: [new OA\Response(response: 201, description: 'Created'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')],
+    )]
     public function store(CreateRoleRequest $request, CreateRoleHandler $command): JsonResponse
     {
         $data = CreateRoleDTO::from($request->validated());
@@ -44,7 +58,19 @@ final class RoleController
         return (new RoleResource(RoleDTO::fromModel($role)))->toCreatedResponse($request);
     }
 
-    #[OA\Put(path: '/api/admin/v1/projects/{project}/roles/{role}', operationId: 'auth_update_api_admin_v1_projects_project_roles_role', tags: ['auth'], summary: 'PUT /api/admin/v1/projects/{project}/roles/{role}', responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')])]
+    #[OA\Put(
+        path: '/api/admin/v1/projects/{project}/roles/{role}',
+        operationId: 'auth_update_api_admin_v1_projects_project_roles_role',
+        tags: ['auth'],
+        summary: 'PUT /api/admin/v1/projects/{project}/roles/{role}',
+        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(
+            required: ['permissions'],
+            properties: [
+                new OA\Property(property: 'permissions', type: 'array', items: new OA\Items(type: 'string')),
+            ],
+        )),
+        responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')],
+    )]
     public function update(
         RolePermissionsRequest $request,
         string $project,
@@ -73,6 +99,7 @@ final class RoleController
         return (new RoleResource(RoleDTO::fromModel($updated)))->toResponse($request);
     }
 
+    #[OA\Delete(path: '/api/admin/v1/projects/{project}/roles/{role}', operationId: 'auth_destroy_api_admin_v1_projects_project_roles_role', tags: ['auth'], summary: 'DELETE /api/admin/v1/projects/{project}/roles/{role}', responses: [new OA\Response(response: 204, description: 'No content'), new OA\Response(response: 401, description: 'Unauthenticated')])]
     public function destroy(
         Request $request,
         string $project,

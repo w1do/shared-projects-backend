@@ -28,7 +28,25 @@ final class PlanController
         return PlanResource::collection($query->handle(includeArchived: true))->toResponse($request);
     }
 
-    #[OA\Post(path: '/api/admin/v1/projects/{project}/pay/plans', operationId: 'pay_store_api_admin_v1_projects_project_pay_plans', tags: ['pay'], summary: 'POST /api/admin/v1/projects/{project}/pay/plans', responses: [new OA\Response(response: 201, description: 'Created'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')])]
+    #[OA\Post(
+        path: '/api/admin/v1/projects/{project}/pay/plans',
+        operationId: 'pay_store_api_admin_v1_projects_project_pay_plans',
+        tags: ['pay'],
+        summary: 'POST /api/admin/v1/projects/{project}/pay/plans',
+        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(
+            required: ['code', 'name', 'price_minor'],
+            properties: [
+                new OA\Property(property: 'code', type: 'string', maxLength: 64),
+                new OA\Property(property: 'name', type: 'string', maxLength: 255),
+                new OA\Property(property: 'price_minor', type: 'integer', minimum: 0),
+                new OA\Property(property: 'currency', type: 'string', minLength: 3, maxLength: 3),
+                new OA\Property(property: 'interval', type: 'string', enum: ['day', 'month', 'year']),
+                new OA\Property(property: 'options', type: 'array', items: new OA\Items),
+                new OA\Property(property: 'features', type: 'array', items: new OA\Items(type: 'string', maxLength: 64)),
+            ],
+        )),
+        responses: [new OA\Response(response: 201, description: 'Created'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')],
+    )]
     public function store(UpsertPlanRequest $request, UpsertPlanHandler $handler): JsonResponse
     {
         // DTO собирается ТОЛЬКО из validated(): отсутствующий ключ остаётся
@@ -38,7 +56,25 @@ final class PlanController
         return (new PlanResource(PlanDTO::fromModel($plan)))->toCreatedResponse($request);
     }
 
-    #[OA\Put(path: '/api/admin/v1/projects/{project}/pay/plans/{plan}', operationId: 'pay_update_api_admin_v1_projects_project_pay_plans_plan', tags: ['pay'], summary: 'PUT /api/admin/v1/projects/{project}/pay/plans/{plan}', responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')])]
+    #[OA\Put(
+        path: '/api/admin/v1/projects/{project}/pay/plans/{plan}',
+        operationId: 'pay_update_api_admin_v1_projects_project_pay_plans_plan',
+        tags: ['pay'],
+        summary: 'PUT /api/admin/v1/projects/{project}/pay/plans/{plan}',
+        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(
+            required: ['code', 'name', 'price_minor'],
+            properties: [
+                new OA\Property(property: 'code', type: 'string', maxLength: 64),
+                new OA\Property(property: 'name', type: 'string', maxLength: 255),
+                new OA\Property(property: 'price_minor', type: 'integer', minimum: 0),
+                new OA\Property(property: 'currency', type: 'string', minLength: 3, maxLength: 3),
+                new OA\Property(property: 'interval', type: 'string', enum: ['day', 'month', 'year']),
+                new OA\Property(property: 'options', type: 'array', items: new OA\Items),
+                new OA\Property(property: 'features', type: 'array', items: new OA\Items(type: 'string', maxLength: 64)),
+            ],
+        )),
+        responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')],
+    )]
     public function update(UpsertPlanRequest $request, string $project, int $planId, UpsertPlanHandler $handler): JsonResponse
     {
         // Скоуп проекта — глобальный (BelongsToProject); чужой план не находится

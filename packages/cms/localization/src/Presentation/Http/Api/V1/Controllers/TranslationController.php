@@ -48,7 +48,20 @@ final class TranslationController
         return TranslationResource::collection($translations->handle())->toResponse($request);
     }
 
-    #[OA\Post(path: '/api/admin/v1/projects/{project}/content/translations', operationId: 'content_store_api_admin_v1_projects_project_content_translations', tags: ['content'], summary: 'POST /api/admin/v1/projects/{project}/content/translations', responses: [new OA\Response(response: 201, description: 'Created'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')])]
+    #[OA\Post(
+        path: '/api/admin/v1/projects/{project}/content/translations',
+        operationId: 'content_store_api_admin_v1_projects_project_content_translations',
+        tags: ['content'],
+        summary: 'POST /api/admin/v1/projects/{project}/content/translations',
+        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(
+            required: ['key', 'values'],
+            properties: [
+                new OA\Property(property: 'key', type: 'string', maxLength: 255),
+                new OA\Property(property: 'values', type: 'object', minProperties: 1, additionalProperties: new OA\AdditionalProperties(type: 'string', maxLength: 10000)),
+            ],
+        )),
+        responses: [new OA\Response(response: 201, description: 'Created'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')],
+    )]
     public function store(UpsertTranslationRequest $request, UpsertTranslationHandler $handler): JsonResponse
     {
         $translation = $handler->handle(new UpsertTranslationCommand(UpsertTranslationDTO::fromValidated($request->validated())));
@@ -56,7 +69,20 @@ final class TranslationController
         return (new TranslationResource(TranslationDTO::fromModel($translation)))->toCreatedResponse($request);
     }
 
-    #[OA\Put(path: '/api/admin/v1/projects/{project}/content/translations/{translation}', operationId: 'content_update_api_admin_v1_projects_project_content_translations_translation', tags: ['content'], summary: 'PUT /api/admin/v1/projects/{project}/content/translations/{translation}', responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')])]
+    #[OA\Put(
+        path: '/api/admin/v1/projects/{project}/content/translations/{translation}',
+        operationId: 'content_update_api_admin_v1_projects_project_content_translations_translation',
+        tags: ['content'],
+        summary: 'PUT /api/admin/v1/projects/{project}/content/translations/{translation}',
+        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(
+            required: ['key', 'values'],
+            properties: [
+                new OA\Property(property: 'key', type: 'string', maxLength: 255),
+                new OA\Property(property: 'values', type: 'object', minProperties: 1, additionalProperties: new OA\AdditionalProperties(type: 'string', maxLength: 10000)),
+            ],
+        )),
+        responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')],
+    )]
     public function update(UpsertTranslationRequest $request, UpsertTranslationHandler $handler): JsonResponse
     {
         // Ключ берётся из найденной записи — присланный `key` игнорируется (см. Handler).
@@ -76,7 +102,18 @@ final class TranslationController
         return ApiResponse::noContent();
     }
 
-    #[OA\Post(path: '/api/admin/v1/projects/{project}/content/translations/translate-missing', operationId: 'content_translateMissing_api_admin_v1_projects_project_content_translations', tags: ['content'], summary: 'POST /api/admin/v1/projects/{project}/content/translations/translate-missing', responses: [new OA\Response(response: 202, description: 'Accepted'), new OA\Response(response: 401, description: 'Unauthenticated')])]
+    #[OA\Post(
+        path: '/api/admin/v1/projects/{project}/content/translations/translate-missing',
+        operationId: 'content_translateMissing_api_admin_v1_projects_project_content_translations',
+        tags: ['content'],
+        summary: 'POST /api/admin/v1/projects/{project}/content/translations/translate-missing',
+        requestBody: new OA\RequestBody(required: false, content: new OA\JsonContent(
+            properties: [
+                new OA\Property(property: 'ids', type: 'array', items: new OA\Items, nullable: true),
+            ],
+        )),
+        responses: [new OA\Response(response: 202, description: 'Accepted'), new OA\Response(response: 401, description: 'Unauthenticated')],
+    )]
     public function translateMissing(
         TranslateMissingRequest $request,
         ProjectLocalesQuery $locales,

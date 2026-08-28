@@ -74,6 +74,47 @@
                 ],
                 "summary": "POST /api/admin/v1/projects/{project}/pay/licensing/licenses",
                 "operationId": "licensing_issue_license",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "organization_id",
+                                    "plan_id",
+                                    "updates_until"
+                                ],
+                                "properties": {
+                                    "organization_id": {
+                                        "type": "integer"
+                                    },
+                                    "plan_id": {
+                                        "type": "integer"
+                                    },
+                                    "updates_until": {
+                                        "type": "string",
+                                        "format": "date"
+                                    },
+                                    "max_installations": {
+                                        "type": "integer",
+                                        "maximum": 1000,
+                                        "minimum": 1
+                                    },
+                                    "entitled_version": {
+                                        "type": "string",
+                                        "nullable": true
+                                    },
+                                    "note": {
+                                        "type": "string",
+                                        "nullable": true,
+                                        "maxLength": 2000
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
                 "responses": {
                     "201": {
                         "description": "Created"
@@ -117,6 +158,25 @@
                 ],
                 "summary": "POST /api/admin/v1/projects/{project}/pay/licensing/licenses/{license}/renew",
                 "operationId": "licensing_renew_license",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "updates_until"
+                                ],
+                                "properties": {
+                                    "updates_until": {
+                                        "type": "string",
+                                        "format": "date"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
                 "responses": {
                     "200": {
                         "description": "OK"
@@ -164,6 +224,33 @@
                 ],
                 "summary": "POST /api/admin/v1/projects/{project}/pay/licensing/licenses/{license}/offline-activation",
                 "operationId": "licensing_offline_activation",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "install_id",
+                                    "domain"
+                                ],
+                                "properties": {
+                                    "install_id": {
+                                        "type": "string"
+                                    },
+                                    "domain": {
+                                        "type": "string",
+                                        "maxLength": 255
+                                    },
+                                    "app_version": {
+                                        "type": "string",
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
                 "responses": {
                     "200": {
                         "description": "OK"
@@ -228,6 +315,66 @@
                 ],
                 "summary": "POST /api/admin/v1/projects/{project}/pay/licensing/organizations",
                 "operationId": "licensing_store_organization",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "contact_first_name",
+                                    "contact_last_name",
+                                    "email"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "maxLength": 255
+                                    },
+                                    "contact_first_name": {
+                                        "type": "string",
+                                        "maxLength": 255
+                                    },
+                                    "contact_last_name": {
+                                        "type": "string",
+                                        "maxLength": 255
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "maxLength": 255
+                                    },
+                                    "phone": {
+                                        "type": "string",
+                                        "nullable": true,
+                                        "maxLength": 32
+                                    },
+                                    "telegram": {
+                                        "type": "string",
+                                        "nullable": true,
+                                        "maxLength": 64
+                                    },
+                                    "activity": {
+                                        "type": "string",
+                                        "nullable": true,
+                                        "maxLength": 255
+                                    },
+                                    "employees_count": {
+                                        "type": "integer",
+                                        "nullable": true,
+                                        "minimum": 0
+                                    },
+                                    "usage_purpose": {
+                                        "type": "string",
+                                        "nullable": true,
+                                        "maxLength": 512
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
                 "responses": {
                     "201": {
                         "description": "Created"
@@ -266,6 +413,66 @@
                 ],
                 "summary": "PUT /api/admin/v1/projects/{project}/pay/licensing/organizations/{organization}",
                 "operationId": "licensing_update_organization",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "contact_first_name",
+                                    "contact_last_name",
+                                    "email"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "maxLength": 255
+                                    },
+                                    "contact_first_name": {
+                                        "type": "string",
+                                        "maxLength": 255
+                                    },
+                                    "contact_last_name": {
+                                        "type": "string",
+                                        "maxLength": 255
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "maxLength": 255
+                                    },
+                                    "phone": {
+                                        "type": "string",
+                                        "nullable": true,
+                                        "maxLength": 32
+                                    },
+                                    "telegram": {
+                                        "type": "string",
+                                        "nullable": true,
+                                        "maxLength": 64
+                                    },
+                                    "activity": {
+                                        "type": "string",
+                                        "nullable": true,
+                                        "maxLength": 255
+                                    },
+                                    "employees_count": {
+                                        "type": "integer",
+                                        "nullable": true,
+                                        "minimum": 0
+                                    },
+                                    "usage_purpose": {
+                                        "type": "string",
+                                        "nullable": true,
+                                        "maxLength": 512
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
                 "responses": {
                     "200": {
                         "description": "OK"
@@ -328,6 +535,50 @@
                 ],
                 "summary": "POST /api/admin/v1/projects/{project}/pay/licensing/plans",
                 "operationId": "licensing_store_plan",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "code",
+                                    "name"
+                                ],
+                                "properties": {
+                                    "code": {
+                                        "type": "string",
+                                        "maxLength": 64
+                                    },
+                                    "name": {
+                                        "type": "string",
+                                        "maxLength": 255
+                                    },
+                                    "price_minor": {
+                                        "type": "integer",
+                                        "nullable": true,
+                                        "minimum": 0
+                                    },
+                                    "currency": {
+                                        "type": "string",
+                                        "nullable": true,
+                                        "maxLength": 3,
+                                        "minLength": 3
+                                    },
+                                    "interval": {
+                                        "type": "string",
+                                        "nullable": true,
+                                        "enum": [
+                                            "day",
+                                            "month",
+                                            "year"
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
                 "responses": {
                     "201": {
                         "description": "Created"
@@ -366,6 +617,50 @@
                 ],
                 "summary": "PUT /api/admin/v1/projects/{project}/pay/licensing/plans/{plan}",
                 "operationId": "licensing_update_plan",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "code",
+                                    "name"
+                                ],
+                                "properties": {
+                                    "code": {
+                                        "type": "string",
+                                        "maxLength": 64
+                                    },
+                                    "name": {
+                                        "type": "string",
+                                        "maxLength": 255
+                                    },
+                                    "price_minor": {
+                                        "type": "integer",
+                                        "nullable": true,
+                                        "minimum": 0
+                                    },
+                                    "currency": {
+                                        "type": "string",
+                                        "nullable": true,
+                                        "maxLength": 3,
+                                        "minLength": 3
+                                    },
+                                    "interval": {
+                                        "type": "string",
+                                        "nullable": true,
+                                        "enum": [
+                                            "day",
+                                            "month",
+                                            "year"
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
                 "responses": {
                     "200": {
                         "description": "OK"
@@ -410,6 +705,34 @@
                 ],
                 "summary": "POST /api/admin/v1/projects/{project}/pay/licensing/plans/{plan}/features",
                 "operationId": "licensing_store_plan_feature",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "code",
+                                    "name"
+                                ],
+                                "properties": {
+                                    "code": {
+                                        "type": "string",
+                                        "maxLength": 64
+                                    },
+                                    "name": {
+                                        "type": "string",
+                                        "maxLength": 255
+                                    },
+                                    "organization_id": {
+                                        "type": "integer",
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
                 "responses": {
                     "201": {
                         "description": "Created"
@@ -433,6 +756,34 @@
                 ],
                 "summary": "PUT /api/admin/v1/projects/{project}/pay/licensing/plans/{plan}/features/{feature}",
                 "operationId": "licensing_update_plan_feature",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "code",
+                                    "name"
+                                ],
+                                "properties": {
+                                    "code": {
+                                        "type": "string",
+                                        "maxLength": 64
+                                    },
+                                    "name": {
+                                        "type": "string",
+                                        "maxLength": 255
+                                    },
+                                    "organization_id": {
+                                        "type": "integer",
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
                 "responses": {
                     "200": {
                         "description": "OK"
@@ -492,6 +843,53 @@
                 ],
                 "summary": "POST /api/admin/v1/projects/{project}/pay/licensing/releases",
                 "operationId": "licensing_store_release",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "version",
+                                    "train",
+                                    "repository",
+                                    "released_at"
+                                ],
+                                "properties": {
+                                    "version": {
+                                        "type": "string",
+                                        "maxLength": 20
+                                    },
+                                    "train": {
+                                        "type": "string",
+                                        "maxLength": 10
+                                    },
+                                    "repository": {
+                                        "type": "string",
+                                        "maxLength": 255
+                                    },
+                                    "released_at": {
+                                        "type": "string",
+                                        "format": "date"
+                                    },
+                                    "is_security": {
+                                        "type": "boolean"
+                                    },
+                                    "min_upgrade_from": {
+                                        "type": "string",
+                                        "nullable": true
+                                    },
+                                    "changelog_url": {
+                                        "type": "string",
+                                        "format": "uri",
+                                        "nullable": true,
+                                        "maxLength": 255
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
                 "responses": {
                     "201": {
                         "description": "Created"
@@ -530,6 +928,53 @@
                 ],
                 "summary": "PUT /api/admin/v1/projects/{project}/pay/licensing/releases/{release}",
                 "operationId": "licensing_update_release",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "version",
+                                    "train",
+                                    "repository",
+                                    "released_at"
+                                ],
+                                "properties": {
+                                    "version": {
+                                        "type": "string",
+                                        "maxLength": 20
+                                    },
+                                    "train": {
+                                        "type": "string",
+                                        "maxLength": 10
+                                    },
+                                    "repository": {
+                                        "type": "string",
+                                        "maxLength": 255
+                                    },
+                                    "released_at": {
+                                        "type": "string",
+                                        "format": "date"
+                                    },
+                                    "is_security": {
+                                        "type": "boolean"
+                                    },
+                                    "min_upgrade_from": {
+                                        "type": "string",
+                                        "nullable": true
+                                    },
+                                    "changelog_url": {
+                                        "type": "string",
+                                        "format": "uri",
+                                        "nullable": true,
+                                        "maxLength": 255
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
                 "responses": {
                     "200": {
                         "description": "OK"
@@ -591,6 +1036,33 @@
                 ],
                 "summary": "POST /api/v1/pay/licensing/updates/check",
                 "operationId": "licensing_check_updates",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "key",
+                                    "install_id",
+                                    "app_version"
+                                ],
+                                "properties": {
+                                    "key": {
+                                        "type": "string",
+                                        "maxLength": 64
+                                    },
+                                    "install_id": {
+                                        "type": "string"
+                                    },
+                                    "app_version": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
                 "responses": {
                     "200": {
                         "description": "OK"
@@ -617,6 +1089,38 @@
                 ],
                 "summary": "POST /api/v1/pay/licensing/license/activate",
                 "operationId": "licensing_activate_license",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "key",
+                                    "install_id",
+                                    "domain",
+                                    "app_version"
+                                ],
+                                "properties": {
+                                    "key": {
+                                        "type": "string",
+                                        "maxLength": 64
+                                    },
+                                    "install_id": {
+                                        "type": "string"
+                                    },
+                                    "domain": {
+                                        "type": "string",
+                                        "maxLength": 255
+                                    },
+                                    "app_version": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
                 "responses": {
                     "200": {
                         "description": "OK"
@@ -643,6 +1147,38 @@
                 ],
                 "summary": "POST /api/v1/pay/licensing/license/refresh",
                 "operationId": "licensing_refresh_license",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "key",
+                                    "install_id",
+                                    "domain",
+                                    "app_version"
+                                ],
+                                "properties": {
+                                    "key": {
+                                        "type": "string",
+                                        "maxLength": 64
+                                    },
+                                    "install_id": {
+                                        "type": "string"
+                                    },
+                                    "domain": {
+                                        "type": "string",
+                                        "maxLength": 255
+                                    },
+                                    "app_version": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
                 "responses": {
                     "200": {
                         "description": "OK"
@@ -666,6 +1202,29 @@
                 ],
                 "summary": "POST /api/v1/pay/licensing/license/deactivate",
                 "operationId": "licensing_deactivate_license",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "key",
+                                    "install_id"
+                                ],
+                                "properties": {
+                                    "key": {
+                                        "type": "string",
+                                        "maxLength": 64
+                                    },
+                                    "install_id": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
                 "responses": {
                     "200": {
                         "description": "OK"
@@ -730,6 +1289,22 @@
                 ],
                 "summary": "POST /api/admin/v1/projects/{project}/pay/payments/{payment}/refund",
                 "operationId": "pay_refund_api_admin_v1_projects_project_pay_payments_payment_refund",
+                "requestBody": {
+                    "required": false,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "amount_minor": {
+                                        "type": "integer",
+                                        "minimum": 1
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
                 "responses": {
                     "200": {
                         "description": "OK"
@@ -768,6 +1343,59 @@
                 ],
                 "summary": "POST /api/admin/v1/projects/{project}/pay/plans",
                 "operationId": "pay_store_api_admin_v1_projects_project_pay_plans",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "code",
+                                    "name",
+                                    "price_minor"
+                                ],
+                                "properties": {
+                                    "code": {
+                                        "type": "string",
+                                        "maxLength": 64
+                                    },
+                                    "name": {
+                                        "type": "string",
+                                        "maxLength": 255
+                                    },
+                                    "price_minor": {
+                                        "type": "integer",
+                                        "minimum": 0
+                                    },
+                                    "currency": {
+                                        "type": "string",
+                                        "maxLength": 3,
+                                        "minLength": 3
+                                    },
+                                    "interval": {
+                                        "type": "string",
+                                        "enum": [
+                                            "day",
+                                            "month",
+                                            "year"
+                                        ]
+                                    },
+                                    "options": {
+                                        "type": "array",
+                                        "items": {}
+                                    },
+                                    "features": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string",
+                                            "maxLength": 64
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
                 "responses": {
                     "201": {
                         "description": "Created"
@@ -788,6 +1416,59 @@
                 ],
                 "summary": "PUT /api/admin/v1/projects/{project}/pay/plans/{plan}",
                 "operationId": "pay_update_api_admin_v1_projects_project_pay_plans_plan",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "code",
+                                    "name",
+                                    "price_minor"
+                                ],
+                                "properties": {
+                                    "code": {
+                                        "type": "string",
+                                        "maxLength": 64
+                                    },
+                                    "name": {
+                                        "type": "string",
+                                        "maxLength": 255
+                                    },
+                                    "price_minor": {
+                                        "type": "integer",
+                                        "minimum": 0
+                                    },
+                                    "currency": {
+                                        "type": "string",
+                                        "maxLength": 3,
+                                        "minLength": 3
+                                    },
+                                    "interval": {
+                                        "type": "string",
+                                        "enum": [
+                                            "day",
+                                            "month",
+                                            "year"
+                                        ]
+                                    },
+                                    "options": {
+                                        "type": "array",
+                                        "items": {}
+                                    },
+                                    "features": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string",
+                                            "maxLength": 64
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
                 "responses": {
                     "200": {
                         "description": "OK"
@@ -869,6 +1550,57 @@
                 ],
                 "summary": "PUT /api/admin/v1/projects/{project}/pay/providers/{provider}",
                 "operationId": "pay_update_api_admin_v1_projects_project_pay_providers_provider",
+                "requestBody": {
+                    "required": false,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "group": {
+                                        "type": "string",
+                                        "maxLength": 32
+                                    },
+                                    "label": {
+                                        "type": "string",
+                                        "nullable": true,
+                                        "maxLength": 255
+                                    },
+                                    "name": {
+                                        "type": "string",
+                                        "nullable": true,
+                                        "maxLength": 255
+                                    },
+                                    "credentials": {
+                                        "type": "object"
+                                    },
+                                    "properties": {
+                                        "type": "object"
+                                    },
+                                    "return_url": {
+                                        "type": "string",
+                                        "format": "uri",
+                                        "nullable": true,
+                                        "maxLength": 255
+                                    },
+                                    "fail_url": {
+                                        "type": "string",
+                                        "format": "uri",
+                                        "nullable": true,
+                                        "maxLength": 255
+                                    },
+                                    "status": {
+                                        "type": "string",
+                                        "enum": [
+                                            "active",
+                                            "archived"
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
                 "responses": {
                     "200": {
                         "description": "OK"
@@ -910,6 +1642,29 @@
                 ],
                 "summary": "PUT /api/admin/v1/projects/{project}/pay/settings",
                 "operationId": "pay_update_api_admin_v1_projects_project_pay_settings",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "provider"
+                                ],
+                                "properties": {
+                                    "provider": {
+                                        "type": "string",
+                                        "enum": [
+                                            "manual",
+                                            "null",
+                                            "platega"
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
                 "responses": {
                     "200": {
                         "description": "OK"
@@ -949,6 +1704,44 @@
                 "summary": "POST /api/admin/v1/projects/{project}/pay/subscriptions",
                 "description": "Оформление подписки оператором: полиморфные подписчик и предмет (Д16).",
                 "operationId": "pay_store_api_admin_v1_projects_project_pay_subscriptions",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "subscriber_type",
+                                    "subscriber_id",
+                                    "subject_type",
+                                    "subject_id"
+                                ],
+                                "properties": {
+                                    "subscriber_type": {
+                                        "type": "string",
+                                        "maxLength": 32
+                                    },
+                                    "subscriber_id": {
+                                        "type": "string",
+                                        "maxLength": 64
+                                    },
+                                    "subject_type": {
+                                        "type": "string",
+                                        "maxLength": 32
+                                    },
+                                    "subject_id": {
+                                        "type": "string",
+                                        "maxLength": 64
+                                    },
+                                    "provider": {
+                                        "type": "string",
+                                        "maxLength": 32
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
                 "responses": {
                     "201": {
                         "description": "Created"
@@ -1028,6 +1821,25 @@
                 ],
                 "summary": "POST /api/v1/pay/subscriptions",
                 "operationId": "pay_subscribe_api_v1_pay_subscriptions",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "plan_code"
+                                ],
+                                "properties": {
+                                    "plan_code": {
+                                        "type": "string",
+                                        "maxLength": 64
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
                 "responses": {
                     "200": {
                         "description": "OK"
@@ -1068,6 +1880,17 @@
                 ],
                 "summary": "POST /webhooks/{provider}",
                 "operationId": "pay___invoke_webhooks_provider",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "description": "Payload провайдера, формат зависит от провайдера",
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
                 "responses": {
                     "200": {
                         "description": "OK"

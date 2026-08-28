@@ -33,6 +33,21 @@ final class ProjectController
         return ProjectResource::collection(ProjectDTO::collect($query->handle($admin)))->toResponse($request);
     }
 
+    #[OA\Post(
+        path: '/api/admin/v1/projects',
+        operationId: 'auth_store_api_admin_v1_projects',
+        tags: ['auth'],
+        summary: 'POST /api/admin/v1/projects',
+        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(
+            required: ['key', 'name'],
+            properties: [
+                new OA\Property(property: 'key', type: 'string', maxLength: 64),
+                new OA\Property(property: 'name', type: 'string', maxLength: 255),
+                new OA\Property(property: 'locales', type: 'array', minItems: 1, items: new OA\Items(type: 'string', maxLength: 10)),
+            ],
+        )),
+        responses: [new OA\Response(response: 201, description: 'Created'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')],
+    )]
     public function store(CreateProjectRequest $request, CreateProjectHandler $command): JsonResponse
     {
         /** @var Admin $admin */
@@ -50,6 +65,19 @@ final class ProjectController
         return (new ProjectResource(ProjectDTO::fromModel($request->attributes->get('project'))))->toResponse($request);
     }
 
+    #[OA\Patch(
+        path: '/api/admin/v1/projects/{project}',
+        operationId: 'auth_update_api_admin_v1_projects_project',
+        tags: ['auth'],
+        summary: 'PATCH /api/admin/v1/projects/{project}',
+        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(
+            properties: [
+                new OA\Property(property: 'name', type: 'string', maxLength: 255),
+                new OA\Property(property: 'locales', type: 'array', minItems: 1, items: new OA\Items(type: 'string', maxLength: 10)),
+            ],
+        )),
+        responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')],
+    )]
     public function update(UpdateProjectRequest $request, UpdateProjectHandler $command): JsonResponse
     {
         $project = $command->handle(new UpdateProjectCommand(

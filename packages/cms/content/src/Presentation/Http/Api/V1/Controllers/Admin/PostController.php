@@ -40,6 +40,25 @@ final class PostController
         return (new PostCursorCollection($page))->toResponse($request);
     }
 
+    #[OA\Post(
+        path: '/api/admin/v1/projects/{project}/content/posts',
+        operationId: 'content_store_api_admin_v1_projects_project_content_posts',
+        tags: ['content'],
+        summary: 'POST /api/admin/v1/projects/{project}/content/posts',
+        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(
+            required: ['title'],
+            properties: [
+                new OA\Property(property: 'title', type: 'string', maxLength: 255),
+                new OA\Property(property: 'slug', type: 'string', maxLength: 255),
+                new OA\Property(property: 'body', type: 'string', nullable: true),
+                new OA\Property(property: 'locale', type: 'string', maxLength: 10),
+                new OA\Property(property: 'translation_group', type: 'string', maxLength: 64, nullable: true),
+                new OA\Property(property: 'categories', type: 'array', items: new OA\Items(type: 'integer')),
+                new OA\Property(property: 'is_index', type: 'boolean'),
+            ],
+        )),
+        responses: [new OA\Response(response: 201, description: 'Created'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')],
+    )]
     public function store(UpsertPostRequest $request, UpsertPostHandler $command): JsonResponse
     {
         $post = $command->handle(new UpsertPostCommand(
@@ -58,6 +77,25 @@ final class PostController
         return (new PostResource(PostDTO::fromModel($post)))->toResponse($request);
     }
 
+    #[OA\Put(
+        path: '/api/admin/v1/projects/{project}/content/posts/{post}',
+        operationId: 'content_update_api_admin_v1_projects_project_content_posts_post',
+        tags: ['content'],
+        summary: 'PUT /api/admin/v1/projects/{project}/content/posts/{post}',
+        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(
+            required: ['title'],
+            properties: [
+                new OA\Property(property: 'title', type: 'string', maxLength: 255),
+                new OA\Property(property: 'slug', type: 'string', maxLength: 255),
+                new OA\Property(property: 'body', type: 'string', nullable: true),
+                new OA\Property(property: 'locale', type: 'string', maxLength: 10),
+                new OA\Property(property: 'translation_group', type: 'string', maxLength: 64, nullable: true),
+                new OA\Property(property: 'categories', type: 'array', items: new OA\Items(type: 'integer')),
+                new OA\Property(property: 'is_index', type: 'boolean'),
+            ],
+        )),
+        responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')],
+    )]
     public function update(UpsertPostRequest $request, string $project, int $postId, UpsertPostHandler $command): JsonResponse
     {
         $post = Post::query()->findOrFail($postId);
@@ -71,7 +109,20 @@ final class PostController
         return (new PostResource(PostDTO::fromModel($updated)))->toResponse($request);
     }
 
-    #[OA\Post(path: '/api/admin/v1/projects/{project}/content/posts/{post}/status', operationId: 'content_changeStatus_api_admin_v1_projects_project_content_posts_post_status', tags: ['content'], summary: 'POST /api/admin/v1/projects/{project}/content/posts/{post}/status', responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')])]
+    #[OA\Post(
+        path: '/api/admin/v1/projects/{project}/content/posts/{post}/status',
+        operationId: 'content_changeStatus_api_admin_v1_projects_project_content_posts_post_status',
+        tags: ['content'],
+        summary: 'POST /api/admin/v1/projects/{project}/content/posts/{post}/status',
+        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(
+            required: ['status'],
+            properties: [
+                new OA\Property(property: 'status', type: 'string', enum: ['draft', 'scheduled', 'published', 'archived']),
+                new OA\Property(property: 'scheduled_at', type: 'string', format: 'date-time', nullable: true),
+            ],
+        )),
+        responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')],
+    )]
     public function changeStatus(ChangeStatusRequest $request, string $project, int $postId, ChangeStatusHandler $command): JsonResponse
     {
         $post = Post::query()->findOrFail($postId);

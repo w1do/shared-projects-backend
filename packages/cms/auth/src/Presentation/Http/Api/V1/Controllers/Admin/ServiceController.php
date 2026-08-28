@@ -23,7 +23,19 @@ final class ServiceController
         return ServiceStatusResource::collection($query->handle($request->attributes->get('project')))->toResponse($request);
     }
 
-    #[OA\Put(path: '/api/admin/v1/projects/{project}/services/{service}', operationId: 'auth_update_api_admin_v1_projects_project_services_service', tags: ['auth'], summary: 'PUT /api/admin/v1/projects/{project}/services/{service}', responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')])]
+    #[OA\Put(
+        path: '/api/admin/v1/projects/{project}/services/{service}',
+        operationId: 'auth_update_api_admin_v1_projects_project_services_service',
+        tags: ['auth'],
+        summary: 'PUT /api/admin/v1/projects/{project}/services/{service}',
+        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(
+            required: ['enabled'],
+            properties: [
+                new OA\Property(property: 'enabled', type: 'boolean'),
+            ],
+        )),
+        responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')],
+    )]
     public function update(ToggleServiceRequest $request, string $project, string $service, ToggleServiceHandler $command): JsonResponse
     {
         $data = ToggleServiceDTO::from($request->validated());

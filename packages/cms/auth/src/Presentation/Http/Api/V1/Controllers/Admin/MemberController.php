@@ -33,6 +33,21 @@ final class MemberController
         return MemberResource::collection($query->handle($request->attributes->get('project')))->toResponse($request);
     }
 
+    #[OA\Post(
+        path: '/api/admin/v1/projects/{project}/members',
+        operationId: 'auth_store_api_admin_v1_projects_project_members',
+        tags: ['auth'],
+        summary: 'POST /api/admin/v1/projects/{project}/members',
+        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(
+            required: ['email', 'role'],
+            properties: [
+                new OA\Property(property: 'email', type: 'string', format: 'email', maxLength: 255),
+                new OA\Property(property: 'role', type: 'string'),
+                new OA\Property(property: 'name', type: 'string', maxLength: 255, nullable: true),
+            ],
+        )),
+        responses: [new OA\Response(response: 201, description: 'Created'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')],
+    )]
     public function store(InviteMemberRequest $request, InviteMemberHandler $command): JsonResponse
     {
         $data = InviteMemberDTO::from($request->validated());
@@ -41,7 +56,19 @@ final class MemberController
         return (new MemberRoleResource(new MemberRoleDTO($member->id, $data->role)))->toCreatedResponse($request);
     }
 
-    #[OA\Put(path: '/api/admin/v1/projects/{project}/members/{member}/role', operationId: 'auth_assignRole_api_admin_v1_projects_project_members_member_role', tags: ['auth'], summary: 'PUT /api/admin/v1/projects/{project}/members/{member}/role', responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')])]
+    #[OA\Put(
+        path: '/api/admin/v1/projects/{project}/members/{member}/role',
+        operationId: 'auth_assignRole_api_admin_v1_projects_project_members_member_role',
+        tags: ['auth'],
+        summary: 'PUT /api/admin/v1/projects/{project}/members/{member}/role',
+        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(
+            required: ['role'],
+            properties: [
+                new OA\Property(property: 'role', type: 'string', maxLength: 64),
+            ],
+        )),
+        responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')],
+    )]
     public function assignRole(
         AssignRoleRequest $request,
         string $project,

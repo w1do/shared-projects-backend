@@ -27,7 +27,23 @@ use Spatie\LaravelData\Optional;
 final class SubscriptionAdminController
 {
     /** Оформление подписки оператором: полиморфные подписчик и предмет (Д16). */
-    #[OA\Post(path: '/api/admin/v1/projects/{project}/pay/subscriptions', operationId: 'pay_store_api_admin_v1_projects_project_pay_subscriptions', tags: ['pay'], summary: 'POST /api/admin/v1/projects/{project}/pay/subscriptions', responses: [new OA\Response(response: 201, description: 'Created'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 403, description: 'Forbidden'), new OA\Response(response: 422, description: 'Validation error')])]
+    #[OA\Post(
+        path: '/api/admin/v1/projects/{project}/pay/subscriptions',
+        operationId: 'pay_store_api_admin_v1_projects_project_pay_subscriptions',
+        tags: ['pay'],
+        summary: 'POST /api/admin/v1/projects/{project}/pay/subscriptions',
+        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(
+            required: ['subscriber_type', 'subscriber_id', 'subject_type', 'subject_id'],
+            properties: [
+                new OA\Property(property: 'subscriber_type', type: 'string', maxLength: 32),
+                new OA\Property(property: 'subscriber_id', type: 'string', maxLength: 64),
+                new OA\Property(property: 'subject_type', type: 'string', maxLength: 32),
+                new OA\Property(property: 'subject_id', type: 'string', maxLength: 64),
+                new OA\Property(property: 'provider', type: 'string', maxLength: 32),
+            ],
+        )),
+        responses: [new OA\Response(response: 201, description: 'Created'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 403, description: 'Forbidden'), new OA\Response(response: 422, description: 'Validation error')],
+    )]
     public function store(
         AdminSubscribeRequest $request,
         FindSubscriberQuery $subscribers,

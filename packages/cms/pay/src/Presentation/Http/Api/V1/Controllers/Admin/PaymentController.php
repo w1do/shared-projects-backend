@@ -41,7 +41,18 @@ final class PaymentController
         return (new PaymentResource(PaymentDTO::fromModel($updated)))->toResponse($request);
     }
 
-    #[OA\Post(path: '/api/admin/v1/projects/{project}/pay/payments/{payment}/refund', operationId: 'pay_refund_api_admin_v1_projects_project_pay_payments_payment_refund', tags: ['pay'], summary: 'POST /api/admin/v1/projects/{project}/pay/payments/{payment}/refund', responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')])]
+    #[OA\Post(
+        path: '/api/admin/v1/projects/{project}/pay/payments/{payment}/refund',
+        operationId: 'pay_refund_api_admin_v1_projects_project_pay_payments_payment_refund',
+        tags: ['pay'],
+        summary: 'POST /api/admin/v1/projects/{project}/pay/payments/{payment}/refund',
+        requestBody: new OA\RequestBody(required: false, content: new OA\JsonContent(
+            properties: [
+                new OA\Property(property: 'amount_minor', type: 'integer', minimum: 1),
+            ],
+        )),
+        responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')],
+    )]
     public function refund(RefundPaymentRequest $request, string $project, string $paymentId, RefundPaymentHandler $handler): JsonResponse
     {
         $payment = Payment::query()->findOrFail($paymentId);

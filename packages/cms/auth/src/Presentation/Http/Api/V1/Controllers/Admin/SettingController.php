@@ -23,6 +23,19 @@ final class SettingController
         return SettingValueResource::collection($query->handle($request->attributes->get('project'), $service))->toResponse($request);
     }
 
+    #[OA\Put(
+        path: '/api/admin/v1/projects/{project}/settings/{service}',
+        operationId: 'auth_update_api_admin_v1_projects_project_settings_service',
+        tags: ['auth'],
+        summary: 'PUT /api/admin/v1/projects/{project}/settings/{service}',
+        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(
+            required: ['values'],
+            properties: [
+                new OA\Property(property: 'values', type: 'object'),
+            ],
+        )),
+        responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')],
+    )]
     public function update(PutSettingsRequest $request, string $project, string $service, PutSettingsHandler $command): JsonResponse
     {
         $saved = $command->handle(new PutSettingsCommand(
