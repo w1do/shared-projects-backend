@@ -19,13 +19,24 @@ use OpenApi\Attributes as OA;
 /** Настройки внешних провайдеров проекта: список, просмотр, upsert (Д3). */
 final class ProviderAccountsController
 {
-    #[OA\Get(path: '/api/admin/v1/projects/{project}/pay/providers', operationId: 'pay_index_api_admin_v1_projects_project_pay_providers', tags: ['pay'], summary: 'GET /api/admin/v1/projects/{project}/pay/providers', responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 403, description: 'Forbidden')])]
+    #[OA\Get(path: '/api/admin/v1/projects/{project}/pay/providers', operationId: 'pay_index_api_admin_v1_projects_project_pay_providers', tags: ['pay'], summary: 'GET /api/admin/v1/projects/{project}/pay/providers', security: [['bearerAuth' => []]], parameters: [new OA\Parameter(name: 'project', in: 'path', required: true, schema: new OA\Schema(type: 'string'))], responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 403, description: 'Forbidden')])]
     public function index(Request $request, ListProviderAccountsQuery $query): JsonResponse
     {
         return ProviderAccountListItemResource::collection($query->handle())->toResponse($request);
     }
 
-    #[OA\Get(path: '/api/admin/v1/projects/{project}/pay/providers/{provider}', operationId: 'pay_show_api_admin_v1_projects_project_pay_providers_provider', tags: ['pay'], summary: 'GET /api/admin/v1/projects/{project}/pay/providers/{provider}', responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 403, description: 'Forbidden'), new OA\Response(response: 422, description: 'Validation error')])]
+    #[OA\Get(
+        path: '/api/admin/v1/projects/{project}/pay/providers/{provider}',
+        operationId: 'pay_show_api_admin_v1_projects_project_pay_providers_provider',
+        tags: ['pay'],
+        summary: 'GET /api/admin/v1/projects/{project}/pay/providers/{provider}',
+        security: [['bearerAuth' => []]],
+        parameters: [
+            new OA\Parameter(name: 'project', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+            new OA\Parameter(name: 'provider', in: 'path', required: true, schema: new OA\Schema(type: 'string', enum: ['manual', 'null', 'platega'])),
+        ],
+        responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 403, description: 'Forbidden'), new OA\Response(response: 422, description: 'Validation error')],
+    )]
     public function show(Request $request, string $project, string $provider, GetProviderAccountQuery $query): JsonResponse
     {
         return (new ProviderAccountResource($query->handle($provider)))->toResponse($request);
@@ -36,6 +47,11 @@ final class ProviderAccountsController
         operationId: 'pay_update_api_admin_v1_projects_project_pay_providers_provider',
         tags: ['pay'],
         summary: 'PUT /api/admin/v1/projects/{project}/pay/providers/{provider}',
+        security: [['bearerAuth' => []]],
+        parameters: [
+            new OA\Parameter(name: 'project', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+            new OA\Parameter(name: 'provider', in: 'path', required: true, schema: new OA\Schema(type: 'string', enum: ['manual', 'null', 'platega'])),
+        ],
         requestBody: new OA\RequestBody(required: false, content: new OA\JsonContent(
             properties: [
                 new OA\Property(property: 'group', type: 'string', maxLength: 32),

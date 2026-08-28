@@ -24,7 +24,7 @@ use OpenApi\Attributes as OA;
 
 final class PageController
 {
-    #[OA\Get(path: '/api/admin/v1/projects/{project}/content/pages', operationId: 'content_index_api_admin_v1_projects_project_content_pages', tags: ['content'], summary: 'GET /api/admin/v1/projects/{project}/content/pages', responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')])]
+    #[OA\Get(path: '/api/admin/v1/projects/{project}/content/pages', operationId: 'content_index_api_admin_v1_projects_project_content_pages', tags: ['content'], summary: 'GET /api/admin/v1/projects/{project}/content/pages', security: [['bearerAuth' => []]], parameters: [new OA\Parameter(name: 'project', in: 'path', required: true, schema: new OA\Schema(type: 'string'))], responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')])]
     public function index(Request $request, ListPagesQuery $query): JsonResponse
     {
         return PageResource::collection($query->handle())->toResponse($request);
@@ -35,6 +35,10 @@ final class PageController
         operationId: 'content_store_api_admin_v1_projects_project_content_pages',
         tags: ['content'],
         summary: 'POST /api/admin/v1/projects/{project}/content/pages',
+        security: [['bearerAuth' => []]],
+        parameters: [
+            new OA\Parameter(name: 'project', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+        ],
         requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(
             required: ['title'],
             properties: [
@@ -59,6 +63,11 @@ final class PageController
         operationId: 'content_update_api_admin_v1_projects_project_content_pages_page',
         tags: ['content'],
         summary: 'PUT /api/admin/v1/projects/{project}/content/pages/{page}',
+        security: [['bearerAuth' => []]],
+        parameters: [
+            new OA\Parameter(name: 'project', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+            new OA\Parameter(name: 'page', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
+        ],
         requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(
             required: ['title'],
             properties: [
@@ -84,6 +93,11 @@ final class PageController
         operationId: 'content_changeStatus_api_admin_v1_projects_project_content_pages_page_status',
         tags: ['content'],
         summary: 'POST /api/admin/v1/projects/{project}/content/pages/{page}/status',
+        security: [['bearerAuth' => []]],
+        parameters: [
+            new OA\Parameter(name: 'project', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+            new OA\Parameter(name: 'page', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
+        ],
         requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(
             required: ['status'],
             properties: [
@@ -101,7 +115,7 @@ final class PageController
         return (new PageResource(PageDTO::fromModel($updated)))->toResponse($request);
     }
 
-    #[OA\Get(path: '/api/admin/v1/projects/{project}/content/pages/{page}/revisions', operationId: 'content_revisions_api_admin_v1_projects_project_content_pages_page_revisions', tags: ['content'], summary: 'GET /api/admin/v1/projects/{project}/content/pages/{page}/revisions', responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')])]
+    #[OA\Get(path: '/api/admin/v1/projects/{project}/content/pages/{page}/revisions', operationId: 'content_revisions_api_admin_v1_projects_project_content_pages_page_revisions', tags: ['content'], summary: 'GET /api/admin/v1/projects/{project}/content/pages/{page}/revisions', security: [['bearerAuth' => []]], parameters: [new OA\Parameter(name: 'project', in: 'path', required: true, schema: new OA\Schema(type: 'string')), new OA\Parameter(name: 'page', in: 'path', required: true, schema: new OA\Schema(type: 'integer'))], responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')])]
     public function revisions(Request $request, string $project, int $pageId, ListRevisionsQuery $query): JsonResponse
     {
         $page = Page::query()->findOrFail($pageId);
@@ -109,7 +123,19 @@ final class PageController
         return RevisionResource::collection($query->handle($page))->toResponse($request);
     }
 
-    #[OA\Post(path: '/api/admin/v1/projects/{project}/content/pages/{page}/revisions/{revision}/restore', operationId: 'content_restore_api_admin_v1_projects_project_content_pages_page_revisions_revision_restore', tags: ['content'], summary: 'POST /api/admin/v1/projects/{project}/content/pages/{page}/revisions/{revision}/restore', responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')])]
+    #[OA\Post(
+        path: '/api/admin/v1/projects/{project}/content/pages/{page}/revisions/{revision}/restore',
+        operationId: 'content_restore_api_admin_v1_projects_project_content_pages_page_revisions_revision_restore',
+        tags: ['content'],
+        summary: 'POST /api/admin/v1/projects/{project}/content/pages/{page}/revisions/{revision}/restore',
+        security: [['bearerAuth' => []]],
+        parameters: [
+            new OA\Parameter(name: 'project', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+            new OA\Parameter(name: 'page', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
+            new OA\Parameter(name: 'revision', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
+        ],
+        responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')],
+    )]
     public function restore(Request $request, string $project, int $pageId, int $revisionId, RestoreRevisionHandler $command): JsonResponse
     {
         $page = Page::query()->findOrFail($pageId);

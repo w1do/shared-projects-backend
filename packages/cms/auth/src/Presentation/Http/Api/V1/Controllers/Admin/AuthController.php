@@ -49,7 +49,7 @@ final class AuthController
         return (new AuthTokenResource($result))->toResponse($request);
     }
 
-    #[OA\Post(path: '/api/admin/v1/auth/logout', operationId: 'auth_logout_api_admin_v1_auth_logout', tags: ['auth'], summary: 'POST /api/admin/v1/auth/logout', responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')])]
+    #[OA\Post(path: '/api/admin/v1/auth/logout', operationId: 'auth_logout_api_admin_v1_auth_logout', tags: ['auth'], summary: 'POST /api/admin/v1/auth/logout', security: [['bearerAuth' => []]], responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')])]
     public function logout(Request $request, LogoutHandler $command): JsonResponse
     {
         /** @var Admin $admin */
@@ -60,7 +60,7 @@ final class AuthController
         return ApiResponse::noContent();
     }
 
-    #[OA\Get(path: '/api/admin/v1/me', operationId: 'auth_me_api_admin_v1_me', tags: ['auth'], summary: 'GET /api/admin/v1/me', responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')])]
+    #[OA\Get(path: '/api/admin/v1/me', operationId: 'auth_me_api_admin_v1_me', tags: ['auth'], summary: 'GET /api/admin/v1/me', security: [['bearerAuth' => []]], responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')])]
     public function me(Request $request): JsonResponse
     {
         /** @var Admin $admin */
@@ -74,6 +74,7 @@ final class AuthController
         operationId: 'auth_updateProfile_api_admin_v1_me',
         tags: ['auth'],
         summary: 'PATCH /api/admin/v1/me',
+        security: [['bearerAuth' => []]],
         requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(
             properties: [
                 new OA\Property(property: 'name', type: 'string', maxLength: 255),

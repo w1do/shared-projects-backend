@@ -24,6 +24,7 @@ final class EventsController
         operationId: 'analytics___invoke_internal_events',
         tags: ['analytics'],
         summary: 'POST /internal/events',
+        security: [['serviceToken' => []]],
         requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(
             required: ['events'],
             properties: [

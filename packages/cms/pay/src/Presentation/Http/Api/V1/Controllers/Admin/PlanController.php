@@ -20,7 +20,7 @@ use OpenApi\Attributes as OA;
 
 final class PlanController
 {
-    #[OA\Get(path: '/api/admin/v1/projects/{project}/pay/plans', operationId: 'pay_index_api_admin_v1_projects_project_pay_plans', tags: ['pay'], summary: 'GET /api/admin/v1/projects/{project}/pay/plans', responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')])]
+    #[OA\Get(path: '/api/admin/v1/projects/{project}/pay/plans', operationId: 'pay_index_api_admin_v1_projects_project_pay_plans', tags: ['pay'], summary: 'GET /api/admin/v1/projects/{project}/pay/plans', security: [['bearerAuth' => []]], parameters: [new OA\Parameter(name: 'project', in: 'path', required: true, schema: new OA\Schema(type: 'string'))], responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')])]
     public function index(Request $request, ListPlansQuery $query): JsonResponse
     {
         // Непагинированная коллекция без `meta` — форма списка не меняется (И5):
@@ -33,6 +33,10 @@ final class PlanController
         operationId: 'pay_store_api_admin_v1_projects_project_pay_plans',
         tags: ['pay'],
         summary: 'POST /api/admin/v1/projects/{project}/pay/plans',
+        security: [['bearerAuth' => []]],
+        parameters: [
+            new OA\Parameter(name: 'project', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+        ],
         requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(
             required: ['code', 'name', 'price_minor'],
             properties: [
@@ -61,6 +65,11 @@ final class PlanController
         operationId: 'pay_update_api_admin_v1_projects_project_pay_plans_plan',
         tags: ['pay'],
         summary: 'PUT /api/admin/v1/projects/{project}/pay/plans/{plan}',
+        security: [['bearerAuth' => []]],
+        parameters: [
+            new OA\Parameter(name: 'project', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+            new OA\Parameter(name: 'plan', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
+        ],
         requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(
             required: ['code', 'name', 'price_minor'],
             properties: [
@@ -86,7 +95,18 @@ final class PlanController
         return (new PlanResource(PlanDTO::fromModel($updated)))->toResponse($request);
     }
 
-    #[OA\Post(path: '/api/admin/v1/projects/{project}/pay/plans/{plan}/archive', operationId: 'pay_archive_api_admin_v1_projects_project_pay_plans_plan_archive', tags: ['pay'], summary: 'POST /api/admin/v1/projects/{project}/pay/plans/{plan}/archive', responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')])]
+    #[OA\Post(
+        path: '/api/admin/v1/projects/{project}/pay/plans/{plan}/archive',
+        operationId: 'pay_archive_api_admin_v1_projects_project_pay_plans_plan_archive',
+        tags: ['pay'],
+        summary: 'POST /api/admin/v1/projects/{project}/pay/plans/{plan}/archive',
+        security: [['bearerAuth' => []]],
+        parameters: [
+            new OA\Parameter(name: 'project', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+            new OA\Parameter(name: 'plan', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
+        ],
+        responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')],
+    )]
     public function archive(Request $request, string $project, int $planId, ArchivePlanHandler $handler): JsonResponse
     {
         $plan = Plan::query()->findOrFail($planId);

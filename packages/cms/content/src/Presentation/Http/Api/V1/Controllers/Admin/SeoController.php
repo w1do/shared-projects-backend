@@ -24,6 +24,12 @@ final class SeoController
         operationId: 'content_update_api_admin_v1_projects_project_content_seo_type_id',
         tags: ['content'],
         summary: 'PUT /api/admin/v1/projects/{project}/content/seo/{type}/{id}',
+        security: [['bearerAuth' => []]],
+        parameters: [
+            new OA\Parameter(name: 'project', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+            new OA\Parameter(name: 'type', in: 'path', required: true, schema: new OA\Schema(type: 'string', enum: ['post', 'page', 'category'])),
+            new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
+        ],
         requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(
             properties: [
                 new OA\Property(property: 'title', type: 'string', maxLength: 255, nullable: true),
@@ -47,7 +53,19 @@ final class SeoController
         return (new SeoResource(SeoDTO::fromModel($seo)))->toResponse($request);
     }
 
-    #[OA\Get(path: '/api/admin/v1/projects/{project}/content/seo/{type}/{id}', operationId: 'content_show_api_admin_v1_projects_project_content_seo_type_id', tags: ['content'], summary: 'GET /api/admin/v1/projects/{project}/content/seo/{type}/{id}', responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')])]
+    #[OA\Get(
+        path: '/api/admin/v1/projects/{project}/content/seo/{type}/{id}',
+        operationId: 'content_show_api_admin_v1_projects_project_content_seo_type_id',
+        tags: ['content'],
+        summary: 'GET /api/admin/v1/projects/{project}/content/seo/{type}/{id}',
+        security: [['bearerAuth' => []]],
+        parameters: [
+            new OA\Parameter(name: 'project', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+            new OA\Parameter(name: 'type', in: 'path', required: true, schema: new OA\Schema(type: 'string', enum: ['post', 'page', 'category'])),
+            new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
+        ],
+        responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')],
+    )]
     public function show(Request $request, string $project, string $type, int $id, FindSeoQuery $query): JsonResponse
     {
         $seo = $query->handle($type, $id);

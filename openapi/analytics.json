@@ -15,6 +15,14 @@
                 "operationId": "analytics_overview_api_admin_v1_projects_project_analytics_overview",
                 "parameters": [
                     {
+                        "name": "project",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
                         "name": "from",
                         "in": "query",
                         "required": false,
@@ -43,7 +51,12 @@
                     "422": {
                         "description": "Validation error"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/admin/v1/projects/{project}/analytics/top-pages": {
@@ -55,6 +68,14 @@
                 "operationId": "analytics_topPages_api_admin_v1_projects_project_analytics_top_pages",
                 "parameters": [
                     {
+                        "name": "project",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
                         "name": "from",
                         "in": "query",
                         "required": false,
@@ -83,7 +104,12 @@
                     "422": {
                         "description": "Validation error"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/admin/v1/projects/{project}/analytics/revenue": {
@@ -95,6 +121,14 @@
                 "operationId": "analytics_revenue_api_admin_v1_projects_project_analytics_revenue",
                 "parameters": [
                     {
+                        "name": "project",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
                         "name": "from",
                         "in": "query",
                         "required": false,
@@ -123,7 +157,12 @@
                     "422": {
                         "description": "Validation error"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/admin/v1/projects/{project}/analytics/history/{subjectKey}": {
@@ -133,6 +172,24 @@
                 ],
                 "summary": "GET /api/admin/v1/projects/{project}/analytics/history/{subjectKey}",
                 "operationId": "analytics_history_api_admin_v1_projects_project_analytics_history_subjectkey",
+                "parameters": [
+                    {
+                        "name": "project",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "subjectKey",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK"
@@ -143,7 +200,12 @@
                     "422": {
                         "description": "Validation error"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/admin/v1/projects/{project}/analytics/export": {
@@ -154,6 +216,14 @@
                 "summary": "POST /api/admin/v1/projects/{project}/analytics/export",
                 "operationId": "analytics_export_api_admin_v1_projects_project_analytics_export",
                 "parameters": [
+                    {
+                        "name": "project",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
                     {
                         "name": "from",
                         "in": "query",
@@ -183,7 +253,12 @@
                     "422": {
                         "description": "Validation error"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/admin/v1/projects/{project}/analytics/settings": {
@@ -193,6 +268,16 @@
                 ],
                 "summary": "GET /api/admin/v1/projects/{project}/analytics/settings",
                 "operationId": "analytics_show_api_admin_v1_projects_project_analytics_settings",
+                "parameters": [
+                    {
+                        "name": "project",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK"
@@ -203,7 +288,12 @@
                     "403": {
                         "description": "Forbidden"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "put": {
                 "tags": [
@@ -211,6 +301,16 @@
                 ],
                 "summary": "PUT /api/admin/v1/projects/{project}/analytics/settings",
                 "operationId": "analytics_update_api_admin_v1_projects_project_analytics_settings",
+                "parameters": [
+                    {
+                        "name": "project",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -253,7 +353,12 @@
                     "422": {
                         "description": "Validation error"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/internal/events": {
@@ -296,7 +401,12 @@
                     "422": {
                         "description": "Validation error"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "serviceToken": []
+                    }
+                ]
             }
         },
         "/api/v1/collect": {
@@ -339,7 +449,12 @@
                     "422": {
                         "description": "Validation error"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "apiKey": []
+                    }
+                ]
             }
         },
         "/api/v1/analytics/config": {
@@ -356,7 +471,12 @@
                     "401": {
                         "description": "Unauthenticated"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "apiKey": []
+                    }
+                ]
             }
         }
     },

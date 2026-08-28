@@ -30,7 +30,7 @@ use OpenApi\Attributes as OA;
 /** Кастомные роли проекта. Системные роли редактировать нельзя. */
 final class RoleController
 {
-    #[OA\Get(path: '/api/admin/v1/projects/{project}/roles', operationId: 'auth_index_api_admin_v1_projects_project_roles', tags: ['auth'], summary: 'GET /api/admin/v1/projects/{project}/roles', responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')])]
+    #[OA\Get(path: '/api/admin/v1/projects/{project}/roles', operationId: 'auth_index_api_admin_v1_projects_project_roles', tags: ['auth'], summary: 'GET /api/admin/v1/projects/{project}/roles', security: [['bearerAuth' => []]], parameters: [new OA\Parameter(name: 'project', in: 'path', required: true, schema: new OA\Schema(type: 'string'))], responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')])]
     public function index(Request $request, ListRolesQuery $query): JsonResponse
     {
         return RoleResource::collection($query->handle($request->attributes->get('project')))->toResponse($request);
@@ -41,6 +41,10 @@ final class RoleController
         operationId: 'auth_store_api_admin_v1_projects_project_roles',
         tags: ['auth'],
         summary: 'POST /api/admin/v1/projects/{project}/roles',
+        security: [['bearerAuth' => []]],
+        parameters: [
+            new OA\Parameter(name: 'project', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+        ],
         requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(
             required: ['name', 'permissions'],
             properties: [
@@ -63,6 +67,11 @@ final class RoleController
         operationId: 'auth_update_api_admin_v1_projects_project_roles_role',
         tags: ['auth'],
         summary: 'PUT /api/admin/v1/projects/{project}/roles/{role}',
+        security: [['bearerAuth' => []]],
+        parameters: [
+            new OA\Parameter(name: 'project', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+            new OA\Parameter(name: 'role', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
+        ],
         requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(
             required: ['permissions'],
             properties: [
@@ -99,7 +108,18 @@ final class RoleController
         return (new RoleResource(RoleDTO::fromModel($updated)))->toResponse($request);
     }
 
-    #[OA\Delete(path: '/api/admin/v1/projects/{project}/roles/{role}', operationId: 'auth_destroy_api_admin_v1_projects_project_roles_role', tags: ['auth'], summary: 'DELETE /api/admin/v1/projects/{project}/roles/{role}', responses: [new OA\Response(response: 204, description: 'No content'), new OA\Response(response: 401, description: 'Unauthenticated')])]
+    #[OA\Delete(
+        path: '/api/admin/v1/projects/{project}/roles/{role}',
+        operationId: 'auth_destroy_api_admin_v1_projects_project_roles_role',
+        tags: ['auth'],
+        summary: 'DELETE /api/admin/v1/projects/{project}/roles/{role}',
+        security: [['bearerAuth' => []]],
+        parameters: [
+            new OA\Parameter(name: 'project', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+            new OA\Parameter(name: 'role', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
+        ],
+        responses: [new OA\Response(response: 204, description: 'No content'), new OA\Response(response: 401, description: 'Unauthenticated')],
+    )]
     public function destroy(
         Request $request,
         string $project,

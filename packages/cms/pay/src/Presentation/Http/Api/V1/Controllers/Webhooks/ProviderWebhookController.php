@@ -32,6 +32,9 @@ final class ProviderWebhookController
         operationId: 'pay___invoke_webhooks_provider',
         tags: ['pay'],
         summary: 'POST /webhooks/{provider}',
+        parameters: [
+            new OA\Parameter(name: 'provider', in: 'path', required: true, schema: new OA\Schema(type: 'string', enum: ['manual', 'null', 'platega'])),
+        ],
         requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(type: 'object', description: 'Payload провайдера, формат зависит от провайдера')),
         responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')],
     )]

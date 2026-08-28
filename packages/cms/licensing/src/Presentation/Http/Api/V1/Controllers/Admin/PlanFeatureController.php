@@ -27,6 +27,11 @@ final class PlanFeatureController
         operationId: 'licensing_store_plan_feature',
         tags: ['pay'],
         summary: 'POST /api/admin/v1/projects/{project}/pay/licensing/plans/{plan}/features',
+        security: [['bearerAuth' => []]],
+        parameters: [
+            new OA\Parameter(name: 'project', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+            new OA\Parameter(name: 'plan', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
+        ],
         requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(
             required: ['code', 'name'],
             properties: [
@@ -57,6 +62,12 @@ final class PlanFeatureController
         operationId: 'licensing_update_plan_feature',
         tags: ['pay'],
         summary: 'PUT /api/admin/v1/projects/{project}/pay/licensing/plans/{plan}/features/{feature}',
+        security: [['bearerAuth' => []]],
+        parameters: [
+            new OA\Parameter(name: 'project', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+            new OA\Parameter(name: 'plan', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
+            new OA\Parameter(name: 'feature', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
+        ],
         requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(
             required: ['code', 'name'],
             properties: [
@@ -87,7 +98,19 @@ final class PlanFeatureController
         return (new PlanFeatureResource(PlanFeatureDTO::fromModel($feature)))->toResponse($request);
     }
 
-    #[OA\Delete(path: '/api/admin/v1/projects/{project}/pay/licensing/plans/{plan}/features/{feature}', operationId: 'licensing_delete_plan_feature', tags: ['pay'], summary: 'DELETE /api/admin/v1/projects/{project}/pay/licensing/plans/{plan}/features/{feature}', responses: [new OA\Response(response: 204, description: 'No content'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 404, description: 'Not found')])]
+    #[OA\Delete(
+        path: '/api/admin/v1/projects/{project}/pay/licensing/plans/{plan}/features/{feature}',
+        operationId: 'licensing_delete_plan_feature',
+        tags: ['pay'],
+        summary: 'DELETE /api/admin/v1/projects/{project}/pay/licensing/plans/{plan}/features/{feature}',
+        security: [['bearerAuth' => []]],
+        parameters: [
+            new OA\Parameter(name: 'project', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+            new OA\Parameter(name: 'plan', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
+            new OA\Parameter(name: 'feature', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
+        ],
+        responses: [new OA\Response(response: 204, description: 'No content'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 404, description: 'Not found')],
+    )]
     public function destroy(
         Request $request,
         string $project,

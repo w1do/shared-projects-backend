@@ -17,7 +17,7 @@ use OpenApi\Attributes as OA;
 
 final class ServiceController
 {
-    #[OA\Get(path: '/api/admin/v1/projects/{project}/services', operationId: 'auth_index_api_admin_v1_projects_project_services', tags: ['auth'], summary: 'GET /api/admin/v1/projects/{project}/services', responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')])]
+    #[OA\Get(path: '/api/admin/v1/projects/{project}/services', operationId: 'auth_index_api_admin_v1_projects_project_services', tags: ['auth'], summary: 'GET /api/admin/v1/projects/{project}/services', security: [['bearerAuth' => []]], parameters: [new OA\Parameter(name: 'project', in: 'path', required: true, schema: new OA\Schema(type: 'string'))], responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')])]
     public function index(Request $request, ListServiceStatusesQuery $query): JsonResponse
     {
         return ServiceStatusResource::collection($query->handle($request->attributes->get('project')))->toResponse($request);
@@ -28,6 +28,11 @@ final class ServiceController
         operationId: 'auth_update_api_admin_v1_projects_project_services_service',
         tags: ['auth'],
         summary: 'PUT /api/admin/v1/projects/{project}/services/{service}',
+        security: [['bearerAuth' => []]],
+        parameters: [
+            new OA\Parameter(name: 'project', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+            new OA\Parameter(name: 'service', in: 'path', required: true, schema: new OA\Schema(type: 'string', enum: ['content', 'analytics', 'pay', 'licensing'])),
+        ],
         requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(
             required: ['enabled'],
             properties: [

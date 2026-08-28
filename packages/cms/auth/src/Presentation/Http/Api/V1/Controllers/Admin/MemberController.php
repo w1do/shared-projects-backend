@@ -27,7 +27,7 @@ use OpenApi\Attributes as OA;
 
 final class MemberController
 {
-    #[OA\Get(path: '/api/admin/v1/projects/{project}/members', operationId: 'auth_index_api_admin_v1_projects_project_members', tags: ['auth'], summary: 'GET /api/admin/v1/projects/{project}/members', responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')])]
+    #[OA\Get(path: '/api/admin/v1/projects/{project}/members', operationId: 'auth_index_api_admin_v1_projects_project_members', tags: ['auth'], summary: 'GET /api/admin/v1/projects/{project}/members', security: [['bearerAuth' => []]], parameters: [new OA\Parameter(name: 'project', in: 'path', required: true, schema: new OA\Schema(type: 'string'))], responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')])]
     public function index(Request $request, ListMembersQuery $query): JsonResponse
     {
         return MemberResource::collection($query->handle($request->attributes->get('project')))->toResponse($request);
@@ -38,6 +38,8 @@ final class MemberController
         operationId: 'auth_store_api_admin_v1_projects_project_members',
         tags: ['auth'],
         summary: 'POST /api/admin/v1/projects/{project}/members',
+        security: [['bearerAuth' => []]],
+        parameters: [new OA\Parameter(name: 'project', in: 'path', required: true, schema: new OA\Schema(type: 'string'))],
         requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(
             required: ['email', 'role'],
             properties: [
@@ -61,6 +63,11 @@ final class MemberController
         operationId: 'auth_assignRole_api_admin_v1_projects_project_members_member_role',
         tags: ['auth'],
         summary: 'PUT /api/admin/v1/projects/{project}/members/{member}/role',
+        security: [['bearerAuth' => []]],
+        parameters: [
+            new OA\Parameter(name: 'project', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+            new OA\Parameter(name: 'member', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
+        ],
         requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(
             required: ['role'],
             properties: [
@@ -87,7 +94,7 @@ final class MemberController
         return (new MemberRoleResource(new MemberRoleDTO($member->id, $data->role)))->toResponse($request);
     }
 
-    #[OA\Delete(path: '/api/admin/v1/projects/{project}/members/{member}', operationId: 'auth_destroy_api_admin_v1_projects_project_members_member', tags: ['auth'], summary: 'DELETE /api/admin/v1/projects/{project}/members/{member}', responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')])]
+    #[OA\Delete(path: '/api/admin/v1/projects/{project}/members/{member}', operationId: 'auth_destroy_api_admin_v1_projects_project_members_member', tags: ['auth'], summary: 'DELETE /api/admin/v1/projects/{project}/members/{member}', security: [['bearerAuth' => []]], parameters: [new OA\Parameter(name: 'project', in: 'path', required: true, schema: new OA\Schema(type: 'string')), new OA\Parameter(name: 'member', in: 'path', required: true, schema: new OA\Schema(type: 'integer'))], responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')])]
     public function destroy(
         Request $request,
         string $project,

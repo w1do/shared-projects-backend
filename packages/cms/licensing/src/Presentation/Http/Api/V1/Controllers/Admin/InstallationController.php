@@ -19,7 +19,19 @@ use OpenApi\Attributes as OA;
 /** Установки лицензий: список с фильтром «кто отстал» и отзыв копии (Д7/Д11). */
 final class InstallationController
 {
-    #[OA\Get(path: '/api/admin/v1/projects/{project}/pay/licensing/licenses/{license}/installations', operationId: 'licensing_index_installations', tags: ['pay'], summary: 'GET /api/admin/v1/projects/{project}/pay/licensing/licenses/{license}/installations', responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 404, description: 'Not found')])]
+    #[OA\Get(
+        path: '/api/admin/v1/projects/{project}/pay/licensing/licenses/{license}/installations',
+        operationId: 'licensing_index_installations',
+        tags: ['pay'],
+        summary: 'GET /api/admin/v1/projects/{project}/pay/licensing/licenses/{license}/installations',
+        security: [['bearerAuth' => []]],
+        parameters: [
+            new OA\Parameter(name: 'project', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+            new OA\Parameter(name: 'license', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+            new OA\Parameter(name: 'filter[app_version_below]', in: 'query', required: false, schema: new OA\Schema(type: 'string')),
+        ],
+        responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 404, description: 'Not found')],
+    )]
     public function index(
         Request $request,
         string $project,
@@ -39,7 +51,7 @@ final class InstallationController
         )->toResponse($request);
     }
 
-    #[OA\Post(path: '/api/admin/v1/projects/{project}/pay/licensing/installations/{installation}/revoke', operationId: 'licensing_revoke_installation', tags: ['pay'], summary: 'POST /api/admin/v1/projects/{project}/pay/licensing/installations/{installation}/revoke', responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 404, description: 'Not found'), new OA\Response(response: 422, description: 'Validation error')])]
+    #[OA\Post(path: '/api/admin/v1/projects/{project}/pay/licensing/installations/{installation}/revoke', operationId: 'licensing_revoke_installation', tags: ['pay'], summary: 'POST /api/admin/v1/projects/{project}/pay/licensing/installations/{installation}/revoke', security: [['bearerAuth' => []]], parameters: [new OA\Parameter(name: 'project', in: 'path', required: true, schema: new OA\Schema(type: 'string')), new OA\Parameter(name: 'installation', in: 'path', required: true, schema: new OA\Schema(type: 'integer'))], responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 404, description: 'Not found'), new OA\Response(response: 422, description: 'Validation error')])]
     public function revoke(
         Request $request,
         string $project,

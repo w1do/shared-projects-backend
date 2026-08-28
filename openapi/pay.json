@@ -13,6 +13,32 @@
                 ],
                 "summary": "GET /api/admin/v1/projects/{project}/pay/licensing/licenses/{license}/installations",
                 "operationId": "licensing_index_installations",
+                "parameters": [
+                    {
+                        "name": "project",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "license",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "filter[app_version_below]",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK"
@@ -23,7 +49,12 @@
                     "404": {
                         "description": "Not found"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/admin/v1/projects/{project}/pay/licensing/installations/{installation}/revoke": {
@@ -33,6 +64,24 @@
                 ],
                 "summary": "POST /api/admin/v1/projects/{project}/pay/licensing/installations/{installation}/revoke",
                 "operationId": "licensing_revoke_installation",
+                "parameters": [
+                    {
+                        "name": "project",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "installation",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK"
@@ -46,7 +95,12 @@
                     "422": {
                         "description": "Validation error"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/admin/v1/projects/{project}/pay/licensing/licenses": {
@@ -56,6 +110,44 @@
                 ],
                 "summary": "GET /api/admin/v1/projects/{project}/pay/licensing/licenses",
                 "operationId": "licensing_index_licenses",
+                "parameters": [
+                    {
+                        "name": "project",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "filter[organization_id]",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "filter[status]",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "active",
+                                "revoked"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "cursor",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK"
@@ -66,7 +158,12 @@
                     "403": {
                         "description": "Forbidden"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "post": {
                 "tags": [
@@ -74,6 +171,16 @@
                 ],
                 "summary": "POST /api/admin/v1/projects/{project}/pay/licensing/licenses",
                 "operationId": "licensing_issue_license",
+                "parameters": [
+                    {
+                        "name": "project",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -128,7 +235,12 @@
                     "422": {
                         "description": "Validation error"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/admin/v1/projects/{project}/pay/licensing/licenses/{license}": {
@@ -138,6 +250,24 @@
                 ],
                 "summary": "GET /api/admin/v1/projects/{project}/pay/licensing/licenses/{license}",
                 "operationId": "licensing_show_license",
+                "parameters": [
+                    {
+                        "name": "project",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "license",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK"
@@ -148,7 +278,12 @@
                     "404": {
                         "description": "Not found"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/admin/v1/projects/{project}/pay/licensing/licenses/{license}/renew": {
@@ -158,6 +293,24 @@
                 ],
                 "summary": "POST /api/admin/v1/projects/{project}/pay/licensing/licenses/{license}/renew",
                 "operationId": "licensing_renew_license",
+                "parameters": [
+                    {
+                        "name": "project",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "license",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -190,7 +343,12 @@
                     "422": {
                         "description": "Validation error"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/admin/v1/projects/{project}/pay/licensing/licenses/{license}/reveal-key": {
@@ -201,6 +359,24 @@
                 "summary": "POST /api/admin/v1/projects/{project}/pay/licensing/licenses/{license}/reveal-key",
                 "description": "Ключ авто-выпущенной лицензии показывается один раз (Д8).",
                 "operationId": "licensing_reveal_license_key",
+                "parameters": [
+                    {
+                        "name": "project",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "license",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK"
@@ -214,7 +390,12 @@
                     "422": {
                         "description": "Validation error"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/admin/v1/projects/{project}/pay/licensing/licenses/{license}/offline-activation": {
@@ -224,6 +405,24 @@
                 ],
                 "summary": "POST /api/admin/v1/projects/{project}/pay/licensing/licenses/{license}/offline-activation",
                 "operationId": "licensing_offline_activation",
+                "parameters": [
+                    {
+                        "name": "project",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "license",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -264,7 +463,12 @@
                     "422": {
                         "description": "Validation error"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/admin/v1/projects/{project}/pay/licensing/licenses/{license}/revoke": {
@@ -274,6 +478,24 @@
                 ],
                 "summary": "POST /api/admin/v1/projects/{project}/pay/licensing/licenses/{license}/revoke",
                 "operationId": "licensing_revoke_license",
+                "parameters": [
+                    {
+                        "name": "project",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "license",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK"
@@ -287,7 +509,12 @@
                     "422": {
                         "description": "Validation error"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/admin/v1/projects/{project}/pay/licensing/organizations": {
@@ -297,6 +524,24 @@
                 ],
                 "summary": "GET /api/admin/v1/projects/{project}/pay/licensing/organizations",
                 "operationId": "licensing_index_organizations",
+                "parameters": [
+                    {
+                        "name": "project",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "cursor",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK"
@@ -307,7 +552,12 @@
                     "403": {
                         "description": "Forbidden"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "post": {
                 "tags": [
@@ -315,6 +565,16 @@
                 ],
                 "summary": "POST /api/admin/v1/projects/{project}/pay/licensing/organizations",
                 "operationId": "licensing_store_organization",
+                "parameters": [
+                    {
+                        "name": "project",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -385,7 +645,12 @@
                     "422": {
                         "description": "Validation error"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/admin/v1/projects/{project}/pay/licensing/organizations/{organization}": {
@@ -395,6 +660,24 @@
                 ],
                 "summary": "GET /api/admin/v1/projects/{project}/pay/licensing/organizations/{organization}",
                 "operationId": "licensing_show_organization",
+                "parameters": [
+                    {
+                        "name": "project",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "organization",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK"
@@ -405,7 +688,12 @@
                     "404": {
                         "description": "Not found"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "put": {
                 "tags": [
@@ -413,6 +701,24 @@
                 ],
                 "summary": "PUT /api/admin/v1/projects/{project}/pay/licensing/organizations/{organization}",
                 "operationId": "licensing_update_organization",
+                "parameters": [
+                    {
+                        "name": "project",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "organization",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -486,7 +792,12 @@
                     "422": {
                         "description": "Validation error"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "delete": {
                 "tags": [
@@ -494,6 +805,24 @@
                 ],
                 "summary": "DELETE /api/admin/v1/projects/{project}/pay/licensing/organizations/{organization}",
                 "operationId": "licensing_delete_organization",
+                "parameters": [
+                    {
+                        "name": "project",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "organization",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
                 "responses": {
                     "204": {
                         "description": "No content"
@@ -507,7 +836,12 @@
                     "422": {
                         "description": "Validation error"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/admin/v1/projects/{project}/pay/licensing/plans": {
@@ -517,6 +851,24 @@
                 ],
                 "summary": "GET /api/admin/v1/projects/{project}/pay/licensing/plans",
                 "operationId": "licensing_index_plans",
+                "parameters": [
+                    {
+                        "name": "project",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "cursor",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK"
@@ -527,7 +879,12 @@
                     "403": {
                         "description": "Forbidden"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "post": {
                 "tags": [
@@ -535,6 +892,16 @@
                 ],
                 "summary": "POST /api/admin/v1/projects/{project}/pay/licensing/plans",
                 "operationId": "licensing_store_plan",
+                "parameters": [
+                    {
+                        "name": "project",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -589,7 +956,12 @@
                     "422": {
                         "description": "Validation error"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/admin/v1/projects/{project}/pay/licensing/plans/{plan}": {
@@ -599,6 +971,24 @@
                 ],
                 "summary": "GET /api/admin/v1/projects/{project}/pay/licensing/plans/{plan}",
                 "operationId": "licensing_show_plan",
+                "parameters": [
+                    {
+                        "name": "project",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "plan",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK"
@@ -609,7 +999,12 @@
                     "404": {
                         "description": "Not found"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "put": {
                 "tags": [
@@ -617,6 +1012,24 @@
                 ],
                 "summary": "PUT /api/admin/v1/projects/{project}/pay/licensing/plans/{plan}",
                 "operationId": "licensing_update_plan",
+                "parameters": [
+                    {
+                        "name": "project",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "plan",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -674,7 +1087,12 @@
                     "422": {
                         "description": "Validation error"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "delete": {
                 "tags": [
@@ -682,6 +1100,24 @@
                 ],
                 "summary": "DELETE /api/admin/v1/projects/{project}/pay/licensing/plans/{plan}",
                 "operationId": "licensing_delete_plan",
+                "parameters": [
+                    {
+                        "name": "project",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "plan",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
                 "responses": {
                     "204": {
                         "description": "No content"
@@ -695,7 +1131,12 @@
                     "422": {
                         "description": "Validation error"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/admin/v1/projects/{project}/pay/licensing/plans/{plan}/features": {
@@ -705,6 +1146,24 @@
                 ],
                 "summary": "POST /api/admin/v1/projects/{project}/pay/licensing/plans/{plan}/features",
                 "operationId": "licensing_store_plan_feature",
+                "parameters": [
+                    {
+                        "name": "project",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "plan",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -746,7 +1205,12 @@
                     "422": {
                         "description": "Validation error"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/admin/v1/projects/{project}/pay/licensing/plans/{plan}/features/{feature}": {
@@ -756,6 +1220,32 @@
                 ],
                 "summary": "PUT /api/admin/v1/projects/{project}/pay/licensing/plans/{plan}/features/{feature}",
                 "operationId": "licensing_update_plan_feature",
+                "parameters": [
+                    {
+                        "name": "project",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "plan",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "feature",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -797,7 +1287,12 @@
                     "422": {
                         "description": "Validation error"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "delete": {
                 "tags": [
@@ -805,6 +1300,32 @@
                 ],
                 "summary": "DELETE /api/admin/v1/projects/{project}/pay/licensing/plans/{plan}/features/{feature}",
                 "operationId": "licensing_delete_plan_feature",
+                "parameters": [
+                    {
+                        "name": "project",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "plan",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "feature",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
                 "responses": {
                     "204": {
                         "description": "No content"
@@ -815,7 +1336,12 @@
                     "404": {
                         "description": "Not found"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/admin/v1/projects/{project}/pay/licensing/releases": {
@@ -825,6 +1351,24 @@
                 ],
                 "summary": "GET /api/admin/v1/projects/{project}/pay/licensing/releases",
                 "operationId": "licensing_index_releases",
+                "parameters": [
+                    {
+                        "name": "project",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "cursor",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK"
@@ -835,7 +1379,12 @@
                     "403": {
                         "description": "Forbidden"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "post": {
                 "tags": [
@@ -843,6 +1392,16 @@
                 ],
                 "summary": "POST /api/admin/v1/projects/{project}/pay/licensing/releases",
                 "operationId": "licensing_store_release",
+                "parameters": [
+                    {
+                        "name": "project",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -900,7 +1459,12 @@
                     "422": {
                         "description": "Validation error"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/admin/v1/projects/{project}/pay/licensing/releases/{release}": {
@@ -910,6 +1474,24 @@
                 ],
                 "summary": "GET /api/admin/v1/projects/{project}/pay/licensing/releases/{release}",
                 "operationId": "licensing_show_release",
+                "parameters": [
+                    {
+                        "name": "project",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "release",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK"
@@ -920,7 +1502,12 @@
                     "404": {
                         "description": "Not found"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "put": {
                 "tags": [
@@ -928,6 +1515,24 @@
                 ],
                 "summary": "PUT /api/admin/v1/projects/{project}/pay/licensing/releases/{release}",
                 "operationId": "licensing_update_release",
+                "parameters": [
+                    {
+                        "name": "project",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "release",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -988,7 +1593,12 @@
                     "422": {
                         "description": "Validation error"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "delete": {
                 "tags": [
@@ -996,6 +1606,24 @@
                 ],
                 "summary": "DELETE /api/admin/v1/projects/{project}/pay/licensing/releases/{release}",
                 "operationId": "licensing_delete_release",
+                "parameters": [
+                    {
+                        "name": "project",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "release",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
                 "responses": {
                     "204": {
                         "description": "No content"
@@ -1006,7 +1634,12 @@
                     "404": {
                         "description": "Not found"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/admin/v1/projects/{project}/pay/licensing/signing-key": {
@@ -1016,6 +1649,16 @@
                 ],
                 "summary": "GET /api/admin/v1/projects/{project}/pay/licensing/signing-key",
                 "operationId": "licensing_signing_key",
+                "parameters": [
+                    {
+                        "name": "project",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK"
@@ -1026,7 +1669,12 @@
                     "403": {
                         "description": "Forbidden"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/v1/pay/licensing/updates/check": {
@@ -1248,6 +1896,24 @@
                 ],
                 "summary": "GET /api/admin/v1/projects/{project}/pay/payments",
                 "operationId": "pay_index_api_admin_v1_projects_project_pay_payments",
+                "parameters": [
+                    {
+                        "name": "project",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "cursor",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK"
@@ -1258,7 +1924,12 @@
                     "422": {
                         "description": "Validation error"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/admin/v1/projects/{project}/pay/payments/{payment}/confirm": {
@@ -1269,6 +1940,24 @@
                 "summary": "POST /api/admin/v1/projects/{project}/pay/payments/{payment}/confirm",
                 "description": "Ручное подтверждение оплаты по счёту (ManualProvider).",
                 "operationId": "pay_confirm_api_admin_v1_projects_project_pay_payments_payment_confirm",
+                "parameters": [
+                    {
+                        "name": "project",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "payment",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK"
@@ -1279,7 +1968,12 @@
                     "422": {
                         "description": "Validation error"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/admin/v1/projects/{project}/pay/payments/{payment}/refund": {
@@ -1289,6 +1983,24 @@
                 ],
                 "summary": "POST /api/admin/v1/projects/{project}/pay/payments/{payment}/refund",
                 "operationId": "pay_refund_api_admin_v1_projects_project_pay_payments_payment_refund",
+                "parameters": [
+                    {
+                        "name": "project",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "payment",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
                 "requestBody": {
                     "required": false,
                     "content": {
@@ -1315,7 +2027,12 @@
                     "422": {
                         "description": "Validation error"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/admin/v1/projects/{project}/pay/plans": {
@@ -1325,6 +2042,16 @@
                 ],
                 "summary": "GET /api/admin/v1/projects/{project}/pay/plans",
                 "operationId": "pay_index_api_admin_v1_projects_project_pay_plans",
+                "parameters": [
+                    {
+                        "name": "project",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK"
@@ -1335,7 +2062,12 @@
                     "422": {
                         "description": "Validation error"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "post": {
                 "tags": [
@@ -1343,6 +2075,16 @@
                 ],
                 "summary": "POST /api/admin/v1/projects/{project}/pay/plans",
                 "operationId": "pay_store_api_admin_v1_projects_project_pay_plans",
+                "parameters": [
+                    {
+                        "name": "project",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -1406,7 +2148,12 @@
                     "422": {
                         "description": "Validation error"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/admin/v1/projects/{project}/pay/plans/{plan}": {
@@ -1416,6 +2163,24 @@
                 ],
                 "summary": "PUT /api/admin/v1/projects/{project}/pay/plans/{plan}",
                 "operationId": "pay_update_api_admin_v1_projects_project_pay_plans_plan",
+                "parameters": [
+                    {
+                        "name": "project",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "plan",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -1479,7 +2244,12 @@
                     "422": {
                         "description": "Validation error"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/admin/v1/projects/{project}/pay/plans/{plan}/archive": {
@@ -1489,6 +2259,24 @@
                 ],
                 "summary": "POST /api/admin/v1/projects/{project}/pay/plans/{plan}/archive",
                 "operationId": "pay_archive_api_admin_v1_projects_project_pay_plans_plan_archive",
+                "parameters": [
+                    {
+                        "name": "project",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "plan",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK"
@@ -1499,7 +2287,12 @@
                     "422": {
                         "description": "Validation error"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/admin/v1/projects/{project}/pay/providers": {
@@ -1509,6 +2302,16 @@
                 ],
                 "summary": "GET /api/admin/v1/projects/{project}/pay/providers",
                 "operationId": "pay_index_api_admin_v1_projects_project_pay_providers",
+                "parameters": [
+                    {
+                        "name": "project",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK"
@@ -1519,7 +2322,12 @@
                     "403": {
                         "description": "Forbidden"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/admin/v1/projects/{project}/pay/providers/{provider}": {
@@ -1529,6 +2337,29 @@
                 ],
                 "summary": "GET /api/admin/v1/projects/{project}/pay/providers/{provider}",
                 "operationId": "pay_show_api_admin_v1_projects_project_pay_providers_provider",
+                "parameters": [
+                    {
+                        "name": "project",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "provider",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "manual",
+                                "null",
+                                "platega"
+                            ]
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK"
@@ -1542,7 +2373,12 @@
                     "422": {
                         "description": "Validation error"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "put": {
                 "tags": [
@@ -1550,6 +2386,29 @@
                 ],
                 "summary": "PUT /api/admin/v1/projects/{project}/pay/providers/{provider}",
                 "operationId": "pay_update_api_admin_v1_projects_project_pay_providers_provider",
+                "parameters": [
+                    {
+                        "name": "project",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "provider",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "manual",
+                                "null",
+                                "platega"
+                            ]
+                        }
+                    }
+                ],
                 "requestBody": {
                     "required": false,
                     "content": {
@@ -1614,7 +2473,12 @@
                     "422": {
                         "description": "Validation error"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/admin/v1/projects/{project}/pay/settings": {
@@ -1624,6 +2488,16 @@
                 ],
                 "summary": "GET /api/admin/v1/projects/{project}/pay/settings",
                 "operationId": "pay_show_api_admin_v1_projects_project_pay_settings",
+                "parameters": [
+                    {
+                        "name": "project",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK"
@@ -1634,7 +2508,12 @@
                     "403": {
                         "description": "Forbidden"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "put": {
                 "tags": [
@@ -1642,6 +2521,16 @@
                 ],
                 "summary": "PUT /api/admin/v1/projects/{project}/pay/settings",
                 "operationId": "pay_update_api_admin_v1_projects_project_pay_settings",
+                "parameters": [
+                    {
+                        "name": "project",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -1675,7 +2564,12 @@
                     "422": {
                         "description": "Validation error"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/admin/v1/projects/{project}/pay/subscriptions": {
@@ -1685,6 +2579,24 @@
                 ],
                 "summary": "GET /api/admin/v1/projects/{project}/pay/subscriptions",
                 "operationId": "pay_index_api_admin_v1_projects_project_pay_subscriptions",
+                "parameters": [
+                    {
+                        "name": "project",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "cursor",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK"
@@ -1695,7 +2607,12 @@
                     "422": {
                         "description": "Validation error"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "post": {
                 "tags": [
@@ -1704,6 +2621,16 @@
                 "summary": "POST /api/admin/v1/projects/{project}/pay/subscriptions",
                 "description": "Оформление подписки оператором: полиморфные подписчик и предмет (Д16).",
                 "operationId": "pay_store_api_admin_v1_projects_project_pay_subscriptions",
+                "parameters": [
+                    {
+                        "name": "project",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -1755,7 +2682,12 @@
                     "422": {
                         "description": "Validation error"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/admin/v1/projects/{project}/pay/subscriptions/{subscription}/{action}": {
@@ -1766,6 +2698,38 @@
                 "summary": "POST /api/admin/v1/projects/{project}/pay/subscriptions/{subscription}/{action}",
                 "description": "action ∈ cancel | resume | pause | delete",
                 "operationId": "pay_change_api_admin_v1_projects_project_pay_subscriptions_subscription_action",
+                "parameters": [
+                    {
+                        "name": "project",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "subscription",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "action",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "cancel",
+                                "resume",
+                                "pause",
+                                "delete"
+                            ]
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK"
@@ -1776,7 +2740,12 @@
                     "422": {
                         "description": "Validation error"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/v1/pay/plans": {
@@ -1796,7 +2765,12 @@
                     "422": {
                         "description": "Validation error"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "apiKey": []
+                    }
+                ]
             }
         },
         "/api/v1/pay/subscriptions": {
@@ -1813,7 +2787,13 @@
                     "401": {
                         "description": "Unauthenticated"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "apiKey": [],
+                        "userToken": []
+                    }
+                ]
             },
             "post": {
                 "tags": [
@@ -1821,6 +2801,17 @@
                 ],
                 "summary": "POST /api/v1/pay/subscriptions",
                 "operationId": "pay_subscribe_api_v1_pay_subscriptions",
+                "parameters": [
+                    {
+                        "name": "Idempotency-Key",
+                        "in": "header",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "maxLength": 128
+                        }
+                    }
+                ],
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -1850,7 +2841,13 @@
                     "422": {
                         "description": "Validation error"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "apiKey": [],
+                        "userToken": []
+                    }
+                ]
             }
         },
         "/api/v1/pay/subscriptions/{subscription}/{action}": {
@@ -1860,6 +2857,38 @@
                 ],
                 "summary": "POST /api/v1/pay/subscriptions/{subscription}/{action}",
                 "operationId": "pay_change_api_v1_pay_subscriptions_subscription_action",
+                "parameters": [
+                    {
+                        "name": "subscription",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "action",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "cancel",
+                                "resume",
+                                "pause"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "Idempotency-Key",
+                        "in": "header",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "maxLength": 128
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK"
@@ -1870,7 +2899,13 @@
                     "422": {
                         "description": "Validation error"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "apiKey": [],
+                        "userToken": []
+                    }
+                ]
             }
         },
         "/webhooks/{provider}": {
@@ -1880,6 +2915,21 @@
                 ],
                 "summary": "POST /webhooks/{provider}",
                 "operationId": "pay___invoke_webhooks_provider",
+                "parameters": [
+                    {
+                        "name": "provider",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "manual",
+                                "null",
+                                "platega"
+                            ]
+                        }
+                    }
+                ],
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -1914,6 +2964,11 @@
             "apiKey": {
                 "type": "apiKey",
                 "name": "X-Api-Key",
+                "in": "header"
+            },
+            "userToken": {
+                "type": "apiKey",
+                "name": "X-User-Token",
                 "in": "header"
             }
         }

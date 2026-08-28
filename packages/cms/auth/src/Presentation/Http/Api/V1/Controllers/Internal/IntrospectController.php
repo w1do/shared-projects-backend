@@ -18,6 +18,7 @@ final class IntrospectController
         operationId: 'auth___invoke_internal_introspect',
         tags: ['auth'],
         summary: 'POST /internal/introspect',
+        security: [['serviceToken' => []]],
         requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(
             properties: [
                 new OA\Property(property: 'token', type: 'string'),

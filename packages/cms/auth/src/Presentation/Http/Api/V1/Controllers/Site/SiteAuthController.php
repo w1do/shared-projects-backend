@@ -51,6 +51,7 @@ final class SiteAuthController
         operationId: 'auth_register_api_v1_auth_register',
         tags: ['auth'],
         summary: 'POST /api/v1/auth/register',
+        security: [['apiKey' => []]],
         requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(
             required: ['email', 'password'],
             properties: [
@@ -76,6 +77,7 @@ final class SiteAuthController
         operationId: 'auth_login_api_v1_auth_login',
         tags: ['auth'],
         summary: 'POST /api/v1/auth/login',
+        security: [['apiKey' => []]],
         requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(
             required: ['email', 'password'],
             properties: [
@@ -96,7 +98,7 @@ final class SiteAuthController
         return (new SiteAuthTokenResource($result))->toResponse($request);
     }
 
-    #[OA\Post(path: '/api/v1/auth/logout', operationId: 'auth_logout_api_v1_auth_logout', tags: ['auth'], summary: 'POST /api/v1/auth/logout', responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')])]
+    #[OA\Post(path: '/api/v1/auth/logout', operationId: 'auth_logout_api_v1_auth_logout', tags: ['auth'], summary: 'POST /api/v1/auth/logout', security: [['apiKey' => [], 'bearerAuth' => []]], responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')])]
     public function logout(Request $request, LogoutHandler $command): JsonResponse
     {
         $command->handle(new LogoutCommand($this->user($request)));
@@ -104,7 +106,7 @@ final class SiteAuthController
         return ApiResponse::noContent();
     }
 
-    #[OA\Get(path: '/api/v1/auth/me', operationId: 'auth_me_api_v1_auth_me', tags: ['auth'], summary: 'GET /api/v1/auth/me', responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')])]
+    #[OA\Get(path: '/api/v1/auth/me', operationId: 'auth_me_api_v1_auth_me', tags: ['auth'], summary: 'GET /api/v1/auth/me', security: [['apiKey' => [], 'bearerAuth' => []]], responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')])]
     public function me(Request $request): JsonResponse
     {
         return (new SiteUserResource(SiteUserDTO::fromModel($this->user($request))))->toResponse($request);
@@ -115,6 +117,7 @@ final class SiteAuthController
         operationId: 'auth_updateProfile_api_v1_auth_me',
         tags: ['auth'],
         summary: 'PATCH /api/v1/auth/me',
+        security: [['apiKey' => [], 'bearerAuth' => []]],
         requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(
             properties: [
                 new OA\Property(property: 'name', type: 'string', maxLength: 255),
@@ -140,6 +143,7 @@ final class SiteAuthController
         operationId: 'auth_forgot_api_v1_auth_forgot_password',
         tags: ['auth'],
         summary: 'POST /api/v1/auth/forgot-password',
+        security: [['apiKey' => []]],
         requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(
             required: ['email'],
             properties: [
@@ -163,6 +167,7 @@ final class SiteAuthController
         operationId: 'auth_reset_api_v1_auth_reset_password',
         tags: ['auth'],
         summary: 'POST /api/v1/auth/reset-password',
+        security: [['apiKey' => []]],
         requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(
             required: ['email', 'token', 'password'],
             properties: [

@@ -28,7 +28,21 @@ final class PostController
 {
     public function __construct(private readonly RequestIntrospection $introspection) {}
 
-    #[OA\Get(path: '/api/admin/v1/projects/{project}/content/posts', operationId: 'content_index_api_admin_v1_projects_project_content_posts', tags: ['content'], summary: 'GET /api/admin/v1/projects/{project}/content/posts', responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')])]
+    #[OA\Get(
+        path: '/api/admin/v1/projects/{project}/content/posts',
+        operationId: 'content_index_api_admin_v1_projects_project_content_posts',
+        tags: ['content'],
+        summary: 'GET /api/admin/v1/projects/{project}/content/posts',
+        security: [['bearerAuth' => []]],
+        parameters: [
+            new OA\Parameter(name: 'project', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+            new OA\Parameter(name: 'status', in: 'query', required: false, schema: new OA\Schema(type: 'string', enum: ['draft', 'scheduled', 'published', 'archived'])),
+            new OA\Parameter(name: 'locale', in: 'query', required: false, schema: new OA\Schema(type: 'string')),
+            new OA\Parameter(name: 'category', in: 'query', required: false, schema: new OA\Schema(type: 'integer')),
+            new OA\Parameter(name: 'cursor', in: 'query', required: false, schema: new OA\Schema(type: 'string')),
+        ],
+        responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')],
+    )]
     public function index(Request $request, ListPostsQuery $query): JsonResponse
     {
         $page = $query->handle(
@@ -45,6 +59,10 @@ final class PostController
         operationId: 'content_store_api_admin_v1_projects_project_content_posts',
         tags: ['content'],
         summary: 'POST /api/admin/v1/projects/{project}/content/posts',
+        security: [['bearerAuth' => []]],
+        parameters: [
+            new OA\Parameter(name: 'project', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+        ],
         requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(
             required: ['title'],
             properties: [
@@ -69,7 +87,7 @@ final class PostController
         return (new PostResource(PostDTO::fromModel($post)))->toCreatedResponse($request);
     }
 
-    #[OA\Get(path: '/api/admin/v1/projects/{project}/content/posts/{post}', operationId: 'content_show_api_admin_v1_projects_project_content_posts_post', tags: ['content'], summary: 'GET /api/admin/v1/projects/{project}/content/posts/{post}', responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')])]
+    #[OA\Get(path: '/api/admin/v1/projects/{project}/content/posts/{post}', operationId: 'content_show_api_admin_v1_projects_project_content_posts_post', tags: ['content'], summary: 'GET /api/admin/v1/projects/{project}/content/posts/{post}', security: [['bearerAuth' => []]], parameters: [new OA\Parameter(name: 'project', in: 'path', required: true, schema: new OA\Schema(type: 'string')), new OA\Parameter(name: 'post', in: 'path', required: true, schema: new OA\Schema(type: 'integer'))], responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')])]
     public function show(Request $request, string $project, int $postId): JsonResponse
     {
         $post = Post::query()->with(['categories:id', 'seo'])->findOrFail($postId);
@@ -82,6 +100,11 @@ final class PostController
         operationId: 'content_update_api_admin_v1_projects_project_content_posts_post',
         tags: ['content'],
         summary: 'PUT /api/admin/v1/projects/{project}/content/posts/{post}',
+        security: [['bearerAuth' => []]],
+        parameters: [
+            new OA\Parameter(name: 'project', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+            new OA\Parameter(name: 'post', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
+        ],
         requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(
             required: ['title'],
             properties: [
@@ -114,6 +137,11 @@ final class PostController
         operationId: 'content_changeStatus_api_admin_v1_projects_project_content_posts_post_status',
         tags: ['content'],
         summary: 'POST /api/admin/v1/projects/{project}/content/posts/{post}/status',
+        security: [['bearerAuth' => []]],
+        parameters: [
+            new OA\Parameter(name: 'project', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+            new OA\Parameter(name: 'post', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
+        ],
         requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(
             required: ['status'],
             properties: [
@@ -131,7 +159,7 @@ final class PostController
         return (new PostResource(PostDTO::fromModel($updated)))->toResponse($request);
     }
 
-    #[OA\Get(path: '/api/admin/v1/projects/{project}/content/posts/{post}/revisions', operationId: 'content_revisions_api_admin_v1_projects_project_content_posts_post_revisions', tags: ['content'], summary: 'GET /api/admin/v1/projects/{project}/content/posts/{post}/revisions', responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')])]
+    #[OA\Get(path: '/api/admin/v1/projects/{project}/content/posts/{post}/revisions', operationId: 'content_revisions_api_admin_v1_projects_project_content_posts_post_revisions', tags: ['content'], summary: 'GET /api/admin/v1/projects/{project}/content/posts/{post}/revisions', security: [['bearerAuth' => []]], parameters: [new OA\Parameter(name: 'project', in: 'path', required: true, schema: new OA\Schema(type: 'string')), new OA\Parameter(name: 'post', in: 'path', required: true, schema: new OA\Schema(type: 'integer'))], responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')])]
     public function revisions(Request $request, string $project, int $postId, ListRevisionsQuery $query): JsonResponse
     {
         $post = Post::query()->findOrFail($postId);
@@ -139,7 +167,19 @@ final class PostController
         return RevisionResource::collection($query->handle($post))->toResponse($request);
     }
 
-    #[OA\Post(path: '/api/admin/v1/projects/{project}/content/posts/{post}/revisions/{revision}/restore', operationId: 'content_restore_api_admin_v1_projects_project_content_posts_post_revisions_revision_restore', tags: ['content'], summary: 'POST /api/admin/v1/projects/{project}/content/posts/{post}/revisions/{revision}/restore', responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')])]
+    #[OA\Post(
+        path: '/api/admin/v1/projects/{project}/content/posts/{post}/revisions/{revision}/restore',
+        operationId: 'content_restore_api_admin_v1_projects_project_content_posts_post_revisions_revision_restore',
+        tags: ['content'],
+        summary: 'POST /api/admin/v1/projects/{project}/content/posts/{post}/revisions/{revision}/restore',
+        security: [['bearerAuth' => []]],
+        parameters: [
+            new OA\Parameter(name: 'project', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+            new OA\Parameter(name: 'post', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
+            new OA\Parameter(name: 'revision', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
+        ],
+        responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')],
+    )]
     public function restore(Request $request, string $project, int $postId, int $revisionId, RestoreRevisionHandler $command): JsonResponse
     {
         $post = Post::query()->findOrFail($postId);

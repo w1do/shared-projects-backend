@@ -31,6 +31,7 @@ final class CollectController
         operationId: 'analytics___invoke_api_v1_collect',
         tags: ['analytics'],
         summary: 'POST /api/v1/collect',
+        security: [['apiKey' => []]],
         requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(
             required: ['events'],
             properties: [

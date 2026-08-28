@@ -22,7 +22,7 @@ use OpenApi\Attributes as OA;
 
 final class ApiKeyController
 {
-    #[OA\Get(path: '/api/admin/v1/projects/{project}/api-keys', operationId: 'auth_index_api_admin_v1_projects_project_api_keys', tags: ['auth'], summary: 'GET /api/admin/v1/projects/{project}/api-keys', responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')])]
+    #[OA\Get(path: '/api/admin/v1/projects/{project}/api-keys', operationId: 'auth_index_api_admin_v1_projects_project_api_keys', tags: ['auth'], summary: 'GET /api/admin/v1/projects/{project}/api-keys', security: [['bearerAuth' => []]], parameters: [new OA\Parameter(name: 'project', in: 'path', required: true, schema: new OA\Schema(type: 'string'))], responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')])]
     public function index(Request $request, ListApiKeysQuery $query): JsonResponse
     {
         return ApiKeyResource::collection($query->handle($request->attributes->get('project')))->toResponse($request);
@@ -33,6 +33,8 @@ final class ApiKeyController
         operationId: 'auth_store_api_admin_v1_projects_project_api_keys',
         tags: ['auth'],
         summary: 'POST /api/admin/v1/projects/{project}/api-keys',
+        security: [['bearerAuth' => []]],
+        parameters: [new OA\Parameter(name: 'project', in: 'path', required: true, schema: new OA\Schema(type: 'string'))],
         requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(
             required: ['type'],
             properties: [
@@ -53,7 +55,7 @@ final class ApiKeyController
         return (new ApiKeyResource(ApiKeyDTO::issued($issued['model'], $issued['plain'])))->toCreatedResponse($request);
     }
 
-    #[OA\Delete(path: '/api/admin/v1/projects/{project}/api-keys/{key}', operationId: 'auth_destroy_api_admin_v1_projects_project_api_keys_key', tags: ['auth'], summary: 'DELETE /api/admin/v1/projects/{project}/api-keys/{key}', responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')])]
+    #[OA\Delete(path: '/api/admin/v1/projects/{project}/api-keys/{key}', operationId: 'auth_destroy_api_admin_v1_projects_project_api_keys_key', tags: ['auth'], summary: 'DELETE /api/admin/v1/projects/{project}/api-keys/{key}', security: [['bearerAuth' => []]], parameters: [new OA\Parameter(name: 'project', in: 'path', required: true, schema: new OA\Schema(type: 'string')), new OA\Parameter(name: 'key', in: 'path', required: true, schema: new OA\Schema(type: 'string'))], responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')])]
     public function destroy(Request $request, string $project, string $keyId, RevokeApiKeyHandler $command): JsonResponse
     {
         /** @var Project $projectModel */

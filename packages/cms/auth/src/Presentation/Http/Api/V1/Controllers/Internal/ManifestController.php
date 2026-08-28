@@ -20,6 +20,7 @@ final class ManifestController
         operationId: 'auth_store_internal_manifests',
         tags: ['auth'],
         summary: 'POST /internal/manifests',
+        security: [['serviceToken' => []]],
         requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(
             required: ['key', 'version'],
             properties: [

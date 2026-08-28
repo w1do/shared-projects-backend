@@ -16,7 +16,7 @@ use OpenApi\Attributes as OA;
 
 final class SiteSettingController
 {
-    #[OA\Get(path: '/api/admin/v1/projects/{project}/site-settings', operationId: 'auth_show_api_admin_v1_projects_project_site_settings', tags: ['auth'], summary: 'GET /api/admin/v1/projects/{project}/site-settings', responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 403, description: 'Forbidden')])]
+    #[OA\Get(path: '/api/admin/v1/projects/{project}/site-settings', operationId: 'auth_show_api_admin_v1_projects_project_site_settings', tags: ['auth'], summary: 'GET /api/admin/v1/projects/{project}/site-settings', security: [['bearerAuth' => []]], parameters: [new OA\Parameter(name: 'project', in: 'path', required: true, schema: new OA\Schema(type: 'string'))], responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 403, description: 'Forbidden')])]
     public function show(Request $request, string $project, GetSiteSettingsQuery $query): JsonResponse
     {
         return (new SiteSettingsResource($query->handle()))->toResponse($request);
@@ -27,6 +27,10 @@ final class SiteSettingController
         operationId: 'auth_update_api_admin_v1_projects_project_site_settings',
         tags: ['auth'],
         summary: 'PUT /api/admin/v1/projects/{project}/site-settings',
+        security: [['bearerAuth' => []]],
+        parameters: [
+            new OA\Parameter(name: 'project', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+        ],
         requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(
             required: ['language', 'currency_default', 'currencies'],
             properties: [

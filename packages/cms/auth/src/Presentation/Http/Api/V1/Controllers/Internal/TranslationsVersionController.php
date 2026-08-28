@@ -19,6 +19,7 @@ final class TranslationsVersionController
         operationId: 'auth___invoke_internal_translations_version',
         tags: ['auth'],
         summary: 'POST /internal/translations-version',
+        security: [['serviceToken' => []]],
         requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(
             required: ['project_id', 'version'],
             properties: [
