@@ -55,6 +55,19 @@ docker compose -f infra/compose/compose.yaml up -d
 на одном домене ничего настраивать не нужно; площадке с отдельным API-origin потребуется
 пересборка образа панели с другими build-args (`infra/docker/admin-front.Dockerfile`).
 
+## Публикация образов в реестр
+
+Backend-образы четырёх сервисов можно собрать и отправить в Container Registry GitLab
+одной командой:
+
+```bash
+./tools/cms image:publish [тег]     # по умолчанию тег — короткий SHA коммита, latest — дополнительно
+```
+
+База реестра задаётся `CMS_REGISTRY_BASE` (окружение или `infra/compose/.env`), либо
+выводится из gitlab-remote репозитория; доступ — заранее через `docker login`.
+Отдельно: `image:build` (только сборка) и `image:push` (только отправка).
+
 ## Обновление и rollback
 
 - **Обновление**: push в отслеживаемую ветку → redeploy сервиса в Dokploy (или локально

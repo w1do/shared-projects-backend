@@ -8,6 +8,9 @@
 #   ./tools/cms api                           собрать единый swagger из всех сервисов
 #   ./tools/cms e2e [--headed] [args...]      сценарии панели (Playwright) против поднятого стека
 #   ./tools/cms seed-demo [project]           демо-контент в проект (по умолчанию demo)
+#   ./tools/cms image:build [тег]             собрать backend-образы четырёх сервисов для реестра
+#   ./tools/cms image:push [тег]              отправить собранные образы в GitLab registry
+#   ./tools/cms image:publish [тег]           собрать и отправить одной командой
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -15,6 +18,48 @@ COMPOSE="docker compose -f $ROOT/infra/compose/compose.yaml -f $ROOT/infra/compo
 SERVICES=(auth-service content-service analytics-service pay-service)
 
 usage() { grep '^#   ' "$0" | sed 's/^#   //'; exit 1; }
+
+# Значение ключа из корневого env. Читаем сами, а не через `. .env`: значения
+# со спецсимволами не должны исполняться shell'ом.
+env_value() {
+    [ -f "$ROOT/infra/compose/.env" ] || return 0
+    sed -n "s/^$1=//p" "$ROOT/infra/compose/.env" | head -n1 | sed -e 's/^"//' -e 's/"$//' -e "s/^'//" -e "s/'$//"
+}
+
+# База реестра: CMS_REGISTRY_BASE (окружение или infra/compose/.env), иначе
+# выводится из gitlab-remote как в Container Registry GitLab: registry.<хост>/<путь>.
+registry_base() {
+    local base remote path
+    base="${CMS_REGISTRY_BASE:-$(env_value CMS_REGISTRY_BASE)}"
+    if [ -n "$base" ]; then
+        echo "$base"
+        return
+    fi
+    remote=$(git -C "$ROOT" remote get-url gitlab 2>/dev/null || git -C "$ROOT" remote get-url origin 2>/dev/null || true)
+    case "$remote" in
+        *gitlab*)
+            # git@host:path.git и https://host/path.git приводятся к host/path
+            path=$(echo "$remote" | sed -e 's|^git@||' -e 's|^https\{0,1\}://||' -e 's|:|/|' -e 's|\.git$||')
+            echo "registry.${path}"
+            ;;
+        *)
+            echo "Реестр не определён: gitlab-remote не найден." >&2
+            echo "Задайте CMS_REGISTRY_BASE=registry.gitlab.com/<группа>/<проект> (окружение или infra/compose/.env)" >&2
+            echo "или добавьте remote: git remote add gitlab git@gitlab.com:<группа>/<проект>.git" >&2
+            exit 1
+            ;;
+    esac
+}
+
+# Тег по умолчанию — короткий SHA коммита: по образу в реестре видно, что в нём
+# собрано. `latest` ставится дополнительно, а не вместо.
+image_tag() {
+    if [ -n "${1:-}" ]; then
+        echo "$1"
+        return
+    fi
+    git -C "$ROOT" rev-parse --short HEAD 2>/dev/null || echo latest
+}
 
 cmd="${1:-}"; shift || true
 case "$cmd" in
@@ -60,6 +105,43 @@ case "$cmd" in
         ;;
     api)
         exec "$ROOT/tools/build-openapi.sh"
+        ;;
+    image:build)
+        base=$(registry_base)
+        tag=$(image_tag "${1:-}")
+        for s in "${SERVICES[@]}"; do
+            echo "==> build $base/$s:$tag"
+            docker build -f "$ROOT/infra/docker/Dockerfile" --build-arg "APP_SERVICE=$s" \
+                -t "$base/$s:$tag" -t "$base/$s:latest" "$ROOT"
+        done
+        echo ""
+        echo "Образы собраны. Отправить: ./tools/cms image:push $tag"
+        ;;
+    image:push)
+        base=$(registry_base)
+        tag=$(image_tag "${1:-}")
+        for s in "${SERVICES[@]}"; do
+            if ! docker image inspect "$base/$s:$tag" >/dev/null 2>&1; then
+                echo "Образа $base/$s:$tag нет локально — сначала ./tools/cms image:build $tag" >&2
+                exit 1
+            fi
+        done
+        # Логин не автоматизируется: пароль в аргументе виден в списке процессов.
+        # docker login хранит токен сам.
+        for s in "${SERVICES[@]}"; do
+            echo "==> push $base/$s:$tag"
+            if ! docker push "$base/$s:$tag"; then
+                echo "push не прошёл. Если дело в доступе: docker login ${base%%/*}" >&2
+                exit 1
+            fi
+            docker push "$base/$s:latest"
+        done
+        echo ""
+        echo "Образы в реестре ($base/*:$tag)."
+        ;;
+    image:publish)
+        "$0" image:build "${1:-}"
+        "$0" image:push "${1:-}"
         ;;
     seed-demo)
         # Идентификатор берётся из auth-service: сидер не должен угадывать проект —
