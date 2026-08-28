@@ -22,6 +22,7 @@ const LATIN_ONLY_TERMS = new Set([
   "ID",
   "Slug",
   "Uptime SLA",
+  "JSON",
 ]);
 
 beforeEach(() => {

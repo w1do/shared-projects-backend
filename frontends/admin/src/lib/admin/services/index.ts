@@ -16,3 +16,4 @@ export * from "./content-domain/seo";
 export * from "./content-domain/campaigns";
 
 export * from "./ops/dashboard";
+export * from "./licensing";

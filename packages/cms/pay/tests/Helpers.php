@@ -30,7 +30,7 @@ class FakePayIntrospector implements Introspector
 function actingAsPayOperator(string $projectId = 'proj-1', array $permissions = [
     'pay.plans.view', 'pay.plans.manage', 'pay.payments.view', 'pay.payments.confirm',
     'pay.payments.refund', 'pay.subscriptions.view', 'pay.subscriptions.manage',
-], array $services = ['pay']): array
+], array $services = ['pay', 'licensing']): array
 {
     // токен guard web для сайтовых сценариев: user 7 проекта
     $token = new IntrospectionResult(subject: Subject::ProjectUser, active: true, projectId: $projectId, userId: '7',

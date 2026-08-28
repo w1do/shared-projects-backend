@@ -25,7 +25,9 @@
         ],
         "key_type": null,
         "scopes": [],
-        "enabled_services": [],
+        "enabled_services": [
+            "licensing"
+        ],
         "locales": [
             "ru"
         ]

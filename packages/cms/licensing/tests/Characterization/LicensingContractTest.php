@@ -3,11 +3,14 @@
 declare(strict_types=1);
 
 use Cms\Licensing\Domain\Models\License;
+use Cms\Licensing\Domain\Models\LicenseInstallation;
 use Cms\Licensing\Domain\Models\Organization;
 use Cms\Licensing\Domain\Models\Plan;
+use Cms\Licensing\Domain\Models\Release;
 use Cms\Licensing\Domain\Models\SigningKey;
 use Cms\Shared\Tenant\ProjectContext;
 use Cms\Shared\Testing\ResponseSnapshot;
+use Illuminate\Support\Facades\Crypt;
 
 /**
  * Характеризационные снимки admin-API licensing (guard 0.3): каждый маршрут
@@ -237,16 +240,30 @@ test('contract: licensing plan delete with licenses', function () {
 
 // ----------------------------------------------------------------- licenses
 
-/** Лицензия с фиксированными ключом и конвертом: снимки требуют детерминизма. */
+/** Лицензия с фиксированными ключом и entitlements: снимки требуют детерминизма. */
 function licensingContractLicense(array $attrs = []): License
 {
     app(ProjectContext::class)->set('proj-1');
 
-    return License::factory()->create(array_merge([
+    return License::factory()->withKey('LIC-ABCD-EFGH-JKLM-NPQR')->create(array_merge([
         'organization_id' => licensingContractOrganization()->id,
         'plan_id' => licensingContractPlan()->id,
-        'key' => 'LIC-00000-11111-22222-33333-44444',
-        'signed_payload' => base64_encode('{"data":"e30=","signature":"c2ln"}'),
+        'edition' => 'enterprise',
+        'features' => ['api-access'],
+        'entitled_version' => '1.4.7',
+        'updates_until' => '2030-01-01',
+        'max_installations' => 3,
+    ], $attrs));
+}
+
+function licensingContractInstallation(License $license, array $attrs = []): LicenseInstallation
+{
+    return LicenseInstallation::factory()->create(array_merge([
+        'license_id' => $license->id,
+        'install_id' => str_repeat('9f2c', 16),
+        'domain' => 'crm.client.example',
+        'app_version' => '1.4.2',
+        'last_ip' => '10.0.0.1',
     ], $attrs));
 }
 
@@ -260,9 +277,10 @@ test('contract: licensing licenses index', function () {
     );
 });
 
-test('contract: licensing license show', function () {
+test('contract: licensing license show with installations', function () {
     $headers = licensingOperator();
     $license = licensingContractLicense();
+    licensingContractInstallation($license);
 
     ResponseSnapshot::assertMatches(
         $this->getJson(licensingUrl("licenses/{$license->id}"), $headers),
@@ -270,7 +288,7 @@ test('contract: licensing license show', function () {
     );
 });
 
-test('contract: licensing license issue', function () {
+test('contract: licensing license issue returns the key once', function () {
     $headers = licensingOperator();
     $organization = licensingContractOrganization();
     $plan = licensingContractPlan();
@@ -279,19 +297,43 @@ test('contract: licensing license issue', function () {
         $this->postJson(licensingUrl('licenses'), [
             'organization_id' => $organization->id,
             'plan_id' => $plan->id,
-            'expires_at' => '2030-01-01T00:00:00+00:00',
+            'updates_until' => '2030-01-01',
+            'max_installations' => 3,
+            'entitled_version' => '1.4.7',
         ], $headers),
         'admin-license-issue',
     );
 });
 
-test('contract: licensing license file', function () {
+test('contract: licensing license renew and rejected renew', function () {
     $headers = licensingOperator();
     $license = licensingContractLicense();
 
     ResponseSnapshot::assertMatches(
-        $this->get(licensingUrl("licenses/{$license->id}/file"), $headers),
-        'admin-license-file',
+        $this->postJson(licensingUrl("licenses/{$license->id}/renew"), ['updates_until' => '2031-01-01'], $headers),
+        'admin-license-renew',
+    );
+
+    ResponseSnapshot::assertMatches(
+        $this->postJson(licensingUrl("licenses/{$license->id}/renew"), ['updates_until' => '2030-01-01'], $headers),
+        'admin-license-renew-422',
+    );
+});
+
+test('contract: licensing reveal key once then 422', function () {
+    $headers = licensingOperator();
+    $license = licensingContractLicense([
+        'key_encrypted' => Crypt::encryptString('LIC-ABCD-EFGH-JKLM-NPQR'),
+    ]);
+
+    ResponseSnapshot::assertMatches(
+        $this->postJson(licensingUrl("licenses/{$license->id}/reveal-key"), [], $headers),
+        'admin-license-reveal-key',
+    );
+
+    ResponseSnapshot::assertMatches(
+        $this->postJson(licensingUrl("licenses/{$license->id}/reveal-key"), [], $headers),
+        'admin-license-reveal-key-422',
     );
 });
 
@@ -310,6 +352,41 @@ test('contract: licensing license revoke and repeated revoke', function () {
     );
 });
 
+test('contract: licensing offline activation', function () {
+    $headers = licensingOperator();
+    $license = licensingContractLicense();
+
+    ResponseSnapshot::assertMatches(
+        $this->postJson(licensingUrl("licenses/{$license->id}/offline-activation"), [
+            'install_id' => str_repeat('9f2c', 16),
+            'domain' => 'closed.contour.example',
+            'app_version' => '1.4.2',
+        ], $headers),
+        'admin-license-offline-activation',
+    );
+});
+
+test('contract: licensing installations index and revoke', function () {
+    $headers = licensingOperator();
+    $license = licensingContractLicense();
+    $installation = licensingContractInstallation($license);
+
+    ResponseSnapshot::assertMatches(
+        $this->getJson(licensingUrl("licenses/{$license->id}/installations"), $headers),
+        'admin-installations-index',
+    );
+
+    ResponseSnapshot::assertMatches(
+        $this->postJson(licensingUrl("installations/{$installation->id}/revoke"), [], $headers),
+        'admin-installation-revoke',
+    );
+
+    ResponseSnapshot::assertMatches(
+        $this->postJson(licensingUrl("installations/{$installation->id}/revoke"), [], $headers),
+        'admin-installation-revoke-422',
+    );
+});
+
 test('contract: licensing signing key', function () {
     $headers = licensingOperator();
     app(ProjectContext::class)->set('proj-1');
@@ -325,23 +402,145 @@ test('contract: licensing signing key', function () {
     );
 });
 
-test('contract: licensing public validate active and invalid', function () {
-    $license = licensingContractLicense([
-        'signed_payload' => base64_encode((string) json_encode([
-            'data' => base64_encode('{"plan":"enterprise","features":["api-access"]}'),
-            'signature' => 'c2ln',
-        ])),
+// ----------------------------------------------------------------- releases
+
+test('contract: licensing releases index and crud', function () {
+    $headers = licensingOperator();
+    app(ProjectContext::class)->set('proj-1');
+    $release = Release::factory()->version('1.4.7')->create([
+        'released_at' => '2026-01-10 00:00:00',
+        'changelog_url' => 'https://changelog.example/1.4.7',
     ]);
-    app(ProjectContext::class)->clear();
 
     ResponseSnapshot::assertMatches(
-        $this->postJson('/api/v1/pay/licensing/validate', ['key' => $license->key]),
-        'public-validate-active',
+        $this->getJson(licensingUrl('releases'), $headers),
+        'admin-releases-index',
     );
 
     ResponseSnapshot::assertMatches(
-        $this->postJson('/api/v1/pay/licensing/validate', ['key' => 'LIC-ZZZZZ-ZZZZZ-ZZZZZ-ZZZZZ-ZZZZZ']),
-        'public-validate-invalid',
+        $this->getJson(licensingUrl("releases/{$release->id}"), $headers),
+        'admin-release-show',
+    );
+
+    ResponseSnapshot::assertMatches(
+        $this->postJson(licensingUrl('releases'), [
+            'version' => '1.4.8',
+            'train' => '1.4',
+            'repository' => 'crm/app-1.4',
+            'released_at' => '2026-03-10T00:00:00+00:00',
+            'is_security' => true,
+        ], $headers),
+        'admin-release-store',
+    );
+
+    ResponseSnapshot::assertMatches(
+        $this->postJson(licensingUrl('releases'), [
+            'version' => '1.4.7',
+            'train' => '1.4',
+            'repository' => 'crm/app-1.4',
+            'released_at' => '2026-03-10T00:00:00+00:00',
+        ], $headers),
+        'admin-release-store-422-version-taken',
+    );
+
+    ResponseSnapshot::assertMatches(
+        $this->putJson(licensingUrl("releases/{$release->id}"), [
+            'version' => '1.4.7',
+            'train' => '1.4',
+            'repository' => 'crm/app-1.4',
+            'released_at' => '2026-01-10T00:00:00+00:00',
+            'is_security' => true,
+        ], $headers),
+        'admin-release-update',
+    );
+
+    ResponseSnapshot::assertMatches(
+        $this->deleteJson(licensingUrl("releases/{$release->id}"), [], $headers),
+        'admin-release-delete',
+    );
+});
+
+// ------------------------------------------------- публичный контракт (ТЗ 1.7)
+
+test('contract: public activate, refresh, deactivate and updates check', function () {
+    $license = licensingContractLicense();
+    app(ProjectContext::class)->set('proj-1');
+    Release::factory()->version('1.4.7')->create(['released_at' => '2026-01-10 00:00:00']);
+    app(ProjectContext::class)->clear();
+
+    $payload = [
+        'key' => 'LIC-ABCD-EFGH-JKLM-NPQR',
+        'install_id' => str_repeat('9f2c', 16),
+        'domain' => 'crm.client.example',
+        'app_version' => '1.4.2',
+    ];
+
+    ResponseSnapshot::assertMatches(
+        $this->postJson('/api/v1/pay/licensing/license/activate', $payload),
+        'public-license-activate',
+    );
+
+    ResponseSnapshot::assertMatches(
+        $this->postJson('/api/v1/pay/licensing/license/refresh', $payload),
+        'public-license-refresh',
+    );
+
+    ResponseSnapshot::assertMatches(
+        $this->postJson('/api/v1/pay/licensing/updates/check', [
+            'key' => $payload['key'],
+            'install_id' => $payload['install_id'],
+            'app_version' => '1.4.2',
+        ]),
+        'public-updates-check',
+    );
+
+    ResponseSnapshot::assertMatches(
+        $this->postJson('/api/v1/pay/licensing/license/deactivate', [
+            'key' => $payload['key'],
+            'install_id' => $payload['install_id'],
+        ]),
+        'public-license-deactivate',
+    );
+});
+
+test('contract: public activation errors', function () {
+    $license = licensingContractLicense(['max_installations' => 1]);
+    licensingContractInstallation($license);
+    app(ProjectContext::class)->clear();
+
+    ResponseSnapshot::assertMatches(
+        $this->postJson('/api/v1/pay/licensing/license/activate', [
+            'key' => 'LIC-XXXX-XXXX-XXXX-XXXX',
+            'install_id' => str_repeat('ab', 32),
+            'domain' => 'crm.client.example',
+            'app_version' => '1.0.0',
+        ]),
+        'public-license-activate-404',
+    );
+
+    ResponseSnapshot::assertMatches(
+        $this->postJson('/api/v1/pay/licensing/license/activate', [
+            'key' => 'LIC-ABCD-EFGH-JKLM-NPQR',
+            'install_id' => str_repeat('cd', 32),
+            'domain' => 'crm.client.example',
+            'app_version' => '1.0.0',
+        ]),
+        'public-license-activate-409-limit',
+    );
+});
+
+test('contract: removed v1 endpoints respond 404', function () {
+    $headers = licensingOperator();
+    $license = licensingContractLicense();
+
+    ResponseSnapshot::assertMatches(
+        $this->postJson('/api/v1/pay/licensing/validate', ['key' => 'LIC-ABCD-EFGH-JKLM-NPQR']),
+        'public-validate-removed-404',
+    );
+
+    ResponseSnapshot::assertMatches(
+        $this->getJson(licensingUrl("licenses/{$license->id}/file"), $headers),
+        'admin-license-file-removed-404',
     );
 });
 

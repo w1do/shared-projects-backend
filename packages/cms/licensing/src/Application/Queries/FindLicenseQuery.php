@@ -14,6 +14,9 @@ final class FindLicenseQuery
 {
     public function handle(string $licenseId): License
     {
-        return License::query()->with(['organization', 'plan'])->findOrFail($licenseId);
+        return License::query()
+            ->with(['organization', 'plan'])
+            ->withCount('activeInstallations')
+            ->findOrFail($licenseId);
     }
 }

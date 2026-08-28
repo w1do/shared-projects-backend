@@ -25,6 +25,10 @@ const SERVICE_TEXTS = {
     title: "console.settings.services.pay.title",
     description: "console.settings.services.pay.description",
   },
+  licensing: {
+    title: "console.settings.services.licensing.title",
+    description: "console.settings.services.licensing.description",
+  },
 } as const;
 
 /** Управление сервисами проекта: галочки переключаемых сервисов платформы. */

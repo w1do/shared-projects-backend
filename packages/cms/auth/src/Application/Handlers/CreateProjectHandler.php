@@ -8,6 +8,7 @@ use Cms\Auth\Application\Commands\CreateProjectCommand;
 use Cms\Auth\Domain\Enums\AuditAction;
 use Cms\Auth\Domain\Enums\SystemRole;
 use Cms\Auth\Domain\Models\Project;
+use Cms\Auth\Domain\Models\ProjectService;
 use Cms\Auth\Infrastructure\Persistence\AdminPermissionResolver;
 use Cms\Auth\Infrastructure\Persistence\AuditRecorder;
 use Cms\Auth\Infrastructure\Persistence\BootstrapCache;
@@ -34,6 +35,15 @@ final class CreateProjectHandler
             $project->members()->attach($command->creator->id);
 
             $this->syncer->syncSystemRoles($project);
+
+            foreach ((array) config('cms-auth.default_enabled_services', []) as $service) {
+                ProjectService::create([
+                    'project_id' => $project->id,
+                    'service' => $service,
+                    'enabled' => true,
+                    'enabled_at' => now(),
+                ]);
+            }
 
             // Сброс в null, а не восстановление предыдущего — поведение сохранено дословно (9.2).
             $this->permissions->withTeam($project->id, function () use ($command): void {

@@ -1,0 +1,18 @@
+{
+    "status": 200,
+    "content_type": "application/json",
+    "body": {
+        "data": [
+            {
+                "id": "<int>",
+                "install_id": "<string>",
+                "domain": "crm.client.example",
+                "app_version": "1.4.2",
+                "last_ip": "10.0.0.1",
+                "last_seen_at": "<string>",
+                "status": "active",
+                "revoked_at": null
+            }
+        ]
+    }
+}

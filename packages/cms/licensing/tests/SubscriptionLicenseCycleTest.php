@@ -11,7 +11,7 @@ use Cms\Pay\Domain\Models\Subscription;
 use Cms\Shared\Tenant\ProjectContext;
 use Illuminate\Support\Carbon;
 
-/** Сквозной цикл Д15/Д16: подписка организации ⇄ жизненный цикл лицензии. */
+/** Сквозной цикл Д10: подписка организации ⇄ perpetual-лицензия. */
 function cycleOperator(): array
 {
     return actingAsPayOperator(permissions: [
@@ -48,19 +48,19 @@ test('organization subscription cycle: issue, renew, cancel and revoke are indep
     expect($checkout->json('data.subscription.subscriber'))
         ->toBe(['type' => 'organization', 'id' => (string) $organization->id])
         ->and($checkout->json('data.subscription.subject.type'))->toBe('license_plan')
-        ->and($checkout->json('data.subscription.subject.code'))->toBe($plan->code)
         ->and($checkout->json('data.payment.provider'))->toBe('manual')
         ->and($checkout->json('data.payment.amount_minor'))->toBe(49900);
 
-    // Лицензия выпущена автоматически со сроком до конца оплаченного периода
+    // Лицензия выпущена автоматически: окно обновлений = конец оплаченного периода
     $subscription = Subscription::query()->sole();
     $license = License::query()->sole();
-    $key = $license->key;
+    $keyHash = $license->key_hash;
     expect($license->organization_id)->toBe($organization->id)
         ->and($license->plan_id)->toBe($plan->id)
-        ->and($license->expires_at->toIso8601String())
-        ->toBe($subscription->current_period_ends_at->toIso8601String())
-        ->and($license->payload()['features'])->toBe(['api-access']);
+        ->and($license->updates_until->toDateString())
+        ->toBe($subscription->current_period_ends_at->toDateString())
+        ->and($license->features)->toBe(['api-access'])
+        ->and($license->key_encrypted)->not->toBeNull();
 
     // Оплата продления: период истёк, джоба создаёт платёж, оператор подтверждает
     Carbon::setTestNow('2026-10-05 12:00:00');
@@ -68,33 +68,24 @@ test('organization subscription cycle: issue, renew, cancel and revoke are indep
     $renewal = app(RenewSubscriptionHandler::class)->handle(new RenewSubscriptionCommand($subscription));
     $this->postJson("/api/admin/v1/projects/proj-1/pay/payments/{$renewal->id}/confirm", [], $headers)->assertOk();
 
-    // Период сдвинут И лицензия перевыпущена: новый expires_at, прежний ключ
+    // Период сдвинут И окно обновлений лицензии сдвинуто, ключ прежний
     $subscription->refresh();
     $license->refresh();
     expect($subscription->current_period_ends_at->toIso8601String())->toBe('2026-11-05T12:00:00+00:00')
-        ->and($license->expires_at->toIso8601String())->toBe('2026-11-05T12:00:00+00:00')
-        ->and($license->key)->toBe($key)
-        ->and($license->payload()['expires_at'])->toBe('2026-11-05T12:00:00+00:00');
+        ->and($license->updates_until->toDateString())->toBe('2026-11-05')
+        ->and($license->key_hash)->toBe($keyHash);
 
-    // Подпись перевыпущенного payload валидна для публичного ключа проекта
-    $publicKey = (string) base64_decode(
-        (string) $this->getJson('/api/admin/v1/projects/proj-1/pay/licensing/signing-key', $headers)
-            ->json('data.public_key'),
-        true,
-    );
-    $envelope = json_decode((string) base64_decode($license->signed_payload, true), true);
-    expect(sodium_crypto_sign_verify_detached(
-        (string) base64_decode($envelope['signature'], true),
-        $envelope['data'],
-        $publicKey,
-    ))->toBeTrue();
-
-    // Отмена подписки лицензию не меняет — она доживает до expires_at
+    // Отмена подписки лицензию не трогает: она бессрочна, замирает только окно
     $this->postJson("/api/admin/v1/projects/proj-1/pay/subscriptions/{$subscription->id}/cancel", [], $headers)
         ->assertOk();
     $license->refresh();
     expect($license->status()->value)->toBe('active')
-        ->and($license->expires_at->toIso8601String())->toBe('2026-11-05T12:00:00+00:00');
+        ->and($license->updates_until->toDateString())->toBe('2026-11-05');
+
+    // Лицензия живёт и после конца оплаченного периода — истекает только окно
+    Carbon::setTestNow('2027-01-01 12:00:00');
+    expect($license->status()->value)->toBe('active')
+        ->and($license->activationState())->toBe('updates_expired');
 
     // Отзыв лицензии подписку не меняет
     $this->postJson("/api/admin/v1/projects/proj-1/pay/licensing/licenses/{$license->id}/revoke", [], $headers)

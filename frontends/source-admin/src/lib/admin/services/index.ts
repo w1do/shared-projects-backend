@@ -15,3 +15,4 @@ export * from "./content-domain/settings";
 export * from "./content-domain/campaigns";
 
 export * from "./ops/dashboard";
+export * from "./licensing";

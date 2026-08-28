@@ -29,6 +29,7 @@ export const CONSOLE_SECTION_KEYS = [
   "notifications",
   "team",
   "settings",
+  "licensing",
 ] as const;
 
 export type ConsoleSectionKey = (typeof CONSOLE_SECTION_KEYS)[number];
@@ -50,6 +51,8 @@ export const SECTION_REQUIREMENTS: Partial<Record<ConsoleSectionKey, SectionRequ
   customers: { service: "auth", permission: "auth.users.view" },
   team: { service: "auth", permission: "auth.members.view" },
   settings: { service: "auth", permission: "auth.settings.view" },
+  // Право — из группы licensing PayManifest'а, сервис — собственный ключ licensing.
+  licensing: { service: "licensing", permission: "pay.licensing.view" },
 };
 
 /**

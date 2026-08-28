@@ -80,6 +80,19 @@ export function resolvePath(path: string) {
  * Ответ платформы → конверт вёрстки.
  * 401 завершает сессию и уводит на страницу входа.
  */
+/**
+ * Первое сообщение из `error.details`: 422-конверт платформы всегда несёт
+ * generic `message`, а текст доменной ошибки (занятый слаг, «есть лицензии»)
+ * лежит в details по полю — оператору показывается именно он.
+ */
+function firstDetailMessage(details: unknown): string | undefined {
+  if (details === null || typeof details !== "object") return undefined;
+  for (const value of Object.values(details as Record<string, unknown>)) {
+    if (Array.isArray(value) && typeof value[0] === "string") return value[0];
+  }
+  return undefined;
+}
+
 export async function toEnvelope<T>(
   response: Response,
 ): Promise<ApiEnvelope<T>> {
@@ -105,7 +118,10 @@ export async function toEnvelope<T>(
 
   if (!response.ok) {
     throw new AdminApiError(
-      messageFor(response.status, payload?.error?.message),
+      messageFor(
+        response.status,
+        firstDetailMessage(payload?.error?.details) ?? payload?.error?.message,
+      ),
       payload?.error?.code ?? `http_${response.status}`,
       response.status,
     );

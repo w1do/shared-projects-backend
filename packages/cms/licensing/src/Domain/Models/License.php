@@ -5,31 +5,40 @@ declare(strict_types=1);
 namespace Cms\Licensing\Domain\Models;
 
 use Cms\Licensing\Database\Factories\LicenseFactory;
-use Cms\Licensing\Domain\Contracts\LicenseSigner;
 use Cms\Licensing\Domain\Enums\LicenseStatus;
+use Cms\Licensing\Domain\ValueObjects\LicenseKey;
 use Cms\Shared\Tenant\BelongsToProject;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 
 /**
- * Лицензионный ключ организации: активационный ключ `LIC-…`, подписанный
- * Ed25519 payload (лицензионный файл) и факты жизненного цикла —
- * статус вычисляется, а не хранится (Д3/Д5).
+ * Perpetual-лицензия (Д2): бессрочное право на entitlements-снимок
+ * (edition, features, entitled_version) с оплачиваемым окном обновлений
+ * `updates_until`; ключ хранится только хэшем, статус вычисляется по
+ * `revoked_at` — понятия «истёкшая лицензия» нет.
  *
  * @property string $id
  * @property string $project_id
  * @property int $organization_id
  * @property int $plan_id
- * @property string $key
- * @property string $signed_payload
+ * @property string $key_hash
+ * @property string $key_prefix
+ * @property ?string $key_encrypted
+ * @property string $edition
+ * @property list<string> $features
+ * @property ?string $entitled_version
+ * @property Carbon $updates_until
+ * @property int $max_installations
+ * @property ?string $note
  * @property Carbon $issued_at
- * @property Carbon $expires_at
  * @property ?Carbon $revoked_at
  * @property-read ?Organization $organization
  * @property-read ?Plan $plan
+ * @property-read ?int $active_installations_count
  */
 class License extends Model
 {
@@ -42,15 +51,18 @@ class License extends Model
     public $incrementing = false;
 
     protected $fillable = [
-        'project_id', 'organization_id', 'plan_id', 'key',
-        'signed_payload', 'issued_at', 'expires_at',
+        'project_id', 'organization_id', 'plan_id', 'key_hash', 'key_prefix',
+        'key_encrypted', 'edition', 'features', 'entitled_version', 'updates_until',
+        'max_installations', 'note', 'issued_at',
     ];
 
     protected function casts(): array
     {
         return [
+            'features' => 'array',
+            'updates_until' => 'date',
+            'max_installations' => 'int',
             'issued_at' => 'datetime',
-            'expires_at' => 'datetime',
             'revoked_at' => 'datetime',
         ];
     }
@@ -67,14 +79,44 @@ class License extends Model
         return $this->belongsTo(Plan::class, 'plan_id');
     }
 
-    /** Вычисленный статус: revoked_at приоритетнее истечения (Д5). */
+    /** @return HasMany<LicenseInstallation, $this> */
+    public function installations(): HasMany
+    {
+        return $this->hasMany(LicenseInstallation::class, 'license_id');
+    }
+
+    /**
+     * Активные установки занимают слоты лимита (Д7).
+     *
+     * @return HasMany<LicenseInstallation, $this>
+     */
+    public function activeInstallations(): HasMany
+    {
+        return $this->installations()->whereNull('revoked_at');
+    }
+
+    /**
+     * Лицензия по plaintext-ключу: резолв глобальный — у публичного
+     * контракта нет проектного контекста, ключ и есть аутентификация (Д3).
+     */
+    public static function findByKey(string $key): ?self
+    {
+        return self::acrossProjects()->where('key_hash', LicenseKey::fromInput($key)->hash())->first();
+    }
+
     public function status(): LicenseStatus
     {
-        if ($this->revoked_at !== null) {
-            return LicenseStatus::Revoked;
-        }
+        return $this->revoked_at === null ? LicenseStatus::Active : LicenseStatus::Revoked;
+    }
 
-        return $this->expires_at->isPast() ? LicenseStatus::Expired : LicenseStatus::Active;
+    /** Серверная подсказка состояния для activate/refresh (ТЗ 1.2). */
+    public function activationState(): string
+    {
+        return match (true) {
+            $this->isRevoked() => 'revoked',
+            $this->updatesExpired() => 'updates_expired',
+            default => 'licensed',
+        };
     }
 
     public function isRevoked(): bool
@@ -82,61 +124,47 @@ class License extends Model
         return $this->revoked_at !== null;
     }
 
-    /**
-     * Payload лицензионного файла (Д3): состав фиксируется на момент
-     * выпуска/перевыпуска — последующие изменения фич плана в уже
-     * подписанные лицензии не попадают.
-     *
-     * @return array<string, mixed>
-     */
-    public function composePayload(): array
+    /** Конец окна обновлений включительно: `updates_until` — дата (Д2). */
+    public function updatesWindowEnd(): Carbon
     {
-        $this->loadMissing(['organization', 'plan']);
+        return $this->updates_until->clone()->endOfDay();
+    }
 
-        return [
-            'license_id' => $this->id,
-            'key' => $this->key,
-            'organization' => $this->organization?->name,
-            'plan' => $this->plan?->code,
-            'features' => $this->plan?->effectiveFeatureCodes($this->organization_id) ?? [],
-            'issued_at' => $this->issued_at->toIso8601String(),
-            'expires_at' => $this->expires_at->toIso8601String(),
-        ];
+    public function updatesExpired(): bool
+    {
+        return $this->updatesWindowEnd()->isPast();
     }
 
     /**
-     * Подписывает актуальный payload и кладёт конверт `{data, signature}`
-     * (base64) в `signed_payload`. Сохранение — за вызывающим handler'ом;
-     * `project_id` обязан быть заполнен до подписи (ключ пары — проектный).
+     * Эффективное право на версии (Д5): максимум из сохранённой
+     * `entitled_version` и последнего релиза проекта внутри окна обновлений.
      */
-    public function sealWith(LicenseSigner $signer): void
+    public function effectiveEntitledVersion(): ?string
     {
-        $data = base64_encode((string) json_encode(
-            $this->composePayload(),
-            JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES,
-        ));
+        $catalog = Release::latestVersionFor($this->project_id, $this->updatesWindowEnd());
 
-        $this->signed_payload = base64_encode((string) json_encode([
-            'data' => $data,
-            'signature' => $signer->sign($this->project_id, $data),
-        ]));
+        return match (true) {
+            $catalog === null => $this->entitled_version,
+            $this->entitled_version === null => $catalog,
+            version_compare($catalog, $this->entitled_version, '>') => $catalog,
+            default => $this->entitled_version,
+        };
     }
 
     /**
-     * Payload из сохранённого конверта — для ответов валидации.
-     *
-     * @return array<string, mixed>
+     * Поднимает сохранённую `entitled_version` до эффективной и возвращает её;
+     * понижение невозможно — право на купленное не отбирается (Д5).
      */
-    public function payload(): array
+    public function raiseEntitledVersion(): ?string
     {
-        $envelope = json_decode((string) base64_decode($this->signed_payload, true), true);
-        if (! is_array($envelope)) {
-            return [];
+        $effective = $this->effectiveEntitledVersion();
+
+        if ($effective !== null && $effective !== $this->entitled_version) {
+            $this->entitled_version = $effective;
+            $this->save();
         }
 
-        $data = base64_decode((string) ($envelope['data'] ?? ''), true);
-
-        return $data === false ? [] : (array) json_decode($data, true);
+        return $effective;
     }
 
     protected static function newFactory(): LicenseFactory

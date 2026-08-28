@@ -11,22 +11,23 @@ use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
 
 /**
- * Лицензии проекта: фильтры по организации и вычисляемому статусу
- * (`?filter[organization_id]=`, `?filter[status]=active|expired|revoked`)
- * через laravel-query-builder; статус выражается условиями на фактах (Д5).
+ * Лицензии проекта: фильтры `?filter[organization_id]=` и
+ * `?filter[status]=active|revoked` (статус — условие на `revoked_at`, Д2),
+ * счётчик активных установок для колонки «занято из лимита».
  */
 final class ListLicensesQuery
 {
     public function handle(int $perPage = 50): CursorPaginator
     {
-        return QueryBuilder::for(License::query()->with(['organization', 'plan']))
+        return QueryBuilder::for(
+            License::query()->with(['organization', 'plan'])->withCount('activeInstallations'),
+        )
             ->allowedFilters([
                 AllowedFilter::exact('organization_id'),
                 AllowedFilter::callback('status', function (Builder $query, mixed $value): void {
                     match ($value) {
                         'revoked' => $query->whereNotNull('revoked_at'),
-                        'expired' => $query->whereNull('revoked_at')->where('expires_at', '<=', now()),
-                        'active' => $query->whereNull('revoked_at')->where('expires_at', '>', now()),
+                        'active' => $query->whereNull('revoked_at'),
                         default => $query,
                     };
                 }),

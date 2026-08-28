@@ -1,0 +1,13 @@
+{
+    "status": 200,
+    "content_type": "application/json",
+    "body": {
+        "data": {
+            "latest_entitled": "1.4.7",
+            "latest_available": "1.4.7",
+            "image": "crm/app-1.4:1.4.7",
+            "changelog_url": null,
+            "security_update": false
+        }
+    }
+}

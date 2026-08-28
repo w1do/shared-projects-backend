@@ -9,7 +9,8 @@ use Cms\Shared\Http\Resources\ApiResource;
 use Illuminate\Http\Request;
 
 /**
- * Лицензия в ответе: организация, план, ключ, сроки и вычисленный статус (Д5).
+ * Лицензия в ответе: entitlements, префикс ключа (полный ключ недоступен),
+ * окно обновлений, лимит установок и вычисленный статус (Д2).
  *
  * @property LicenseDTO $resource
  */
@@ -20,12 +21,19 @@ final class LicenseResource extends ApiResource
     {
         return [
             'id' => $this->resource->id,
-            'key' => $this->resource->key,
+            'key_prefix' => $this->resource->key_prefix,
             'status' => $this->resource->status,
             'organization' => $this->resource->organization,
             'plan' => $this->resource->plan,
+            'edition' => $this->resource->edition,
+            'features' => $this->resource->features,
+            'entitled_version' => $this->resource->entitled_version,
+            'updates_until' => $this->resource->updates_until,
+            'max_installations' => $this->resource->max_installations,
+            'active_installations' => $this->resource->active_installations,
+            'reveal_available' => $this->resource->reveal_available,
+            'note' => $this->resource->note,
             'issued_at' => $this->resource->issued_at,
-            'expires_at' => $this->resource->expires_at,
             'revoked_at' => $this->resource->revoked_at,
         ];
     }

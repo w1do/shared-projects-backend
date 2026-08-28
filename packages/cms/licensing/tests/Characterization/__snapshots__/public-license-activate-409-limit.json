@@ -1,0 +1,12 @@
+{
+    "status": 409,
+    "content_type": "application/json",
+    "body": {
+        "error": {
+            "code": "installation_limit_reached",
+            "message": "Достигнут лимит установок по лицензии.",
+            "details": {},
+            "trace_id": "<string>"
+        }
+    }
+}

@@ -7,13 +7,16 @@ namespace Cms\Licensing\Infrastructure\Providers;
 use Cms\Contracts\Events\SubscriptionPeriodExtended;
 use Cms\Contracts\Events\SubscriptionStarted;
 use Cms\Licensing\Application\Listeners\IssueLicenseOnSubscriptionStarted;
-use Cms\Licensing\Application\Listeners\ReissueLicenseOnPeriodExtended;
+use Cms\Licensing\Application\Listeners\RenewLicenseOnPeriodExtended;
+use Cms\Licensing\Console\PublishManifestCommand;
 use Cms\Licensing\Domain\Contracts\LicenseKeyGenerator;
 use Cms\Licensing\Domain\Contracts\LicenseSigner;
+use Cms\Licensing\Domain\Contracts\LicenseTokenIssuer;
 use Cms\Licensing\Domain\Models\Organization;
 use Cms\Licensing\Domain\Models\Plan;
-use Cms\Licensing\Infrastructure\Persistence\CrockfordLicenseKeyGenerator;
+use Cms\Licensing\Infrastructure\Persistence\ActivationKeyGenerator;
 use Cms\Licensing\Infrastructure\Persistence\Ed25519LicenseSigner;
+use Cms\Licensing\Infrastructure\Persistence\Ed25519LicenseTokenIssuer;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\ServiceProvider;
@@ -21,7 +24,7 @@ use Illuminate\Support\ServiceProvider;
 final class LicensingServiceProvider extends ServiceProvider
 {
     /**
-     * Листенеры межмодульных событий подписки (Д12/Д15): синхронные, как все
+     * Листенеры межмодульных событий подписки (Д10): синхронные, как все
      * доменные события платформы (И8) — при ошибке транзакция продления
      * откатывается целиком, лицензия и подписка не разъезжаются.
      *
@@ -29,13 +32,16 @@ final class LicensingServiceProvider extends ServiceProvider
      */
     private const LISTENERS = [
         SubscriptionStarted::class => [IssueLicenseOnSubscriptionStarted::class],
-        SubscriptionPeriodExtended::class => [ReissueLicenseOnPeriodExtended::class],
+        SubscriptionPeriodExtended::class => [RenewLicenseOnPeriodExtended::class],
     ];
 
     public function register(): void
     {
+        $this->mergeConfigFrom(__DIR__.'/../../../config/cms-licensing.php', 'cms-licensing');
+
         $this->app->bind(LicenseSigner::class, Ed25519LicenseSigner::class);
-        $this->app->bind(LicenseKeyGenerator::class, CrockfordLicenseKeyGenerator::class);
+        $this->app->bind(LicenseKeyGenerator::class, ActivationKeyGenerator::class);
+        $this->app->bind(LicenseTokenIssuer::class, Ed25519LicenseTokenIssuer::class);
     }
 
     public function boot(): void
@@ -50,6 +56,10 @@ final class LicensingServiceProvider extends ServiceProvider
         $this->loadMigrationsFrom(__DIR__.'/../../../database/migrations');
         $this->loadRoutesFrom(__DIR__.'/../../../routes/admin.php');
         $this->loadRoutesFrom(__DIR__.'/../../../routes/public.php');
+
+        if ($this->app->runningInConsole()) {
+            $this->commands([PublishManifestCommand::class]);
+        }
 
         $events = $this->app->make(Dispatcher::class);
         foreach (self::LISTENERS as $event => $listeners) {

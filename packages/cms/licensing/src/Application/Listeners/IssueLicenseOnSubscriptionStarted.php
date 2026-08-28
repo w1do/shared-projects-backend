@@ -6,25 +6,27 @@ namespace Cms\Licensing\Application\Listeners;
 
 use Cms\Contracts\Events\SubscriptionStarted;
 use Cms\Licensing\Application\Commands\IssueLicenseCommand;
-use Cms\Licensing\Application\Commands\ReissueLicenseCommand;
+use Cms\Licensing\Application\Commands\RenewLicenseCommand;
 use Cms\Licensing\Application\Handlers\IssueLicenseHandler;
-use Cms\Licensing\Application\Handlers\ReissueLicenseHandler;
+use Cms\Licensing\Application\Handlers\RenewLicenseHandler;
 use Cms\Licensing\Domain\Models\License;
 use Cms\Licensing\Domain\Models\Organization;
 use Cms\Licensing\Domain\Models\Plan;
+use Illuminate\Support\Carbon;
 
 /**
- * Авто-выпуск лицензии при оформлении подписки организации на лицензионный
- * план (Д15): `expires_at` = конец оплаченного периода. При существующей
- * неотозванной (в т.ч. истёкшей) лицензии плана — продление, не дубль;
- * идемпотентен: повтор события перевыпускает с тем же сроком. «Чужие»
- * события (site_user, тарифный план pay) игнорируются.
+ * Авто-выпуск perpetual-лицензии при оформлении подписки организации на
+ * лицензионный план (Д10): `updates_until` = конец оплаченного периода,
+ * ключ — в `key_encrypted` до первого показа (Д8). При существующей
+ * неотозванной лицензии плана — продление окна, не дубль; идемпотентен:
+ * повтор события с тем же концом периода — noop. «Чужие» события
+ * (site_user, тарифный план pay) игнорируются.
  */
 final class IssueLicenseOnSubscriptionStarted
 {
     public function __construct(
         private readonly IssueLicenseHandler $issue,
-        private readonly ReissueLicenseHandler $reissue,
+        private readonly RenewLicenseHandler $renew,
     ) {}
 
     public function handle(SubscriptionStarted $event): void
@@ -46,6 +48,8 @@ final class IssueLicenseOnSubscriptionStarted
             return;
         }
 
+        $periodEnd = Carbon::parse($event->periodEndsAt);
+
         $existing = License::acrossProjects()
             ->where('project_id', $event->projectId)
             ->where('organization_id', $organization->id)
@@ -54,11 +58,18 @@ final class IssueLicenseOnSubscriptionStarted
             ->first();
 
         if ($existing !== null) {
-            $this->reissue->handle(new ReissueLicenseCommand($existing, new \DateTimeImmutable($event->periodEndsAt)));
+            if ($periodEnd->toDateString() > $existing->updates_until->toDateString()) {
+                $this->renew->handle(new RenewLicenseCommand($existing, $periodEnd));
+            }
 
             return;
         }
 
-        $this->issue->handle(new IssueLicenseCommand($organization, $plan, new \DateTimeImmutable($event->periodEndsAt)));
+        $this->issue->handle(new IssueLicenseCommand(
+            organization: $organization,
+            plan: $plan,
+            updatesUntil: $periodEnd,
+            encryptKey: true,
+        ));
     }
 }

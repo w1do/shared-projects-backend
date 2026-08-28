@@ -5,11 +5,13 @@ declare(strict_types=1);
 use Cms\Contracts\Events\SubscriptionPeriodExtended;
 use Cms\Contracts\Events\SubscriptionStarted;
 use Cms\Licensing\Application\Listeners\IssueLicenseOnSubscriptionStarted;
-use Cms\Licensing\Application\Listeners\ReissueLicenseOnPeriodExtended;
+use Cms\Licensing\Application\Listeners\RenewLicenseOnPeriodExtended;
 use Cms\Licensing\Domain\Models\License;
 use Cms\Licensing\Domain\Models\Organization;
 use Cms\Licensing\Domain\Models\Plan;
+use Cms\Licensing\Domain\Models\Release;
 use Cms\Shared\Tenant\ProjectContext;
+use Illuminate\Support\Facades\Crypt;
 
 function licensingStartedEvent(Organization $organization, Plan $plan, string $endsAt): SubscriptionStarted
 {
@@ -40,20 +42,31 @@ function licensingExtendedEvent(Organization $organization, Plan $plan, string $
 beforeEach(function () {
     app(ProjectContext::class)->set('proj-1');
     $this->organization = Organization::factory()->create();
-    $this->plan = Plan::factory()->priced()->create();
+    $this->plan = Plan::factory()->priced()->create(['code' => 'pro']);
 });
 
-test('subscription started issues a license until the paid period end', function () {
-    $endsAt = now()->addMonth()->toIso8601String();
+// ------------------------------------------------------- старт подписки (Д10)
+
+test('subscription start issues a perpetual license with the paid period as updates window', function () {
+    $this->plan->features()->create(['project_id' => 'proj-1', 'code' => 'api-access', 'name' => 'API']);
+    Release::factory()->version('1.4.7')->create(['released_at' => now()->subDay()]);
+    $endsAt = now()->addMonth();
 
     app(IssueLicenseOnSubscriptionStarted::class)
-        ->handle(licensingStartedEvent($this->organization, $this->plan, $endsAt));
+        ->handle(licensingStartedEvent($this->organization, $this->plan, $endsAt->toIso8601String()));
 
     $license = License::query()->sole();
     expect($license->organization_id)->toBe($this->organization->id)
         ->and($license->plan_id)->toBe($this->plan->id)
-        ->and($license->expires_at->toIso8601String())->toBe($endsAt)
-        ->and($license->payload()['plan'])->toBe($this->plan->code);
+        ->and($license->updates_until->toDateString())->toBe($endsAt->toDateString())
+        ->and($license->edition)->toBe('pro')
+        ->and($license->features)->toBe(['api-access'])
+        ->and($license->entitled_version)->toBe('1.4.7')
+        ->and($license->max_installations)->toBe(1);
+
+    // ключ некому вернуть — он ждёт первого показа шифрованным (Д8)
+    expect($license->key_encrypted)->not->toBeNull()
+        ->and(Crypt::decryptString((string) $license->key_encrypted))->toMatch('/^LIC(-[A-HJ-NP-Z2-9]{4}){4}$/');
 });
 
 test('subscription started listener is idempotent', function () {
@@ -62,28 +75,27 @@ test('subscription started listener is idempotent', function () {
     $listener = app(IssueLicenseOnSubscriptionStarted::class);
 
     $listener->handle($event);
-    $key = License::query()->sole()->key;
+    $hash = License::query()->sole()->key_hash;
     $listener->handle($event);
 
     $license = License::query()->sole(); // второй лицензии нет
-    expect($license->key)->toBe($key)
-        ->and($license->expires_at->toIso8601String())->toBe($endsAt);
+    expect($license->key_hash)->toBe($hash);
 });
 
-test('existing unrevoked license is extended instead of duplicated, even expired', function () {
-    $existing = License::factory()->expired()->create([
+test('existing unrevoked license is renewed instead of duplicated, even with an expired window', function () {
+    $existing = License::factory()->updatesExpired()->create([
         'organization_id' => $this->organization->id,
         'plan_id' => $this->plan->id,
     ]);
-    $endsAt = now()->addMonth()->toIso8601String();
+    $endsAt = now()->addMonth();
 
     app(IssueLicenseOnSubscriptionStarted::class)
-        ->handle(licensingStartedEvent($this->organization, $this->plan, $endsAt));
+        ->handle(licensingStartedEvent($this->organization, $this->plan, $endsAt->toIso8601String()));
 
     $license = License::query()->sole();
     expect($license->id)->toBe($existing->id)
-        ->and($license->key)->toBe($existing->key)
-        ->and($license->expires_at->toIso8601String())->toBe($endsAt);
+        ->and($license->key_hash)->toBe($existing->key_hash)
+        ->and($license->updates_until->toDateString())->toBe($endsAt->toDateString());
 });
 
 test('foreign subscription events are ignored', function () {
@@ -110,42 +122,42 @@ test('foreign subscription events are ignored', function () {
     expect(License::query()->count())->toBe(0);
 });
 
-test('period extension reissues payload with the new expiry and same key', function () {
+// ----------------------------------------------------- продление периода (Д10)
+
+test('period extension moves the updates window and raises the entitled version', function () {
     $license = License::factory()->create([
         'organization_id' => $this->organization->id,
         'plan_id' => $this->plan->id,
+        'entitled_version' => '1.2.0',
+        'updates_until' => now()->addDays(3)->toDateString(),
     ]);
-    $originalKey = $license->key;
-    $endsAt = now()->addMonths(2)->toIso8601String();
+    Release::factory()->version('1.4.7')->create(['released_at' => now()->subDay()]);
+    $endsAt = now()->addMonths(2);
 
-    app(ReissueLicenseOnPeriodExtended::class)
-        ->handle(licensingExtendedEvent($this->organization, $this->plan, $endsAt));
+    app(RenewLicenseOnPeriodExtended::class)
+        ->handle(licensingExtendedEvent($this->organization, $this->plan, $endsAt->toIso8601String()));
 
     $fresh = $license->fresh();
-    expect($fresh->key)->toBe($originalKey)
-        ->and($fresh->expires_at->toIso8601String())->toBe($endsAt)
-        ->and($fresh->payload()['expires_at'])->toBe($endsAt)
-        ->and($fresh->payload()['key'])->toBe($originalKey);
+    expect($fresh->key_hash)->toBe($license->key_hash)
+        ->and($fresh->updates_until->toDateString())->toBe($endsAt->toDateString())
+        ->and($fresh->entitled_version)->toBe('1.4.7');
 });
 
 test('period extension listener is idempotent', function () {
     $license = License::factory()->create([
         'organization_id' => $this->organization->id,
         'plan_id' => $this->plan->id,
+        'updates_until' => now()->addDays(3)->toDateString(),
     ]);
-    $endsAt = now()->addMonths(2)->toIso8601String();
-    $event = licensingExtendedEvent($this->organization, $this->plan, $endsAt);
-    $listener = app(ReissueLicenseOnPeriodExtended::class);
+    $endsAt = now()->addMonths(2);
+    $event = licensingExtendedEvent($this->organization, $this->plan, $endsAt->toIso8601String());
+    $listener = app(RenewLicenseOnPeriodExtended::class);
 
     $listener->handle($event);
-    $first = $license->fresh()->signed_payload;
-    $listener->handle($event);
+    $listener->handle($event); // повтор того же срока — noop, не доменная ошибка
 
     expect(License::query()->count())->toBe(1)
-        ->and($license->fresh()->expires_at->toIso8601String())->toBe($endsAt)
-        ->and($license->fresh()->payload())->toBe(
-            License::query()->sole()->payload(),
-        );
+        ->and($license->fresh()->updates_until->toDateString())->toBe($endsAt->toDateString());
 });
 
 test('revoked license is not resurrected by payment events', function () {
@@ -153,16 +165,27 @@ test('revoked license is not resurrected by payment events', function () {
         'organization_id' => $this->organization->id,
         'plan_id' => $this->plan->id,
     ]);
-    $originalExpiry = $revoked->expires_at->toIso8601String();
-    $originalPayload = $revoked->signed_payload;
-    $endsAt = now()->addMonths(3)->toIso8601String();
+    $originalWindow = $revoked->updates_until->toDateString();
 
-    app(ReissueLicenseOnPeriodExtended::class)
-        ->handle(licensingExtendedEvent($this->organization, $this->plan, $endsAt));
+    app(RenewLicenseOnPeriodExtended::class)
+        ->handle(licensingExtendedEvent($this->organization, $this->plan, now()->addMonths(3)->toIso8601String()));
 
     $fresh = $revoked->fresh();
     expect($fresh->status()->value)->toBe('revoked')
-        ->and($fresh->expires_at->toIso8601String())->toBe($originalExpiry)
-        ->and($fresh->signed_payload)->toBe($originalPayload)
+        ->and($fresh->updates_until->toDateString())->toBe($originalWindow)
         ->and(License::query()->count())->toBe(1);
+});
+
+// -------------------------------------- perpetual: жизнь после конца периода
+
+test('license outlives the paid period end', function () {
+    $license = License::factory()->create([
+        'organization_id' => $this->organization->id,
+        'plan_id' => $this->plan->id,
+        'updates_until' => now()->subDay()->toDateString(),
+    ]);
+
+    // окно истекло, но лицензия активна и выдаёт licensed-совместимые состояния
+    expect($license->status()->value)->toBe('active')
+        ->and($license->activationState())->toBe('updates_expired');
 });
