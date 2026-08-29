@@ -27,6 +27,11 @@ final class ResearchRuleViolation extends ValidationException
         return self::withMessages(['research' => ['Topics can only be extracted from a completed research.']]);
     }
 
+    public static function noSourcesFetched(): self
+    {
+        return self::withMessages(['research' => ['None of the found pages could be fetched.']]);
+    }
+
     public static function noSourcesIndexed(): self
     {
         return self::withMessages(['research' => ['Research has no material in the knowledge base yet.']]);

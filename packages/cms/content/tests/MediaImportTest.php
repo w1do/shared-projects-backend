@@ -9,6 +9,9 @@ use Cms\Content\Application\Handlers\ImportMediaHandler;
 use Cms\Content\Domain\Contracts\RemoteFileFetcher;
 use Cms\Content\Domain\Models\MediaFile;
 use Cms\Content\Infrastructure\Jobs\GenerateMediaVariantsJob;
+use Cms\Shared\BackgroundTasks\BackgroundTask;
+use Cms\Shared\BackgroundTasks\BackgroundTaskKind;
+use Cms\Shared\BackgroundTasks\BackgroundTaskState;
 use Cms\Shared\Tenant\ProjectContext;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Queue;
@@ -149,4 +152,36 @@ test('import endpoint rejects a non http url before any request', function () {
 
     Http::assertNothingSent();
     expect(MediaFile::acrossProjects()->count())->toBe(0);
+});
+
+test('импорт по ссылке виден в реестре фоновых задач', function () {
+    Http::fake(['images.test/*' => Http::response(onePixelPng(), 200, ['Content-Type' => 'image/png'])]);
+    Queue::fake();
+    app(ProjectContext::class)->set('proj-1');
+
+    $media = app(ImportMediaHandler::class)->handle(
+        new ImportMediaCommand(ImportMediaDTO::from(['url' => 'https://images.test/photo.png'])),
+    );
+
+    $task = BackgroundTask::query()->latest('id')->firstOrFail();
+
+    expect($task->kind)->toBe(BackgroundTaskKind::MediaImport)
+        ->and($task->state)->toBe(BackgroundTaskState::Succeeded)
+        ->and($task->subject_id)->toBe((string) $media->id)
+        ->and($task->finished_at)->not->toBeNull();
+});
+
+test('отказ скачивания попадает в реестр как отклонённая задача', function () {
+    Http::fake();
+    app(ProjectContext::class)->set('proj-1');
+
+    expect(fn () => app(ImportMediaHandler::class)->handle(
+        new ImportMediaCommand(ImportMediaDTO::from(['url' => 'http://127.0.0.1/photo.png'])),
+    ))->toThrow(ContentRuleViolation::class);
+
+    $task = BackgroundTask::query()->latest('id')->firstOrFail();
+
+    expect($task->state)->toBe(BackgroundTaskState::Failed)
+        ->and($task->failure_reason)->not->toBeNull()
+        ->and($task->failure_reason)->not->toContain('Exception');
 });

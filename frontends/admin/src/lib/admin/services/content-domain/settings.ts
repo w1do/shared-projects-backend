@@ -1,55 +1,28 @@
-import type { StoreSettings } from "@/lib/admin/mocks/settings";
-import {
-  patchStoredStoreSettingsSection,
-  readStoredStoreSettings,
-} from "@/lib/admin/settings/store";
+import type { StoreSettings } from "@/lib/admin/types/settings";
 import { t } from "@/lib/admin/console-texts";
 import { getAdminStoreSettings } from "@/lib/admin/data-source/admin-data";
-import { shouldUseAdminApi } from "@/lib/admin/data-source/config";
 import * as platformAuth from "@/lib/admin/data-source/platform/auth";
-import { getSettingsCapabilities } from "./capabilities";
-
-export { getSettingsCapabilities };
 
 export type SettingsPersistResult = {
   ok: boolean;
-  persisted: "local" | "server" | "none";
+  persisted: "server" | "none";
   reason?: string;
   settings?: StoreSettings;
 };
 
 export async function getStoreSettings(): Promise<StoreSettings> {
-  if (!shouldUseAdminApi()) {
-    return readStoredStoreSettings();
-  }
   return getAdminStoreSettings();
 }
 
 /**
- * Persist a settings section. API mode is read-only today — never pretend a server save.
- * Mock mode writes the full settings blob to localStorage.
+ * Сохранение секции настроек. В платформе есть данные проекта; секции без
+ * аналога сохранять некуда — об этом честно сообщается вызывающему.
  */
 export async function saveSettingsSection<K extends keyof StoreSettings>(
   section: K,
   value: StoreSettings[K],
 ): Promise<SettingsPersistResult> {
-  const caps = getSettingsCapabilities();
-  if (!caps.write) {
-    return {
-      ok: false,
-      persisted: "none",
-      reason: caps.writeReason,
-    };
-  }
-
-  if (shouldUseAdminApi()) {
-    // В платформе есть данные проекта; остальные секции — витринные, аналога нет.
-    if (section === "general") {
-      const general = value as StoreSettings["general"];
-      await platformAuth.updateProject({ name: general.storeName });
-      return { ok: true, persisted: "server" };
-    }
-
+  if (section !== "general") {
     return {
       ok: false,
       persisted: "none",
@@ -57,8 +30,9 @@ export async function saveSettingsSection<K extends keyof StoreSettings>(
     };
   }
 
-  const settings = patchStoredStoreSettingsSection(section, value);
-  return { ok: true, persisted: "local", settings };
+  const general = value as StoreSettings["general"];
+  await platformAuth.updateProject({ name: general.storeName });
+  return { ok: true, persisted: "server" };
 }
 
 /** API-ключи проекта: чтение, выдача (ключ показывается один раз) и отзыв. */

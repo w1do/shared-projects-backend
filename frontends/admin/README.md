@@ -57,12 +57,9 @@ Open [http://localhost:3000](http://localhost:3000) — you'll be redirected to 
 
 | Variable                          | Default                 | Description                                                                  |
 | --------------------------------- | ----------------------- | ---------------------------------------------------------------------------- |
-| `NEXT_PUBLIC_ADMIN_DATA_SOURCE`   | `mock`                  | Set to `api` to connect a real backend                                       |
 | `NEXT_PUBLIC_ADMIN_API_BASE_URL`  | `http://localhost:8080` | Your REST API base URL                                                       |
 | `NEXT_PUBLIC_ADMIN_API_USERNAME`  | —                       | API basic auth username                                                      |
 | `NEXT_PUBLIC_ADMIN_API_PASSWORD`  | —                       | API basic auth password                                                      |
-| `NEXT_PUBLIC_ADMIN_MOCK_DELAY_MS` | `2000`                  | Simulated network latency for mock data (ms). Set to `0` for instant loading |
-| `NEXT_PUBLIC_ADMIN_IS_DEMO`       | —                       | Set to `true` to show demo account selector on login screen                  |
 
 ### Available Scripts
 
@@ -170,7 +167,6 @@ The home page offers a dense, at-a-glance overview of your business:
 | **Type safety**         | Strict TypeScript with barrel exports, Zod schema inference, and centralized type definitions               |
 | **Thin routes**         | `page.tsx` files are slim shells that compose page components from `@/components/pages/`                    |
 | **Component isolation** | Each page module has its own `sections/`, `loading/`, `config/`, `hooks/`, and `utils/` subdirectories      |
-| **Mock latency**        | Configurable simulated network delay via `NEXT_PUBLIC_ADMIN_MOCK_DELAY_MS` for realistic loading UX testing |
 
 ---
 
@@ -455,7 +451,6 @@ The template includes a complete **dual data-source layer** that makes backend i
 ### 1. Switch to API Mode
 
 ```env
-NEXT_PUBLIC_ADMIN_DATA_SOURCE=api
 NEXT_PUBLIC_ADMIN_API_BASE_URL=https://your-api.com
 NEXT_PUBLIC_ADMIN_API_USERNAME=your-username
 NEXT_PUBLIC_ADMIN_API_PASSWORD=your-password

@@ -1,4 +1,4 @@
-import type { CustomerTier, DetailedCustomer } from "@/lib/admin/mocks/customers";
+import type { CustomerTier, DetailedCustomer } from "@/lib/admin/types/customers";
 import { t, type ConsoleTextKey } from "@/lib/admin/console-texts";
 
 const tierTextKeys: Record<CustomerTier, ConsoleTextKey> = {

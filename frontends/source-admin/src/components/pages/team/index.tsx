@@ -6,7 +6,6 @@ import { TeamHeader } from "./sections/TeamHeader";
 import { TeamPanel } from "./sections/TeamPanel";
 import { TeamLoadingState } from "./loading";
 import { InviteMemberDialog } from "./sections/InviteMemberDialog";
-import { DeactivateMemberDialog } from "./sections/DeactivateMemberDialog";
 import { DeleteMemberDialog } from "./sections/DeleteMemberDialog";
 
 /**
@@ -21,13 +20,9 @@ export default function TeamPage() {
     isLoading,
     isInviteOpen,
     setIsInviteOpen,
-    deactivateTarget,
-    setDeactivateTarget,
     deleteTarget,
     setDeleteTarget,
     handleAddMember,
-    handleToggleStatus,
-    handleConfirmDeactivate,
     handleDeleteMember,
     handleConfirmDelete,
     canManage,
@@ -47,7 +42,6 @@ export default function TeamPage() {
         users={users}
         currentUser={currentUser}
         canManage={canManage}
-        onToggleStatus={handleToggleStatus}
         onDelete={handleDeleteMember}
       />
 
@@ -56,13 +50,6 @@ export default function TeamPage() {
         onClose={() => setIsInviteOpen(false)}
         onAdd={handleAddMember}
         currentUserRole={currentUser?.role || "staff"}
-      />
-
-      <DeactivateMemberDialog
-        isOpen={!!deactivateTarget}
-        onClose={() => setDeactivateTarget(null)}
-        onConfirm={handleConfirmDeactivate}
-        user={deactivateTarget}
       />
 
       <DeleteMemberDialog

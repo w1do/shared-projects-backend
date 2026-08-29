@@ -4,14 +4,12 @@ import * as React from "react";
 import { useForm, FormProvider, Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { shouldUseAdminApi } from "@/lib/admin/data-source/config";
 import {
   categoryFormSchema,
-  mockCategoryFormSchema,
   CategoryFormValues,
 } from "@/lib/admin/schemas/catalog/category-form-schema";
 import { createCategoryFormValues, defaultCategoryFormValues } from "@/lib/admin/categories/form";
-import type { Category } from "@/lib/admin/mocks/types";
+import type { Category } from "@/lib/admin/types/catalog";
 import { useEditCategoryPage, useUpdateCategoryForm } from "@/hooks/admin/categories";
 import { useStickyThreshold } from "@/hooks/use-sticky-threshold";
 
@@ -48,7 +46,7 @@ export function EditCategoryForm({
   // Живой режим — базовая схема без денежных полей; демо-шаблон хранит метрики.
   const methods = useForm<CategoryFormValues>({
     resolver: zodResolver(
-      shouldUseAdminApi() ? categoryFormSchema : mockCategoryFormSchema,
+      categoryFormSchema,
     ) as Resolver<CategoryFormValues>,
     defaultValues: defaultCategoryFormValues,
   });

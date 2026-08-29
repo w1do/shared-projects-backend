@@ -17,16 +17,16 @@ import {
 import { siteConfig } from "@/lib/site-config";
 import { logoutAction } from "@/app/actions/auth";
 import { useConsoleText } from "@/lib/admin/use-console-text";
-import type { MockUser } from "@/lib/admin/mocks/auth";
+import type { TeamUser } from "@/lib/admin/types/team";
 
 /** Меню оператора в верхней панели: профиль, настройки, поддержка и выход. */
 export function TopbarUserMenu() {
   const [open, setOpen] = useState(false);
-  const [currentUser, setCurrentUser] = useState<MockUser | null>(null);
+  const [currentUser, setCurrentUser] = useState<TeamUser | null>(null);
   const router = useRouter();
   const t = useConsoleText();
 
-  const roleLabel = (role: MockUser["role"]) =>
+  const roleLabel = (role: TeamUser["role"]) =>
     role === "admin"
       ? t("console.role.admin")
       : role === "manager"

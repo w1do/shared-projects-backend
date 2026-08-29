@@ -3,7 +3,7 @@
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/inputs/button";
 import { PageHeader } from "@/components/shared/layout/PageHeader";
-import type { Article } from "@/lib/admin/mocks/magazine";
+import type { Article } from "@/lib/admin/types/magazine";
 import { useConsoleText } from "@/lib/admin/use-console-text";
 import { useBlogsPage } from "@/hooks/admin/articles";
 import { BlogsStats } from "./sections/blogs-stats";

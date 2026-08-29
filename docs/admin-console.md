@@ -54,9 +54,7 @@ bun run build && bun run start   # production
 
 | Переменная | Назначение |
 | --- | --- |
-| `NEXT_PUBLIC_ADMIN_DATA_SOURCE` | `api` — данные платформы, `mock` — демо-данные вёрстки |
 | `NEXT_PUBLIC_ADMIN_API_BASE_URL` | базовый URL API; пусто — тот же origin, что и панель |
-| `NEXT_PUBLIC_ADMIN_MOCK_DELAY_MS` | искусственная задержка mock-данных |
 | `ADMIN_INTERNAL_API_BASE_URL` | базовый URL для серверных запросов внутри docker-сети |
 
 ## Вход оператора

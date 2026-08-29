@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { Card } from "@/components/ui/data-display/card";
 import { Badge } from "@/components/ui/data-display/badge";
 import { Button } from "@/components/ui/inputs/button";
-import type { Article } from "@/lib/admin/mocks/magazine";
+import type { Article } from "@/lib/admin/types/magazine";
 import { tf, type ConsoleTextKey } from "@/lib/admin/console-texts";
 import { useConsoleText } from "@/lib/admin/use-console-text";
 import {

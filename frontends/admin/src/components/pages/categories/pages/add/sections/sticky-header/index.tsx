@@ -6,13 +6,11 @@ import { useConsoleText } from "@/lib/admin/use-console-text";
 interface AddCategoryStickyHeaderProps {
   isSticky: boolean;
   isSubmitting: boolean;
-  onAutoFill: () => void;
 }
 
 export function AddCategoryStickyHeader({
   isSticky,
   isSubmitting,
-  onAutoFill,
 }: AddCategoryStickyHeaderProps) {
   const t = useConsoleText();
   return (
@@ -26,7 +24,6 @@ export function AddCategoryStickyHeader({
       submitLabelShort={t("console.common.save")}
       submittingLabel={t("console.categories.saving-ellipsis")}
       submitIcon="check"
-      onAutoFill={onAutoFill}
       disableBackWhileSubmitting
     />
   );

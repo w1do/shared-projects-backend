@@ -16,7 +16,7 @@ import { Button } from "@/components/ui/inputs/button";
 import { Input } from "@/components/ui/inputs/input";
 import { Select } from "@/components/ui/inputs/select";
 import { Textarea } from "@/components/ui/inputs/textarea";
-import type { TeamMember } from "@/lib/admin/mocks/settings";
+import type { TeamMember } from "@/lib/admin/types/settings";
 import {
   defaultInviteMemberFormValues,
   inviteMemberSchema,

@@ -7,13 +7,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { blogFormSchema, type BlogFormValues } from "@/lib/admin/schemas/content/blog-form-schema";
 import { blogFormDefaults } from "./constants";
-import { blogSampleData } from "./AutofillData";
 import {
   BlogFormHeader,
   BlogFormStickyHeader,
   BlogFormBody,
 } from "@/components/pages/blogs/sections/blog-form";
-import { getArticlesCapabilities } from "@/lib/admin/services";
 import { useConsoleText } from "@/lib/admin/use-console-text";
 import { useCreateArticleForm } from "@/hooks/admin/articles";
 import { TopicPicker } from "@/components/pages/blogs/sections/TopicPicker";
@@ -36,15 +34,6 @@ export function AddBlogForm() {
     }
   };
 
-  const handleAutoFill = () => {
-    if (!getArticlesCapabilities().autoFill) {
-      toast.info(t("console.blogs.autofill-mock-only"));
-      return;
-    }
-    methods.reset(blogSampleData);
-    toast.success(t("console.blogs.autofill-done"));
-  };
-
   return (
     <FormProvider {...methods}>
       <form onSubmit={methods.handleSubmit(onSubmit)} className="relative">
@@ -55,8 +44,6 @@ export function AddBlogForm() {
           submittingLabel={t("console.blogs.form.publishing")}
           isSticky={isSticky}
           isSubmitting={isSubmitting}
-          onAutoFill={handleAutoFill}
-          autoFillLabel={t("console.blogs.autofill")}
           backHref="/admin/blogs"
           backLabel={t("console.blogs.back")}
         />
@@ -67,7 +54,6 @@ export function AddBlogForm() {
             submitLabel={t("console.blogs.form.save")}
             submittingLabel={t("console.blogs.form.publishing")}
             isSubmitting={isSubmitting}
-            onAutoFill={handleAutoFill}
           />
 
           <TopicPicker />

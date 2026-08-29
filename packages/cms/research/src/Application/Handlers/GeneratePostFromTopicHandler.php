@@ -24,6 +24,7 @@ use Cms\Research\Domain\Enums\TopicStatus;
 use Cms\Research\Domain\Models\ResearchTopic;
 use Cms\Research\Domain\ValueObjects\KnowledgeFilter;
 use Cms\Research\Domain\ValueObjects\KnowledgeHit;
+use Cms\Shared\BackgroundTasks\TaskProgress;
 use Illuminate\Contracts\Config\Repository as Config;
 use Illuminate\Contracts\Translation\Translator;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -44,6 +45,7 @@ final readonly class GeneratePostFromTopicHandler
         private UpsertSeoHandler $seo,
         private Config $config,
         private Translator $translator,
+        private TaskProgress $progress,
     ) {}
 
     public function handle(GeneratePostCommand $command): Post
@@ -56,6 +58,7 @@ final readonly class GeneratePostFromTopicHandler
 
         $this->assertUsable($topic);
 
+        $this->stage($command, 'preparing');
         $materials = $this->materials($topic);
 
         if ($materials === []) {
@@ -64,6 +67,7 @@ final readonly class GeneratePostFromTopicHandler
 
         $bodyInstruct = $this->instructs->handle(InstructCategory::PostBody);
 
+        $this->stage($command, 'ai_request');
         $draft = $this->ai->runInstruct(new RunInstructRequestDTO(
             rule: $bodyInstruct->rule,
             schema: $bodyInstruct->schema,
@@ -75,11 +79,15 @@ final readonly class GeneratePostFromTopicHandler
             ],
         ))->output;
 
+        $this->stage($command, 'assembling');
+        $blocks = $this->blocks($draft);
+
+        $this->stage($command, 'saving');
         $post = $this->posts->handle(new UpsertPostCommand(
             UpsertPostDTO::from([
                 'title' => $this->text($draft, 'title') ?? $topic->title,
                 'slug' => $this->slug($draft, $topic),
-                'blocks' => $this->blocks($draft),
+                'blocks' => $blocks,
                 'categories' => [$this->categoryId($topic)],
                 'tags' => $this->tags($draft),
             ]),
@@ -93,6 +101,14 @@ final readonly class GeneratePostFromTopicHandler
         $this->usages->handle($bodyInstruct, $post);
 
         return $post;
+    }
+
+    /** Этап работы уходит в реестр задач, только если генерацию запустила задача. */
+    private function stage(GeneratePostCommand $command, string $stage): void
+    {
+        if ($command->taskId !== null) {
+            $this->progress->stage($command->taskId, $stage);
+        }
     }
 
     private function assertUsable(ResearchTopic $topic): void

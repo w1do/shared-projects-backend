@@ -9,7 +9,7 @@ import { TreeTable } from "@/components/ui/data-display/tree-table";
 import { DataTableFooter } from "@/components/shared/data-table/DataTableFooter";
 import { countChildren, descendantIds } from "@/lib/admin/data-source/category-tree";
 import { listStateMessage } from "@/lib/admin/data-source/list-state";
-import type { Category } from "@/lib/admin/mocks/types";
+import type { Category } from "@/lib/admin/types/catalog";
 import { CategoryCard } from "../category-card";
 import { CategoriesToolbar } from "../categories-toolbar";
 import { getCategoryColumns } from "../category-columns";

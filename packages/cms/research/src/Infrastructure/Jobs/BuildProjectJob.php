@@ -14,6 +14,7 @@ use Cms\Research\Application\Actions\CreateCategoryTreeAction;
 use Cms\Research\Domain\Enums\BuildoutStatus;
 use Cms\Research\Domain\Models\ProjectBuildout;
 use Cms\Shared\AuthClient\AuthClient;
+use Cms\Shared\BackgroundTasks\TaskProgress;
 use Cms\Shared\Tenant\ProjectContext;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -44,6 +45,7 @@ final class BuildProjectJob implements ShouldQueue
     public function __construct(
         public readonly string $projectId,
         public readonly int $buildoutId,
+        public readonly ?int $taskId = null,
     ) {}
 
     public function handle(
@@ -53,6 +55,7 @@ final class BuildProjectJob implements ShouldQueue
         RecordInstructUsageAction $usages,
         CreateCategoryTreeAction $categories,
         AuthClient $auth,
+        TaskProgress $progress,
     ): void {
         // Синхронная диспетчеризация выполняет джобу внутри чужого контекста:
         // прежнее значение возвращается, иначе вложенный запуск обнулил бы
@@ -67,6 +70,8 @@ final class BuildProjectJob implements ShouldQueue
                 return;
             }
 
+            $this->stage($progress, 'ai_request', start: true);
+
             $instruct = $instructs->handle(InstructCategory::ProjectDescription);
 
             $output = $ai->runInstruct(new RunInstructRequestDTO(
@@ -75,12 +80,14 @@ final class BuildProjectJob implements ShouldQueue
                 input: ['topic' => $buildout->topic, 'project_id' => $this->projectId],
             ))->output;
 
+            $this->stage($progress, 'categories');
             $rows = $this->categoryRows($output, $instruct, $ai, $instructs);
 
             // Порядок фиксирован: сначала категории (одной транзакцией),
             // затем поля проекта (одним вызовом).
             $created = $categories->handle($rows);
 
+            $this->stage($progress, 'project_profile');
             $updated = $auth->setProjectProfile(
                 projectId: $this->projectId,
                 description: $this->text($output, 'description'),
@@ -96,6 +103,10 @@ final class BuildProjectJob implements ShouldQueue
                 'project_updated' => $updated,
                 'completed_at' => $buildout->freshTimestamp(),
             ])->save();
+
+            if ($this->taskId !== null) {
+                $progress->succeed($this->taskId);
+            }
         } finally {
             $previous === null ? $context->clear() : $context->set($previous);
         }
@@ -120,6 +131,19 @@ final class BuildProjectJob implements ShouldQueue
             'error_message' => $exception?->getMessage() ?? 'Project buildout job failed.',
             'completed_at' => $buildout->freshTimestamp(),
         ])->save();
+
+        if ($this->taskId !== null && $exception !== null) {
+            app(TaskProgress::class)->fail($this->taskId, $exception);
+        }
+    }
+
+    private function stage(TaskProgress $progress, string $stage, bool $start = false): void
+    {
+        if ($this->taskId === null) {
+            return;
+        }
+
+        $start ? $progress->start($this->taskId, $stage) : $progress->stage($this->taskId, $stage);
     }
 
     /**

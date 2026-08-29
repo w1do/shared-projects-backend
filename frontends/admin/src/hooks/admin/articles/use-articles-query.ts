@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import type { Article } from "@/lib/admin/mocks/magazine";
+import type { Article } from "@/lib/admin/types/magazine";
 import { listArticles } from "@/lib/admin/services";
 import { adminQueryKeys } from "@/lib/admin/query/keys";
 

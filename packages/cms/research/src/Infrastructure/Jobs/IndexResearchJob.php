@@ -11,6 +11,7 @@ use Cms\Research\Domain\Enums\ResearchStatus;
 use Cms\Research\Domain\Models\Research;
 use Cms\Research\Domain\Models\ResearchSource;
 use Cms\Research\Domain\ValueObjects\KnowledgePoint;
+use Cms\Shared\BackgroundTasks\TaskProgress;
 use Cms\Shared\Tenant\ProjectContext;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -41,10 +42,15 @@ final class IndexResearchJob implements ShouldQueue
     public function __construct(
         public readonly string $projectId,
         public readonly int $researchId,
+        public readonly ?int $taskId = null,
     ) {}
 
-    public function handle(ProjectContext $context, KnowledgeBase $knowledge, AiOperations $ai): void
-    {
+    public function handle(
+        ProjectContext $context,
+        KnowledgeBase $knowledge,
+        AiOperations $ai,
+        TaskProgress $progress,
+    ): void {
         // Синхронная диспетчеризация выполняет джобу внутри чужого контекста:
         // прежнее значение возвращается, иначе вложенный запуск обнулил бы
         // проект вызывающего.
@@ -59,10 +65,13 @@ final class IndexResearchJob implements ShouldQueue
                 return;
             }
 
+            $this->report($progress, fn (int $taskId) => $progress->start($taskId, 'embedding'));
+
             $sources = $research->sources()->whereNull('indexed_at')->orderBy('position')->get();
 
             if ($sources->isEmpty()) {
                 $this->markIndexed($research);
+                $this->report($progress, fn (int $taskId) => $progress->succeed($taskId));
 
                 return;
             }
@@ -88,11 +97,13 @@ final class IndexResearchJob implements ShouldQueue
                 );
             }
 
+            $this->report($progress, fn (int $taskId) => $progress->stage($taskId, 'saving'));
             $knowledge->upsert($this->projectId, $points);
 
             $research->sources()->whereIn('id', $sources->modelKeys())->update(['indexed_at' => now()]);
 
             $this->markIndexed($research);
+            $this->report($progress, fn (int $taskId) => $progress->succeed($taskId));
         } finally {
             $previous === null ? $context->clear() : $context->set($previous);
         }
@@ -105,6 +116,18 @@ final class IndexResearchJob implements ShouldQueue
             'research' => $this->researchId,
             'error' => $exception?->getMessage(),
         ]);
+
+        if ($this->taskId !== null && $exception !== null) {
+            app(TaskProgress::class)->fail($this->taskId, $exception);
+        }
+    }
+
+    /** Ход пишется, только когда индексацию запустила задача реестра. */
+    private function report(TaskProgress $progress, callable $write): void
+    {
+        if ($this->taskId !== null) {
+            $write($this->taskId);
+        }
     }
 
     /**

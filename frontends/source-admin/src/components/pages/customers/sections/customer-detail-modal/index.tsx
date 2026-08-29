@@ -12,7 +12,7 @@ import { Separator } from "@/components/ui/data-display/separator";
 import { Avatar } from "@/components/ui/data-display/avatar";
 import { Badge } from "@/components/ui/data-display/badge";
 import { AdminDynamicStyles } from "@/components/admin/AdminDynamicStyles";
-import type { DetailedCustomer } from "@/lib/admin/mocks/customers";
+import type { DetailedCustomer } from "@/lib/admin/types/customers";
 import { useConsoleText } from "@/lib/admin/use-console-text";
 import { customerTierLabel } from "@/components/pages/customers/utils";
 

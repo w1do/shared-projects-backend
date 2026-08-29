@@ -4,7 +4,6 @@ import * as React from "react";
 import { GeneralInfoSection } from "@/components/pages/blogs/pages/add/sections/general-info";
 import { useCategoriesQuery } from "@/hooks/admin/categories";
 import { useConsoleAccessQuery } from "@/hooks/admin/project";
-import { shouldUseAdminApi } from "@/lib/admin/data-source/config";
 import { MediaSection } from "@/components/pages/blogs/pages/add/sections/media";
 import { ContentBlocksSection } from "@/components/pages/blogs/pages/add/sections/content-blocks";
 import { StatusSection } from "@/components/pages/blogs/pages/add/sections/status";
@@ -14,21 +13,17 @@ import { StatusSection } from "@/components/pages/blogs/pages/add/sections/statu
  * Reused by both the add and edit article workflows.
  */
 export function BlogFormBody({ sidebarExtra }: { sidebarExtra?: React.ReactNode }) {
-  // Дерево категорий проекта для привязки поста — только в режиме api.
-  const isApi = shouldUseAdminApi();
-  const { data: categories } = useCategoriesQuery({ enabled: isApi });
+  const { data: categories } = useCategoriesQuery();
   const { data: access } = useConsoleAccessQuery();
   const platformCategories = React.useMemo(
     () =>
-      isApi
-        ? (categories ?? []).map((category) => ({
-            id: category.id,
-            name: category.name,
-            depth: category.depth ?? 0,
-            parentId: category.parentId ?? null,
-          }))
-        : undefined,
-    [isApi, categories],
+      (categories ?? []).map((category) => ({
+        id: category.id,
+        name: category.name,
+        depth: category.depth ?? 0,
+        parentId: category.parentId ?? null,
+      })),
+    [categories],
   );
 
   return (

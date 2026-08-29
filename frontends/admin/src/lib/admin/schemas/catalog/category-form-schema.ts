@@ -3,10 +3,7 @@ import * as z from "zod";
 // Относительный импорт с расширением — схему проверяет node-тест.
 import { t } from "../../console-texts.ts";
 
-/**
- * Схема формы категории живого режима: платформа не имеет торговых метрик,
- * поэтому денежных полей здесь нет.
- */
+/** Схема формы категории: платформа торговых метрик не ведёт. */
 export const categoryFormSchema = z.object({
   name: z.string().min(2, { message: t("console.categories.validation.name-min") }),
   slug: z
@@ -19,9 +16,9 @@ export const categoryFormSchema = z.object({
   /** Родитель в дереве категорий; пустая строка — корневая категория. */
   parentId: z.string().optional(),
   /**
-   * Имя по не-дефолтным локалям проекта (режим api). Поле локали монтируется
-   * со значением undefined и может остаться пустым — «нет перевода» допустимо:
-   * пустые значения вычищаются здесь, а не валят форму невидимой ошибкой.
+   * Имя по не-дефолтным локалям проекта. Поле локали монтируется со значением
+   * undefined и может остаться пустым — «нет перевода» допустимо: пустые
+   * значения вычищаются здесь, а не валят форму невидимой ошибкой.
    */
   nameTranslations: z
     .record(z.string(), z.string().optional())
@@ -50,16 +47,4 @@ export const categoryFormSchema = z.object({
     .min(1, { message: t("console.categories.validation.display-order-min") }),
 });
 
-/**
- * Мок-режим шаблона: демо-каталог хранит торговые метрики, поэтому его схема —
- * базовая плюс денежные поля. Живой режим этой схемой не пользуется.
- */
-export const mockCategoryFormSchema = categoryFormSchema.extend({
-  revenue: z.coerce.number().min(0, { message: t("console.categories.validation.revenue-min") }),
-  growthYoY: z.coerce.number({
-    invalid_type_error: t("console.categories.validation.growth-number"),
-  }),
-});
-
 export type CategoryFormValues = z.infer<typeof categoryFormSchema>;
-export type MockCategoryFormValues = z.infer<typeof mockCategoryFormSchema>;

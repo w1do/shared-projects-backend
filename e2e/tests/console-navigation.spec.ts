@@ -6,7 +6,7 @@ import { env } from "../support/env";
 
 /**
  * Состав разделов панели: меню собирается из включённых сервисов проекта и прав
- * оператора, разделы без поддержки платформы скрыты, но сохранены в коде.
+ * оператора; разделов без поддержки платформы в консоли нет вовсе.
  *
  * Проверяется то, что видит оператор. Коды ответов и работу селектора отдельно
  * закрывают guard и юнит-тесты — здесь важно, что меню действительно собралось.
@@ -26,7 +26,7 @@ const VISIBLE = [
   "Настройки",
 ];
 
-/** Разделы вёрстки без сервиса платформы — их не должно быть в меню. */
+/** Разделы склада вёрстки без сервиса платформы — их в консоли нет. */
 const HIDDEN = [
   "Товары",
   "Варианты",
@@ -79,7 +79,7 @@ test.describe("состав меню", () => {
     const unique = await sidebarTitles(page);
 
     for (const hidden of HIDDEN) {
-      expect(unique, `раздел ${hidden} скрыт`).not.toContain(hidden);
+      expect(unique, `раздела ${hidden} в консоли нет`).not.toContain(hidden);
     }
   });
 
@@ -103,7 +103,7 @@ test.describe("состав меню", () => {
     }
   });
 
-  test("быстрые действия скрытых разделов не предлагаются", async ({ page }) => {
+  test("быстрые действия удалённых разделов не предлагаются", async ({ page }) => {
     await page.goto("/admin");
     await expect(sidebarItems(page).first()).toBeVisible();
 
@@ -122,10 +122,10 @@ test.describe("состав меню", () => {
 });
 
 test.describe("доступ к маршрутам", () => {
-  test("скрытый раздел по прямому адресу даёт отказ", async ({ page }) => {
-    await page.goto("/admin/products");
+  test("адрес удалённого раздела отвечает как несуществующий", async ({ page }) => {
+    const response = await page.goto("/admin/products");
 
-    await expect(page).toHaveURL(/\/admin\/unauthorized$/);
+    expect(response?.status()).toBe(404);
   });
 
   test("доступный раздел открывается обычным образом", async ({ page }) => {

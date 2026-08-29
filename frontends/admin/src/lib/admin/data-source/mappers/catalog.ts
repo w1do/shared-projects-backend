@@ -1,4 +1,4 @@
-import type { Category } from "@/lib/admin/mocks/types";
+import type { Category } from "@/lib/admin/types/catalog";
 import type { ApiCategory } from "../api-types";
 import { money, statusMap } from "./shared";
 import { semanticColors } from "@/lib/theme-colors";

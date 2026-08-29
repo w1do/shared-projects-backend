@@ -1,5 +1,5 @@
 import { Badge } from "@/components/ui/data-display/badge";
-import type { Category } from "@/lib/admin/mocks/types";
+import type { Category } from "@/lib/admin/types/catalog";
 
 interface CategoryStatusBadgeProps {
   status: Category["status"];

@@ -8,14 +8,14 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/overlay/dialog";
-import type { MockUser } from "@/lib/admin/mocks/auth";
+import type { TeamUser } from "@/lib/admin/types/team";
 import { useConsoleText } from "@/lib/admin/use-console-text";
 
 interface DeleteMemberDialogProps {
   isOpen: boolean;
   onClose: () => void;
   onConfirm: () => void;
-  user: MockUser | null;
+  user: TeamUser | null;
 }
 
 export function DeleteMemberDialog({ isOpen, onClose, onConfirm, user }: DeleteMemberDialogProps) {

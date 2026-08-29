@@ -1,4 +1,4 @@
-import type { Category } from "@/lib/admin/mocks/types";
+import type { Category } from "@/lib/admin/types/catalog";
 import { renderHtmlToPdf } from "@/lib/admin/pdf/load-html2pdf";
 import { countChildren } from "@/lib/admin/data-source/category-tree";
 import { generateCategorySwatchSvg } from "./chart";

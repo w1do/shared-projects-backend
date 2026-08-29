@@ -2,7 +2,7 @@
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { CategoryFormValues } from "@/lib/admin/schemas/catalog/category-form-schema";
-import type { Category } from "@/lib/admin/mocks/types";
+import type { Category } from "@/lib/admin/types/catalog";
 import {
   createCategory,
   deleteCategories,

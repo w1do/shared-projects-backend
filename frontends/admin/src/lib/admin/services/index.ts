@@ -1,5 +1,4 @@
 export * from "./catalog/categories";
-export * from "./content-domain/capabilities";
 export * from "./ops/customers";
 export * from "./content-domain/articles";
 export * from "./content-domain/settings";

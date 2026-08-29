@@ -1,5 +1,5 @@
 import * as z from "zod";
-import type { TeamRole } from "@/lib/admin/mocks/settings";
+import type { TeamRole } from "@/lib/admin/types/settings";
 import { t } from "@/lib/admin/console-texts";
 
 /** Roles that can be assigned via invite (Owner is reserved). */

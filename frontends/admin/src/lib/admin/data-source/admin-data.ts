@@ -1,7 +1,6 @@
 /**
- * Admin data facade: dual-mode reads (mock | API) via query modules.
- * Catalog write paths (brands/categories/collections/products/inventory)
- * live in `@/lib/admin/services/*` so UI no longer branches on shouldUseAdminApi.
+ * Фасад чтений консоли: запросы к API платформы по модулям.
+ * Запись живёт в `@/lib/admin/services/*`.
  */
 export * from "./queries/catalog";
 export * from "./queries/commerce";

@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/inputs/input";
 import { Select } from "@/components/ui/inputs/select";
-import type { CustomerTier, DetailedCustomer } from "@/lib/admin/mocks/customers";
+import type { CustomerTier, DetailedCustomer } from "@/lib/admin/types/customers";
 import { CustomersTable } from "@/components/pages/customers/sections/customers-table";
 import { CustomersBulkActions } from "@/components/pages/customers/sections/customers-bulk-actions";
 import { useDataTable } from "@/hooks/use-data-table";

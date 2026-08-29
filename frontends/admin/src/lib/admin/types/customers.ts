@@ -1,3 +1,4 @@
+/** Типы раздела «Клиенты»: пользователи проекта из auth-service. */
 export interface CustomerAddress {
   street: string;
   city: string;
@@ -10,21 +11,13 @@ export interface CustomerSkinProfile {
   skinConcerns: string[];
 }
 
-export interface CustomerRecentOrder {
-  id: string;
-  placedAt: string;
-  total: number;
-  status: "Paid" | "Processing" | "Shipped" | "Refunded" | "Pending";
-  paymentMethod: string;
-}
-
 export interface CustomerActivity {
   title: string;
   timestamp: string;
   description: string;
 }
 
-/** Уровень лояльности демо-шаблона. Платформа лояльность не ведёт. */
+/** Уровень лояльности вёрстки. Платформа лояльность не ведёт. */
 export type CustomerTier = "Bronze" | "Silver" | "Gold" | "Platinum";
 
 export interface DetailedCustomer {
@@ -35,7 +28,7 @@ export interface DetailedCustomer {
   avatar: string;
   avatarUrl?: string;
   gradient: [string, string];
-  /** Отсутствует в живом режиме: платформа не ведёт уровни лояльности. */
+  /** Платформа уровни лояльности не ведёт — поле остаётся пустым. */
   tier?: CustomerTier;
   status: "Active" | "Inactive";
   skinProfile: CustomerSkinProfile;
@@ -46,6 +39,5 @@ export interface DetailedCustomer {
     shipping: CustomerAddress;
     billing: CustomerAddress;
   };
-  recentOrders: CustomerRecentOrder[];
   activities: CustomerActivity[];
 }

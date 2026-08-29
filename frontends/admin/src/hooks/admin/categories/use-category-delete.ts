@@ -2,7 +2,7 @@
 
 import { useCallback, useState } from "react";
 import { toast } from "sonner";
-import type { Category } from "@/lib/admin/mocks/types";
+import type { Category } from "@/lib/admin/types/catalog";
 import { t, tf } from "@/lib/admin/console-texts";
 import {
   useBulkDeleteCategoriesMutation,

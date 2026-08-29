@@ -43,8 +43,6 @@ services:
     working_dir: /app
     command: sh -c "bun install --frozen-lockfile && bun run build && bun run start"
     environment:
-      NEXT_PUBLIC_ADMIN_DATA_SOURCE: api
       NEXT_PUBLIC_ADMIN_API_BASE_URL: ""
-      NEXT_PUBLIC_ADMIN_MOCK_DELAY_MS: 0
     volumes:
       - ../../frontends/admin:/app

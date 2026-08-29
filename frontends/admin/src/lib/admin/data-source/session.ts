@@ -8,7 +8,7 @@
  *  - localStorage `current_user` — профиль для динамических привязок интерфейса (топбар и т.п.).
  */
 
-import { adminApiConfig, shouldUseAdminApi } from "./config";
+import { adminApiConfig } from "./config";
 import { t, tf } from "@/lib/admin/console-texts";
 import {
   type PlatformAdminProfile,
@@ -20,14 +20,14 @@ import {
   persistSectionSnapshot,
   visibleSectionKeys,
 } from "./section-access";
-import { type MockUser, authenticateMockUser } from "@/lib/admin/mocks/auth";
+import type { TeamUser } from "@/lib/admin/types/team";
 
 export const AUTH_TOKEN_COOKIE = "auth_token";
 export const AUTH_ROLE_COOKIE = "auth_role";
 export const PROJECT_KEY_COOKIE = "project_key";
 export const CURRENT_USER_STORAGE_KEY = "current_user";
 
-export type OperatorRole = MockUser["role"];
+export type OperatorRole = TeamUser["role"];
 
 export type OperatorProfile = {
   id: string;
@@ -195,21 +195,8 @@ async function signInAgainstPlatform(
   };
 }
 
-function signInAgainstMocks(email: string, password: string) {
-  const user = authenticateMockUser(email);
-  if (!user || user.password !== password) {
-    throw new AdminAuthError(t("console.login.invalid-credentials"));
-  }
-  if (user.status === "inactive") {
-    throw new AdminAuthError(t("console.login.account-deactivated"));
-  }
-
-  const { password: _password, ...profile } = user;
-  return { profile: profile as OperatorProfile, token: "mock-token" };
-}
-
 /**
- * Вход оператора. В режиме `api` — против auth-service, в режиме `mock` — по данным вёрстки.
+ * Вход оператора против auth-service.
  * Ошибки приходят как `AdminAuthError` с текстом, пригодным для toast'а.
  */
 export async function signInOperator(
@@ -217,19 +204,15 @@ export async function signInOperator(
   password: string,
   rememberMe: boolean,
 ): Promise<OperatorProfile> {
-  const { profile, token } = shouldUseAdminApi()
-    ? await signInAgainstPlatform(email, password)
-    : signInAgainstMocks(email, password);
+  const { profile, token } = await signInAgainstPlatform(email, password);
 
   persistSession(profile, token, rememberMe);
 
-  if (shouldUseAdminApi()) {
-    try {
-      await applyBootstrap(token, sessionMaxAge(rememberMe));
-    } catch {
-      // Скоуп проекта не критичен для входа — разделы покажут ошибку сами.
-      // Снимок остаётся отсутствующим: меню и guard трактуют это как «снимок не готов».
-    }
+  try {
+    await applyBootstrap(token, sessionMaxAge(rememberMe));
+  } catch {
+    // Скоуп проекта не критичен для входа — разделы покажут ошибку сами.
+    // Снимок остаётся отсутствующим: меню и guard трактуют это как «снимок не готов».
   }
 
   return profile;

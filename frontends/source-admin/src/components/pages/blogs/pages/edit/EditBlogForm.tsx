@@ -5,7 +5,7 @@ import { useStickyHeader } from "@/hooks/use-sticky-header";
 import { FormProvider, useForm, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/inputs/button";
-import type { Article } from "@/lib/admin/mocks/magazine";
+import type { Article } from "@/lib/admin/types/magazine";
 import { blogFormSchema, type BlogFormValues } from "@/lib/admin/schemas/content/blog-form-schema";
 import { tf } from "@/lib/admin/console-texts";
 import { useConsoleText } from "@/lib/admin/use-console-text";

@@ -11,7 +11,7 @@ import {
 import { ScrollArea } from "@/components/ui/layout/scroll-area";
 import { Avatar } from "@/components/ui/data-display/avatar";
 import { Badge } from "@/components/ui/data-display/badge";
-import type { Article } from "@/lib/admin/mocks/magazine";
+import type { Article } from "@/lib/admin/types/magazine";
 import { tf } from "@/lib/admin/console-texts";
 import { formatArticleDate } from "@/components/pages/blogs/utils";
 import { ArticleContent } from "./components/ArticleContent";

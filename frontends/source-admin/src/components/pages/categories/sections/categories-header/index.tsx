@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/inputs/button";
 import { PageHeader } from "@/components/shared/layout/PageHeader";
 import { toast } from "sonner";
-import type { Category } from "@/lib/admin/mocks/types";
+import type { Category } from "@/lib/admin/types/catalog";
 import { exportCategoriesToPDF } from "@/lib/admin/categories/pdf/export";
 import { useConsoleText } from "@/lib/admin/use-console-text";
 

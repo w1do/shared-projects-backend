@@ -1,7 +1,7 @@
 "use client";
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import type { StoreSettings } from "@/lib/admin/mocks/settings";
+import type { StoreSettings } from "@/lib/admin/types/settings";
 import { saveSettingsSection } from "@/lib/admin/services";
 import { adminQueryKeys } from "@/lib/admin/query/keys";
 

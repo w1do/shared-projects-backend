@@ -8,26 +8,11 @@
 
 import * as platformContent from "@/lib/admin/data-source/platform/content";
 import type { PlatformSeo } from "@/lib/admin/data-source/platform/types";
-import { shouldUseAdminApi } from "@/lib/admin/data-source/config";
 
 export type SeoSubjectType = platformContent.SeoSubjectType;
 export type SeoMeta = PlatformSeo;
 
-const emptySeo: SeoMeta = {
-  title: null,
-  description: null,
-  keywords: null,
-  canonical: null,
-  robots: null,
-  og_title: null,
-  og_description: null,
-  og_image: null,
-  twitter_card: null,
-  json_ld: null,
-};
-
 export async function getSeo(type: SeoSubjectType, id: string | number): Promise<SeoMeta> {
-  if (!shouldUseAdminApi()) return emptySeo;
   return platformContent.getSeo(type, id);
 }
 
@@ -36,6 +21,5 @@ export async function saveSeo(
   id: string | number,
   meta: SeoMeta,
 ): Promise<SeoMeta> {
-  if (!shouldUseAdminApi()) return meta;
   return platformContent.updateSeo(type, id, meta);
 }

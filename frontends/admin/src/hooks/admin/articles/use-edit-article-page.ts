@@ -1,6 +1,6 @@
 "use client";
 
-import type { Article } from "@/lib/admin/mocks/magazine";
+import type { Article } from "@/lib/admin/types/magazine";
 import { useArticleQuery } from "./use-article-query";
 
 type Options = {

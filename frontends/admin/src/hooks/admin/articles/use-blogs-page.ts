@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import type { Article } from "@/lib/admin/mocks/magazine";
+import type { Article } from "@/lib/admin/types/magazine";
 import { t, tf } from "@/lib/admin/console-texts";
 import { useArticlesQuery } from "./use-articles-query";
 import { useDeleteArticleMutation } from "./use-article-mutations";

@@ -11,6 +11,8 @@ use Cms\Research\Domain\Enums\ResearchStatus;
 use Cms\Research\Domain\Enums\SearchEngine;
 use Cms\Research\Domain\Models\Research;
 use Cms\Research\Infrastructure\Jobs\ProcessResearchJob;
+use Cms\Shared\BackgroundTasks\BackgroundTaskKind;
+use Cms\Shared\BackgroundTasks\TaskProgress;
 use Cms\Shared\Tenant\ProjectContext;
 use Illuminate\Contracts\Bus\Dispatcher;
 use Illuminate\Contracts\Config\Repository as Config;
@@ -21,6 +23,7 @@ final readonly class StartResearchHandler
         private ProjectContext $context,
         private Config $config,
         private Dispatcher $bus,
+        private TaskProgress $progress,
     ) {}
 
     public function handle(StartResearchCommand $command): Research
@@ -43,8 +46,15 @@ final readonly class StartResearchHandler
             'author_id' => $command->authorId,
         ]);
 
+        $taskId = $this->progress->queue(
+            BackgroundTaskKind::Research,
+            'research',
+            (string) $research->getKey(),
+            $command->authorId,
+        );
+
         $this->bus->dispatch(
-            (new ProcessResearchJob($projectId, (int) $research->getKey()))
+            (new ProcessResearchJob($projectId, (int) $research->getKey(), $taskId))
                 ->onQueue((string) $this->config->get('cms-research.queue', 'research')),
         );
 

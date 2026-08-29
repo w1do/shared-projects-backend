@@ -4,19 +4,15 @@ import * as React from "react";
 import { useForm, FormProvider, Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import { getCatalogCapabilities } from "@/lib/admin/services";
-import { shouldUseAdminApi } from "@/lib/admin/data-source/config";
 import {
   categoryFormSchema,
-  mockCategoryFormSchema,
   CategoryFormValues,
 } from "@/lib/admin/schemas/catalog/category-form-schema";
 import {
   defaultCategoryFormValues,
-  sampleCategoryFormValues,
   slugifyCategoryName,
 } from "@/lib/admin/categories/form";
-import type { Category } from "@/lib/admin/mocks/types";
+import type { Category } from "@/lib/admin/types/catalog";
 import { useCreateCategoryForm } from "@/hooks/admin/categories";
 import { useStickyThreshold } from "@/hooks/use-sticky-threshold";
 import { useConsoleText } from "@/lib/admin/use-console-text";
@@ -45,7 +41,7 @@ export function AddCategoryForm({ initialCategories }: { initialCategories?: Cat
   // Живой режим — базовая схема без денежных полей; демо-шаблон хранит метрики.
   const methods = useForm<CategoryFormValues>({
     resolver: zodResolver(
-      shouldUseAdminApi() ? categoryFormSchema : mockCategoryFormSchema,
+      categoryFormSchema,
     ) as Resolver<CategoryFormValues>,
     defaultValues: defaultCategoryFormValues,
   });
@@ -82,27 +78,16 @@ export function AddCategoryForm({ initialCategories }: { initialCategories?: Cat
     }
   };
 
-  const handleAutoFill = () => {
-    if (!getCatalogCapabilities().autoFill) {
-      toast.info(t("console.categories.autofill-mock-only"));
-      return;
-    }
-    setAutoSlug(false);
-    methods.reset(sampleCategoryFormValues);
-    toast.success(t("console.categories.autofill-applied"));
-  };
-
   return (
     <FormProvider {...methods}>
       <form onSubmit={methods.handleSubmit(onSubmit)} className="relative">
         <AddCategoryStickyHeader
           isSticky={isSticky}
           isSubmitting={isSubmitting}
-          onAutoFill={handleAutoFill}
         />
 
         <div className="flex flex-col gap-8">
-          <AddCategoryHeader isSubmitting={isSubmitting} onAutoFill={handleAutoFill} />
+          <AddCategoryHeader isSubmitting={isSubmitting} />
 
           <div className="grid gap-8 lg:grid-cols-3">
             <div className="lg:col-span-2 flex flex-col gap-8">

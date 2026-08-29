@@ -2,7 +2,7 @@
 
 import { Newspaper, FolderTree, PenLine, Clock } from "lucide-react";
 import { KpiStatCard, type KpiStat } from "@/components/shared";
-import type { Article } from "@/lib/admin/mocks/magazine";
+import type { Article } from "@/lib/admin/types/magazine";
 import { computeBlogsKpiValues } from "@/lib/admin/blogs-kpi";
 import { tf } from "@/lib/admin/console-texts";
 import { useConsoleText } from "@/lib/admin/use-console-text";

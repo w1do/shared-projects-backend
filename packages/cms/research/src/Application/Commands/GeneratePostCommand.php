@@ -9,5 +9,7 @@ final readonly class GeneratePostCommand
     public function __construct(
         public int $topicId,
         public ?string $authorId = null,
+        /** Запись реестра фоновых задач, в которую пишется ход работы. */
+        public ?int $taskId = null,
     ) {}
 }

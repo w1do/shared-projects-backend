@@ -8,6 +8,5 @@ export const metadata: Metadata = {
 };
 
 export default function LoginPage() {
-  const showDemo = process.env.NEXT_PUBLIC_ADMIN_IS_DEMO === "true";
-  return <LoginScreen showDemo={showDemo} />;
+  return <LoginScreen />;
 }

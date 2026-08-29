@@ -9,6 +9,8 @@ use Cms\Research\Application\Exceptions\ResearchRuleViolation;
 use Cms\Research\Domain\Enums\TopicStatus;
 use Cms\Research\Domain\Models\ResearchTopic;
 use Cms\Research\Infrastructure\Jobs\GeneratePostJob;
+use Cms\Shared\BackgroundTasks\BackgroundTaskKind;
+use Cms\Shared\BackgroundTasks\TaskProgress;
 use Cms\Shared\Tenant\ProjectContext;
 use Illuminate\Contracts\Bus\Dispatcher;
 use Illuminate\Contracts\Config\Repository as Config;
@@ -21,6 +23,7 @@ final readonly class StartPostGenerationHandler
         private ProjectContext $context,
         private Config $config,
         private Dispatcher $bus,
+        private TaskProgress $progress,
     ) {}
 
     public function handle(GeneratePostCommand $command): ResearchTopic
@@ -39,8 +42,17 @@ final readonly class StartPostGenerationHandler
             throw ResearchRuleViolation::topicRejected();
         }
 
+        // Запись заводится до постановки в очередь: оператор видит «принята»,
+        // не дожидаясь, пока обработчик возьмёт задачу.
+        $taskId = $this->progress->queue(
+            BackgroundTaskKind::PostGeneration,
+            'topic',
+            (string) $topic->getKey(),
+            $command->authorId,
+        );
+
         $this->bus->dispatch(
-            (new GeneratePostJob($this->context->required(), (int) $topic->getKey(), $command->authorId))
+            (new GeneratePostJob($this->context->required(), (int) $topic->getKey(), $command->authorId, $taskId))
                 ->onQueue((string) $this->config->get('cms-research.queue', 'research')),
         );
 

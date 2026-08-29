@@ -8,7 +8,7 @@ import { AdminFooter } from "./AdminFooter";
 import { FloatingActions } from "./floating";
 import { AdminModalsProvider, useAdminModals } from "./modals";
 import { InviteMemberDialog } from "@/components/pages/settings/sections/invite-member-dialog";
-import type { TeamMember } from "@/lib/admin/mocks/settings";
+import type { TeamMember } from "@/lib/admin/types/settings";
 import { QueryProvider } from "@/components/providers/QueryProvider";
 
 function AdminShellModals() {

@@ -6,6 +6,7 @@ namespace Cms\Research\Infrastructure\Jobs;
 
 use Cms\Research\Application\Actions\SplitPromptIntoSubQueriesAction;
 use Cms\Research\Application\Actions\SummarizeSourcesAction;
+use Cms\Research\Application\Exceptions\ResearchRuleViolation;
 use Cms\Research\Domain\Contracts\PageContentFetcher;
 use Cms\Research\Domain\Contracts\SerpSearchClient;
 use Cms\Research\Domain\Enums\ResearchProgressStage;
@@ -14,6 +15,8 @@ use Cms\Research\Domain\Exceptions\ResearchCanceled;
 use Cms\Research\Domain\Models\Research;
 use Cms\Research\Domain\Models\ResearchSource;
 use Cms\Research\Domain\ValueObjects\PageContent;
+use Cms\Shared\BackgroundTasks\BackgroundTaskKind;
+use Cms\Shared\BackgroundTasks\TaskProgress;
 use Cms\Shared\Tenant\ProjectContext;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Bus\Dispatcher;
@@ -44,6 +47,7 @@ final class ProcessResearchJob implements ShouldQueue
     public function __construct(
         public readonly string $projectId,
         public readonly int $researchId,
+        public readonly ?int $taskId = null,
     ) {}
 
     public function handle(
@@ -53,6 +57,7 @@ final class ProcessResearchJob implements ShouldQueue
         PageContentFetcher $fetcher,
         SummarizeSourcesAction $summarize,
         Dispatcher $bus,
+        TaskProgress $progress,
     ): void {
         // Синхронная диспетчеризация выполняет джобу внутри чужого контекста:
         // прежнее значение возвращается, иначе вложенный запуск обнулил бы
@@ -68,9 +73,12 @@ final class ProcessResearchJob implements ShouldQueue
                 return;
             }
 
-            $this->run($research, $split, $search, $fetcher, $summarize, $bus);
+            $this->progressStart($progress);
+            $this->run($research, $split, $search, $fetcher, $summarize, $bus, $progress);
+            $this->progressSucceed($progress);
         } catch (ResearchCanceled) {
-            // Отмена — не отказ: состояние уже переведено оператором.
+            // Отмена — не отказ: состояние уже переведено оператором, задача тоже закрывается.
+            $this->progressSucceed($progress);
         } finally {
             $previous === null ? $context->clear() : $context->set($previous);
         }
@@ -94,6 +102,10 @@ final class ProcessResearchJob implements ShouldQueue
         $research->error_message = $exception?->getMessage() ?? 'Research job failed.';
         $research->completed_at = $research->freshTimestamp();
         $research->save();
+
+        if ($this->taskId !== null && $exception !== null) {
+            app(TaskProgress::class)->fail($this->taskId, $exception);
+        }
     }
 
     private function run(
@@ -103,6 +115,7 @@ final class ProcessResearchJob implements ShouldQueue
         PageContentFetcher $fetcher,
         SummarizeSourcesAction $summarize,
         Dispatcher $bus,
+        TaskProgress $progress,
     ): void {
         $research->forceFill([
             'status' => ResearchStatus::Process,
@@ -113,7 +126,7 @@ final class ProcessResearchJob implements ShouldQueue
 
         $subQueries = $split->handle($research->query, $research->sub_queries_count);
 
-        $this->advance($research, ResearchProgressStage::Searching, ['sub_queries' => $subQueries]);
+        $this->advance($research, ResearchProgressStage::Searching, $progress, ['sub_queries' => $subQueries]);
 
         $sources = $this->collectSources($research, $subQueries, $search, $fetcher);
 
@@ -124,10 +137,14 @@ final class ProcessResearchJob implements ShouldQueue
                 'completed_at' => $research->freshTimestamp(),
             ])->save();
 
+            if ($this->taskId !== null) {
+                $progress->fail($this->taskId, ResearchRuleViolation::noSourcesFetched());
+            }
+
             return;
         }
 
-        $this->advance($research, ResearchProgressStage::Writing);
+        $this->advance($research, ResearchProgressStage::Writing, $progress);
 
         $summary = $summarize->handle($research->query, $sources, $research->offer);
 
@@ -140,7 +157,11 @@ final class ProcessResearchJob implements ShouldQueue
 
         // Индексация — отдельной задачей: недоступность базы знаний не отменяет
         // результат исследования и повторяется сама.
-        $bus->dispatch(new IndexResearchJob($this->projectId, (int) $research->getKey()));
+        $bus->dispatch(new IndexResearchJob(
+            $this->projectId,
+            (int) $research->getKey(),
+            $progress->queue(BackgroundTaskKind::ResearchIndexing, 'research', (string) $research->getKey()),
+        ));
     }
 
     /**
@@ -197,11 +218,34 @@ final class ProcessResearchJob implements ShouldQueue
     }
 
     /** @param array<string, mixed> $attributes */
-    private function advance(Research $research, ResearchProgressStage $stage, array $attributes = []): void
-    {
+    private function advance(
+        Research $research,
+        ResearchProgressStage $stage,
+        TaskProgress $progress,
+        array $attributes = [],
+    ): void {
         $this->assertNotCanceled($research);
 
         $research->forceFill(array_merge($attributes, ['progress_stage' => $stage]))->save();
+
+        if ($this->taskId !== null) {
+            $progress->stage($this->taskId, $stage->value);
+        }
+    }
+
+    private function progressStart(TaskProgress $progress): void
+    {
+        if ($this->taskId !== null) {
+            $progress->start($this->taskId, ResearchProgressStage::Starting->value);
+        }
+    }
+
+    /** Исследование ушло в конечное состояние — задача не может остаться «выполняется». */
+    private function progressSucceed(TaskProgress $progress): void
+    {
+        if ($this->taskId !== null) {
+            $progress->succeed($this->taskId);
+        }
     }
 
     private function assertNotCanceled(Research $research): void

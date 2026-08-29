@@ -8,7 +8,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/overlay/dropdown-menu";
-import type { Category } from "@/lib/admin/mocks/types";
+import type { Category } from "@/lib/admin/types/catalog";
 import { useConsoleText } from "@/lib/admin/use-console-text";
 
 interface CategoryRowActionsProps {

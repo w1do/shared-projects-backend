@@ -2,7 +2,7 @@
 
 import { formatCurrency } from "@/lib/utils";
 import { AdminDynamicStyles } from "@/components/admin/AdminDynamicStyles";
-import type { Category } from "@/lib/admin/mocks/types";
+import type { Category } from "@/lib/admin/types/catalog";
 import { FolderHeart, Trophy, TrendingUp, BarChart4 } from "lucide-react";
 import { CategoryStatCard } from "./components/CategoryStatCard";
 

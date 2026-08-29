@@ -1,5 +1,5 @@
 import type { BlogFormValues } from "@/lib/admin/schemas/content/blog-form-schema";
-import type { Article } from "@/lib/admin/mocks/magazine";
+import type { Article } from "@/lib/admin/types/magazine";
 import { t } from "@/lib/admin/console-texts";
 
 // Значения option — стабильные данные (хранятся в статье и участвуют в

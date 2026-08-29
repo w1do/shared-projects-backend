@@ -1,3 +1,4 @@
+/** Типы раздела «Настройки»: профиль проекта и его операторы. */
 export type CurrencyCode = "USD" | "EUR" | "GBP" | "VND";
 export type WeightUnit = "kg" | "lb";
 export type TeamRole = "Owner" | "Admin" | "Manager" | "Staff";
@@ -14,14 +15,6 @@ export interface GeneralSettings {
   storefrontUrl?: string;
 }
 
-export interface NotificationPref {
-  id: string;
-  label: string;
-  description: string;
-  email: boolean;
-  push: boolean;
-}
-
 export interface TeamMember {
   id: string;
   name: string;
@@ -31,15 +24,7 @@ export interface TeamMember {
   avatar?: string;
 }
 
-export interface SecuritySettings {
-  twoFactor: boolean;
-  loginAlerts: boolean;
-  sessionTimeout: number;
-}
-
 export interface StoreSettings {
   general: GeneralSettings;
-  notifications: NotificationPref[];
   team: TeamMember[];
-  security: SecuritySettings;
 }

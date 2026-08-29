@@ -2,7 +2,7 @@
 
 import { Users, UserCheck, UserX, Activity } from "lucide-react";
 import { KpiStatCard } from "@/components/shared";
-import type { DetailedCustomer } from "@/lib/admin/mocks/customers";
+import type { DetailedCustomer } from "@/lib/admin/types/customers";
 import { useConsoleText } from "@/lib/admin/use-console-text";
 
 interface CustomersStatsProps {

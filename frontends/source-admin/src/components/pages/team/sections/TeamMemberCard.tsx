@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { MoreVertical, Trash2, ToggleLeft, ToggleRight } from "lucide-react";
+import { MoreVertical, Trash2 } from "lucide-react";
 import { Avatar } from "@/components/ui/data-display/avatar";
 import { Badge } from "@/components/ui/data-display/badge";
 import { Card } from "@/components/ui/data-display/card";
@@ -10,19 +10,17 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/overlay/dropdown-menu";
-import type { MockUser } from "@/lib/admin/mocks/auth";
+import type { TeamUser } from "@/lib/admin/types/team";
 import { useConsoleText } from "@/lib/admin/use-console-text";
 
 interface TeamMemberCardProps {
-  user: MockUser;
+  user: TeamUser;
   isSelf: boolean;
   allowed: boolean;
   currentUserRole: string;
-  onToggleStatus: (user: MockUser) => void;
-  onDelete: (user: MockUser) => void;
+  onDelete: (user: TeamUser) => void;
 }
 
 export function TeamMemberCard({
@@ -30,7 +28,6 @@ export function TeamMemberCard({
   isSelf,
   allowed,
   currentUserRole,
-  onToggleStatus,
   onDelete,
 }: TeamMemberCardProps) {
   const t = useConsoleText();
@@ -85,15 +82,6 @@ export function TeamMemberCard({
               </IconButton>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => onToggleStatus(user)}>
-                {isActive ? (
-                  <ToggleRight className="text-destructive size-4" />
-                ) : (
-                  <ToggleLeft className="text-success size-4" />
-                )}
-                {isActive ? t("console.team.card.deactivate") : t("console.team.card.activate")}
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
               <DropdownMenuItem variant="destructive" onClick={() => onDelete(user)}>
                 <Trash2 className="size-4" /> {t("console.team.card.delete")}
               </DropdownMenuItem>

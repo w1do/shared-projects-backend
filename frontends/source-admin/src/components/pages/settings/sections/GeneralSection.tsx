@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/inputs/button";
 import { Input } from "@/components/ui/inputs/input";
 import { Textarea } from "@/components/ui/inputs/textarea";
 import { Select } from "@/components/ui/inputs/select";
-import type { GeneralSettings } from "@/lib/admin/mocks/settings";
+import type { GeneralSettings } from "@/lib/admin/types/settings";
 import {
   generalSettingsSchema,
   fromGeneralSettingsFormValues,

@@ -6,7 +6,7 @@ import { Avatar } from "@/components/ui/data-display/avatar";
 import { Badge } from "@/components/ui/data-display/badge";
 import { AdminDynamicStyles } from "@/components/admin/AdminDynamicStyles";
 import type { ColumnDef } from "@/components/ui/data-display/data-grid.types";
-import type { CustomerTier, DetailedCustomer } from "@/lib/admin/mocks/customers";
+import type { CustomerTier, DetailedCustomer } from "@/lib/admin/types/customers";
 import { t } from "@/lib/admin/console-texts";
 import {
   customerSkinConcernLabel,

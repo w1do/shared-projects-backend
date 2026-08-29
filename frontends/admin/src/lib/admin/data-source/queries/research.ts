@@ -1,9 +1,4 @@
-/**
- * Ресёрч, темы, инструкции и сборка проекта.
- *
- * Разделы существуют только в режиме `api`: демо-данных у них нет, поэтому в
- * mock-режиме возвращается пустой результат, а не выдуманные записи.
- */
+/** Ресёрч, темы, инструкции и сборка проекта — content-service. */
 
 import * as platformAuth from "../platform/auth";
 import * as platformInstructs from "../platform/instructs";
@@ -25,7 +20,6 @@ import {
   mapProjectEvents,
   type ProjectEvent,
 } from "../platform/project-events";
-import { fromSource } from "./shared";
 
 export type ProjectCard = {
   id: string;
@@ -36,29 +30,18 @@ export type ProjectCard = {
   locales: string[];
 };
 
-const emptyProjectCard: ProjectCard = {
-  id: "",
-  key: "",
-  name: "",
-  description: null,
-  topic: null,
-  locales: [],
-};
-
 /** Карточка проекта на дашборде: идентификатор, название, описание, тематика. */
 export async function getProjectCard(): Promise<ProjectCard> {
-  return fromSource(async () => {
-    const project = await platformAuth.getProject();
+  const project = await platformAuth.getProject();
 
-    return {
-      id: project.id,
-      key: project.key,
-      name: project.name,
-      description: project.description ?? null,
-      topic: project.topic ?? null,
-      locales: project.locales ?? [],
-    } satisfies ProjectCard;
-  }, emptyProjectCard);
+  return {
+    id: project.id,
+    key: project.key,
+    name: project.name,
+    description: project.description ?? null,
+    topic: project.topic ?? null,
+    locales: project.locales ?? [],
+  } satisfies ProjectCard;
 }
 
 export async function saveProjectCard(body: {
@@ -82,22 +65,20 @@ export async function saveProjectCard(body: {
  * оператору — он их не запрашивал, панель просто остаётся без числа.
  */
 export async function getProjectEvents(): Promise<ProjectEvent[]> {
-  return fromSource(async () => {
-    try {
-      return mapProjectEvents(await platformAuth.listAuditEntries(PROJECT_EVENTS_LIMIT));
-    } catch {
-      return [];
-    }
-  }, []);
+  try {
+    return mapProjectEvents(await platformAuth.listAuditEntries(PROJECT_EVENTS_LIMIT));
+  } catch {
+    return [];
+  }
 }
 
-/** Создание проекта оператором: в mock-режиме платформы нет, поэтому только api. */
+/** Создание проекта оператором. */
 export function createProject(name: string) {
   return platformAuth.createProject({ name });
 }
 
 export async function getBuildout(): Promise<PlatformBuildout | null> {
-  return fromSource(() => platformInstructs.getBuildout(), null);
+  return platformInstructs.getBuildout();
 }
 
 export function startBuildout(topic: string, overwrite = false) {
@@ -107,13 +88,13 @@ export function startBuildout(topic: string, overwrite = false) {
 export async function getResearches(
   status?: string,
 ): Promise<PlatformResearch[]> {
-  return fromSource(() => platformResearch.listResearches({ status }), []);
+  return platformResearch.listResearches({ status });
 }
 
 export async function getResearch(
   id: number,
 ): Promise<PlatformResearch | null> {
-  return fromSource(() => platformResearch.getResearch(id), null);
+  return platformResearch.getResearch(id);
 }
 
 export function startResearch(body: StartResearchBody) {
@@ -127,11 +108,11 @@ export function cancelResearch(id: number) {
 export async function getResearchTopics(
   researchId: number,
 ): Promise<PlatformTopic[]> {
-  return fromSource(() => platformResearch.listResearchTopics(researchId), []);
+  return platformResearch.listResearchTopics(researchId);
 }
 
 export async function getTopics(status?: string): Promise<PlatformTopic[]> {
-  return fromSource(() => platformResearch.listTopics({ status }), []);
+  return platformResearch.listTopics({ status });
 }
 
 export function extractTopics(researchId: number, maxCount?: number) {
@@ -149,18 +130,18 @@ export function generatePostFromTopic(topicId: number) {
 export async function getInstructs(
   category?: string,
 ): Promise<PlatformInstruct[]> {
-  return fromSource(() => platformInstructs.listInstructs({ category }), []);
+  return platformInstructs.listInstructs({ category });
 }
 
 export async function getInstructCategories(): Promise<
   PlatformInstructCategory[]
 > {
-  return fromSource(() => platformInstructs.listInstructCategories(), []);
+  return platformInstructs.listInstructCategories();
 }
 
 /** Каталог пресетов схем ответа: одинаков для всех проектов. */
 export async function getSchemaPresets(): Promise<PlatformSchemaPreset[]> {
-  return fromSource(() => platformInstructs.listSchemaPresets(), []);
+  return platformInstructs.listSchemaPresets();
 }
 
 export function createInstruct(body: UpsertInstructBody) {

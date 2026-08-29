@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import type { DetailedCustomer } from "@/lib/admin/mocks/customers";
+import type { DetailedCustomer } from "@/lib/admin/types/customers";
 import { deleteCustomer, setCustomerBlocked } from "@/lib/admin/services";
 import { adminQueryKeys } from "@/lib/admin/query/keys";
 import { t } from "@/lib/admin/console-texts";

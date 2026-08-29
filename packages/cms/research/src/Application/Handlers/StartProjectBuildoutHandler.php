@@ -8,6 +8,8 @@ use Cms\Research\Application\Commands\StartProjectBuildoutCommand;
 use Cms\Research\Application\Exceptions\ResearchRuleViolation;
 use Cms\Research\Domain\Models\ProjectBuildout;
 use Cms\Research\Infrastructure\Jobs\BuildProjectJob;
+use Cms\Shared\BackgroundTasks\BackgroundTaskKind;
+use Cms\Shared\BackgroundTasks\TaskProgress;
 use Cms\Shared\Tenant\ProjectContext;
 use Illuminate\Contracts\Bus\Dispatcher;
 use Illuminate\Contracts\Config\Repository as Config;
@@ -19,6 +21,7 @@ final readonly class StartProjectBuildoutHandler
         private ProjectContext $context,
         private Config $config,
         private Dispatcher $bus,
+        private TaskProgress $progress,
     ) {}
 
     public function handle(StartProjectBuildoutCommand $command): ProjectBuildout
@@ -36,8 +39,15 @@ final readonly class StartProjectBuildoutHandler
             'author_id' => $command->authorId,
         ]);
 
+        $taskId = $this->progress->queue(
+            BackgroundTaskKind::ProjectBuildout,
+            'buildout',
+            (string) $buildout->getKey(),
+            $command->authorId,
+        );
+
         $this->bus->dispatch(
-            (new BuildProjectJob($projectId, (int) $buildout->getKey()))
+            (new BuildProjectJob($projectId, (int) $buildout->getKey(), $taskId))
                 ->onQueue((string) $this->config->get('cms-research.queue', 'research')),
         );
 

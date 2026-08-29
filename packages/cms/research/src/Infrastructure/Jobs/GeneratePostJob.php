@@ -8,6 +8,7 @@ use Cms\Research\Application\Commands\GeneratePostCommand;
 use Cms\Research\Application\Handlers\GeneratePostFromTopicHandler;
 use Cms\Research\Domain\Enums\TopicStatus;
 use Cms\Research\Domain\Models\ResearchTopic;
+use Cms\Shared\BackgroundTasks\TaskProgress;
 use Cms\Shared\Tenant\ProjectContext;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -38,10 +39,14 @@ final class GeneratePostJob implements ShouldQueue
         public readonly string $projectId,
         public readonly int $topicId,
         public readonly ?string $authorId = null,
+        public readonly ?int $taskId = null,
     ) {}
 
-    public function handle(ProjectContext $context, GeneratePostFromTopicHandler $handler): void
-    {
+    public function handle(
+        ProjectContext $context,
+        GeneratePostFromTopicHandler $handler,
+        TaskProgress $progress,
+    ): void {
         // Синхронная диспетчеризация выполняет джобу внутри чужого контекста:
         // прежнее значение возвращается, иначе вложенный запуск обнулил бы
         // проект вызывающего.
@@ -55,7 +60,15 @@ final class GeneratePostJob implements ShouldQueue
                 return;
             }
 
-            $handler->handle(new GeneratePostCommand($this->topicId, $this->authorId));
+            if ($this->taskId !== null) {
+                $progress->start($this->taskId, 'preparing');
+            }
+
+            $post = $handler->handle(new GeneratePostCommand($this->topicId, $this->authorId, $this->taskId));
+
+            if ($this->taskId !== null) {
+                $progress->succeed($this->taskId, (string) $post->getKey());
+            }
         } finally {
             $previous === null ? $context->clear() : $context->set($previous);
         }
@@ -68,5 +81,9 @@ final class GeneratePostJob implements ShouldQueue
             'topic' => $this->topicId,
             'error' => $exception?->getMessage(),
         ]);
+
+        if ($this->taskId !== null && $exception !== null) {
+            app(TaskProgress::class)->fail($this->taskId, $exception);
+        }
     }
 }

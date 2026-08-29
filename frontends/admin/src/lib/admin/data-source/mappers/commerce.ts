@@ -1,9 +1,8 @@
-import type { DetailedCustomer } from "@/lib/admin/mocks/customers";
+import type { DetailedCustomer } from "@/lib/admin/types/customers";
 import type { ApiCustomer, ApiDashboardStats, ApiRevenuePoint } from "../api-types";
 import { semanticColors } from "@/lib/theme-colors";
 import { initials, money, titleCase } from "./shared";
 import { t } from "@/lib/admin/console-texts";
-import { findCustomerByEmailOrName } from "@/lib/admin/mocks/customers";
 
 export function mapDashboard(
   stats: ApiDashboardStats,
@@ -64,9 +63,7 @@ export function mapCustomer(customer: ApiCustomer): DetailedCustomer {
     email: customer.email,
     phone: "",
     avatar: initials(customer.name),
-    avatarUrl:
-      customer.avatarUrl ||
-      findCustomerByEmailOrName(customer.email)?.avatarUrl,
+    avatarUrl: customer.avatarUrl ?? undefined,
     gradient: [semanticColors.accent, semanticColors.brandAccentHover],
     tier: customer.tier
       ? (titleCase(customer.tier) as NonNullable<DetailedCustomer["tier"]>)
@@ -86,7 +83,6 @@ export function mapCustomer(customer: ApiCustomer): DetailedCustomer {
       shipping: { street: "", city: "", country: "", zip: "" },
       billing: { street: "", city: "", country: "", zip: "" },
     },
-    recentOrders: [],
     activities: [],
   };
 }

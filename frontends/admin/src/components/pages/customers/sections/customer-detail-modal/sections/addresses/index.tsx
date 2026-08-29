@@ -1,7 +1,7 @@
 "use client";
 
 import { MapPin } from "lucide-react";
-import type { DetailedCustomer } from "@/lib/admin/mocks/customers";
+import type { DetailedCustomer } from "@/lib/admin/types/customers";
 import { useConsoleText } from "@/lib/admin/use-console-text";
 
 interface CustomerAddressesCardProps {

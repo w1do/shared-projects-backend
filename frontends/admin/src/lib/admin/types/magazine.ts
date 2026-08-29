@@ -1,7 +1,4 @@
-/**
- * Beauty Journal (magazine) content types. Product references use product ids
- * (slugs) so they resolve against the catalog once the UI is built.
- */
+/** Типы материалов блога: пост, его блоки и предпросмотр статьи. */
 export interface ArticleAuthor {
   name: string;
   avatar: string;
@@ -12,7 +9,6 @@ export type ContentBlockType =
   | "paragraph"
   | "heading"
   | "image_full"
-  | "product_card"
   | "quote"
   | "image_grid";
 
@@ -34,13 +30,6 @@ export interface ImageFullBlock {
   effect?: string;
 }
 
-export interface ProductCardBlock {
-  type: "product_card";
-  product_id: string;
-  display_mode: string;
-  caption?: string;
-}
-
 export interface QuoteBlock {
   type: "quote";
   content: string;
@@ -59,7 +48,6 @@ export type ContentBlock =
   | ParagraphBlock
   | HeadingBlock
   | ImageFullBlock
-  | ProductCardBlock
   | QuoteBlock
   | ImageGridBlock;
 
@@ -73,9 +61,8 @@ export interface ArticleBlock {
 
 export interface Article {
   id: string;
-  /** Статус поста платформы; отсутствует у демо-данных вёрстки. */
   status?: "draft" | "scheduled" | "published" | "archived";
-  /** Категории проекта, к которым привязан пост (режим api). */
+  /** Категории проекта, к которым привязан пост. */
   categoryIds?: string[];
   slug: string;
   title: string;
@@ -87,12 +74,11 @@ export interface Article {
   readingTimeMin: number;
   banner: string;
   thumbnail: string;
-  /** Медиа проекта за изображениями поста (режим api). */
+  /** Медиа проекта за изображениями поста. */
   coverMediaId?: number | null;
   bannerMediaId?: number | null;
   layoutStyle: "minimalist" | "editorial" | "botanical" | string;
-  relatedProducts: string[];
   contentBlocks: ContentBlock[];
-  /** Содержимое блоками (режим api): источник правды для формы поста. */
+  /** Содержимое блоками: источник правды для формы поста. */
   blocks?: ArticleBlock[];
 }

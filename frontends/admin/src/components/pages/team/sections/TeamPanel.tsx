@@ -1,14 +1,13 @@
 "use client";
 
-import type { MockUser } from "@/lib/admin/mocks/auth";
+import type { TeamUser } from "@/lib/admin/types/team";
 import { TeamMemberCard } from "./TeamMemberCard";
 
 interface TeamPanelProps {
-  users: MockUser[];
-  currentUser: MockUser | null;
-  canManage: (target: MockUser) => boolean;
-  onToggleStatus: (target: MockUser) => void;
-  onDelete: (target: MockUser) => void;
+  users: TeamUser[];
+  currentUser: TeamUser | null;
+  canManage: (target: TeamUser) => boolean;
+  onDelete: (target: TeamUser) => void;
 }
 
 /**
@@ -18,7 +17,6 @@ export function TeamPanel({
   users,
   currentUser,
   canManage,
-  onToggleStatus,
   onDelete,
 }: TeamPanelProps) {
   return (
@@ -30,7 +28,6 @@ export function TeamPanel({
           isSelf={currentUser?.id === user.id}
           allowed={canManage(user)}
           currentUserRole={currentUser?.role || "staff"}
-          onToggleStatus={onToggleStatus}
           onDelete={onDelete}
         />
       ))}

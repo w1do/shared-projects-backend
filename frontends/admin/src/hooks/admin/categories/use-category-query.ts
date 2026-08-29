@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import type { Category } from "@/lib/admin/mocks/types";
+import type { Category } from "@/lib/admin/types/catalog";
 import { getCategoryById } from "@/lib/admin/services";
 import { adminQueryKeys } from "@/lib/admin/query/keys";
 

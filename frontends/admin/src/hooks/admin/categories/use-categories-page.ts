@@ -3,7 +3,7 @@
 import { useCallback, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import type { Category } from "@/lib/admin/mocks/types";
+import type { Category } from "@/lib/admin/types/catalog";
 import { t, tf } from "@/lib/admin/console-texts";
 import { useCategoriesQuery } from "./use-categories-query";
 import { useCategoryDelete } from "./use-category-delete";

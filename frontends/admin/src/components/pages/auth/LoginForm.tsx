@@ -13,7 +13,6 @@ import { Button } from "@/components/ui/inputs/button";
 import { Checkbox } from "@/components/ui/inputs/checkbox";
 import { Label } from "@/components/ui/inputs/label";
 import { IconButton } from "@/components/ui/inputs/icon-button";
-import { DemoAccountSelector } from "./DemoAccountSelector";
 import {
   loginFormSchema,
   defaultLoginFormValues,
@@ -27,11 +26,7 @@ import {
   signInOperator,
 } from "@/lib/admin/data-source/session";
 
-interface LoginFormProps {
-  showDemo?: boolean;
-}
-
-export function LoginForm({ showDemo = false }: LoginFormProps) {
+export function LoginForm() {
   const router = useRouter();
   const t = useConsoleText();
   const [isSubmitting, setIsSubmitting] = React.useState(false);
@@ -74,15 +69,6 @@ export function LoginForm({ showDemo = false }: LoginFormProps) {
 
   return (
     <div className="mx-auto flex w-full max-w-sm flex-col gap-8">
-      <DemoAccountSelector
-        showDemo={showDemo}
-        onSelectUser={(user) => {
-          setValue("email", user.email);
-          setValue("password", "password");
-          toast.success(`Selected profile: ${user.name} (${user.role})`);
-        }}
-      />
-
       <div className="flex flex-col gap-2">
         <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary lg:hidden">
           <Image

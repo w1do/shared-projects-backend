@@ -6,7 +6,7 @@ import { Avatar } from "@/components/ui/data-display/avatar";
 import { Badge } from "@/components/ui/data-display/badge";
 import { Button } from "@/components/ui/inputs/button";
 import { IconButton } from "@/components/ui/inputs/icon-button";
-import type { Article } from "@/lib/admin/mocks/magazine";
+import type { Article } from "@/lib/admin/types/magazine";
 import { tf } from "@/lib/admin/console-texts";
 import { useConsoleText } from "@/lib/admin/use-console-text";
 import { articleStatusLabel, formatArticleDate } from "@/components/pages/blogs/utils";

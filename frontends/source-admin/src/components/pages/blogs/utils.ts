@@ -1,4 +1,4 @@
-import type { Article } from "@/lib/admin/mocks/magazine";
+import type { Article } from "@/lib/admin/types/magazine";
 import { t, type ConsoleTextKey } from "@/lib/admin/console-texts";
 
 export interface CategoryOption {

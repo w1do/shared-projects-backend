@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import type { Category } from "@/lib/admin/mocks/types";
+import type { Category } from "@/lib/admin/types/catalog";
 
 type ViewMode = "grid" | "table";
 type SortConfig = { field: string; order: "asc" | "desc" } | null;

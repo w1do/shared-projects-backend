@@ -3,7 +3,7 @@
 import { Download } from "lucide-react";
 import { Button } from "@/components/ui/inputs/button";
 import { PageHeader } from "@/components/shared/layout/PageHeader";
-import type { DetailedCustomer } from "@/lib/admin/mocks/customers";
+import type { DetailedCustomer } from "@/lib/admin/types/customers";
 import { useCustomersPage } from "@/hooks/admin/customers";
 import { useConsoleText } from "@/lib/admin/use-console-text";
 import { CustomersStats } from "@/components/pages/customers/sections/customers-stats";

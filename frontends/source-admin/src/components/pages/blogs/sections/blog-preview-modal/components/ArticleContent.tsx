@@ -1,6 +1,6 @@
 "use client";
 
-import type { ContentBlock } from "@/lib/admin/mocks/magazine";
+import type { ContentBlock } from "@/lib/admin/types/magazine";
 
 export function ArticleContent({ blocks }: { blocks: ContentBlock[] }) {
   return (

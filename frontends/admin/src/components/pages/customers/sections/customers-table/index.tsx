@@ -4,7 +4,7 @@ import { useCallback, useMemo } from "react";
 import { DataGrid } from "@/components/ui/data-display/data-grid";
 import { listStateMessage } from "@/lib/admin/data-source/list-state";
 import { DataTableFooter } from "@/components/shared/data-table/DataTableFooter";
-import type { DetailedCustomer } from "@/lib/admin/mocks/customers";
+import type { DetailedCustomer } from "@/lib/admin/types/customers";
 import { getCustomerColumns } from "../customer-columns";
 import { useConsoleText } from "@/lib/admin/use-console-text";
 

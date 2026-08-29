@@ -5,7 +5,7 @@ import { CategoriesPanel } from "./sections/categories-panel";
 import { CategoryDeleteDialog } from "./sections/category-delete-dialog";
 import { CategoryMoveDialog } from "./sections/category-move-dialog";
 import { categoryPath, descendantIds } from "@/lib/admin/data-source/category-tree";
-import type { Category } from "@/lib/admin/mocks/types";
+import type { Category } from "@/lib/admin/types/catalog";
 import { useCategoriesPage } from "@/hooks/admin/categories";
 
 interface CategoriesPageProps {

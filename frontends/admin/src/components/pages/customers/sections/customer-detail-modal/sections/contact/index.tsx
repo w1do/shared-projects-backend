@@ -2,7 +2,7 @@
 
 import { Mail, Phone, User, Sparkles } from "lucide-react";
 import { Badge } from "@/components/ui/data-display/badge";
-import type { DetailedCustomer } from "@/lib/admin/mocks/customers";
+import type { DetailedCustomer } from "@/lib/admin/types/customers";
 import { useConsoleText } from "@/lib/admin/use-console-text";
 import {
   customerSkinConcernLabel,

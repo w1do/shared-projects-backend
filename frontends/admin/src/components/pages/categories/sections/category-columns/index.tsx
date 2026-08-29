@@ -1,7 +1,7 @@
 "use client";
 
 import type { ColumnDef } from "@/components/ui/data-display/data-grid.types";
-import type { Category } from "@/lib/admin/mocks/types";
+import type { Category } from "@/lib/admin/types/catalog";
 import { countChildren } from "@/lib/admin/data-source/category-tree";
 import { CategoryRowActions } from "../category-row-actions";
 import { getCategoryIcon } from "@/components/pages/categories/config/icons";

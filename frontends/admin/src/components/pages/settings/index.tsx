@@ -1,11 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Store, CreditCard, Bell, Users, ShieldCheck, Languages, Blocks } from "lucide-react";
+import { Store, CreditCard, Languages, Blocks } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/data-display/tabs";
 import { PageHeader } from "@/components/shared/layout/PageHeader";
 import { useStoreSettingsQuery } from "@/hooks/admin/settings/use-settings-query";
-import { mockStoreSettings, type StoreSettings } from "@/lib/admin/mocks/settings";
+import type { StoreSettings } from "@/lib/admin/types/settings";
 import { SettingsLoadingState } from "./loading";
 import { useConsoleText } from "@/lib/admin/use-console-text";
 import { cn } from "@/lib/utils";
@@ -13,16 +12,12 @@ import { cn } from "@/lib/utils";
 import { GeneralSection } from "./sections/GeneralSection";
 import { SiteLanguageSection } from "./sections/SiteLanguageSection";
 import { PaymentsSection } from "./sections/PaymentsSection";
-import { NotificationsSection } from "./sections/NotificationsSection";
-import { SecuritySection } from "./sections/SecuritySection";
 import { LanguagesSection } from "./sections/LanguagesSection";
 import { ServicesSection } from "./sections/ServicesSection";
 
 const TABS = [
   { value: "general", labelKey: "console.settings.tab.general", icon: Store },
   { value: "payments", labelKey: "console.settings.tab.payments", icon: CreditCard },
-  { value: "notifications", labelKey: "console.settings.tab.notifications", icon: Bell },
-  { value: "security", labelKey: "console.settings.tab.security", icon: ShieldCheck },
   { value: "languages", labelKey: "console.settings.tab.languages", icon: Languages },
   { value: "services", labelKey: "console.settings.tab.services", icon: Blocks },
 ] as const;
@@ -38,17 +33,8 @@ export default function SettingsPage({
     initialData: hasSeed ? initialSettings : undefined,
   });
 
-  const settings = data ?? initialSettings ?? mockStoreSettings;
-  const [isMockLoading, setIsMockLoading] = useState(true);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsMockLoading(false);
-    }, 2000);
-    return () => clearTimeout(timer);
-  }, []);
-
-  const showSkeleton = (hasSeed ? false : isPending) || isMockLoading;
+  const settings = data ?? initialSettings;
+  const showSkeleton = hasSeed ? false : isPending;
 
   return (
     <div className="relative min-h-screen w-full">
@@ -101,18 +87,12 @@ export default function SettingsPage({
 
             <TabsContent value="general">
               <div className="flex flex-col gap-8">
-                <GeneralSection initial={settings.general} />
+                {settings && <GeneralSection initial={settings.general} />}
                 <SiteLanguageSection />
               </div>
             </TabsContent>
             <TabsContent value="payments">
               <PaymentsSection />
-            </TabsContent>
-            <TabsContent value="notifications">
-              <NotificationsSection initial={settings.notifications} />
-            </TabsContent>
-            <TabsContent value="security">
-              <SecuritySection initial={settings.security} />
             </TabsContent>
             <TabsContent value="languages">
               <LanguagesSection />

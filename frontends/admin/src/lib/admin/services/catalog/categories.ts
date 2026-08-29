@@ -1,45 +1,19 @@
 import type { CategoryFormValues } from "@/lib/admin/schemas/catalog/category-form-schema";
-import type { Category } from "@/lib/admin/mocks/types";
-import {
-  createStoredCategory,
-  deleteStoredCategory,
-  findStoredCategory,
-  readStoredCategories,
-  updateStoredCategory,
-} from "@/lib/admin/categories/store";
+import type { Category } from "@/lib/admin/types/catalog";
 import {
   adminMutations,
   getAdminCategories,
   getAdminCategoryById,
 } from "@/lib/admin/data-source/admin-data";
-import { shouldUseAdminApi } from "@/lib/admin/data-source/config";
 import { mapCategory } from "@/lib/admin/data-source/mappers/catalog";
-import { mockNetworkDelay } from "@/lib/admin/data-source/queries/shared";
 
-/** Client rehydrate after SSR seed (mock reads local store; API keeps server list). */
-export function rehydrateCategories(serverList: Category[] = []): Category[] {
-  if (shouldUseAdminApi() || typeof window === "undefined") return serverList;
-  return readStoredCategories();
-}
-
-/**
- * Canonical category list loader for TanStack Query.
- * Mock latency comes from mockNetworkDelay so list pages can share skeleton UX.
- */
+/** Список категорий проекта для TanStack Query. */
 export async function listCategories(): Promise<Category[]> {
-  if (!shouldUseAdminApi()) {
-    await mockNetworkDelay();
-    return readStoredCategories();
-  }
   return getAdminCategories();
 }
 
-/** Canonical category detail loader for TanStack Query. */
+/** Категория по идентификатору для TanStack Query. */
 export async function getCategoryById(id: string): Promise<Category | null> {
-  if (!shouldUseAdminApi()) {
-    // Case-insensitive match — route params and stored ids can differ in casing.
-    return findStoredCategory(id);
-  }
   return getAdminCategoryById(id);
 }
 
@@ -68,27 +42,21 @@ function toParentId(values: CategoryFormValues): string | null {
 }
 
 export async function createCategory(values: CategoryFormValues): Promise<Category> {
-  if (shouldUseAdminApi()) {
-    return mapCategory(
-      await adminMutations.createCategory({
-        ...toApiCategoryBody(values),
-        parentId: toParentId(values),
-      }),
-    );
-  }
-  return createStoredCategory(values);
+  return mapCategory(
+    await adminMutations.createCategory({
+      ...toApiCategoryBody(values),
+      parentId: toParentId(values),
+    }),
+  );
 }
 
 export async function updateCategory(
   id: string,
   values: CategoryFormValues,
 ): Promise<Category | null> {
-  if (shouldUseAdminApi()) {
-    // Родитель не отправляется вместе с переименованием: смена родителя —
-    // отдельная операция перемещения (moveCategory), иначе поддерево уедет в корень.
-    return mapCategory(await adminMutations.updateCategory(id, toApiCategoryBody(values)));
-  }
-  return updateStoredCategory(id, values);
+  // Родитель не отправляется вместе с переименованием: смена родителя —
+  // отдельная операция перемещения (moveCategory), иначе поддерево уедет в корень.
+  return mapCategory(await adminMutations.updateCategory(id, toApiCategoryBody(values)));
 }
 
 /**
@@ -102,17 +70,12 @@ export async function moveCategory(
   parentId: string | null,
   position?: number,
 ): Promise<void> {
-  if (!shouldUseAdminApi()) return;
   await adminMutations.moveCategory(id, parentId, position);
 }
 
-/** Deletes a category. UI should optimistically remove then rollback on throw. */
+/** Удаление категории. UI убирает её оптимистично и откатывает при ошибке. */
 export async function deleteCategory(id: string): Promise<void> {
-  if (shouldUseAdminApi()) {
-    await adminMutations.deleteCategory(id);
-    return;
-  }
-  deleteStoredCategory(id);
+  await adminMutations.deleteCategory(id);
 }
 
 /**
@@ -122,18 +85,10 @@ export async function deleteCategory(id: string): Promise<void> {
  * не остаётся, а дерево пересчитывается один раз, а не на каждом узле.
  */
 export async function deleteCategories(ids: string[]): Promise<void> {
-  if (shouldUseAdminApi()) {
-    await adminMutations.bulkDeleteCategories(ids);
-    return;
-  }
-  ids.forEach((id) => deleteStoredCategory(id));
+  await adminMutations.bulkDeleteCategories(ids);
 }
 
 /** Удаление всех категорий проекта одним запросом. */
 export async function purgeCategories(): Promise<void> {
-  if (shouldUseAdminApi()) {
-    await adminMutations.purgeCategories();
-    return;
-  }
-  readStoredCategories().forEach((category) => deleteStoredCategory(category.id));
+  await adminMutations.purgeCategories();
 }

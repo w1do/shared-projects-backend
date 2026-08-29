@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/inputs/input";
 import { Select } from "@/components/ui/inputs/select";
 import { DataTableFooter } from "@/components/shared/data-table/DataTableFooter";
 import { listStateMessage } from "@/lib/admin/data-source/list-state";
-import type { Article } from "@/lib/admin/mocks/magazine";
+import type { Article } from "@/lib/admin/types/magazine";
 import { useConsoleText } from "@/lib/admin/use-console-text";
 import { ArticleCard } from "./components/ArticleCard";
 import { categoryOptions, filterArticles, statusOptions } from "@/components/pages/blogs/utils";

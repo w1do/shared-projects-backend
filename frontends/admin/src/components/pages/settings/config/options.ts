@@ -1,4 +1,4 @@
-import type { CurrencyCode, WeightUnit } from "@/lib/admin/mocks/settings";
+import type { CurrencyCode, WeightUnit } from "@/lib/admin/types/settings";
 import { inviteableRoles } from "@/lib/admin/schemas/content/invite-member-schema";
 import { t } from "@/lib/admin/console-texts";
 

@@ -1,6 +1,6 @@
 "use client";
 
-import type { Category } from "@/lib/admin/mocks/types";
+import type { Category } from "@/lib/admin/types/catalog";
 import { useCategoryQuery } from "./use-category-query";
 import { useCategoriesQuery } from "./use-categories-query";
 

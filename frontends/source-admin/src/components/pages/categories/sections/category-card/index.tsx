@@ -4,7 +4,7 @@ import { Edit2, Trash2 } from "lucide-react";
 import { IconButton } from "@/components/ui/inputs/icon-button";
 import Image from "next/image";
 import { AdminDynamicStyles } from "@/components/admin/AdminDynamicStyles";
-import type { Category } from "@/lib/admin/mocks/types";
+import type { Category } from "@/lib/admin/types/catalog";
 import { getCategoryIcon } from "@/components/pages/categories/config/icons";
 import { CategoryStatusBadge } from "../category-status-badge";
 import { useConsoleText } from "@/lib/admin/use-console-text";

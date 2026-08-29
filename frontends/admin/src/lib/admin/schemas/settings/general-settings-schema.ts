@@ -1,5 +1,5 @@
 import * as z from "zod";
-import type { GeneralSettings } from "@/lib/admin/mocks/settings";
+import type { GeneralSettings } from "@/lib/admin/types/settings";
 import { t } from "@/lib/admin/console-texts";
 
 export const currencyCodes = ["USD", "EUR", "GBP", "VND"] as const;

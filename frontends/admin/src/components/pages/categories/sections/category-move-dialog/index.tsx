@@ -10,7 +10,7 @@ import {
   DialogDescription,
   DialogTitle,
 } from "@/components/ui/overlay/dialog";
-import type { Category } from "@/lib/admin/mocks/types";
+import type { Category } from "@/lib/admin/types/catalog";
 import { descendantIds } from "@/lib/admin/data-source/category-tree";
 import { useConsoleText } from "@/lib/admin/use-console-text";
 

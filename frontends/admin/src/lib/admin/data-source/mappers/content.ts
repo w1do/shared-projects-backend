@@ -1,4 +1,4 @@
-import type { Article, ContentBlock } from "@/lib/admin/mocks/magazine";
+import type { Article, ContentBlock } from "@/lib/admin/types/magazine";
 import type { ApiArticle } from "../api-types";
 
 export function mapArticle(article: ApiArticle): Article {
@@ -50,7 +50,6 @@ export function mapArticle(article: ApiArticle): Article {
     coverMediaId: article.coverMediaId ?? null,
     bannerMediaId: article.bannerMediaId ?? null,
     layoutStyle: "editorial",
-    relatedProducts: [],
     contentBlocks,
   };
 }
