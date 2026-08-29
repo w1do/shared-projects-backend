@@ -26,6 +26,16 @@ return [
         'password' => env('ADMIN_PASSWORD'),
     ],
 
+    // Стартовый проект бутстрапа (project:seed): без проекта консоль пуста
+    'initial_project' => [
+        'key' => env('INITIAL_PROJECT_KEY', 'main'),
+        'name' => env('INITIAL_PROJECT_NAME', 'Main'),
+        'locales' => array_values(array_filter(array_map(
+            'trim',
+            explode(',', (string) env('INITIAL_PROJECT_LOCALES', 'ru')),
+        ))),
+    ],
+
     // Rate limit входа: попыток в минуту
     'login_rate_limit' => (int) env('AUTH_LOGIN_RATE_LIMIT', 5),
 

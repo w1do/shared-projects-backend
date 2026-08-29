@@ -101,6 +101,8 @@ services:
       ADMIN_SEED: "1"
       ADMIN_EMAIL: ${ADMIN_EMAIL:-root@example.com}
       ADMIN_PASSWORD: ${ADMIN_PASSWORD:-secret-123}
+      INITIAL_PROJECT_KEY: ${INITIAL_PROJECT_KEY:-main}
+      INITIAL_PROJECT_NAME: ${INITIAL_PROJECT_NAME:-Main}
 
   auth-worker:
     <<: *php-service

@@ -6,6 +6,7 @@ namespace Cms\Auth\Infrastructure\Providers;
 
 use Cms\Auth\Console\PublishManifestConsoleCommand;
 use Cms\Auth\Console\SeedOperatorConsoleCommand;
+use Cms\Auth\Console\SeedProjectConsoleCommand;
 use Cms\Auth\Domain\Models\Admin;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
@@ -25,7 +26,11 @@ final class AuthServiceProvider extends ServiceProvider
         $this->loadRoutesFrom(__DIR__.'/../../../routes/internal.php');
 
         if ($this->app->runningInConsole()) {
-            $this->commands([PublishManifestConsoleCommand::class, SeedOperatorConsoleCommand::class]);
+            $this->commands([
+                PublishManifestConsoleCommand::class,
+                SeedOperatorConsoleCommand::class,
+                SeedProjectConsoleCommand::class,
+            ]);
         }
 
         // Роль super-admin проходит любую проверку прав в любом проекте

@@ -9,6 +9,11 @@ services:
       - ../gateway:/etc/traefik:ro
 
   auth-service:
+    # Стартовый проект dev-стека — demo: на нём идут smoke, seed-demo и e2e
+    environment:
+      INITIAL_PROJECT_KEY: demo
+      INITIAL_PROJECT_NAME: Demo Site
+      INITIAL_PROJECT_LOCALES: ru,en
     volumes: &src-mount
       - ../..:/var/www
   auth-worker:

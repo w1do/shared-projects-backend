@@ -39,9 +39,11 @@ if [ "${MANIFEST_PUBLISH:-0}" = "1" ]; then
     done
 fi
 
-# Корневой оператор панели (идемпотентно, только auth-service)
+# Корневой оператор и стартовый проект панели (идемпотентно, только auth-service):
+# без проекта консоль не показывает разделов — bootstrap собирается из его сервисов
 if [ "${ADMIN_SEED:-0}" = "1" ]; then
     php artisan operator:seed || true
+    php artisan project:seed || true
 fi
 
 exec "$@"
