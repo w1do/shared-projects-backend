@@ -56,6 +56,16 @@ class Page extends Model
         return $this->morphMany(Revision::class, 'revisable');
     }
 
+    /**
+     * Поля, попадающие в снимок ревизии: у страницы нет блоков содержимого.
+     *
+     * @return array<string, mixed>
+     */
+    public function revisionSnapshot(): array
+    {
+        return $this->only(['title', 'slug', 'body', 'locale', 'status']);
+    }
+
     public function scopePublished(Builder $query): Builder
     {
         return $query->where('status', ContentStatus::Published);

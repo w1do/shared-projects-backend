@@ -5,6 +5,7 @@ import { Search } from "lucide-react";
 import { Input } from "@/components/ui/inputs/input";
 import { Select } from "@/components/ui/inputs/select";
 import { DataTableFooter } from "@/components/shared/data-table/DataTableFooter";
+import { listStateMessage } from "@/lib/admin/data-source/list-state";
 import type { Article } from "@/lib/admin/mocks/magazine";
 import { useConsoleText } from "@/lib/admin/use-console-text";
 import { ArticleCard } from "./components/ArticleCard";
@@ -12,12 +13,20 @@ import { categoryOptions, filterArticles, statusOptions } from "@/components/pag
 
 interface BlogsPanelProps {
   articles: Article[];
+  /** Данные ещё идут: пустое состояние показывать рано. */
+  isLoading?: boolean;
   onOpen: (article: Article) => void;
   onEdit: (article: Article) => void;
   onDelete: (article: Article) => void;
 }
 
-export function BlogsPanel({ articles, onOpen, onEdit, onDelete }: BlogsPanelProps) {
+export function BlogsPanel({
+  articles,
+  isLoading = false,
+  onOpen,
+  onEdit,
+  onDelete,
+}: BlogsPanelProps) {
   const t = useConsoleText();
   const [searchTerm, setSearchTerm] = useState("");
   const [category, setCategory] = useState("all");
@@ -84,7 +93,11 @@ export function BlogsPanel({ articles, onOpen, onEdit, onDelete }: BlogsPanelPro
 
       {paginated.length === 0 ? (
         <div className="rounded-3xl border border-dashed border-border py-12 text-center text-xs text-muted-foreground-lighter">
-          {t("console.blogs.empty-filtered")}
+          {listStateMessage(
+            isLoading,
+            t("console.common.loading"),
+            t("console.blogs.empty-filtered"),
+          )}
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">

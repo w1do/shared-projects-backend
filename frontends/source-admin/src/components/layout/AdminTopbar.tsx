@@ -1,51 +1,32 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { PanelLeftClose, PanelLeftOpen, Plus } from "lucide-react";
+import { PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import { SidebarTrigger, useSidebar } from "@/components/ui/navigation/sidebar";
 import { Button } from "@/components/ui/inputs/button";
 import { IconButton } from "@/components/ui/inputs/icon-button";
 import { NotificationsBell } from "./NotificationsBell";
 import { TopbarUserMenu } from "./components/TopbarUserMenu";
 import { SupportQuickMenu } from "./SupportQuickMenu";
-import { StatusDot } from "@/components/ui/feedback/status-dot";
-import { siteConfig } from "@/lib/site-config";
+import { ProjectDialog } from "./modals/ProjectDialog";
 import { useConsoleText } from "@/lib/admin/use-console-text";
-import { useConsoleAccessQuery } from "@/hooks/admin/project";
-import { CreateProjectDialog } from "./modals/CreateProjectDialog";
+import { useProjectCardQuery, useProjectEventsQuery } from "@/hooks/admin/project";
 
 export function AdminTopbar() {
   const { state, toggleSidebar } = useSidebar();
   const isSidebarCollapsed = state === "collapsed";
   const SidebarToggleIcon = isSidebarCollapsed ? PanelLeftOpen : PanelLeftClose;
-  const [storefrontUrl, setStorefrontUrl] = useState<string>(
-    siteConfig.urls.storefrontDefault,
-  );
   const router = useRouter();
   const t = useConsoleText();
-  const { data: access } = useConsoleAccessQuery();
-  const [creatingProject, setCreatingProject] = useState(false);
 
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const savedUrl = localStorage.getItem("storefront_live_url");
-      if (savedUrl) {
-        setStorefrontUrl(savedUrl);
-      }
+  const { data: project } = useProjectCardQuery();
+  // Журнал недоступен или права на него нет — кнопка остаётся без числа
+  const { data: events } = useProjectEventsQuery();
+  const [projectOpen, setProjectOpen] = useState(false);
 
-      const handleUpdate = (e: Event) => {
-        const detail = (e as CustomEvent).detail;
-        if (detail) {
-          setStorefrontUrl(detail);
-        }
-      };
-
-      window.addEventListener("storefront-url-updated", handleUpdate);
-      return () =>
-        window.removeEventListener("storefront-url-updated", handleUpdate);
-    }
-  }, []);
+  const projectName = project?.name?.trim() || t("console.project.title");
+  const eventsCount = events?.length ?? 0;
 
   return (
     <header className="sticky top-0 z-20 flex h-16 items-center gap-4 border-b border-border bg-background/85 px-4 backdrop-blur md:px-24">
@@ -69,33 +50,16 @@ export function AdminTopbar() {
         <SidebarToggleIcon />
       </IconButton>
 
-      {/* Align live storefront status button to the left */}
+      {/* Текущий проект и его активность: одна кнопка вместо индикатора сайта и создания проекта */}
       <Button
-        component="Link"
-        href={storefrontUrl}
-        target="_blank"
-        rel="noopener noreferrer"
         variant="outlined"
         shape="circle"
-        className="hidden md:inline-flex shrink-0 animate-fade-in"
-        startIcon={<StatusDot color="success" ping />}
+        className="shrink-0 animate-fade-in"
+        onClick={() => setProjectOpen(true)}
+        data-testid="topbar-project"
       >
-        {t("console.topbar.storefront-live")}
+        {eventsCount > 0 ? `${projectName} (${eventsCount})` : projectName}
       </Button>
-
-      {/* Новый проект заводит только супер-админ платформы. */}
-      {access?.isSuperAdmin && (
-        <Button
-          variant="outlined"
-          shape="circle"
-          className="shrink-0"
-          startIcon={<Plus />}
-          onClick={() => setCreatingProject(true)}
-          data-testid="topbar-create-project"
-        >
-          {t("console.project.create.action")}
-        </Button>
-      )}
 
       {/* Right-side controls */}
       <div className="ml-auto flex items-center gap-2">
@@ -105,12 +69,13 @@ export function AdminTopbar() {
         <TopbarUserMenu />
       </div>
 
-      <CreateProjectDialog
-        open={creatingProject}
-        onClose={() => setCreatingProject(false)}
-        onCreated={() => {
-          setCreatingProject(false);
-          // Разделы перечитываются под новый проект без перезагрузки страницы.
+      <ProjectDialog
+        open={projectOpen}
+        events={events ?? []}
+        onClose={() => setProjectOpen(false)}
+        onSwitched={() => {
+          setProjectOpen(false);
+          // Разделы перечитываются под выбранный проект без перезагрузки вручную
           router.refresh();
         }}
       />

@@ -18,44 +18,50 @@ export const LAYOUT_OPTIONS = [
   { value: "botanical", label: t("console.blogs.form.layout.botanical") },
 ];
 
-export const BLOCK_TYPE_OPTIONS = [
-  { value: "heading", label: t("console.blogs.form.block-type.heading") },
-  { value: "paragraph", label: t("console.blogs.form.block-type.paragraph") },
-  { value: "quote", label: t("console.blogs.form.block-type.quote") },
-  { value: "image", label: t("console.blogs.form.block-type.image") },
-];
-
 export const blogFormDefaults: BlogFormValues = {
   title: "",
   subtitle: "",
   category: "Rituals",
   categoryIds: [],
   tags: "",
-  authorName: "",
-  authorRole: "",
-  authorAvatar: "",
   readingTimeMin: 5,
   banner: "",
   thumbnail: "",
   layoutStyle: "editorial",
-  contentBlocks: [{ type: "paragraph", content: "" }],
+  contentBlocks: [],
 };
 
 type FormContentBlock = BlogFormValues["contentBlocks"][number];
 
-/** Map a stored article's rich content blocks onto the editable form blocks. */
+/**
+ * Содержимое поста для формы.
+ *
+ * В режиме api источник правды — блоки платформы: у них есть идентификаторы,
+ * которые надо вернуть обратно. Демо-данные вёрстки блоков не имеют, поэтому
+ * их богатые блоки сводятся к тексту.
+ */
 function toFormBlocks(article: Article): FormContentBlock[] {
+  if (article.blocks && article.blocks.length > 0) {
+    return article.blocks.map((block) => ({
+      id: block.id,
+      title: block.title ?? "",
+      markdown: block.markdown ?? "",
+    }));
+  }
+
   const blocks: FormContentBlock[] = [];
+
   for (const block of article.contentBlocks) {
     if (block.type === "heading" || block.type === "paragraph" || block.type === "quote") {
-      blocks.push({ type: block.type, content: block.content });
+      blocks.push({ title: "", markdown: block.content });
     } else if (block.type === "image_full") {
-      blocks.push({ type: "image", content: block.url });
+      blocks.push({ title: "", markdown: `![](${block.url})` });
     } else if (block.type === "image_grid") {
-      blocks.push({ type: "image", content: block.images[0] ?? "" });
+      blocks.push({ title: "", markdown: `![](${block.images[0] ?? ""})` });
     }
   }
-  return blocks.length > 0 ? blocks : [{ type: "paragraph", content: "" }];
+
+  return blocks;
 }
 
 /** Convert a stored article into editable form values. */
@@ -66,9 +72,6 @@ export function articleToFormValues(article: Article): BlogFormValues {
     category: article.category,
     categoryIds: article.categoryIds ?? [],
     tags: article.tags.join(", "),
-    authorName: article.author.name,
-    authorRole: article.author.role,
-    authorAvatar: article.author.avatar,
     readingTimeMin: article.readingTimeMin,
     banner: article.banner,
     thumbnail: article.thumbnail,

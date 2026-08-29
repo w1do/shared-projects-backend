@@ -8,6 +8,7 @@ import { DataGrid } from "@/components/ui/data-display/data-grid";
 import { TreeTable } from "@/components/ui/data-display/tree-table";
 import { DataTableFooter } from "@/components/shared/data-table/DataTableFooter";
 import { countChildren, descendantIds } from "@/lib/admin/data-source/category-tree";
+import { listStateMessage } from "@/lib/admin/data-source/list-state";
 import type { Category } from "@/lib/admin/mocks/types";
 import { CategoryCard } from "../category-card";
 import { CategoriesToolbar } from "../categories-toolbar";
@@ -17,6 +18,8 @@ import { useConsoleText } from "@/lib/admin/use-console-text";
 
 interface CategoriesPanelProps {
   categories: Category[];
+  /** Данные ещё идут: пустое состояние показывать рано. */
+  isLoading?: boolean;
   onEditClick: (category: Category) => void;
   onDeleteClick: (id: string) => void;
   onMoveClick?: (category: Category) => void;
@@ -30,6 +33,7 @@ interface CategoriesPanelProps {
 
 export function CategoriesPanel({
   categories,
+  isLoading = false,
   onEditClick,
   onDeleteClick,
   onMoveClick,
@@ -40,6 +44,13 @@ export function CategoriesPanel({
 }: CategoriesPanelProps) {
   const t = useConsoleText();
   const panel = useCategoriesPanel({ categories, onDeleteClick });
+
+  // Пока данные идут, «нет категорий» было бы неправдой
+  const emptyMessage = listStateMessage(
+    isLoading,
+    t("console.common.loading"),
+    t("console.categories.empty-filtered"),
+  );
 
   // Дерево (режим api): данные несут depth. Плоский каталог mock-режима
   // остаётся на прежней таблице с пагинацией.
@@ -143,7 +154,7 @@ export function CategoriesPanel({
           checkbox
           selectedRowIds={panel.selectedRowIds}
           onSelectionChange={panel.setSelectedRowIds}
-          emptyMessage={t("console.categories.empty-filtered")}
+          emptyMessage={emptyMessage}
         />
       ) : panel.viewMode === "table" ? (
         <DataGrid
@@ -156,7 +167,7 @@ export function CategoriesPanel({
           onSelectionChange={panel.setSelectedRowIds}
           emptyState={
             <div className="py-6 text-center text-xs text-muted-foreground-lighter">
-              {t("console.categories.empty-filtered")}
+              {emptyMessage}
             </div>
           }
         />
@@ -174,7 +185,7 @@ export function CategoriesPanel({
         </div>
       ) : (
         <div className="col-span-full rounded-3xl border border-dashed border-border/60 bg-card p-6 py-12 text-center text-xs text-muted-foreground-lighter">
-          {t("console.categories.empty-filtered")}
+          {emptyMessage}
         </div>
       )}
 

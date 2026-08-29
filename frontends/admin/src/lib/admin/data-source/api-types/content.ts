@@ -47,6 +47,8 @@ export type ApiArticle = {
   /** Идентификаторы категорий проекта, к которым привязан пост. */
   categoryIds?: string[];
   contentBlocks?: Array<{ type?: string; content?: string; url?: string; images?: string[] }>;
+  /** Содержимое блоками: название и текст в markdown. */
+  blocks?: Array<{ id?: string; title?: string; markdown?: string }>;
   publishedAt?: string | null;
   createdAt?: string;
   updatedAt?: string;

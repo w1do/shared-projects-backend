@@ -58,6 +58,14 @@ export const CONSOLE_TEXTS = {
   "console.project.name": "Название",
   "console.project.description": "Описание",
   "console.project.topic": "Тематика",
+  "console.project.dialog.title": "Проект",
+  "console.project.dialog.subtitle":
+    "Текущий проект, его последние события и переход в другой проект.",
+  "console.project.dialog.current": "Текущий",
+  "console.project.dialog.only-one": "Других проектов у вас пока нет.",
+  "console.project.dialog.events": "Последние события",
+  "console.project.dialog.events-empty": "Событий в проекте пока нет.",
+  "console.project.switch.failed": "Не удалось перейти в выбранный проект.",
   "console.project.create.action": "Новый проект",
   "console.project.create.title": "Новый проект",
   "console.project.create.subtitle":
@@ -310,6 +318,10 @@ export const CONSOLE_TEXTS = {
   "console.blogs.form.tags-hint": "через запятую",
   "console.blogs.form.tags-placeholder": "уход, руководство, сыворотка",
   "console.blogs.form.project-categories": "Категории проекта",
+  "console.blogs.form.block-title": "Название блока",
+  "console.blogs.form.block-text": "Текст блока",
+  "console.blogs.form.block-text-placeholder": "Текст в markdown: ## заголовок, **жирный**, списки",
+  "console.blogs.form.blocks-empty": "Блоков пока нет — добавьте первый.",
   "console.blogs.form.media-title": "Медиа",
   "console.blogs.form.media-subtitle": "Обложки для сетки блога и шапки статьи",
   "console.blogs.form.thumbnail-label": "Миниатюра",
@@ -327,10 +339,6 @@ export const CONSOLE_TEXTS = {
   "console.blogs.form.block-placeholder": "Текст блока…",
   "console.blogs.form.image-upload": "Загрузите изображение",
   "console.blogs.form.image-hint": "Изображение внутри текста статьи",
-  "console.blogs.form.author-title": "Автор",
-  "console.blogs.form.author-name": "Имя",
-  "console.blogs.form.author-role": "Роль",
-  "console.blogs.form.author-avatar": "Аватар",
   "console.blogs.form.avatar-upload": "Загрузите аватар",
   "console.blogs.form.avatar-hint": "Квадратный портрет автора",
   "console.blogs.form.publish-title": "Параметры публикации",
@@ -339,10 +347,6 @@ export const CONSOLE_TEXTS = {
   "console.blogs.form.layout.minimalist": "Минималистичный",
   "console.blogs.form.layout.editorial": "Редакционный",
   "console.blogs.form.layout.botanical": "Ботанический",
-  "console.blogs.form.block-type.heading": "Заголовок",
-  "console.blogs.form.block-type.paragraph": "Абзац",
-  "console.blogs.form.block-type.quote": "Цитата",
-  "console.blogs.form.block-type.image": "Изображение",
   "console.blogs.form.category.rituals": "Ритуалы",
   "console.blogs.form.category.ingredients": "Ингредиенты",
   "console.blogs.form.category.science": "Наука",
@@ -368,14 +372,10 @@ export const CONSOLE_TEXTS = {
   "console.blogs.validation.subtitle-min":
     "Подзаголовок должен быть не короче 4 символов.",
   "console.blogs.validation.category-required": "Выберите рубрику.",
-  "console.blogs.validation.author-name-required": "Укажите имя автора.",
-  "console.blogs.validation.author-role-required": "Укажите роль автора.",
   "console.blogs.validation.reading-time-min":
     "Время чтения — не менее 1 минуты.",
   "console.blogs.validation.block-content-required":
     "Заполните содержимое блока.",
-  "console.blogs.validation.blocks-min":
-    "Добавьте хотя бы один блок содержимого.",
 
   // Блог: уведомления операций
   "console.blogs.toast.deleted": "Статья «{title}» удалена.",

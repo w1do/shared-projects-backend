@@ -25,8 +25,11 @@ export const projectCard = {
   save: queries.saveProjectCard,
 };
 
+export type { ProjectEvent } from "@/lib/admin/data-source/platform/project-events";
+
 export const projects = {
   create: queries.createProject,
+  events: queries.getProjectEvents,
 };
 
 export const projectBuildout = {

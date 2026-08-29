@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { projectUserToCustomer } from "./mappers.ts";
+import { postToArticle, projectUserToCustomer } from "./mappers.ts";
 
 const USER = {
   id: 7,
@@ -26,4 +26,42 @@ test("blocked → Inactive; имя падает обратно на email", () =
 
   assert.equal(customer.status, "Inactive");
   assert.equal(customer.name, "anna@example.com");
+});
+
+/** Пост платформы с блоками: идентификаторы обязаны дожить до формы. */
+const POST_WITH_BLOCKS = {
+  id: 42,
+  title: "Какие бывают авто",
+  slug: "kakie-byvayut-avto",
+  body: "## Седаны\n\nТекст про седаны.",
+  locale: "ru",
+  status: "draft" as const,
+  is_index: true,
+  categories: [3],
+  blocks: [
+    { id: "01BLOCKONE", title: "Седаны", markdown: "Текст про седаны." },
+    { id: "01BLOCKTWO", title: "", markdown: "Блок без названия." },
+  ],
+};
+
+test("блоки поста доезжают до статьи вёрстки с идентификаторами и порядком", () => {
+  const article = postToArticle(POST_WITH_BLOCKS, new Map([[3, "Авто"]]));
+
+  assert.deepEqual(article.blocks, [
+    { id: "01BLOCKONE", title: "Седаны", markdown: "Текст про седаны." },
+    { id: "01BLOCKTWO", title: "", markdown: "Блок без названия." },
+  ]);
+});
+
+test("пост без блоков даёт пустой список, а не выдуманный блок", () => {
+  const article = postToArticle({ ...POST_WITH_BLOCKS, blocks: [] }, new Map());
+
+  assert.deepEqual(article.blocks, []);
+});
+
+test("непереданные блоки трактуются как пустое содержимое", () => {
+  const { blocks: _blocks, ...withoutBlocks } = POST_WITH_BLOCKS;
+  const article = postToArticle(withoutBlocks, new Map());
+
+  assert.deepEqual(article.blocks, []);
 });

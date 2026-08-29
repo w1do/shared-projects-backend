@@ -20,6 +20,13 @@ export type PlatformPostImage = {
   alt?: string | null;
 };
 
+/** Блок содержимого поста платформы. */
+export type PlatformPostBlock = {
+  id: string;
+  title: string;
+  markdown: string;
+};
+
 export type PlatformPost = {
   id: number;
   title: string;
@@ -33,6 +40,7 @@ export type PlatformPost = {
   is_index: boolean;
   categories?: number[];
   seo?: PlatformSeo | null;
+  blocks?: PlatformPostBlock[];
   cover?: PlatformPostImage | null;
   banner?: PlatformPostImage | null;
 };
@@ -83,6 +91,17 @@ export type PlatformProject = {
   topic?: string | null;
   locales: string[];
   archived_at?: string | null;
+};
+
+/** Запись журнала действий проекта. */
+export type PlatformAuditEntry = {
+  id: number;
+  actor_type: string;
+  actor_id?: string | null;
+  action: string;
+  subject?: string | null;
+  changes?: Record<string, unknown> | null;
+  created_at?: string | null;
 };
 
 export type PlatformProjectUser = {

@@ -23,14 +23,16 @@ function toArticleBody(data: BlogFormValues) {
     category: data.category,
     categoryIds: data.categoryIds,
     tags: data.tags,
-    authorName: data.authorName,
-    authorRole: data.authorRole,
     readingTimeMin: data.readingTimeMin,
     banner: data.banner,
     thumbnail: data.thumbnail,
     coverMediaId: data.coverMediaId ?? null,
     bannerMediaId: data.bannerMediaId ?? null,
-    contentBlocks: data.contentBlocks,
+    blocks: data.contentBlocks.map((block) => ({
+      ...(block.id ? { id: block.id } : {}),
+      title: block.title ?? "",
+      markdown: block.markdown,
+    })),
   };
 }
 

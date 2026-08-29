@@ -7,13 +7,13 @@ import { Card } from "@/components/ui/data-display/card";
 import { Button } from "@/components/ui/inputs/button";
 import { Input } from "@/components/ui/inputs/input";
 import { Select } from "@/components/ui/inputs/select";
+import { showsEmptyState } from "@/lib/admin/data-source/list-state";
 import { useConsoleText } from "@/lib/admin/use-console-text";
 import {
   useCancelResearchMutation,
   useResearchListQuery,
   useStartResearchMutation,
 } from "@/hooks/admin/research";
-import { ResearchListSkeleton } from "@/components/pages/research/loading/ResearchListSkeleton";
 
 const STATUS_VALUES = ["", "process", "done", "failed", "canceled"] as const;
 
@@ -36,8 +36,6 @@ export function ResearchListSection({ canRun, onOpen }: Props) {
     value,
     label: value === "" ? t("console.research.filter-all") : t(`console.research.status.${value}`),
   }));
-
-  if (isPending) return <ResearchListSkeleton />;
 
   return (
     <div className="flex flex-col gap-6">
@@ -86,7 +84,7 @@ export function ResearchListSection({ canRun, onOpen }: Props) {
         />
       </div>
 
-      {researches.length === 0 ? (
+      {showsEmptyState(isPending, researches.length) ? (
         <div
           className="flex flex-col items-center gap-4 rounded-3xl bg-muted p-12 text-center"
           data-testid="research-empty"
@@ -101,6 +99,13 @@ export function ResearchListSection({ canRun, onOpen }: Props) {
             {t("console.research.empty-hint")}
           </p>
         </div>
+      ) : researches.length === 0 ? (
+        <p
+          className="py-8 text-center text-caption text-muted-foreground-lighter"
+          data-testid="research-loading"
+        >
+          {t("console.common.loading")}
+        </p>
       ) : (
         <Card variant="form-section" data-testid="research-list">
           {researches.map((item) => (

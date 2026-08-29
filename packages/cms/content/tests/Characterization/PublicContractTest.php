@@ -25,6 +25,7 @@ function contractPublishedPost(array $attributes): Post
         'title' => 'Fixed title',
         'slug' => 'fixed-title',
         'body' => 'Fixed body',
+        'blocks' => [['id' => '01FIXEDBLOCKIDENTIFIER01', 'title' => '', 'markdown' => 'Fixed body']],
         'locale' => 'ru',
         'status' => 'published',
         'published_at' => '2024-01-01 00:00:00',
@@ -40,7 +41,7 @@ test('contract: content public posts', function () {
     ], $headers)->json('data');
 
     $post = $this->postJson('/api/admin/v1/projects/proj-1/content/posts', [
-        'title' => 'Live post', 'slug' => 'live-post', 'body' => 'Live body',
+        'title' => 'Live post', 'slug' => 'live-post', 'blocks' => [['title' => '', 'markdown' => 'Live body']],
         'locale' => 'ru', 'categories' => [$category['id']],
     ], $headers)->json('data');
 
@@ -85,6 +86,7 @@ test('contract: content public posts cursor pagination', function () {
             'title' => "Post {$number}",
             'slug' => "post-{$number}",
             'body' => "Body {$number}",
+            'blocks' => [['id' => "01CURSORBLOCKIDENTIFIER{$number}", 'title' => '', 'markdown' => "Body {$number}"]],
         ]);
     }
 
@@ -110,7 +112,7 @@ test('contract: content public post by slug', function () {
     $headers = actingAsContentOperator();
 
     $post = $this->postJson('/api/admin/v1/projects/proj-1/content/posts', [
-        'title' => 'Live post', 'slug' => 'live-post', 'body' => 'Live body', 'locale' => 'ru',
+        'title' => 'Live post', 'slug' => 'live-post', 'blocks' => [['title' => '', 'markdown' => 'Live body']], 'locale' => 'ru',
     ], $headers)->json('data');
 
     $this->postJson("/api/admin/v1/projects/proj-1/content/posts/{$post['id']}/status", [
@@ -305,7 +307,7 @@ test('contract: content public post with images', function () {
     ]);
 
     $post = $this->postJson('/api/admin/v1/projects/proj-1/content/posts', [
-        'title' => 'Illustrated post', 'slug' => 'illustrated-post', 'body' => 'Body',
+        'title' => 'Illustrated post', 'slug' => 'illustrated-post', 'blocks' => [['title' => '', 'markdown' => 'Body']],
         'locale' => 'ru', 'cover_media_id' => $cover->id,
     ], $headers)->json('data');
 

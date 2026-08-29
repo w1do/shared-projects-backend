@@ -130,7 +130,10 @@ test('post preset matches the keys the post generation reads', function () {
     $presetFields = presetFieldNames('post');
     sort($presetFields);
 
-    expect($presetFields)->toBe(['body', 'slug', 'tags', 'title']);
+    expect($presetFields)->toBe(['blocks', 'slug', 'tags', 'title']);
+
+    // Состав блока совпадает с тем, что разбирает генерация поста
+    expect(presetItemFieldNames('post', 'blocks'))->toBe(['title', 'markdown']);
 });
 
 test('schema presets endpoint returns the catalog', function () {

@@ -21,7 +21,7 @@ final class RestoreRevisionHandler
      */
     public function handle(RestoreRevisionCommand $command): Post|Page
     {
-        $command->model->fill(array_intersect_key((array) $command->revision->snapshot, array_flip(['title', 'slug', 'body', 'locale'])));
+        $command->model->fill(array_intersect_key((array) $command->revision->snapshot, array_flip(['title', 'slug', 'body', 'blocks', 'locale'])));
         $command->model->save();
 
         // Восстановление — тоже сохранение: новая ревизия

@@ -24,6 +24,7 @@ use Spatie\Tags\HasTags;
  * @property string $title
  * @property string $slug
  * @property ?string $body
+ * @property list<array{id: string, title: string, markdown: string}> $blocks
  * @property string $locale
  * @property ?string $translation_group
  * @property ContentStatus $status
@@ -47,7 +48,7 @@ class Post extends Model
     protected $fillable = [
         'project_id', 'title', 'slug', 'body', 'locale', 'translation_group',
         'status', 'scheduled_at', 'published_at', 'is_index', 'author_id',
-        'cover_media_id', 'banner_media_id',
+        'cover_media_id', 'banner_media_id', 'blocks',
     ];
 
     protected $attributes = ['is_index' => true, 'status' => 'draft', 'locale' => 'ru'];
@@ -59,6 +60,7 @@ class Post extends Model
             'scheduled_at' => 'datetime',
             'published_at' => 'datetime',
             'is_index' => 'bool',
+            'blocks' => 'array',
         ];
     }
 
@@ -95,6 +97,17 @@ class Post extends Model
     public function scopePublished(Builder $query): Builder
     {
         return $query->where('status', ContentStatus::Published);
+    }
+
+    /**
+     * Поля, попадающие в снимок ревизии: состав задаёт сама модель, иначе
+     * общий обработчик клал бы в снимок страницы её несуществующие поля.
+     *
+     * @return array<string, mixed>
+     */
+    public function revisionSnapshot(): array
+    {
+        return $this->only(['title', 'slug', 'body', 'blocks', 'locale', 'status']);
     }
 
     public function isPublished(): bool

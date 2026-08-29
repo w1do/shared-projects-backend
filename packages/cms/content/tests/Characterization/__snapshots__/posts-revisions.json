@@ -9,6 +9,13 @@
                     "title": "Hello world",
                     "slug": "hello-world",
                     "body": "v2",
+                    "blocks": [
+                        {
+                            "id": "<string>",
+                            "title": "",
+                            "markdown": "v2"
+                        }
+                    ],
                     "locale": "ru",
                     "status": "draft"
                 },
@@ -21,6 +28,13 @@
                     "title": "Hello world",
                     "slug": "hello-world",
                     "body": "v1",
+                    "blocks": [
+                        {
+                            "id": "<string>",
+                            "title": "",
+                            "markdown": "v1"
+                        }
+                    ],
                     "locale": "ru",
                     "status": "draft"
                 },

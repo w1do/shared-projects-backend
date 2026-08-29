@@ -29,9 +29,12 @@ final class UpsertPostHandler
             // слаг существующего поста не перегенерируется (Safety Protocol, И1).
             $post->title = $command->data->title;
             $post->slug = $command->data->slug instanceof Optional ? ($post->slug ?? Str::slug($command->data->title)) : $command->data->slug;
-            if (! $command->data->body instanceof Optional) {
-                $post->body = $command->data->body;
+            if (! $command->data->blocks instanceof Optional) {
+                $post->blocks = $this->withIds($command->data->blocks);
             }
+            // `body` — проекция блоков: переданное клиентом тело не применяется,
+            // иначе два источника правды разъехались бы при первой же правке.
+            $post->body = $this->composeBody($post->blocks ?? []);
             if (! $command->data->locale instanceof Optional) {
                 $post->locale = $command->data->locale;
             }
@@ -72,5 +75,50 @@ final class UpsertPostHandler
 
             return $post->fresh(['categories', 'tags', 'cover', 'banner']) ?? $post;
         });
+    }
+
+    /**
+     * Идентификатор присваивает платформа: блок без `id` получает ULID,
+     * переданный сохраняется как есть — уникальность проверена в FormRequest.
+     *
+     * @param  list<array<string, mixed>>  $blocks
+     * @return list<array{id: string, title: string, markdown: string}>
+     */
+    private function withIds(array $blocks): array
+    {
+        $result = [];
+
+        foreach ($blocks as $block) {
+            $id = trim((string) ($block['id'] ?? ''));
+
+            $result[] = [
+                'id' => $id !== '' ? $id : (string) Str::ulid(),
+                'title' => (string) ($block['title'] ?? ''),
+                'markdown' => (string) ($block['markdown'] ?? ''),
+            ];
+        }
+
+        return $result;
+    }
+
+    /**
+     * Единый текст поста для клиентов, которые не знают о блоках:
+     * название блока становится заголовком второго уровня.
+     *
+     * @param  list<array{id: string, title: string, markdown: string}>  $blocks
+     */
+    private function composeBody(array $blocks): ?string
+    {
+        $parts = [];
+
+        foreach ($blocks as $block) {
+            $title = trim($block['title']);
+
+            $parts[] = $title === '' ? $block['markdown'] : "## {$title}\n\n{$block['markdown']}";
+        }
+
+        $body = trim(implode("\n\n", $parts));
+
+        return $body === '' ? null : $body;
     }
 }

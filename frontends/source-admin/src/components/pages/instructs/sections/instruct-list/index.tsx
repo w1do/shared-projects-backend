@@ -4,9 +4,9 @@ import * as React from "react";
 import { FileText, Plus } from "lucide-react";
 import { Badge } from "@/components/ui/data-display/badge";
 import { Card } from "@/components/ui/data-display/card";
-import { Skeleton } from "@/components/ui/data-display/skeleton";
 import { Button } from "@/components/ui/inputs/button";
 import { Select } from "@/components/ui/inputs/select";
+import { showsEmptyState } from "@/lib/admin/data-source/list-state";
 import { useConsoleText } from "@/lib/admin/use-console-text";
 import type { PlatformInstruct } from "@/lib/admin/services";
 import {
@@ -62,18 +62,13 @@ export function InstructListSection({ canManage, onCreate, onEdit }: Props) {
       </div>
 
       {isPending ? (
-        <Card variant="form-section" data-testid="instructs-skeleton">
-          {[0, 1, 2].map((index) => (
-            <div key={index} className="flex items-center justify-between gap-4">
-              <div className="flex min-w-0 flex-1 flex-col gap-2">
-                <Skeleton className="h-4 w-1/2" />
-                <Skeleton className="h-4 w-1/4" />
-              </div>
-              <Skeleton className="h-8 w-24 rounded-full" />
-            </div>
-          ))}
-        </Card>
-      ) : instructs.length === 0 ? (
+        <p
+          className="py-8 text-center text-caption text-muted-foreground-lighter"
+          data-testid="instructs-loading"
+        >
+          {t("console.common.loading")}
+        </p>
+      ) : showsEmptyState(isPending, instructs.length) ? (
         <div
           className="flex flex-col items-center gap-4 rounded-3xl bg-muted p-12 text-center"
           data-testid="instructs-empty"

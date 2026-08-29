@@ -1,6 +1,11 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
 
-import { categoryTree, createCategory, deleteCategoryIfExists, findCategory } from "../support/content";
+import {
+  categoryTree,
+  createCategory,
+  deleteCategoryIfExists,
+  findCategoryByPath,
+} from "../support/content";
 import { operatorToken } from "../support/platform";
 
 /**
@@ -163,14 +168,17 @@ test.describe("перетаскивание в дереве категорий",
 });
 
 test.describe("селект категорий с деревом и поиском", () => {
+  /** Ветка демо-сидера: имена в проекте не уникальны, адресуем её путём. */
+  const SEEDED = ["Аналитика", "Рынок", "Обзоры"];
+
   /**
-   * Узлы адресуются идентификатором, а не текстом: имя узла — подстрока чужих
-   * имён проекта («Обзоры» ⊂ «Обзоры автомобилей»), и текстовый локатор ловит
-   * соседнюю ветку. Идентификатор берётся из дерева платформы по точному имени.
+   * Узлы адресуются идентификатором, а не текстом: имя узла и подстрока чужого
+   * имени совпадают, а одноимённые категории есть в разных деревьях проекта.
+   * Идентификатор берётся из дерева платформы по пути от корня.
    */
-  async function optionOf(page: Page, name: string): Promise<Locator> {
-    const node = findCategory(await categoryTree(await operatorToken()), name);
-    expect(node, `категория ${name} есть в проекте`).toBeTruthy();
+  async function optionOf(page: Page, path: string[]): Promise<Locator> {
+    const node = findCategoryByPath(await categoryTree(await operatorToken()), path);
+    expect(node, `категория ${path.join(" / ")} есть в проекте`).toBeTruthy();
 
     return page.locator(`[data-category-option="${node!.id}"]`);
   }
@@ -182,7 +190,7 @@ test.describe("селект категорий с деревом и поиско
     await expect(page.locator("[data-category-option]").first()).toBeVisible();
 
     await page.locator("input[cmdk-input]").fill("Обзор");
-    const found = await optionOf(page, "Обзоры");
+    const found = await optionOf(page, SEEDED);
     await expect(found).toBeVisible();
     await expect(found, "видна цепочка предков").toContainText("Аналитика / Рынок");
 
@@ -195,8 +203,8 @@ test.describe("селект категорий с деревом и поиско
     const select = page.locator("[data-testid=post-categories-select]");
     await select.click();
 
-    await (await optionOf(page, "Новости")).click();
-    await (await optionOf(page, "Рынок")).click();
+    await (await optionOf(page, ["Новости"])).click();
+    await (await optionOf(page, ["Аналитика", "Рынок"])).click();
     await page.keyboard.press("Escape");
 
     await expect(select).toContainText("Новости, Рынок");
@@ -204,18 +212,18 @@ test.describe("селект категорий с деревом и поиско
 
   test("в одиночном режиме свои потомки недоступны для выбора", async ({ page }) => {
     const token = await operatorToken();
-    const analitika = findCategory(await categoryTree(token), "Аналитика");
+    const analitika = findCategoryByPath(await categoryTree(token), ["Аналитика"]);
     expect(analitika).toBeTruthy();
 
     await page.goto(`/admin/categories/${analitika!.id}/edit`);
     await page.locator("[data-testid=category-parent]").click();
 
-    for (const name of ["Аналитика", "Рынок", "Обзоры"]) {
-      const option = await optionOf(page, name);
-      await expect(option, `${name} недоступна`).toHaveAttribute("aria-disabled", "true");
+    for (const path of [["Аналитика"], ["Аналитика", "Рынок"], SEEDED]) {
+      const option = await optionOf(page, path);
+      await expect(option, `${path.join(" / ")} недоступна`).toHaveAttribute("aria-disabled", "true");
     }
 
-    const allowed = await optionOf(page, "Разработка");
+    const allowed = await optionOf(page, ["Разработка"]);
     await expect(allowed).not.toHaveAttribute("aria-disabled", "true");
   });
 });

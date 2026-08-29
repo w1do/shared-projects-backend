@@ -68,7 +68,7 @@ test('guard: 0.4 category partial update keeps parent', function () {
     expect($childAfter['slug'])->toBe('renamed-b');
 });
 
-test('guard: 0.4 post partial update keeps slug categories and body', function () {
+test('guard: 0.4 post partial update keeps slug categories and blocks', function () {
     $headers = actingAsContentOperator();
 
     $first = $this->postJson('/api/admin/v1/projects/proj-1/content/categories', [
@@ -81,7 +81,8 @@ test('guard: 0.4 post partial update keeps slug categories and body', function (
     $post = $this->postJson('/api/admin/v1/projects/proj-1/content/posts', [
         'title' => 'Old Title',
         'slug' => 'old-slug',
-        'body' => 'Original body',
+        // Содержимое — блоки; `body` собирается из них платформой
+        'blocks' => [['title' => '', 'markdown' => 'Original body']],
         'locale' => 'ru',
         'translation_group' => 'group-a',
         'categories' => [$first['id'], $second['id']],
@@ -90,7 +91,7 @@ test('guard: 0.4 post partial update keeps slug categories and body', function (
 
     expect(DB::table('category_post')->where('post_id', $post['id'])->count())->toBe(2);
 
-    // тело только с title: slug, body, locale, translation_group, categories не переданы
+    // тело только с title: slug, blocks, locale, translation_group, categories не переданы
     $this->putJson("/api/admin/v1/projects/proj-1/content/posts/{$post['id']}", [
         'title' => 'New Title',
     ], $headers)->assertOk();
@@ -99,7 +100,8 @@ test('guard: 0.4 post partial update keeps slug categories and body', function (
 
     expect($row['title'])->toBe('New Title')
         ->and($row['slug'])->toBe('old-slug')          // слаг не перегенерирован из нового title
-        ->and($row['body'])->toBe('Original body')     // body не затёрт в null
+        ->and($row['body'])->toBe('Original body')     // body пересобран из прежних блоков, а не затёрт
+        ->and(json_decode((string) $row['blocks'], true)[0]['markdown'])->toBe('Original body')
         ->and($row['locale'])->toBe('ru')
         ->and($row['translation_group'])->toBe('group-a')
         ->and((int) $row['is_index'])->toBe(0)

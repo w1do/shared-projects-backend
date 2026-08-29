@@ -79,7 +79,7 @@ final readonly class GeneratePostFromTopicHandler
             UpsertPostDTO::from([
                 'title' => $this->text($draft, 'title') ?? $topic->title,
                 'slug' => $this->slug($draft, $topic),
-                'body' => $this->text($draft, 'body') ?? '',
+                'blocks' => $this->blocks($draft),
                 'categories' => [$this->categoryId($topic)],
                 'tags' => $this->tags($draft),
             ]),
@@ -121,10 +121,16 @@ final readonly class GeneratePostFromTopicHandler
         ), static fn (string $material): bool => $material !== ''));
     }
 
-    /** Предложенная категория создаётся, если её ещё нет в проекте. */
+    /**
+     * Предложенная категория создаётся, если её ещё нет в проекте.
+     *
+     * Привязка темы проверяется на существование: оператор мог удалить
+     * категорию после извлечения тем, и мёртвая ссылка роняла бы генерацию
+     * нарушением внешнего ключа уже после написания текста.
+     */
     private function categoryId(ResearchTopic $topic): int
     {
-        if ($topic->category_id !== null) {
+        if ($topic->category_id !== null && Category::query()->whereKey($topic->category_id)->exists()) {
             return $topic->category_id;
         }
 
@@ -169,6 +175,49 @@ final readonly class GeneratePostFromTopicHandler
             'description' => $this->text($seo, 'description'),
             'keywords' => $this->text($seo, 'keywords'),
         ])));
+    }
+
+    /**
+     * Содержимое поста блоками: ответ короче предела по числу блоков или по
+     * объёму текста отклоняется, а не превращается в пост из одного абзаца.
+     *
+     * @param  array<string, mixed>  $draft
+     * @return list<array{title: string, markdown: string}>
+     */
+    private function blocks(array $draft): array
+    {
+        $raw = $draft['blocks'] ?? [];
+        $blocks = [];
+
+        foreach (is_array($raw) ? $raw : [] as $block) {
+            if (! is_array($block)) {
+                continue;
+            }
+
+            $markdown = trim((string) ($block['markdown'] ?? ''));
+
+            if ($markdown === '') {
+                continue;
+            }
+
+            $blocks[] = ['title' => trim((string) ($block['title'] ?? '')), 'markdown' => $markdown];
+        }
+
+        $minBlocks = (int) $this->config->get('cms-research.post_min_blocks', 10);
+
+        if (count($blocks) < $minBlocks) {
+            throw ResearchRuleViolation::postBlocksTooFew($minBlocks, count($blocks));
+        }
+
+        // Десять блоков по строчке — не пост: объём проверяется отдельно
+        $length = array_sum(array_map(static fn (array $block): int => mb_strlen($block['markdown']), $blocks));
+        $minLength = (int) $this->config->get('cms-research.post_min_length', 8000);
+
+        if ($length < $minLength) {
+            throw ResearchRuleViolation::postTooShort($minLength, $length);
+        }
+
+        return $blocks;
     }
 
     /**

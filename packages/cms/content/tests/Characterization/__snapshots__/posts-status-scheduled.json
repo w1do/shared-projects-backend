@@ -13,6 +13,7 @@
             "scheduled_at": "<string>",
             "published_at": null,
             "is_index": true,
+            "blocks": [],
             "categories": [],
             "tags": [],
             "seo": null,

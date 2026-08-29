@@ -63,6 +63,14 @@ export type ContentBlock =
   | QuoteBlock
   | ImageGridBlock;
 
+/** Блок содержимого поста: название и текст в markdown. */
+export interface ArticleBlock {
+  /** Идентификатор платформы; у нового блока его ещё нет. */
+  id?: string;
+  title: string;
+  markdown: string;
+}
+
 export interface Article {
   id: string;
   /** Статус поста платформы; отсутствует у демо-данных вёрстки. */
@@ -85,4 +93,6 @@ export interface Article {
   layoutStyle: "minimalist" | "editorial" | "botanical" | string;
   relatedProducts: string[];
   contentBlocks: ContentBlock[];
+  /** Содержимое блоками (режим api): источник правды для формы поста. */
+  blocks?: ArticleBlock[];
 }

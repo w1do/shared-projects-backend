@@ -216,9 +216,10 @@ test.describe("жизненный цикл поста", () => {
       // slug генерируется из заголовка, поэтому заголовок латиницей
       await page.locator("input[name=title]").fill(`Post ${slug}`);
       await page.locator("textarea[name=subtitle]").fill("E2E lifecycle subtitle");
-      await page.locator("input[name=authorName]").fill("E2E Author");
-      await page.locator("input[name=authorRole]").fill("Editor");
-      await page.locator("textarea").last().fill("Первый абзац тестового поста.");
+      // Содержимое — блоки «название + markdown»; автора форма не спрашивает
+      await page.getByTestId("content-block-add").click();
+      await page.getByTestId("content-block-title").first().fill("Вступление");
+      await page.getByTestId("content-block-markdown").first().fill("Первый абзац тестового поста.");
       await page.locator("[data-testid=post-categories-select]").click();
       await page.locator("[data-category-option]", { hasText: /^Новости$/ }).first().click();
       await page.keyboard.press("Escape");

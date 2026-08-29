@@ -24,14 +24,29 @@ use Cms\Shared\Tenant\ProjectContext;
 use Illuminate\Support\Facades\Bus;
 use Laravel\Ai\Embeddings;
 
+/**
+ * Блоки ответа модели: платформа требует не меньше десяти блоков и 8000
+ * символов текста, поэтому каждый блок фикстуры заведомо длинный.
+ */
+function fakePostBlocks(int $count = 10, int $length = 900): array
+{
+    return array_map(
+        static fn (int $index): array => [
+            'title' => "Часть {$index}",
+            'markdown' => "Текст части {$index}. ".str_repeat('Подробности материала. ', (int) ceil($length / 23)),
+        ],
+        range(1, $count),
+    );
+}
+
 /** Ответы модели: сначала текст поста, затем SEO-поля. */
-function fakePostAi(array $tags = ['седаны', 'обзор']): void
+function fakePostAi(array $tags = ['седаны', 'обзор'], ?array $blocks = null): void
 {
     StructuredAgent::fake([
         [
             'title' => 'Топ-10 седанов 2026 года',
             'slug' => 'top-10-sedanov-2026',
-            'body' => '<p>Текст поста</p>',
+            'blocks' => $blocks ?? fakePostBlocks(),
             'tags' => $tags,
         ],
         [
@@ -103,8 +118,67 @@ test('a draft post is generated from the topic material', function () {
 
     expect($post->title)->toBe('Топ-10 седанов 2026 года')
         ->and($post->slug)->toBe('top-10-sedanov-2026')
-        ->and($post->body)->toBe('<p>Текст поста</p>')
+        ->and($post->blocks)->toHaveCount(10)
+        ->and($post->blocks[0]['title'])->toBe('Часть 1')
+        ->and($post->blocks[0]['markdown'])->toStartWith('Текст части 1.')
+        ->and($post->blocks[0]['id'])->toMatch('/^[0-9A-HJKMNP-TV-Z]{26}$/')
+        // Единый текст собран из блоков: заголовок второго уровня + текст
+        ->and($post->body)->toStartWith("## Часть 1\n\nТекст части 1.")
+        ->and(mb_strlen((string) $post->body))->toBeGreaterThanOrEqual(8000)
         ->and($post->status)->toBe(ContentStatus::Draft);
+});
+
+test('a topic pointing at a deleted category is rebound instead of failing', function () {
+    $research = generationResearch();
+    seedKnowledgeFor($research);
+    $topic = topicFor($research);
+
+    // Тема была привязана к категории, а оператор её удалил — ссылка мёртвая
+    $category = new Category;
+    $category->setTranslation('name', 'ru', 'Удалённая');
+    $category->slug = 'udalennaya';
+    $category->saveAsRoot();
+    $deletedId = (int) $category->getKey();
+    $topic->forceFill(['category_id' => $deletedId])->save();
+    $category->delete();
+
+    fakePostAi();
+
+    $post = app(GeneratePostFromTopicHandler::class)->handle(new GeneratePostCommand((int) $topic->getKey()));
+
+    expect($post->categories()->count())->toBe(1)
+        ->and($post->categories()->first()->id)->not->toBe($deletedId)
+        ->and($topic->fresh()->category_id)->toBe($post->categories()->first()->id);
+});
+
+test('generation is refused when the content is shorter than the required length', function () {
+    $research = generationResearch();
+    seedKnowledgeFor($research);
+    $topic = topicFor($research);
+
+    // Блоков достаточно, но текст короткий — это пересказ, а не статья
+    fakePostAi(blocks: fakePostBlocks(10, 10));
+
+    expect(fn () => app(GeneratePostFromTopicHandler::class)->handle(new GeneratePostCommand((int) $topic->getKey())))
+        ->toThrow(ResearchRuleViolation::class);
+
+    expect($topic->fresh()->status)->toBe(TopicStatus::Suggested)
+        ->and(Post::acrossProjects()->count())->toBe(0);
+});
+
+test('generation is refused when the model returns fewer than ten blocks', function () {
+    $research = generationResearch();
+    seedKnowledgeFor($research);
+    $topic = topicFor($research);
+
+    fakePostAi(blocks: fakePostBlocks(3));
+
+    expect(fn () => app(GeneratePostFromTopicHandler::class)->handle(new GeneratePostCommand((int) $topic->getKey())))
+        ->toThrow(ResearchRuleViolation::class);
+
+    // Тема осталась доступной для повторной попытки, пост не создан
+    expect($topic->fresh()->status)->toBe(TopicStatus::Suggested)
+        ->and(Post::acrossProjects()->count())->toBe(0);
 });
 
 test('the generated post gets categories, tags and seo', function () {

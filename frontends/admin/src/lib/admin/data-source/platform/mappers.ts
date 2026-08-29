@@ -41,6 +41,11 @@ export function postToArticle(post: PlatformPost, categoryNames: Map<number, str
     status: post.status.toUpperCase() as ApiArticle["status"],
     categoryIds: (post.categories ?? []).map(String),
     contentBlocks: post.body ? [{ type: "paragraph", content: post.body }] : [],
+    blocks: (post.blocks ?? []).map((block) => ({
+      id: block.id,
+      title: block.title ?? "",
+      markdown: block.markdown ?? "",
+    })),
     publishedAt: post.published_at ?? null,
     createdAt: post.published_at ?? undefined,
     updatedAt: post.published_at ?? undefined,

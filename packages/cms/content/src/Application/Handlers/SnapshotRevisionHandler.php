@@ -14,7 +14,9 @@ final class SnapshotRevisionHandler
         /** @var Revision */
         return $command->model->revisions()->create([
             'project_id' => $command->model->project_id,
-            'snapshot' => $command->model->only(['title', 'slug', 'body', 'locale', 'status']),
+            // Состав снимка задаёт сама модель: у поста в него входят блоки,
+            // у страницы их нет вовсе.
+            'snapshot' => $command->model->revisionSnapshot(),
             'author_id' => $command->authorId,
             'created_at' => now(),
         ]);

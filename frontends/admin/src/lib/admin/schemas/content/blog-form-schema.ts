@@ -2,9 +2,14 @@ import * as z from "zod";
 
 import { t } from "@/lib/admin/console-texts";
 
+/**
+ * Блок содержимого: название и текст в markdown. Идентификатор приходит от
+ * платформы и возвращается ей обратно — по нему сайт ссылается на часть поста.
+ */
 export const blogContentBlockSchema = z.object({
-  type: z.enum(["heading", "paragraph", "quote", "image"]),
-  content: z
+  id: z.string().optional(),
+  title: z.string().max(255).optional().default(""),
+  markdown: z
     .string()
     .min(1, { message: t("console.blogs.validation.block-content-required") }),
 });
@@ -27,13 +32,6 @@ export const blogFormSchema = z.object({
   /** Категории проекта (режим api): идентификаторы из дерева. */
   categoryIds: z.array(z.string()).optional().default([]),
   tags: z.string().optional(),
-  authorName: z
-    .string()
-    .min(2, { message: t("console.blogs.validation.author-name-required") }),
-  authorRole: z
-    .string()
-    .min(2, { message: t("console.blogs.validation.author-role-required") }),
-  authorAvatar: z.string().optional(),
   readingTimeMin: z.coerce
     .number()
     .min(1, { message: t("console.blogs.validation.reading-time-min") }),
@@ -43,9 +41,8 @@ export const blogFormSchema = z.object({
   coverMediaId: z.number().nullable().optional(),
   bannerMediaId: z.number().nullable().optional(),
   layoutStyle: z.enum(["minimalist", "editorial", "botanical"]),
-  contentBlocks: z
-    .array(blogContentBlockSchema)
-    .min(1, { message: t("console.blogs.validation.blocks-min") }),
+  // Пост без блоков допустим: содержимое можно дописать позже
+  contentBlocks: z.array(blogContentBlockSchema).default([]),
 });
 
 export type BlogFormValues = z.infer<typeof blogFormSchema>;

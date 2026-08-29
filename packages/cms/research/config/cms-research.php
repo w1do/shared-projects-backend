@@ -35,6 +35,10 @@ return [
         'timeout' => (int) env('QDRANT_TIMEOUT', 15),
     ],
 
+    // Минимум блоков и общего объёма текста в посте, созданном по теме
+    'post_min_blocks' => (int) env('RESEARCH_POST_MIN_BLOCKS', 10),
+    'post_min_length' => (int) env('RESEARCH_POST_MIN_LENGTH', 8000),
+
     // Сколько записей базы знаний уходит в модель при написании поста
     'post_context_limit' => (int) env('RESEARCH_POST_CONTEXT_LIMIT', 12),
 ];

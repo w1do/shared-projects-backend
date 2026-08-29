@@ -51,6 +51,25 @@ export function findCategory(nodes: CategoryNode[], name: string): CategoryNode 
   return null;
 }
 
+/**
+ * Узел по пути имён от корня: `['Аналитика','Рынок','Обзоры']`.
+ *
+ * Имя в проекте не уникально — сборка по AI и демо-сидер заводят свои деревья,
+ * где встречаются одинаковые названия. Путь адресует ровно один узел.
+ */
+export function findCategoryByPath(nodes: CategoryNode[], path: string[]): CategoryNode | null {
+  let level = nodes;
+  let found: CategoryNode | null = null;
+
+  for (const name of path) {
+    found = level.find((node) => node.name === name) ?? null;
+    if (found === null) return null;
+    level = found.children ?? [];
+  }
+
+  return found;
+}
+
 export async function createCategory(
   token: string,
   name: string,

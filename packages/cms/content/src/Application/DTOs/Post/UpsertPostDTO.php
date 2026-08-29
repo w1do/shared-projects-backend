@@ -12,6 +12,7 @@ final class UpsertPostDTO extends Data
     /**
      * @param  list<int>|Optional  $categories
      * @param  list<string>|Optional  $tags
+     * @param  list<array{id?: string, title?: string, markdown: string}>|Optional  $blocks
      */
     public function __construct(
         public string $title,
@@ -24,5 +25,6 @@ final class UpsertPostDTO extends Data
         public array|Optional $tags = new Optional,
         public int|Optional|null $cover_media_id = new Optional,
         public int|Optional|null $banner_media_id = new Optional,
+        public array|Optional $blocks = new Optional,
     ) {}
 }

@@ -56,7 +56,19 @@ final class SchemaPresetCatalog
                 'fields' => [
                     ['name' => 'title', 'type' => 'string', 'required' => true, 'description' => 'Заголовок поста'],
                     ['name' => 'slug', 'type' => 'string', 'required' => true, 'description' => 'Латинский slug в kebab-case'],
-                    ['name' => 'body', 'type' => 'string', 'required' => true, 'description' => 'Текст поста простыми HTML-абзацами'],
+                    [
+                        'name' => 'blocks',
+                        'type' => 'array',
+                        'required' => true,
+                        'description' => 'Части поста: название и текст в markdown, не меньше 10 штук',
+                        'item' => [
+                            'type' => 'object',
+                            'fields' => [
+                                ['name' => 'title', 'type' => 'string', 'required' => true, 'description' => 'Название части'],
+                                ['name' => 'markdown', 'type' => 'string', 'required' => true, 'description' => 'Текст части в markdown'],
+                            ],
+                        ],
+                    ],
                     [
                         'name' => 'tags',
                         'type' => 'array',

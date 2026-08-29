@@ -18,6 +18,8 @@ import {
 
 interface CustomersPanelProps {
   customers: DetailedCustomer[];
+  /** Данные ещё идут: пустое состояние показывать рано. */
+  isLoading?: boolean;
   onCustomerClick: (customer: DetailedCustomer) => void;
   onToggleBlocked: (customer: DetailedCustomer) => void;
   onDeleteCustomer: (customer: DetailedCustomer) => void;
@@ -30,6 +32,7 @@ type SortField = "joinedAt" | "totalSpent" | "totalOrders";
 
 export function CustomersPanel({
   customers,
+  isLoading = false,
   onCustomerClick,
   onToggleBlocked,
   onDeleteCustomer,
@@ -158,6 +161,7 @@ export function CustomersPanel({
 
       <CustomersTable
         customers={paginatedCustomers}
+        isLoading={isLoading}
         onCustomerClick={onCustomerClick}
         onToggleBlocked={onToggleBlocked}
         onDeleteCustomer={onDeleteCustomer}

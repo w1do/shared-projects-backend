@@ -2,6 +2,7 @@
 
 import { useCallback, useMemo } from "react";
 import { DataGrid } from "@/components/ui/data-display/data-grid";
+import { listStateMessage } from "@/lib/admin/data-source/list-state";
 import { DataTableFooter } from "@/components/shared/data-table/DataTableFooter";
 import type { DetailedCustomer } from "@/lib/admin/mocks/customers";
 import { getCustomerColumns } from "../customer-columns";
@@ -9,6 +10,8 @@ import { useConsoleText } from "@/lib/admin/use-console-text";
 
 interface CustomersTableProps {
   customers: DetailedCustomer[];
+  /** Данные ещё идут: пустое состояние показывать рано. */
+  isLoading?: boolean;
   onCustomerClick: (customer: DetailedCustomer) => void;
   selectedIds: Set<string>;
   allSelected: boolean;
@@ -30,6 +33,7 @@ interface CustomersTableProps {
 
 export function CustomersTable({
   customers,
+  isLoading = false,
   onCustomerClick,
   onToggleBlocked,
   onDeleteCustomer,
@@ -93,7 +97,11 @@ export function CustomersTable({
         onRowClick={(row) => onCustomerClick(row)}
         emptyState={
           <div className="py-6 text-center text-xs text-muted-foreground-lighter">
-            {t("console.customers.empty-filtered")}
+            {listStateMessage(
+              isLoading,
+              t("console.common.loading"),
+              t("console.customers.empty-filtered"),
+            )}
           </div>
         }
       />

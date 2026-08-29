@@ -17,13 +17,13 @@ test('post crud with categories and revisions', function () {
         ->assertCreated()->json('data');
 
     $post = $this->postJson('/api/admin/v1/projects/proj-1/content/posts', [
-        'title' => 'Hello', 'body' => 'v1', 'categories' => [$cat['id']],
+        'title' => 'Hello', 'blocks' => [['title' => '', 'markdown' => 'v1']], 'categories' => [$cat['id']],
     ], $headers)->assertCreated()->json('data');
 
     expect($post['slug'])->toBe('hello')->and($post['categories'])->toBe([$cat['id']]);
 
     $this->putJson("/api/admin/v1/projects/proj-1/content/posts/{$post['id']}", [
-        'title' => 'Hello', 'body' => 'v2',
+        'title' => 'Hello', 'blocks' => [['title' => '', 'markdown' => 'v2']],
     ], $headers)->assertOk();
 
     $revisions = $this->getJson("/api/admin/v1/projects/proj-1/content/posts/{$post['id']}/revisions", $headers)

@@ -39,20 +39,22 @@ function tagsFromForm(tags?: string): string[] {
     .filter(Boolean);
 }
 
+/**
+ * Демо-хранилище вёрстки не знает про markdown-блоки: название блока
+ * становится подзаголовком, текст — абзацем.
+ */
 function mapContentBlocks(values: BlogFormValues): ContentBlock[] {
-  // Form schema uses a simplified block model; cast to magazine ContentBlock union.
-  return values.contentBlocks.map((block) => {
-    if (block.type === "heading") {
-      return { type: "heading", level: 2, content: block.content };
+  return values.contentBlocks.flatMap((block) => {
+    const rendered: ContentBlock[] = [];
+
+    if (block.title) {
+      rendered.push({ type: "heading", level: 2, content: block.title } as ContentBlock);
     }
-    if (block.type === "quote") {
-      return { type: "quote", content: block.content, author: values.authorName, style: "default" };
-    }
-    if (block.type === "image") {
-      return { type: "image_full", url: block.content, caption: "" };
-    }
-    return { type: "paragraph", content: block.content };
-  }) as ContentBlock[];
+
+    rendered.push({ type: "paragraph", content: block.markdown } as ContentBlock);
+
+    return rendered;
+  });
 }
 
 function articleFromForm(values: BlogFormValues, existing?: Article): Article {
@@ -65,11 +67,8 @@ function articleFromForm(values: BlogFormValues, existing?: Article): Article {
     subtitle: values.subtitle,
     category: values.category,
     tags: tagsFromForm(values.tags),
-    author: {
-      name: values.authorName,
-      role: values.authorRole,
-      avatar: values.authorAvatar || existing?.author.avatar || "/avatars/user-03.webp",
-    },
+    // Автор поста — оператор, форма его не спрашивает
+    author: existing?.author ?? { name: "", role: "", avatar: "/avatars/user-03.webp" },
     publishedAt: existing?.publishedAt ?? new Date().toISOString().slice(0, 10),
     readingTimeMin: values.readingTimeMin,
     banner: values.banner || existing?.banner || "",
@@ -77,6 +76,11 @@ function articleFromForm(values: BlogFormValues, existing?: Article): Article {
     layoutStyle: values.layoutStyle,
     relatedProducts: existing?.relatedProducts ?? [],
     contentBlocks: mapContentBlocks(values),
+    blocks: values.contentBlocks.map((block) => ({
+      id: block.id,
+      title: block.title ?? "",
+      markdown: block.markdown,
+    })),
   };
 }
 

@@ -3,7 +3,11 @@
 import { adminApiGet, adminApiGetPage, adminApiSend } from "../api-client";
 import { rememberSectionSnapshot } from "../session";
 import { syncConsoleTexts } from "./console-texts-loader";
-import type { PlatformBootstrap, PlatformProject } from "./types";
+import type {
+  PlatformAuditEntry,
+  PlatformBootstrap,
+  PlatformProject,
+} from "./types";
 
 const base = "/api/admin/v1/projects/{project}";
 
@@ -159,6 +163,18 @@ export function removeMember(memberId: number | string) {
   return adminApiSend<void>(`${base}/members/${memberId}`, {
     method: "DELETE",
   });
+}
+
+/**
+ * Последние события журнала действий проекта.
+ *
+ * Журнал отдаётся курсорной страницей — общего числа записей в ответе нет,
+ * поэтому берётся только первая страница и обрезается до нужного числа.
+ */
+export async function listAuditEntries(limit = 10) {
+  const page = await adminApiGetPage<PlatformAuditEntry>(`${base}/audit`);
+
+  return page.items.slice(0, limit);
 }
 
 export function listRoles() {

@@ -52,6 +52,20 @@ final class ResearchRuleViolation extends ValidationException
         return self::withMessages(['topic' => ['No research material found for this topic in the knowledge base.']]);
     }
 
+    public static function postBlocksTooFew(int $expected, int $actual): self
+    {
+        return self::withMessages([
+            'topic' => ["The model returned {$actual} content blocks, at least {$expected} are required. Try again."],
+        ]);
+    }
+
+    public static function postTooShort(int $expected, int $actual): self
+    {
+        return self::withMessages([
+            'topic' => ["The model returned {$actual} characters of content, at least {$expected} are required. Try again."],
+        ]);
+    }
+
     public static function imageSearchUnavailable(): self
     {
         return self::withMessages(['query' => ['The image search service is unavailable or rejected the request.']]);

@@ -116,6 +116,7 @@ export const adminQueryKeys = {
     card: () => ["admin", "project", "card"] as const,
     buildout: () => ["admin", "project", "buildout"] as const,
     access: () => ["admin", "project", "access"] as const,
+    list: (project: string) => ["admin", "project", "list", project] as const,
   },
   research: {
     all: ["admin", "research"] as const,
@@ -123,6 +124,10 @@ export const adminQueryKeys = {
     detail: (id: number) => ["admin", "research", "detail", id] as const,
     topics: (researchId: number) => ["admin", "research", "topics", researchId] as const,
     allTopics: (status?: string) => ["admin", "research", "topics", "all", status ?? ""] as const,
+  },
+  projectEvents: {
+    all: ["admin", "project-events"] as const,
+    list: (project: string) => ["admin", "project-events", project] as const,
   },
   instructs: {
     all: ["admin", "instructs"] as const,

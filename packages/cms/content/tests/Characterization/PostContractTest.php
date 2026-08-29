@@ -25,6 +25,7 @@ function contractPost(array $attributes): Post
         'title' => 'Fixed title',
         'slug' => 'fixed-title',
         'body' => 'Fixed body',
+        'blocks' => [['id' => '01FIXEDBLOCKIDENTIFIER01', 'title' => '', 'markdown' => 'Fixed body']],
         'locale' => 'ru',
     ]);
 }
@@ -37,12 +38,12 @@ test('contract: content posts index', function () {
     ], $headers)->json('data');
 
     $first = $this->postJson('/api/admin/v1/projects/proj-1/content/posts', [
-        'title' => 'First post', 'slug' => 'first-post', 'body' => 'First body',
+        'title' => 'First post', 'slug' => 'first-post', 'blocks' => [['title' => '', 'markdown' => 'First body']],
         'locale' => 'ru', 'categories' => [$category['id']], 'is_index' => true,
     ], $headers)->json('data');
 
     $this->postJson('/api/admin/v1/projects/proj-1/content/posts', [
-        'title' => 'Second post', 'slug' => 'second-post', 'body' => 'Second body',
+        'title' => 'Second post', 'slug' => 'second-post', 'blocks' => [['title' => '', 'markdown' => 'Second body']],
         'locale' => 'en', 'translation_group' => 'group-a', 'is_index' => false,
     ], $headers);
 
@@ -86,6 +87,7 @@ test('contract: content posts index cursor pagination', function () {
             'title' => "Post {$number}",
             'slug' => "post-{$number}",
             'body' => "Body {$number}",
+            'blocks' => [['id' => "01CURSORBLOCKIDENTIFIER{$number}", 'title' => '', 'markdown' => "Body {$number}"]],
             'locale' => 'ru',
         ]);
     }
@@ -115,7 +117,7 @@ test('contract: content posts store', function () {
 
     ResponseSnapshot::assertMatches(
         $this->postJson('/api/admin/v1/projects/proj-1/content/posts', [
-            'title' => 'Hello world', 'slug' => 'hello-world', 'body' => 'Body text',
+            'title' => 'Hello world', 'slug' => 'hello-world', 'blocks' => [['title' => '', 'markdown' => 'Body text']],
             'locale' => 'ru', 'translation_group' => 'group-a',
             'categories' => [$category['id']], 'is_index' => true,
         ], $headers),
@@ -170,7 +172,7 @@ test('contract: content posts show', function () {
     ], $headers)->json('data');
 
     $post = $this->postJson('/api/admin/v1/projects/proj-1/content/posts', [
-        'title' => 'Hello world', 'slug' => 'hello-world', 'body' => 'Body text',
+        'title' => 'Hello world', 'slug' => 'hello-world', 'blocks' => [['title' => '', 'markdown' => 'Body text']],
         'locale' => 'ru', 'categories' => [$category['id']],
     ], $headers)->json('data');
 
@@ -198,12 +200,12 @@ test('contract: content posts update', function () {
     $headers = actingAsContentOperator();
 
     $post = $this->postJson('/api/admin/v1/projects/proj-1/content/posts', [
-        'title' => 'Hello world', 'slug' => 'hello-world', 'body' => 'v1', 'locale' => 'ru',
+        'title' => 'Hello world', 'slug' => 'hello-world', 'blocks' => [['title' => '', 'markdown' => 'v1']], 'locale' => 'ru',
     ], $headers)->json('data');
 
     ResponseSnapshot::assertMatches(
         $this->putJson("/api/admin/v1/projects/proj-1/content/posts/{$post['id']}", [
-            'title' => 'Hello world v2', 'slug' => 'hello-world', 'body' => 'v2', 'locale' => 'ru',
+            'title' => 'Hello world v2', 'slug' => 'hello-world', 'blocks' => [['title' => '', 'markdown' => 'v2']], 'locale' => 'ru',
         ], $headers),
         'posts-update',
     );
@@ -239,7 +241,7 @@ test('contract: content posts change status', function () {
     $headers = actingAsContentOperator();
 
     $post = $this->postJson('/api/admin/v1/projects/proj-1/content/posts', [
-        'title' => 'Hello world', 'slug' => 'hello-world', 'body' => 'Body text', 'locale' => 'ru',
+        'title' => 'Hello world', 'slug' => 'hello-world', 'blocks' => [['title' => '', 'markdown' => 'Body text']], 'locale' => 'ru',
     ], $headers)->json('data');
 
     ResponseSnapshot::assertMatches(
@@ -332,11 +334,11 @@ test('contract: content posts revisions', function () {
     $headers = actingAsContentOperator();
 
     $post = $this->postJson('/api/admin/v1/projects/proj-1/content/posts', [
-        'title' => 'Hello world', 'slug' => 'hello-world', 'body' => 'v1', 'locale' => 'ru',
+        'title' => 'Hello world', 'slug' => 'hello-world', 'blocks' => [['title' => '', 'markdown' => 'v1']], 'locale' => 'ru',
     ], $headers)->json('data');
 
     $this->putJson("/api/admin/v1/projects/proj-1/content/posts/{$post['id']}", [
-        'title' => 'Hello world', 'slug' => 'hello-world', 'body' => 'v2', 'locale' => 'ru',
+        'title' => 'Hello world', 'slug' => 'hello-world', 'blocks' => [['title' => '', 'markdown' => 'v2']], 'locale' => 'ru',
     ], $headers);
 
     ResponseSnapshot::assertMatches(
@@ -358,11 +360,11 @@ test('contract: content posts restore revision', function () {
     $headers = actingAsContentOperator();
 
     $post = $this->postJson('/api/admin/v1/projects/proj-1/content/posts', [
-        'title' => 'Hello world', 'slug' => 'hello-world', 'body' => 'v1', 'locale' => 'ru',
+        'title' => 'Hello world', 'slug' => 'hello-world', 'blocks' => [['title' => '', 'markdown' => 'v1']], 'locale' => 'ru',
     ], $headers)->json('data');
 
     $this->putJson("/api/admin/v1/projects/proj-1/content/posts/{$post['id']}", [
-        'title' => 'Hello world v2', 'slug' => 'hello-world', 'body' => 'v2', 'locale' => 'ru',
+        'title' => 'Hello world v2', 'slug' => 'hello-world', 'blocks' => [['title' => '', 'markdown' => 'v2']], 'locale' => 'ru',
     ], $headers);
 
     $revisions = $this->getJson("/api/admin/v1/projects/proj-1/content/posts/{$post['id']}/revisions", $headers)
@@ -501,5 +503,26 @@ test('contract: content posts with a media file of another project', function ()
             'title' => 'Stolen cover', 'cover_media_id' => $foreign->id,
         ], $headers),
         'posts-store-422-foreign-media',
+    );
+});
+
+test('contract: content posts with several blocks', function () {
+    $headers = actingAsContentOperator();
+
+    $response = $this->postJson('/api/admin/v1/projects/proj-1/content/posts', [
+        'title' => 'Blocks post',
+        'slug' => 'blocks-post',
+        'blocks' => [
+            ['title' => 'Какие бывают авто', 'markdown' => "Седаны, хэтчбеки и кроссоверы.\n\n- один\n- два"],
+            ['title' => 'Что нужно знать при выборе двигателя', 'markdown' => 'Объём, тип топлива и ресурс.'],
+            ['title' => '', 'markdown' => 'Блок без названия — только текст.'],
+        ],
+    ], $headers);
+
+    ResponseSnapshot::assertMatches($response, 'posts-store-with-blocks');
+
+    ResponseSnapshot::assertMatches(
+        $this->getJson("/api/admin/v1/projects/proj-1/content/posts/{$response->json('data.id')}", $headers),
+        'posts-show-with-blocks',
     );
 });

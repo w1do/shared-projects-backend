@@ -7,28 +7,24 @@ export const blogSampleData: BlogFormValues = {
   category: "Rituals",
   categoryIds: [],
   tags: "skincare, ritual, mindfulness, glow",
-  authorName: "Dr. Elena Vos",
-  authorRole: "Lead Cosmetic Chemist",
-  authorAvatar: "/avatars/user-03.webp",
   readingTimeMin: 6,
   banner: "/magazine/images/banners/842915.webp",
   thumbnail: "/magazine/images/thumbnails/842915.webp",
   layoutStyle: "editorial",
   contentBlocks: [
-    { type: "heading", content: "Begin with intention" },
     {
-      type: "paragraph",
-      content:
+      title: "Begin with intention",
+      markdown:
         "Slow beauty is less about products and more about presence. Each step becomes a moment to reconnect with yourself, letting actives absorb fully before the next layer.",
     },
     {
-      type: "quote",
-      content: "Your skin remembers consistency far more than intensity.",
+      title: "Consistency over intensity",
+      markdown: "> Your skin remembers consistency far more than intensity.",
     },
     {
-      type: "paragraph",
-      content:
-        "Build a routine you can keep: a gentle cleanse, a hydrating essence, a targeted serum, and a barrier-sealing moisturizer. Repeat it nightly and let time do the rest.",
+      title: "Build a routine you can keep",
+      markdown:
+        "A gentle cleanse, a hydrating essence, a targeted serum, and a barrier-sealing moisturizer. Repeat it nightly and let time do the rest.",
     },
   ],
 };

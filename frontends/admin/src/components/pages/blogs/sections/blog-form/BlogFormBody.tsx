@@ -7,7 +7,6 @@ import { useConsoleAccessQuery } from "@/hooks/admin/project";
 import { shouldUseAdminApi } from "@/lib/admin/data-source/config";
 import { MediaSection } from "@/components/pages/blogs/pages/add/sections/media";
 import { ContentBlocksSection } from "@/components/pages/blogs/pages/add/sections/content-blocks";
-import { AuthorSection } from "@/components/pages/blogs/pages/add/sections/author";
 import { StatusSection } from "@/components/pages/blogs/pages/add/sections/status";
 
 /**
@@ -44,7 +43,6 @@ export function BlogFormBody({ sidebarExtra }: { sidebarExtra?: React.ReactNode 
       {/* Right column - sidebar */}
       <div className="lg:col-span-1">
         <div className="flex flex-col gap-6 lg:sticky lg:top-32">
-          <AuthorSection />
           <StatusSection />
           {sidebarExtra}
         </div>

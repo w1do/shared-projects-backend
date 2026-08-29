@@ -7,7 +7,8 @@ return [
     'api_key' => env('OPENAI_API_KEY'),
     'base_url' => env('OPENAI_BASE_URL', 'https://polza.ai/api/v1'),
     'model' => env('CMS_AI_MODEL', 'openai/gpt-5.4-mini'),
-    'timeout' => (int) env('CMS_AI_TIMEOUT', 30),
+    // Развёрнутый ответ (статья на 8000+ символов) не укладывается в 30 секунд
+    'timeout' => (int) env('CMS_AI_TIMEOUT', 180),
 
     // Векторные представления. Размерность объявляется здесь, а не берётся из
     // пробного ответа: хранилище базы знаний создаётся под неё до первого вызова.

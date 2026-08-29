@@ -21,15 +21,14 @@ type ArticleBody = {
   /** Категории проекта, к которым привязывается пост. */
   categoryIds?: string[];
   tags?: string;
-  authorName: string;
-  authorRole: string;
   readingTimeMin: number;
   banner?: string;
   thumbnail?: string;
   /** Медиа проекта за обложкой и баннером; `null` снимает изображение. */
   coverMediaId?: number | null;
   bannerMediaId?: number | null;
-  contentBlocks: Array<{ type: string; content: string }>;
+  /** Содержимое блоками: платформа собирает из них единый текст поста. */
+  blocks: Array<{ id?: string; title: string; markdown: string }>;
 };
 
 /** Блоки вёрстки → тело поста платформы (посты хранят единый текст). */
@@ -39,10 +38,7 @@ function toPostBody(body: ArticleBody, options: { withSlug?: boolean } = {}) {
     // Slug задаётся один раз при создании: перегенерация при правке заголовка
     // молча меняла бы адрес уже существующего поста.
     ...(options.withSlug ? { slug: slugify(body.title) } : {}),
-    body: body.contentBlocks
-      .map((block) => (block.type === "heading" ? `<h2>${block.content}</h2>` : block.content))
-      .filter(Boolean)
-      .join("\n\n"),
+    blocks: body.blocks,
     ...(body.categoryIds ? { categories: body.categoryIds.map(Number) } : {}),
     // Ключ уходит всегда: `null` — осознанное снятие изображения поста
     cover_media_id: body.coverMediaId ?? null,

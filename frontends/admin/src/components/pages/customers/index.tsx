@@ -10,7 +10,6 @@ import { CustomersStats } from "@/components/pages/customers/sections/customers-
 import { CustomersPanel } from "@/components/pages/customers/sections/customers-panel";
 import { CustomerDetailModal } from "@/components/pages/customers/sections/customer-detail-modal";
 import { DeleteCustomerDialog } from "@/components/pages/customers/sections/delete-customer-dialog";
-import { CustomersLoadingState } from "./loading";
 
 interface CustomersPageProps {
   /** Optional seed for tests; omit in production so skeleton can show. */
@@ -36,10 +35,6 @@ export default function CustomersPage({ initialCustomers }: CustomersPageProps =
     setDeleteTarget,
     confirmDelete,
   } = useCustomersPage(initialCustomers !== undefined ? { initialCustomers } : {});
-
-  if (isPending) {
-    return <CustomersLoadingState />;
-  }
 
   return (
     <div className="flex flex-col gap-8">
@@ -69,6 +64,7 @@ export default function CustomersPage({ initialCustomers }: CustomersPageProps =
 
       <CustomersPanel
         customers={customers}
+        isLoading={isPending}
         onCustomerClick={openCustomer}
         onToggleBlocked={toggleCustomerBlocked}
         onDeleteCustomer={setDeleteTarget}

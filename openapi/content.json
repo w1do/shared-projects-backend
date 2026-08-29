@@ -998,6 +998,7 @@
                                         "maxLength": 255
                                     },
                                     "body": {
+                                        "description": "Только чтение: собирается из blocks, переданное значение не применяется",
                                         "type": "string",
                                         "nullable": true
                                     },
@@ -1026,6 +1027,30 @@
                                     "banner_media_id": {
                                         "type": "integer",
                                         "nullable": true
+                                    },
+                                    "blocks": {
+                                        "type": "array",
+                                        "items": {
+                                            "required": [
+                                                "markdown"
+                                            ],
+                                            "properties": {
+                                                "id": {
+                                                    "type": "string",
+                                                    "nullable": true,
+                                                    "maxLength": 64
+                                                },
+                                                "title": {
+                                                    "type": "string",
+                                                    "nullable": true,
+                                                    "maxLength": 255
+                                                },
+                                                "markdown": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
                                     }
                                 },
                                 "type": "object"
@@ -1135,6 +1160,7 @@
                                         "maxLength": 255
                                     },
                                     "body": {
+                                        "description": "Только чтение: собирается из blocks, переданное значение не применяется",
                                         "type": "string",
                                         "nullable": true
                                     },
@@ -1163,6 +1189,30 @@
                                     "banner_media_id": {
                                         "type": "integer",
                                         "nullable": true
+                                    },
+                                    "blocks": {
+                                        "type": "array",
+                                        "items": {
+                                            "required": [
+                                                "markdown"
+                                            ],
+                                            "properties": {
+                                                "id": {
+                                                    "type": "string",
+                                                    "nullable": true,
+                                                    "maxLength": 64
+                                                },
+                                                "title": {
+                                                    "type": "string",
+                                                    "nullable": true,
+                                                    "maxLength": 255
+                                                },
+                                                "markdown": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
                                     }
                                 },
                                 "type": "object"

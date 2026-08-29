@@ -20,6 +20,11 @@ import type {
   PlatformTopic,
   StartResearchBody,
 } from "../platform/research";
+import {
+  PROJECT_EVENTS_LIMIT,
+  mapProjectEvents,
+  type ProjectEvent,
+} from "../platform/project-events";
 import { fromSource } from "./shared";
 
 export type ProjectCard = {
@@ -70,6 +75,20 @@ export async function saveProjectCard(body: {
     topic: project.topic ?? null,
     locales: project.locales ?? [],
   } satisfies ProjectCard;
+}
+
+/**
+ * Последние события проекта: отказ журнала и отсутствие права не показываются
+ * оператору — он их не запрашивал, панель просто остаётся без числа.
+ */
+export async function getProjectEvents(): Promise<ProjectEvent[]> {
+  return fromSource(async () => {
+    try {
+      return mapProjectEvents(await platformAuth.listAuditEntries(PROJECT_EVENTS_LIMIT));
+    } catch {
+      return [];
+    }
+  }, []);
 }
 
 /** Создание проекта оператором: в mock-режиме платформы нет, поэтому только api. */

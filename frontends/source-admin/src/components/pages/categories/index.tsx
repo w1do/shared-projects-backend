@@ -5,7 +5,6 @@ import { CategoriesPanel } from "./sections/categories-panel";
 import { CategoryDeleteDialog } from "./sections/category-delete-dialog";
 import { CategoryMoveDialog } from "./sections/category-move-dialog";
 import { categoryPath, descendantIds } from "@/lib/admin/data-source/category-tree";
-import { CategoriesLoadingState } from "./loading";
 import type { Category } from "@/lib/admin/mocks/types";
 import { useCategoriesPage } from "@/hooks/admin/categories";
 
@@ -62,16 +61,13 @@ export default function CategoriesPage({
         ? deleteIntent.ids.map((id) => categoryPath(categories, id))
         : [];
 
-  if (isPending) {
-    return <CategoriesLoadingState />;
-  }
-
   return (
     <div className="flex flex-col gap-8">
       <CategoriesHeader categories={categories} />
       {/* Карточки аналитики (CategoriesStats) скрыты: платформа не имеет торговых метрик. */}
       <CategoriesPanel
         categories={categories}
+        isLoading={isPending}
         onEditClick={openEdit}
         onDeleteClick={requestDelete}
         onMoveClick={requestMove}

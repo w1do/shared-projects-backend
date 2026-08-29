@@ -10,8 +10,10 @@ use Illuminate\Support\Facades\Cache;
  * Задача 0.13, инвариант И12: форма закэшированного значения меняется только
  * вместе с ключом.
  *
- * Ключ `content:{project}:v{version}:{key}` (ContentCache:19) переживает деплой:
- * после выката в Redis лежат значения, записанные ПРЕДЫДУЩЕЙ версией кода.
+ * Ключ `content:{project}:v{version}:s{shape}:{key}` переживает деплой: после
+ * выката в Redis лежат значения, записанные ПРЕДЫДУЩЕЙ версией кода. Часть
+ * `s{shape}` растёт вместе с формой значения — значения прежней формы под
+ * новым ключом не находятся и доживают до истечения TTL.
  * Тест кладёт под текущий ключ значение в текущем формате
  * (`ApiResponse::cursorPage(...)->getData(true)` — массив `{data, meta}` из
  * PublicContentController:33-45) и требует, чтобы эндпоинт отдал именно его.
@@ -41,7 +43,8 @@ test('guard: 0.13 public posts serve warm cache value in current format', functi
     // для GET /api/v1/content/posts без параметров only() отдаёт [], json_encode([]) === '[]'.
     expect(md5('[]'))->toBe('d751713988987e9331980363e24189ce');
 
-    $key = 'content:proj-1:v1:posts:d751713988987e9331980363e24189ce';
+    // s2 — текущая форма значения (блоки содержимого поста)
+    $key = 'content:proj-1:v1:s2:posts:d751713988987e9331980363e24189ce';
 
     // Значение в текущем формате: конверт cursorPage — data (список PostDTO) + meta.
     $warm = [
@@ -57,6 +60,9 @@ test('guard: 0.13 public posts serve warm cache value in current format', functi
                 'scheduled_at' => null,
                 'published_at' => '2024-01-01T00:00:00+00:00',
                 'is_index' => true,
+                'blocks' => [
+                    ['id' => '01HWARMCACHEMARKERBLOCK1', 'title' => 'Маркер', 'markdown' => 'Warm cache marker body'],
+                ],
                 'categories' => [],
                 'seo' => null,
             ],
@@ -80,6 +86,7 @@ test('guard: 0.13 public posts serve warm cache value in current format', functi
         // Маркер: из БД пришёл бы 'Database post'
         ->and($response->json('data.0.title'))->toBe('Warm cache marker post')
         ->and($response->json('data.0.id'))->toBe(4242)
+        ->and($response->json('data.0.blocks.0.id'))->toBe('01HWARMCACHEMARKERBLOCK1')
         ->and($response->json('meta.per_page'))->toBe(25)
         ->and($response->json('meta.next_cursor'))->toBeNull();
 

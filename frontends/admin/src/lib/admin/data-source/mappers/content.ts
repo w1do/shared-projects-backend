@@ -88,6 +88,11 @@ export function mapArticle(article: ApiArticle): Article {
     publishedAt: article.publishedAt ?? article.createdAt ?? new Date().toISOString(),
     banner: article.banner ?? article.thumbnail ?? "",
     thumbnail: article.thumbnail ?? article.banner ?? "",
+    blocks: (article.blocks ?? []).map((block) => ({
+      id: block.id,
+      title: block.title ?? "",
+      markdown: block.markdown ?? "",
+    })),
     coverMediaId: article.coverMediaId ?? null,
     bannerMediaId: article.bannerMediaId ?? null,
     layoutStyle: "editorial",

@@ -1,0 +1,40 @@
+{
+    "status": 201,
+    "content_type": "application/json",
+    "body": {
+        "data": {
+            "id": "<int>",
+            "title": "Blocks post",
+            "slug": "blocks-post",
+            "body": "## Какие бывают авто\n\nСеданы, хэтчбеки и кроссоверы.\n\n- один\n- два\n\n## Что нужно знать при выборе двигателя\n\nОбъём, тип топлива и ресурс.\n\nБлок без названия — только текст.",
+            "locale": "ru",
+            "translation_group": null,
+            "status": "draft",
+            "scheduled_at": null,
+            "published_at": null,
+            "is_index": true,
+            "blocks": [
+                {
+                    "id": "<string>",
+                    "title": "Какие бывают авто",
+                    "markdown": "Седаны, хэтчбеки и кроссоверы.\n\n- один\n- два"
+                },
+                {
+                    "id": "<string>",
+                    "title": "Что нужно знать при выборе двигателя",
+                    "markdown": "Объём, тип топлива и ресурс."
+                },
+                {
+                    "id": "<string>",
+                    "title": "",
+                    "markdown": "Блок без названия — только текст."
+                }
+            ],
+            "categories": [],
+            "tags": [],
+            "seo": null,
+            "cover": null,
+            "banner": null
+        }
+    }
+}

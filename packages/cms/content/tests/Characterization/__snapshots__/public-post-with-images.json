@@ -13,6 +13,13 @@
             "scheduled_at": null,
             "published_at": "<string>",
             "is_index": true,
+            "blocks": [
+                {
+                    "id": "<string>",
+                    "title": "",
+                    "markdown": "Body"
+                }
+            ],
             "categories": [],
             "tags": [],
             "seo": null,

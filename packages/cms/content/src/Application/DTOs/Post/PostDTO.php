@@ -13,6 +13,7 @@ final class PostDTO extends Data
     /**
      * @param  list<int>  $categories
      * @param  list<string>  $tags
+     * @param  list<PostBlockDTO>  $blocks
      */
     public function __construct(
         public int $id,
@@ -25,6 +26,7 @@ final class PostDTO extends Data
         public ?string $scheduled_at,
         public ?string $published_at,
         public bool $is_index,
+        public array $blocks = [],
         public array $categories = [],
         public array $tags = [],
         public ?SeoDTO $seo = null,
@@ -45,6 +47,7 @@ final class PostDTO extends Data
             scheduled_at: $post->scheduled_at?->toIso8601String(),
             published_at: $post->published_at?->toIso8601String(),
             is_index: $post->is_index,
+            blocks: array_map(PostBlockDTO::fromArray(...), $post->blocks ?? []),
             categories: $post->relationLoaded('categories') ? array_values(array_map('intval', $post->categories->pluck('id')->all())) : [],
             tags: $post->relationLoaded('tags') ? array_values(array_map('strval', $post->tags->pluck('name')->all())) : [],
             seo: $post->relationLoaded('seo') && $post->seo ? SeoDTO::fromModel($post->seo) : null,
