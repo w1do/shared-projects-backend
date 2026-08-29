@@ -1,17 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import {
-  Plus,
-  Upload,
-  Tag,
-  Layers,
-  UserPlus,
-  Megaphone,
-  CalendarDays,
-  Download,
-  ChevronDown,
-} from "lucide-react";
+import { UserPlus, CalendarDays, Download, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/inputs/button";
 import { cn } from "@/lib/utils";
 import {
@@ -21,37 +11,11 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from "@/components/ui/overlay/dropdown-menu";
-import { ImportInventoryDialog } from "@/components/admin/ImportInventoryDialog";
 import { useAdminModals } from "@/components/layout/modals";
 import { t } from "@/lib/admin/console-texts";
 import { DASHBOARD_TIME_RANGES, timeRangeLabel } from "../../utils/time-range";
 
 const actions = [
-  {
-    label: t("console.quick-actions.add-product"),
-    icon: Plus,
-    href: "/admin/products/add",
-  },
-  {
-    label: t("console.quick-actions.new-promotion"),
-    icon: Tag,
-    action: "new-promotion",
-  },
-  {
-    label: t("console.quick-actions.import-inventory"),
-    icon: Upload,
-    action: "import-inventory",
-  },
-  {
-    label: t("console.quick-actions.create-collection"),
-    icon: Layers,
-    href: "/admin/collections/add",
-  },
-  {
-    label: t("console.quick-actions.launch-campaign"),
-    icon: Megaphone,
-    action: "launch-campaign",
-  },
   {
     label: t("console.quick-actions.invite-teammate"),
     icon: UserPlus,
@@ -69,7 +33,6 @@ export function QuickActions({
   onTimeRangeChange,
 }: QuickActionsProps) {
   const [isStuck, setIsStuck] = useState(false);
-  const [isImportOpen, setIsImportOpen] = useState(false);
   const sentinelRef = useRef<HTMLDivElement>(null);
   const { openModal } = useAdminModals();
 
@@ -122,34 +85,19 @@ export function QuickActions({
             {t("console.nav.quick-actions")}
           </div>
           <div className="flex flex-nowrap items-center gap-2 overflow-x-auto no-scrollbar py-1 min-w-0 flex-1">
-            {actions.map((a) => {
-              const hasHref = "href" in a && a.href;
-              return (
-                <Button
-                  key={a.label}
-                  component={hasHref ? "Link" : "button"}
-                  href={hasHref ? a.href : undefined}
-                  onClick={
-                    !hasHref && a.action === "new-promotion"
-                      ? () => openModal("promotion")
-                      : !hasHref && a.action === "import-inventory"
-                        ? () => setIsImportOpen(true)
-                        : !hasHref && a.action === "launch-campaign"
-                          ? () => openModal("campaignLaunch")
-                          : !hasHref && a.action === "invite-teammate"
-                            ? () => openModal("inviteMember")
-                            : undefined
-                  }
-                  variant="contained"
-                  color="surface"
-                  size="sm"
-                  shape="circle"
-                  startIcon={<a.icon className="text-muted-foreground" />}
-                >
-                  {a.label}
-                </Button>
-              );
-            })}
+            {actions.map((a) => (
+              <Button
+                key={a.label}
+                onClick={a.action === "invite-teammate" ? () => openModal("inviteMember") : undefined}
+                variant="contained"
+                color="surface"
+                size="sm"
+                shape="circle"
+                startIcon={<a.icon className="text-muted-foreground" />}
+              >
+                {a.label}
+              </Button>
+            ))}
           </div>
         </div>
 
@@ -195,10 +143,6 @@ export function QuickActions({
           </div>
         )}
       </div>
-      <ImportInventoryDialog
-        open={isImportOpen}
-        onOpenChange={setIsImportOpen}
-      />
     </>
   );
 }

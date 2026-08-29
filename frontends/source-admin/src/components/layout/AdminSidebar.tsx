@@ -112,33 +112,24 @@ export function AdminSidebar() {
           </SidebarGroupLabel>
           <SidebarGroupContent className="px-2 pt-2">
             <SidebarMenu className="grid grid-cols-2 gap-2">
-              {filteredQuickActions.map((action) => {
-                const hasUrl = "url" in action && action.url;
-                return (
-                  <SidebarMenuItem key={action.title}>
-                    <Button
-                      component={hasUrl ? "Link" : "button"}
-                      href={hasUrl ? action.url : undefined}
-                      onClick={
-                        !hasUrl && action.action === "new-promotion"
-                          ? () => openModal("promotion")
-                          : !hasUrl && action.action === "launch-campaign"
-                            ? () => openModal("campaignLaunch")
-                            : !hasUrl && action.action === "invite-teammate"
-                              ? () => openModal("inviteMember")
-                              : undefined
-                      }
-                      variant="soft"
-                      color="primary"
-                      size="md"
-                      fullWidth
-                      startIcon={<action.icon />}
-                    >
-                      {action.title}
-                    </Button>
-                  </SidebarMenuItem>
-                );
-              })}
+              {filteredQuickActions.map((action) => (
+                <SidebarMenuItem key={action.title}>
+                  <Button
+                    onClick={
+                      action.action === "invite-teammate"
+                        ? () => openModal("inviteMember")
+                        : undefined
+                    }
+                    variant="soft"
+                    color="primary"
+                    size="md"
+                    fullWidth
+                    startIcon={<action.icon />}
+                  >
+                    {action.title}
+                  </Button>
+                </SidebarMenuItem>
+              ))}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>

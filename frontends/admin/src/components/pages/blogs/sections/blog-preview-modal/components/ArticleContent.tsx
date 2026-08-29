@@ -1,28 +1,6 @@
 "use client";
 
 import type { ContentBlock } from "@/lib/admin/mocks/magazine";
-import { useProductsQuery } from "@/hooks/admin/products";
-
-function ProductRef({ productId, caption }: { productId: string; caption?: string }) {
-  const { data: products = [] } = useProductsQuery();
-  const product = products.find((p) => p.id === productId);
-  if (!product) return null;
-  return (
-    <div className="flex items-center gap-4 rounded-2xl border border-border/60 bg-muted/20 p-4">
-      <img
-        src={product.image}
-        alt={product.name}
-        className="size-16 shrink-0 rounded-xl object-cover"
-      />
-      <div className="flex min-w-0 flex-col">
-        <span className="text-caption text-muted-foreground-lighter">{product.brand}</span>
-        <span className="truncate text-xs font-semibold text-foreground">{product.name}</span>
-        <span className="text-caption text-brand-accent font-semibold">${product.price}</span>
-        {caption && <span className="mt-2 text-caption text-muted-foreground">{caption}</span>}
-      </div>
-    </div>
-  );
-}
 
 export function ArticleContent({ blocks }: { blocks: ContentBlock[] }) {
   return (
@@ -81,8 +59,6 @@ export function ArticleContent({ blocks }: { blocks: ContentBlock[] }) {
                 ))}
               </div>
             );
-          case "product_card":
-            return <ProductRef key={index} productId={block.product_id} caption={block.caption} />;
           default:
             return null;
         }

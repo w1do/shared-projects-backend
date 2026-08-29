@@ -71,13 +71,9 @@ jobs:
       - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v2
         with: { bun-version: '1.2.21' }
-      # Вёрстка переносится как есть: расхождение с источником валит билд
+      # Перенесённая вёрстка не расходится со складом; своё в консоли — норма
       - name: Layout matches source-admin
-        run: |
-          set -e
-          for path in src/components src/app src/styles.css src/theme.css public; do
-            diff -r "frontends/source-admin/$path" "frontends/admin/$path"
-          done
+        run: ./tools/mirror-check.sh
       - name: Install dependencies
         working-directory: frontends/admin
         run: bun install --frozen-lockfile

@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { beforeEach, test } from "node:test";
 
+import { CONSOLE_SECTION_KEYS } from "./data-source/section-access.ts";
 import {
   CONSOLE_TEXTS,
   applyConsoleTextOverrides,
@@ -44,6 +45,15 @@ test("каждый ключ реестра — console.* с непустым р�
       `значение по умолчанию не на русском: ${key} = ${value}`,
     );
   }
+});
+
+test("пункты меню в реестре — ровно разделы консоли, без осиротевших", () => {
+  const navKeys = Object.keys(CONSOLE_TEXTS)
+    .filter((key) => key.startsWith("console.nav.") && !key.startsWith("console.nav.group."))
+    .map((key) => key.slice("console.nav.".length))
+    .filter((key) => key !== "quick-actions");
+
+  assert.deepEqual(navKeys.sort(), [...CONSOLE_SECTION_KEYS].sort());
 });
 
 test("без переопределений t() отдаёт значение по умолчанию", () => {

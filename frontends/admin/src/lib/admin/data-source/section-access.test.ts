@@ -5,7 +5,6 @@ import {
   CONSOLE_SECTION_KEYS,
   SECTION_REQUIREMENTS,
   decodeSectionSnapshot,
-  isDemoSection,
   persistSectionSnapshot,
   sectionKeyOfPath,
   sectionSnapshotRevision,
@@ -39,15 +38,9 @@ const ALL_SERVICES = [
   { key: "licensing", enabled: true },
 ];
 
-test("требование объявлено ровно для девяти живых разделов", () => {
-  assert.deepEqual(
-    CONSOLE_SECTION_KEYS.filter((key) => key in SECTION_REQUIREMENTS),
-    LIVE,
-  );
-  assert.equal(
-    CONSOLE_SECTION_KEYS.filter((key) => isDemoSection(key)).length,
-    CONSOLE_SECTION_KEYS.length - LIVE.length,
-  );
+test("в консоли ровно девять разделов и у каждого есть требование платформы", () => {
+  assert.deepEqual([...CONSOLE_SECTION_KEYS], LIVE);
+  assert.deepEqual(Object.keys(SECTION_REQUIREMENTS).sort(), [...LIVE].sort());
 });
 
 test("супер-администратор видит все живые разделы", () => {
@@ -56,7 +49,7 @@ test("супер-администратор видит все живые раз�
 
 test("оператор без права не видит свой раздел", () => {
   const permissions = Object.values(SECTION_REQUIREMENTS)
-    .map((requirement) => requirement!.permission)
+    .map((requirement) => requirement.permission)
     .filter((permission) => permission !== "content.posts.view");
 
   const keys = visibleSectionKeys({ services: ALL_SERVICES, permissions });
@@ -129,7 +122,7 @@ test("селектор сохраняет порядок и выбрасывае
     },
     {
       label: "Catalog",
-      items: [{ title: "Products", section: "products" }],
+      items: [{ title: "Categories", section: "categories" }],
     },
     {
       label: "Workspace",
@@ -153,27 +146,25 @@ test("селектор сохраняет порядок и выбрасывае
   );
 });
 
-test("быстрые действия скрытых разделов не отображаются", () => {
+test("быстрые действия недоступных разделов не отображаются", () => {
   const actions = [
-    { title: "Add product", section: "products" },
-    { title: "New promotion", section: "promotions" },
-    { title: "Import inventory", section: "inventory" },
-    { title: "Create collection", section: "collections" },
-    { title: "Launch campaign", section: "campaigns" },
     { title: "Invite teammate", section: "team" },
+    { title: "Open licensing", section: "licensing" },
   ];
 
   assert.deepEqual(
-    selectVisibleQuickActions(actions, LIVE).map((action) => action.title),
+    selectVisibleQuickActions(actions, ["dashboard", "team"]).map((action) => action.title),
     ["Invite teammate"],
   );
 });
 
-test("адрес раздела → ключ; служебные адреса ключа не имеют", () => {
+test("адрес раздела → ключ; удалённые и служебные адреса ключа не имеют", () => {
   assert.equal(sectionKeyOfPath("/admin"), "dashboard");
   assert.equal(sectionKeyOfPath("/admin/"), "dashboard");
-  assert.equal(sectionKeyOfPath("/admin/products"), "products");
-  assert.equal(sectionKeyOfPath("/admin/products/add"), "products");
+  assert.equal(sectionKeyOfPath("/admin/blogs"), "blogs");
+  assert.equal(sectionKeyOfPath("/admin/blogs/add"), "blogs");
+  assert.equal(sectionKeyOfPath("/admin/products"), undefined);
+  assert.equal(sectionKeyOfPath("/admin/orders"), undefined);
   assert.equal(sectionKeyOfPath("/admin/unauthorized"), undefined);
   assert.equal(sectionKeyOfPath("/login"), undefined);
 });

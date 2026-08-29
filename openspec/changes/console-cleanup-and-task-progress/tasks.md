@@ -1,25 +1,25 @@
 ## 1. Зеркало: снять симметричную сверку
 
-- [ ] 1.1 Написать `tools/mirror-check.sh`: сверяет только файлы, присутствующие и в `frontends/source-admin`, и в `frontends/admin` (по путям `src/components src/app src/styles.css src/theme.css public`); расхождение содержимого — ошибка, односторонний файл — норма. Проверить: скрипт зелёный на текущем состоянии, красный после правки любого перенесённого файла в `admin`
-- [ ] 1.2 Заменить шаг `Layout matches source-admin` в `.github/workflows/pull-request.yml` на вызов `tools/mirror-check.sh`. Проверить: `bash tools/mirror-check.sh` проходит локально
-- [ ] 1.3 Написать `tools/mirror-own-files.sh`: печатает файлы `frontends/admin`, которых нет в складе, — список для линта. Проверить: вывод не содержит перенесённых файлов и содержит `src/lib/admin/data-source/*`
+- [x] 1.1 Написать `tools/mirror-check.sh`: сверяет только файлы, присутствующие и в `frontends/source-admin`, и в `frontends/admin` (по путям `src/components src/app src/styles.css src/theme.css public`); расхождение содержимого — ошибка, односторонний файл — норма. Проверить: скрипт зелёный на текущем состоянии, красный после правки любого перенесённого файла в `admin`
+- [x] 1.2 Заменить шаг `Layout matches source-admin` в `.github/workflows/pull-request.yml` на вызов `tools/mirror-check.sh`. Проверить: `bash tools/mirror-check.sh` проходит локально
+- [x] 1.3 Написать `tools/mirror-own-files.sh`: печатает файлы `frontends/admin`, которых нет в складе, — список для линта. Проверить: вывод не содержит перенесённых файлов и содержит `src/lib/admin/data-source/*`
 
 ## 2. Удаление разделов без сервиса платформы
 
-- [ ] 2.1 Удалить раздел «Товары»: `src/app/admin/products/**`, `src/components/pages/products/**`, `src/lib/admin/products/**`, `src/lib/admin/mocks/products.ts`, `src/lib/admin/products-helpers.ts`, его запросы в `data-source/queries/catalog.ts`, мутации в `data-source/mutations/catalog-products.ts`, маппер `mappers/catalog-products.ts`, ключ в `section-access.ts`, пункт в `sidebar-config.ts`, тексты `console.products.*`. Проверить: `bun run build` зелёный
-- [ ] 2.2 Удалить раздел «Варианты» (`variants`) со всеми его файлами, ключами и текстами. Проверить: `bun run build` зелёный
-- [ ] 2.3 Удалить раздел «Бренды» (`brands`, включая `brand-mocks.ts` и `mocks/brands/`). Проверить: `bun run build` зелёный
-- [ ] 2.4 Удалить раздел «Коллекции» (`collections`). Проверить: `bun run build` зелёный
-- [ ] 2.5 Удалить раздел «Склад» (`inventory`, включая `inventory-import-helpers.ts` и `mocks/inventory.ts`). Проверить: `bun run build` зелёный
-- [ ] 2.6 Удалить раздел «Заказы» (`orders`), его запросы в `data-source/queries/commerce.ts` и маппер `mappers/commerce.ts`. Проверить: `bun run build` зелёный
-- [ ] 2.7 Удалить раздел «Кампании» (`campaigns`, включая `mocks/campaigns-data.ts`). Проверить: `bun run build` зелёный
-- [ ] 2.8 Удалить раздел «Акции» (`promotions`). Проверить: `bun run build` зелёный
-- [ ] 2.9 Удалить раздел «Поддержка» (`support`). Проверить: `bun run build` зелёный
-- [ ] 2.10 Удалить раздел «Уведомления» (`notifications`) вместе с `NotificationsBell` в верхней панели и секцией уведомлений в настройках, если она осталась без API. Проверить: `bun run build` зелёный, панель рендерится без колокольчика
-- [ ] 2.11 Убрать из дашборда виджеты удалённых разделов (`BestSellers`, `BrandPerformance`, `CampaignPerformance`, `CategorySales`, `LowStock`, `RecentOrders`) — их данных в платформе нет. Проверить: дашборд собирается и показывает только виджеты, подключённые к analytics/content
-- [ ] 2.12 Сократить `CONSOLE_SECTION_KEYS` и `SECTION_REQUIREMENTS` в `section-access.ts` до девяти подключённых разделов; обновить `section-access.test.ts`. Проверить: `bun test` зелёный
-- [ ] 2.13 Удалить из реестра `console-texts.ts` ключи удалённых разделов; обновить `console-texts.test.ts`. Проверить: `bun test` зелёный, дублей и осиротевших ключей нет
-- [ ] 2.14 Проверить, что адреса удалённых разделов отвечают 404: открыть `/admin/products` и `/admin/orders` на собранном бандле
+- [x] 2.1 Удалить раздел «Товары»: `src/app/admin/products/**`, `src/components/pages/products/**`, `src/lib/admin/products/**`, `src/lib/admin/mocks/products.ts`, `src/lib/admin/products-helpers.ts`, его запросы в `data-source/queries/catalog.ts`, мутации в `data-source/mutations/catalog-products.ts`, маппер `mappers/catalog-products.ts`, ключ в `section-access.ts`, пункт в `sidebar-config.ts`, тексты `console.products.*`. Проверить: `bun run build` зелёный
+- [x] 2.2 Удалить раздел «Варианты» (`variants`) со всеми его файлами, ключами и текстами. Проверить: `bun run build` зелёный
+- [x] 2.3 Удалить раздел «Бренды» (`brands`, включая `brand-mocks.ts` и `mocks/brands/`). Проверить: `bun run build` зелёный
+- [x] 2.4 Удалить раздел «Коллекции» (`collections`). Проверить: `bun run build` зелёный
+- [x] 2.5 Удалить раздел «Склад» (`inventory`, включая `inventory-import-helpers.ts` и `mocks/inventory.ts`). Проверить: `bun run build` зелёный
+- [x] 2.6 Удалить раздел «Заказы» (`orders`), его запросы в `data-source/queries/commerce.ts` и маппер `mappers/commerce.ts`. Проверить: `bun run build` зелёный
+- [x] 2.7 Удалить раздел «Кампании» (`campaigns`, включая `mocks/campaigns-data.ts`). Проверить: `bun run build` зелёный
+- [x] 2.8 Удалить раздел «Акции» (`promotions`). Проверить: `bun run build` зелёный
+- [x] 2.9 Удалить раздел «Поддержка» (`support`). Проверить: `bun run build` зелёный
+- [x] 2.10 Удалить раздел «Уведомления» (`notifications`) вместе с `NotificationsBell` в верхней панели и секцией уведомлений в настройках, если она осталась без API. Проверить: `bun run build` зелёный, панель рендерится без колокольчика
+- [x] 2.11 Убрать из дашборда виджеты удалённых разделов (`BestSellers`, `BrandPerformance`, `CampaignPerformance`, `CategorySales`, `LowStock`, `RecentOrders`) — их данных в платформе нет. Проверить: дашборд собирается и показывает только виджеты, подключённые к analytics/content
+- [x] 2.12 Сократить `CONSOLE_SECTION_KEYS` и `SECTION_REQUIREMENTS` в `section-access.ts` до девяти подключённых разделов; обновить `section-access.test.ts`. Проверить: `bun test` зелёный
+- [x] 2.13 Удалить из реестра `console-texts.ts` ключи удалённых разделов; обновить `console-texts.test.ts`. Проверить: `bun test` зелёный, дублей и осиротевших ключей нет
+- [x] 2.14 Проверить, что адреса удалённых разделов отвечают 404: открыть `/admin/products` и `/admin/orders` на собранном бандле
 
 ## 3. Убрать режим демо-данных
 

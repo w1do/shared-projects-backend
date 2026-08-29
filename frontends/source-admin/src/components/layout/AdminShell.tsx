@@ -7,27 +7,12 @@ import { AdminTopbar } from "./AdminTopbar";
 import { AdminFooter } from "./AdminFooter";
 import { FloatingActions } from "./floating";
 import { AdminModalsProvider, useAdminModals } from "./modals";
-import { PromotionFormModal } from "@/components/pages/promotions/sections/promotion-form-modal";
-import { CampaignLaunchModal } from "@/components/pages/campaigns/sections/campaign-launch-modal";
 import { InviteMemberDialog } from "@/components/pages/settings/sections/invite-member-dialog";
-import type { Promotion } from "@/lib/admin/mocks/promotions";
 import type { TeamMember } from "@/lib/admin/mocks/settings";
-import { useCreatePromotionMutation } from "@/hooks/admin/promotions";
-import { toast } from "sonner";
 import { QueryProvider } from "@/components/providers/QueryProvider";
 
 function AdminShellModals() {
   const { isOpen, closeModal } = useAdminModals();
-  const createPromotionMutation = useCreatePromotionMutation();
-
-  const handleSubmitPromotion = async (promotion: Promotion) => {
-    try {
-      await createPromotionMutation.mutateAsync(promotion);
-    } catch {
-      toast.error("Could not save promotion.");
-      return;
-    }
-  };
 
   const handleInvited = (member: TeamMember) => {
     window.dispatchEvent(new CustomEvent("team-member-invited", { detail: member }));
@@ -35,18 +20,6 @@ function AdminShellModals() {
 
   return (
     <>
-      <PromotionFormModal
-        promotion={null}
-        isOpen={isOpen.promotion}
-        onClose={() => closeModal("promotion")}
-        onSubmit={handleSubmitPromotion}
-      />
-
-      <CampaignLaunchModal
-        isOpen={isOpen.campaignLaunch}
-        onClose={() => closeModal("campaignLaunch")}
-      />
-
       <InviteMemberDialog
         isOpen={isOpen.inviteMember}
         onClose={() => closeModal("inviteMember")}

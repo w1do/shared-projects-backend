@@ -7,7 +7,6 @@ import { Select } from "@/components/ui/inputs/select";
 import type { CustomerTier, DetailedCustomer } from "@/lib/admin/mocks/customers";
 import { CustomersTable } from "@/components/pages/customers/sections/customers-table";
 import { CustomersBulkActions } from "@/components/pages/customers/sections/customers-bulk-actions";
-import { EngageAudienceModal } from "@/components/pages/customers/sections/engage-audience-modal";
 import { useDataTable } from "@/hooks/use-data-table";
 import { useConsoleText } from "@/lib/admin/use-console-text";
 import {
@@ -40,7 +39,6 @@ export function CustomersPanel({
   const t = useConsoleText();
   const [skinTypeFilter, setSkinTypeFilter] = useState<SkinTypeFilter>("all");
   const [skinConcernFilter, setSkinConcernFilter] = useState<SkinConcernFilter>("all");
-  const [isEngageOpen, setIsEngageOpen] = useState(false);
 
   const preFiltered = useMemo(() => {
     return customers.filter((c) => {
@@ -108,11 +106,6 @@ export function CustomersPanel({
     },
   });
 
-  const selectedCustomers = useMemo(
-    () => customers.filter((customer) => selectedIds.has(customer.id)),
-    [customers, selectedIds],
-  );
-
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
@@ -156,7 +149,6 @@ export function CustomersPanel({
       <CustomersBulkActions
         selectedCount={selectedIds.size}
         onClearSelection={clearSelection}
-        onEngage={() => setIsEngageOpen(true)}
       />
 
       <CustomersTable
@@ -179,13 +171,6 @@ export function CustomersPanel({
         totalItems={visible.length}
         onPageChange={setCurrentPage}
         onItemsPerPageChange={setItemsPerPage}
-      />
-
-      <EngageAudienceModal
-        isOpen={isEngageOpen}
-        customers={selectedCustomers}
-        onClose={() => setIsEngageOpen(false)}
-        onSent={clearSelection}
       />
     </div>
   );

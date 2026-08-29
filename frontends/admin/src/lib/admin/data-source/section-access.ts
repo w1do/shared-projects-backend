@@ -6,29 +6,18 @@
  * оператора) → набор ключей видимых разделов.
  *
  * Раздел показывается, только если его сервис включён для проекта И у оператора
- * есть объявленное для раздела право. Разделы, которым не соответствует ни один
- * сервис платформы, требования не имеют и скрыты всегда — их страницы,
- * компоненты и демо-данные при этом остаются в проекте нетронутыми.
+ * есть объявленное для раздела право. Разделов без сервиса платформы в консоли
+ * нет вовсе — их вёрстка живёт в складе `frontends/source-admin`.
  */
 
-/** Все ключи разделов вёрстки — совпадают с сегментами маршрутов `app/admin/<key>`. */
+/** Все ключи разделов консоли — совпадают с сегментами маршрутов `app/admin/<key>`. */
 export const CONSOLE_SECTION_KEYS = [
   "dashboard",
-  "products",
-  "variants",
-  "brands",
   "categories",
-  "collections",
-  "inventory",
-  "orders",
   "customers",
-  "campaigns",
-  "promotions",
-  "support",
   "blogs",
   "research",
   "instructs",
-  "notifications",
   "team",
   "settings",
   "licensing",
@@ -39,14 +28,14 @@ export type ConsoleSectionKey = (typeof CONSOLE_SECTION_KEYS)[number];
 export type SectionRequirement = { service: string; permission: string };
 
 /**
- * Карта «раздел вёрстки → требование платформы».
+ * Карта «раздел консоли → требование платформы».
  *
  * Задана явно: маршруты манифестов сервисов (`/content/posts`, `/users`, …) не
- * совпадают с маршрутами вёрстки (`/admin/blogs`, `/admin/customers`, …), и
- * автосопоставление давало бы молчаливые дыры. Чтобы вернуть скрытый раздел,
- * когда в платформе появится сервис, достаточно дописать сюда строку.
+ * совпадают с маршрутами консоли (`/admin/blogs`, `/admin/customers`, …), и
+ * автосопоставление давало бы молчаливые дыры. Новый раздел переносится из
+ * склада вёрстки и получает здесь свою строку.
  */
-export const SECTION_REQUIREMENTS: Partial<Record<ConsoleSectionKey, SectionRequirement>> = {
+export const SECTION_REQUIREMENTS: Record<ConsoleSectionKey, SectionRequirement> = {
   dashboard: { service: "analytics", permission: "analytics.reports.view" },
   blogs: { service: "content", permission: "content.posts.view" },
   research: { service: "content", permission: "content.research.view" },
@@ -80,11 +69,6 @@ export function sectionKeyOfPath(pathname: string): ConsoleSectionKey | undefine
   return SECTION_KEY_SET.has(segment) ? (segment as ConsoleSectionKey) : undefined;
 }
 
-/** Раздел без требования — демонстрационный: в платформе нет его сервиса. */
-export function isDemoSection(key: string): boolean {
-  return !(key in SECTION_REQUIREMENTS);
-}
-
 export type BootstrapAccess = {
   services?: Array<{ key: string; enabled?: boolean }> | null;
   permissions?: string[] | null;
@@ -100,7 +84,6 @@ export function visibleSectionKeys(bootstrap: BootstrapAccess): ConsoleSectionKe
 
   return CONSOLE_SECTION_KEYS.filter((key) => {
     const requirement = SECTION_REQUIREMENTS[key];
-    if (!requirement) return false;
     if (!CORE_SERVICES.has(requirement.service) && !enabledServices.has(requirement.service)) {
       return false;
     }

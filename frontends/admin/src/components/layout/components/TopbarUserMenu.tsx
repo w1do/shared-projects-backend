@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Settings, LifeBuoy, LogOut } from "lucide-react";
+import { Settings, LogOut } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/inputs/button";
 import { Avatar } from "@/components/ui/data-display/avatar";
@@ -100,19 +100,6 @@ export function TopbarUserMenu() {
             <span>{t("console.nav.settings")}</span>
           </DropdownMenuItem>
         )}
-        <DropdownMenuItem
-          onSelect={(e) => {
-            e.preventDefault();
-            setOpen(false);
-            setTimeout(() => {
-              router.push("/admin/support");
-            }, 150);
-          }}
-          className="w-full flex items-center gap-2 cursor-pointer"
-        >
-          <LifeBuoy className="size-4" />
-          <span>{t("console.nav.support")}</span>
-        </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem
           onSelect={async (e) => {

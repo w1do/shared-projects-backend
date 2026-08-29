@@ -48,15 +48,6 @@ export default function proxy(request: NextRequest) {
       const unauthorizedUrl = new URL("/admin/unauthorized", request.url);
       return NextResponse.redirect(unauthorizedUrl);
     }
-
-    // 3. Campaigns and Promotions are admin/manager only (staff blocked)
-    if (
-      (pathname.startsWith("/admin/campaigns") || pathname.startsWith("/admin/promotions")) &&
-      role === "staff"
-    ) {
-      const unauthorizedUrl = new URL("/admin/unauthorized", request.url);
-      return NextResponse.redirect(unauthorizedUrl);
-    }
   }
 
   return NextResponse.next();

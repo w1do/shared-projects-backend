@@ -1,20 +1,17 @@
 "use client";
 
-import { Megaphone, X } from "lucide-react";
-import { Button } from "@/components/ui/inputs/button";
+import { X } from "lucide-react";
 import { IconButton } from "@/components/ui/inputs/icon-button";
 import { useConsoleText } from "@/lib/admin/use-console-text";
 
 interface CustomersBulkActionsProps {
   selectedCount: number;
   onClearSelection: () => void;
-  onEngage: () => void;
 }
 
 export function CustomersBulkActions({
   selectedCount,
   onClearSelection,
-  onEngage,
 }: CustomersBulkActionsProps) {
   const t = useConsoleText();
 
@@ -30,9 +27,6 @@ export function CustomersBulkActions({
           {t("console.customers.bulk-selected").replace("{count}", String(selectedCount))}
         </span>
       </div>
-      <Button variant="ghost" color="surface" startIcon={<Megaphone />} onClick={onEngage}>
-        {t("console.engage.title")}
-      </Button>
     </div>
   );
 }

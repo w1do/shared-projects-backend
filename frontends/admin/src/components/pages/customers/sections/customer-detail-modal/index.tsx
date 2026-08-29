@@ -19,7 +19,6 @@ import { customerTierLabel } from "@/components/pages/customers/utils";
 // Sections
 import { ContactSection } from "./sections/contact";
 import { AddressesSection } from "./sections/addresses";
-import { RecentOrdersSection } from "./sections/recent-orders";
 import { ActivitiesLogSection } from "./sections/activities-log";
 
 interface CustomerDetailModalProps {
@@ -113,10 +112,6 @@ export function CustomerDetailModal({ customer, isOpen, onClose }: CustomerDetai
                     </span>
                   </div>
                 </div>
-
-                <Separator />
-
-                <RecentOrdersSection customer={customer} />
 
                 <Separator />
 

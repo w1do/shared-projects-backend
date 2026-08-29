@@ -2,7 +2,7 @@
 
 import { createContext } from "react";
 
-export type AdminModalKey = "promotion" | "campaignLaunch" | "inviteMember";
+export type AdminModalKey = "inviteMember";
 
 export type AdminModalsState = Record<AdminModalKey, boolean>;
 
@@ -13,8 +13,6 @@ export type AdminModalsContextValue = {
 };
 
 export const INITIAL_ADMIN_MODALS_STATE: AdminModalsState = {
-  promotion: false,
-  campaignLaunch: false,
   inviteMember: false,
 };
 

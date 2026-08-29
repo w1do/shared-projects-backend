@@ -21,10 +21,8 @@ export const CONSOLE_TEXTS = {
   "console.common.delete": "Удалить",
   "console.common.edit": "Изменить",
   "console.common.create": "Создать",
-  "console.common.search": "Поиск",
   "console.common.loading": "Загрузка…",
   "console.common.actions": "Действия",
-  "console.common.mark-all-read": "Прочитать все",
   "console.common.breadcrumb-admin": "Админпанель",
 
   // Навигация: группы, пункты меню, быстрые действия
@@ -34,21 +32,11 @@ export const CONSOLE_TEXTS = {
   "console.nav.group.workspace": "Рабочее пространство",
   "console.nav.quick-actions": "Быстрые действия",
   "console.nav.dashboard": "Дашборд",
-  "console.nav.products": "Товары",
-  "console.nav.variants": "Варианты",
-  "console.nav.brands": "Бренды",
   "console.nav.categories": "Категории",
-  "console.nav.collections": "Коллекции",
-  "console.nav.inventory": "Склад",
-  "console.nav.orders": "Заказы",
   "console.nav.customers": "Клиенты",
-  "console.nav.campaigns": "Кампании",
-  "console.nav.promotions": "Акции",
-  "console.nav.support": "Поддержка",
   "console.nav.blogs": "Блог",
   "console.nav.research": "Ресёрч",
   "console.nav.instructs": "Инструкции",
-  "console.nav.notifications": "Уведомления",
   "console.nav.team": "Команда",
   "console.nav.settings": "Настройки",
   "console.nav.licensing": "Лицензирование",
@@ -57,7 +45,6 @@ export const CONSOLE_TEXTS = {
   "console.project.id": "Идентификатор",
   "console.project.name": "Название",
   "console.project.description": "Описание",
-  "console.project.topic": "Тематика",
   "console.project.dialog.title": "Проект",
   "console.project.dialog.subtitle":
     "Текущий проект, его последние события и переход в другой проект.",
@@ -74,20 +61,16 @@ export const CONSOLE_TEXTS = {
   "console.project.create.failed": "Не удалось создать проект.",
   "console.project.description-empty": "Описание проекта не заполнено",
   "console.project.copy-id": "Скопировать идентификатор",
-  "console.project.copied": "Идентификатор скопирован",
   "console.project.edit": "Изменить",
   "console.project.save": "Сохранить",
   "console.project.cancel": "Отмена",
   "console.project.saved": "Изменения сохранены",
   "console.project.build": "Собрать проект по AI",
-  "console.project.build-topic": "Тематика проекта",
   "console.project.build-topic-placeholder": "например: автомобили",
   "console.project.build-running": "Сборка идёт…",
-  "console.project.build-start": "Запустить сборку",
   "console.project.build-done": "Сборка завершена",
   "console.project.build-failed": "Сборка не удалась",
   "console.project.build-categories": "Создано категорий",
-  "console.project.build-retry": "Повторить",
 
   // Ресёрч
   "console.research.title": "Ресёрч",
@@ -95,15 +78,11 @@ export const CONSOLE_TEXTS = {
   "console.research.new": "Новое исследование",
   "console.research.query": "Запрос",
   "console.research.query-placeholder": "например: Расскажи про топ 10 автомобилей",
-  "console.research.offer": "Предложение компании",
-  "console.research.engine": "Поисковая система",
   "console.research.start": "Запустить",
   "console.research.cancel": "Отменить",
   "console.research.status": "Состояние",
-  "console.research.stage": "Этап",
   "console.research.sources": "Источники",
   "console.research.summary": "Сводный материал",
-  "console.research.sub-queries": "Подзапросы",
   "console.research.empty": "Исследований пока нет",
   "console.research.filter-all": "Все",
   "console.research.topics": "Темы",
@@ -134,8 +113,6 @@ export const CONSOLE_TEXTS = {
   "console.instructs.schema": "Схема ответа (JSON)",
   "console.instructs.schema-invalid": "Схема не является корректным JSON",
   "console.instructs.published": "Опубликована",
-  "console.instructs.publish": "Опубликовать",
-  "console.instructs.unpublish": "Снять с публикации",
   "console.instructs.system": "Предустановленная",
   "console.instructs.own": "Своя",
   "console.instructs.applied": "Применяется",
@@ -170,11 +147,6 @@ export const CONSOLE_TEXTS = {
   "console.instructs.schema.type-boolean": "Да/нет",
   "console.instructs.schema.type-object": "Объект",
   "console.instructs.schema.type-array": "Список",
-  "console.quick-actions.add-product": "Добавить товар",
-  "console.quick-actions.new-promotion": "Новая акция",
-  "console.quick-actions.import-inventory": "Импорт склада",
-  "console.quick-actions.create-collection": "Создать коллекцию",
-  "console.quick-actions.launch-campaign": "Запустить кампанию",
   "console.quick-actions.invite-teammate": "Пригласить участника",
 
   // Роли операторов
@@ -185,17 +157,10 @@ export const CONSOLE_TEXTS = {
   // Топбар и футер
   "console.topbar.expand-sidebar": "Развернуть меню",
   "console.topbar.collapse-sidebar": "Свернуть меню",
-  "console.topbar.storefront-live": "Сайт онлайн",
   "console.topbar.sign-out": "Выйти",
   "console.topbar.signed-out": "Вы вышли из системы",
   "console.topbar.sign-out-failed": "Не удалось выйти. Попробуйте ещё раз.",
   "console.footer.system-healthy": "Система работает",
-
-  // Уведомления и поддержка в топбаре
-  "console.notifications.view-all": "Все уведомления",
-  "console.support.tickets-title": "Обращения в поддержку",
-  "console.support.empty": "Обращений нет.",
-  "console.support.view-inbox": "Открыть входящие поддержки",
 
   // Экран входа
   "console.login.title": "Вход в консоль",
@@ -336,11 +301,6 @@ export const CONSOLE_TEXTS = {
     "Соберите материал из заголовков, абзацев, цитат и изображений.",
   "console.blogs.form.add-block": "Добавить блок",
   "console.blogs.form.remove-block": "Удалить блок",
-  "console.blogs.form.block-placeholder": "Текст блока…",
-  "console.blogs.form.image-upload": "Загрузите изображение",
-  "console.blogs.form.image-hint": "Изображение внутри текста статьи",
-  "console.blogs.form.avatar-upload": "Загрузите аватар",
-  "console.blogs.form.avatar-hint": "Квадратный портрет автора",
   "console.blogs.form.publish-title": "Параметры публикации",
   "console.blogs.form.reading-time": "Время чтения (мин)",
   "console.blogs.form.layout-label": "Стиль оформления",
@@ -425,7 +385,6 @@ export const CONSOLE_TEXTS = {
   "console.categories.column.slug": "Слаг",
   "console.categories.column.status": "Статус",
   "console.categories.column.children": "Вложенных категорий",
-  "console.categories.column.actions": "Действия",
   "console.categories.card.children": "Вложенных категорий",
   "console.categories.card.no-description": "Описание не задано.",
   "console.categories.delete.title": "Удалить категорию",
@@ -621,7 +580,6 @@ export const CONSOLE_TEXTS = {
   "console.customers.detail.addresses": "Адреса в профиле",
   "console.customers.detail.shipping-address": "Адрес доставки",
   "console.customers.detail.billing-address": "Адрес для счетов",
-  "console.customers.detail.recent-orders": "Последние заказы",
   "console.customers.detail.activity": "История активности",
 
   // Клиенты: уведомления об операциях
@@ -632,138 +590,6 @@ export const CONSOLE_TEXTS = {
   "console.customers.toast.export-success": "Список клиентов выгружен в CSV.",
   "console.customers.toast.export-failed":
     "Не удалось сформировать файл выгрузки.",
-
-  // Вовлечение аудитории: шаги мастера
-  "console.engage.title": "Вовлечение аудитории",
-  "console.engage.step.audience": "Аудитория",
-  "console.engage.step.intent": "Цель",
-  "console.engage.step.configure": "Настройка",
-  "console.engage.step.review": "Проверка",
-  "console.engage.step-hint.audience":
-    "Проверьте, кто получит рассылку. Уберите тех, кого включать не нужно.",
-  "console.engage.step-hint.intent":
-    "Выберите, что отправить: письмо кампании, акцию, промокод или приглашение в программу лояльности.",
-  "console.engage.step-hint.configure":
-    "Выберите материал и задайте параметры доставки для этой аудитории.",
-  "console.engage.step-hint.review":
-    "Проверьте аудиторию, цель и текст, затем отправьте сразу или запланируйте.",
-
-  // Вовлечение аудитории: цели рассылки
-  "console.engage.intent.campaign.title": "Отправить письмо кампании",
-  "console.engage.intent.campaign.description":
-    "Поставить кампанию проекта в очередь для выбранной аудитории.",
-  "console.engage.intent.campaign.badge": "Рекомендуем",
-  "console.engage.intent.promotion.title": "Отправить акцию",
-  "console.engage.intent.promotion.description":
-    "Поделиться действующей акцией с выбранными клиентами.",
-  "console.engage.intent.promotion.badge": "Акция",
-  "console.engage.intent.coupon.title": "Отправить промокод",
-  "console.engage.intent.coupon.description":
-    "Отправить промокод из каталога акций.",
-  "console.engage.intent.coupon.badge": "Промокод",
-  "console.engage.intent.loyalty.title": "Пригласить в программу лояльности",
-  "console.engage.intent.loyalty.description":
-    "Пригласить клиентов на уровень лояльности с приветственным письмом.",
-  "console.engage.intent.loyalty.badge": "Лояльность",
-  "console.engage.intent.fallback": "Рассылка",
-  "console.engage.intent.fallback-description":
-    "Проверьте состав рассылки перед отправкой.",
-
-  // Вовлечение аудитории: каналы доставки
-  "console.engage.channel.email": "Email",
-  "console.engage.channel.sms": "СМС",
-  "console.engage.channel.push": "Push-уведомление",
-  "console.engage.channel.in-app": "Сообщение в приложении",
-
-  // Вовлечение аудитории: шаг «Аудитория»
-  "console.engage.audience.empty-title": "Клиенты не выбраны",
-  "console.engage.audience.empty-hint":
-    "Закройте окно и сначала выберите клиентов в списке.",
-  "console.engage.audience.reach": "Ожидаемый охват",
-  "console.engage.audience.reach-count": "Клиентов: {count}",
-  "console.engage.audience.reach-hint":
-    "Прежде чем продолжить, уберите тех, кому эта рассылка не нужна.",
-  "console.engage.audience.remove": "Убрать {name}",
-
-  // Вовлечение аудитории: шаг «Настройка»
-  "console.engage.asset.campaign": "Кампания",
-  "console.engage.asset.campaign-empty":
-    "Кампаний пока нет. Сначала создайте кампанию в разделе «Кампании».",
-  "console.engage.asset.promotion": "Акция",
-  "console.engage.asset.promotion-empty": "Действующих акций нет.",
-  "console.engage.asset.coupon": "Промокод",
-  "console.engage.asset.coupon-empty": "Промокодов нет.",
-  "console.engage.asset.loyalty": "Пригласить на уровень",
-  "console.engage.asset.loyalty-subtitle": "Приглашение в программу лояльности",
-  "console.engage.form.channel": "Канал",
-  "console.engage.form.schedule-date": "Дата отправки (необязательно)",
-  "console.engage.form.subject": "Тема письма",
-  "console.engage.form.subject-placeholder":
-    "Например, письмо от команды проекта…",
-  "console.engage.form.message": "Сообщение (необязательно)",
-  "console.engage.form.message-placeholder":
-    "Добавьте короткий текст, который клиенты увидят вместе с рассылкой.",
-  "console.engage.subject.campaign": "Приглашаем: {name}",
-  "console.engage.subject.coupon": "Ваш промокод: {code}",
-  "console.engage.subject.promotion": "Специальное предложение: {name}",
-  "console.engage.subject.loyalty": "Приглашаем на уровень «{tier}»",
-
-  // Вовлечение аудитории: шаг «Проверка»
-  "console.engage.review.audience": "Аудитория",
-  "console.engage.review.asset": "Материал",
-  "console.engage.review.channel": "Канал",
-  "console.engage.review.schedule": "Отправка",
-  "console.engage.review.subject": "Тема",
-  "console.engage.review.message": "Сообщение",
-  "console.engage.review.recipients": "Кто получит рассылку",
-  "console.engage.review.more": "ещё {count}",
-  "console.engage.review.send-now": "Отправить сразу",
-  "console.engage.review.tier-value": "уровень «{tier}»",
-  "console.engage.review.note-before": "Проверьте сводку перед отправкой.",
-  "console.engage.review.note-send": "Отправить",
-  "console.engage.review.note-middle": "доставит рассылку сразу,",
-  "console.engage.review.note-schedule": "Запланировать",
-  "console.engage.review.note-after": "сохранит выбранную дату.",
-
-  // Вовлечение аудитории: кнопки мастера
-  "console.engage.footer.back": "Назад",
-  "console.engage.footer.continue": "Далее",
-  "console.engage.footer.configure": "Настроить",
-  "console.engage.footer.review": "Проверить",
-  "console.engage.footer.schedule": "Запланировать",
-  "console.engage.footer.schedule-hint":
-    "Поставить рассылку в очередь на выбранную дату, не отправляя сразу.",
-  "console.engage.footer.send": "Отправить: {count}",
-  "console.engage.footer.send-hint":
-    "Отправить рассылку клиентам ({count}) сейчас.",
-  "console.engage.footer.sending": "Отправляем…",
-
-  // Вовлечение аудитории: валидация формы
-  "console.engage.validation.channel": "Выберите канал доставки.",
-  "console.engage.validation.subject": "Укажите тему письма.",
-  "console.engage.validation.campaign": "Выберите кампанию для отправки.",
-  "console.engage.validation.promotion": "Выберите акцию или промокод.",
-  "console.engage.validation.loyalty":
-    "Выберите уровень лояльности для приглашения.",
-
-  // Вовлечение аудитории: уведомления
-  "console.engage.toast.select-customer":
-    "Выберите хотя бы одного клиента, чтобы продолжить.",
-  "console.engage.toast.select-customer-short":
-    "Выберите хотя бы одного клиента.",
-  "console.engage.toast.choose-intent": "Выберите цель рассылки.",
-  "console.engage.toast.complete-before-review":
-    "Заполните настройки перед проверкой.",
-  "console.engage.toast.complete-before-send":
-    "Заполните настройки перед отправкой.",
-  "console.engage.toast.pick-schedule":
-    "Выберите дату отправки или отправьте сразу.",
-  "console.engage.toast.queued":
-    "{intent}: поставлено в очередь для клиентов ({count})",
-  "console.engage.toast.scheduled": "{intent}: запланировано на {date}",
-  "console.engage.toast.mock-description":
-    "Подключите бэкенд, чтобы отправлять реальные рассылки.",
-  "console.engage.toast.failed": "Не удалось поставить рассылку в очередь.",
 
   // Команда: заголовок раздела и карточка участника
   "console.team.title": "Команда",
@@ -865,8 +691,6 @@ export const CONSOLE_TEXTS = {
     "Профиль проекта, платежи, доступ команды и безопасность в одном месте.",
   "console.settings.tab.general": "Основное",
   "console.settings.tab.payments": "Платежи",
-  "console.settings.tab.shipping": "Доставка",
-  "console.settings.tab.taxes": "Налоги",
   "console.settings.tab.notifications": "Уведомления",
   "console.settings.tab.security": "Безопасность",
   "console.settings.tab.languages": "Языки",
@@ -961,42 +785,6 @@ export const CONSOLE_TEXTS = {
     "Не удалось сохранить настройки провайдера.",
   "console.settings.payments.provider.load-failed":
     "Не удалось загрузить настройки провайдера.",
-
-  // Настройки: доставка
-  "console.settings.shipping.title": "Зоны доставки",
-  "console.settings.shipping.description":
-    "Фиксированные тарифы и порог бесплатной доставки для каждого региона.",
-  "console.settings.shipping.flat": "{rate} фикс.",
-  "console.settings.shipping.free-over": "Бесплатно от {threshold}",
-  "console.settings.shipping.activated": "Зона «{name}» включена.",
-  "console.settings.shipping.paused": "Зона «{name}» приостановлена.",
-  "console.settings.shipping.save-failed":
-    "Не удалось сохранить настройки доставки.",
-
-  // Настройки: налоги
-  "console.settings.taxes.title": "Налоги",
-  "console.settings.taxes.description":
-    "Как налог рассчитывается, отображается и учитывается по регионам.",
-  "console.settings.taxes.prices-include": "Цены с налогом",
-  "console.settings.taxes.prices-include-description":
-    "Показывать на витрине цены с учётом налога.",
-  "console.settings.taxes.auto-calculate": "Автоматический расчёт",
-  "console.settings.taxes.auto-calculate-description":
-    "Применять региональные ставки автоматически при оформлении заказа.",
-  "console.settings.taxes.default-rate": "Ставка по умолчанию (%)",
-  "console.settings.taxes.tax-id": "Налоговый номер",
-  "console.settings.taxes.regional-rates": "Региональные ставки",
-  "console.settings.taxes.saved": "Настройки налогов сохранены.",
-  "console.settings.taxes.validation.rate-invalid":
-    "Введите корректную ставку налога.",
-  "console.settings.taxes.validation.rate-min":
-    "Ставка не может быть отрицательной.",
-  "console.settings.taxes.validation.rate-max":
-    "Ставка не может превышать 100%.",
-  "console.settings.taxes.validation.tax-id-required":
-    "Укажите налоговый номер.",
-  "console.settings.taxes.validation.tax-id-max":
-    "Налоговый номер — не больше 40 символов.",
 
   // Настройки: уведомления
   "console.settings.notifications.title": "Уведомления",
@@ -1327,21 +1115,6 @@ export const CONSOLE_TEXTS = {
     "Настройки проекта: профиль, сервисы, локализация и доступ.",
   "console.meta.licensing-description":
     "Лицензирование: организации, планы поставки и лицензионные ключи.",
-  "console.meta.products-description":
-    "Управление каталогом: цены, остатки и статусы.",
-  "console.meta.brands-description":
-    "Портфель брендов и ключевые метрики по маркам.",
-  "console.meta.orders-description":
-    "Заказы: отгрузки, возвраты и оплаты.",
-  "console.meta.inventory-description":
-    "Склад: остатки, пороги оповещений и пополнения.",
-  "console.meta.variants-description":
-    "Связи вариантов: объединение товаров в переключатели опций.",
-  "console.meta.collections-description":
-    "Коллекции: редакционные подборки и наборы продуктов.",
-  "console.meta.collections-add-description": "Создание новой коллекции.",
-  "console.meta.promotions-description":
-    "Акции и скидки: правила, купоны и уровни вознаграждений.",
 } as const;
 
 export type ConsoleTextKey = keyof typeof CONSOLE_TEXTS;

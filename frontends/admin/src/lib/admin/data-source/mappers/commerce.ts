@@ -1,18 +1,7 @@
-import type { Promotion } from "@/lib/admin/mocks/promotions";
 import type { DetailedCustomer } from "@/lib/admin/mocks/customers";
-import type { DetailedOrder } from "@/lib/admin/mocks/orders";
-import type { ProductFull } from "@/lib/admin/mocks/types";
-import type {
-  ApiBestSeller,
-  ApiCustomer,
-  ApiDashboardStats,
-  ApiOrder,
-  ApiOrderSummary,
-  ApiPromotion,
-  ApiRevenuePoint,
-} from "../api-types";
+import type { ApiCustomer, ApiDashboardStats, ApiRevenuePoint } from "../api-types";
 import { semanticColors } from "@/lib/theme-colors";
-import { initials, money, orderStatusMap, titleCase } from "./shared";
+import { initials, money, titleCase } from "./shared";
 import { t } from "@/lib/admin/console-texts";
 import { findCustomerByEmailOrName } from "@/lib/admin/mocks/customers";
 
@@ -68,96 +57,6 @@ export function mapDashboard(
   };
 }
 
-export function mapBestSeller(item: ApiBestSeller): ProductFull {
-  return {
-    id: item.productId,
-    name: item.productName,
-    brand: "Aetheria",
-    category: "Catalog",
-    sku: item.sku,
-    price: 0,
-    unitsSold: item.unitsSold,
-    revenue: money(item.revenue),
-    gradient: [semanticColors.accent, semanticColors.brandAccentHover],
-    status: "Active",
-    stock: 0,
-    stockStatus: "In Stock",
-    updatedAt: new Date().toISOString(),
-    createdAt: new Date().toISOString(),
-    variants: 0,
-  };
-}
-
-export function mapOrder(order: ApiOrder | ApiOrderSummary): DetailedOrder {
-  const status = orderStatusMap[order.status];
-  const placedAt = order.placedAt ?? new Date().toISOString();
-  return {
-    id: order.code,
-    apiId: order.id,
-    customer: {
-      name: order.customer?.name ?? "Guest Customer",
-      email: order.customer?.email ?? "guest@aetheria.local",
-      phone: "",
-      initials: initials(order.customer?.name ?? "Guest Customer"),
-      avatarUrl: findCustomerByEmailOrName(order.customer?.email)?.avatarUrl,
-      shippingAddress: {
-        street: "",
-        city: "",
-        state: "",
-        postalCode: "",
-        country: "",
-      },
-      billingAddress: {
-        street: "",
-        city: "",
-        state: "",
-        postalCode: "",
-        country: "",
-      },
-    },
-    items:
-      "items" in order && order.items
-        ? order.items.map((item) => ({
-            id: item.id,
-            name: item.productName,
-            brand: "Aetheria",
-            sku: item.sku,
-            price: money(item.unitPrice),
-            quantity: item.quantity,
-            gradient: [semanticColors.accent, semanticColors.brandAccentHover],
-          }))
-        : [],
-    status,
-    paymentMethod: titleCase(
-      order.paymentMethod,
-    ) as DetailedOrder["paymentMethod"],
-    shippingMethod: "Standard Shipping",
-    trackingNumber: null,
-    placedAt,
-    subtotal: "subtotal" in order ? money(order.subtotal) : money(order.total),
-    shippingFee: "shippingFee" in order ? money(order.shippingFee) : 0,
-    tax: "tax" in order ? money(order.tax) : 0,
-    discount: "discount" in order ? money(order.discount) : 0,
-    total: money(order.total),
-    timeline:
-      "timeline" in order && order.timeline
-        ? order.timeline.map((event) => ({
-            title: event.title,
-            timestamp: event.eventTime,
-            description: event.description,
-            done: event.done ?? true,
-          }))
-        : [
-            {
-              title: status,
-              timestamp: placedAt,
-              description: `Order is ${status}`,
-              done: true,
-            },
-          ],
-  } as DetailedOrder;
-}
-
 export function mapCustomer(customer: ApiCustomer): DetailedCustomer {
   return {
     id: customer.id,
@@ -189,25 +88,5 @@ export function mapCustomer(customer: ApiCustomer): DetailedCustomer {
     },
     recentOrders: [],
     activities: [],
-  };
-}
-
-export function mapPromotion(promotion: ApiPromotion): Promotion {
-  return {
-    id: promotion.id,
-    code: promotion.code,
-    title: promotion.title,
-    description: "",
-    type: titleCase(promotion.type) as Promotion["type"],
-    rewardValue: money(promotion.rewardValue),
-    minSpend: money(promotion.minSpend),
-    channel: "Storefront",
-    status: titleCase(promotion.status) as Promotion["status"],
-    used: promotion.used,
-    limit: promotion.usageLimit,
-    revenue: 0,
-    startsAt: promotion.startsAt,
-    endsAt: promotion.endsAt,
-    gradient: [semanticColors.accent, semanticColors.brandAccentHover],
   };
 }
