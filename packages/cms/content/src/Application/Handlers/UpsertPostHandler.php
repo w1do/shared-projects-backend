@@ -41,6 +41,13 @@ final class UpsertPostHandler
             if (! $command->data->is_index instanceof Optional) {
                 $post->is_index = $command->data->is_index;
             }
+            // Непереданное поле не трогает прежнее изображение, переданный null — снимает его
+            if (! $command->data->cover_media_id instanceof Optional) {
+                $post->cover_media_id = $command->data->cover_media_id;
+            }
+            if (! $command->data->banner_media_id instanceof Optional) {
+                $post->banner_media_id = $command->data->banner_media_id;
+            }
             $post->author_id ??= $command->authorId;
 
             // Уникальность слага в пределах проекта и локали — доменный инвариант
@@ -63,7 +70,7 @@ final class UpsertPostHandler
             // Каждое сохранение — ревизия
             $this->revision->handle(new SnapshotRevisionCommand($post, $command->authorId));
 
-            return $post->fresh(['categories', 'tags']) ?? $post;
+            return $post->fresh(['categories', 'tags', 'cover', 'banner']) ?? $post;
         });
     }
 }

@@ -11,6 +11,8 @@ $authorize = fn (string $permission) => [AuthorizeOperator::class.':'.$permissio
 Route::prefix('api/admin/v1/projects/{project}/content')->group(function () use ($authorize) {
     Route::get('categories', [Admin\CategoryController::class, 'index'])->middleware($authorize('content.categories.view'));
     Route::post('categories', [Admin\CategoryController::class, 'store'])->middleware($authorize('content.categories.manage'));
+    Route::post('categories/bulk-delete', [Admin\CategoryController::class, 'bulkDestroy'])->middleware($authorize('content.categories.manage'));
+    Route::delete('categories', [Admin\CategoryController::class, 'purge'])->middleware($authorize('content.categories.manage'));
     Route::put('categories/{category}', [Admin\CategoryController::class, 'update'])->middleware($authorize('content.categories.manage'));
     Route::post('categories/{category}/move', [Admin\CategoryController::class, 'move'])->middleware($authorize('content.categories.manage'));
     Route::delete('categories/{category}', [Admin\CategoryController::class, 'destroy'])->middleware($authorize('content.categories.manage'));
@@ -36,4 +38,5 @@ Route::prefix('api/admin/v1/projects/{project}/content')->group(function () use 
 
     Route::get('media', [Admin\MediaController::class, 'index'])->middleware($authorize('content.media.view'));
     Route::post('media', [Admin\MediaController::class, 'store'])->middleware($authorize('content.media.manage'));
+    Route::post('media/import', [Admin\MediaController::class, 'import'])->middleware($authorize('content.media.manage'));
 });

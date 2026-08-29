@@ -1,0 +1,19 @@
+{
+    "status": 422,
+    "content_type": "application/json",
+    "body": {
+        "error": {
+            "code": "validation_failed",
+            "message": "The given data was invalid.",
+            "details": {
+                "query": [
+                    "The query field must be at least 2 characters."
+                ],
+                "limit": [
+                    "The limit field must not be greater than 50."
+                ]
+            },
+            "trace_id": "<string>"
+        }
+    }
+}

@@ -11,9 +11,9 @@ final class CreateProjectDTO extends Data
 {
     /** @param list<string>|Optional $locales */
     public function __construct(
-        public string $key,
         public string $name,
         public array|Optional $locales,
+        // Ключ может не передаваться: платформа выводит его из названия
+        public string|Optional $key = new Optional,
     ) {}
-
 }

@@ -1,0 +1,27 @@
+{
+    "status": 200,
+    "content_type": "application/json",
+    "body": {
+        "data": {
+            "id": "<int>",
+            "title": "Illustrated post",
+            "slug": "illustrated-post",
+            "body": "Body",
+            "locale": "ru",
+            "translation_group": null,
+            "status": "published",
+            "scheduled_at": null,
+            "published_at": "<string>",
+            "is_index": true,
+            "categories": [],
+            "tags": [],
+            "seo": null,
+            "cover": {
+                "id": "<int>",
+                "url": "/storage/projects/proj-1/media/cover.jpg",
+                "alt": "Cover alt"
+            },
+            "banner": null
+        }
+    }
+}

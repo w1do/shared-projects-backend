@@ -43,4 +43,19 @@ final class ContentRuleViolation extends ValidationException
     {
         return self::withMessages(['parent_id' => ['Cannot move a node under its own descendant.']]);
     }
+
+    public static function remoteFileUnreachable(): self
+    {
+        return self::withMessages(['url' => ['The file could not be downloaded from the given link.']]);
+    }
+
+    public static function remoteFileRejected(): self
+    {
+        return self::withMessages(['url' => ['The linked file is not a supported image or exceeds the size limit.']]);
+    }
+
+    public static function remoteAddressNotAllowed(): self
+    {
+        return self::withMessages(['url' => ['The given link does not point to a public address.']]);
+    }
 }

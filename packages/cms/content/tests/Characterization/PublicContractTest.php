@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Cms\Content\Domain\Models\MediaFile;
 use Cms\Content\Domain\Models\Post;
 use Cms\Shared\Tenant\ProjectContext;
 use Cms\Shared\Testing\ResponseSnapshot;
@@ -289,4 +290,31 @@ test('contract: content robots txt without api key', function () {
     actingAsProjectSite();
 
     ResponseSnapshot::assertMatches($this->get('/robots.txt'), 'robots-txt-401');
+});
+
+test('contract: content public post with images', function () {
+    Storage::fake('s3');
+    config(['cms-content.media_disk' => 's3']);
+
+    $headers = actingAsContentOperator();
+    app(ProjectContext::class)->set('proj-1');
+
+    $cover = MediaFile::create([
+        'disk' => 's3', 'path' => 'projects/proj-1/media/cover.jpg',
+        'mime' => 'image/jpeg', 'size' => 1024, 'alt' => 'Cover alt',
+    ]);
+
+    $post = $this->postJson('/api/admin/v1/projects/proj-1/content/posts', [
+        'title' => 'Illustrated post', 'slug' => 'illustrated-post', 'body' => 'Body',
+        'locale' => 'ru', 'cover_media_id' => $cover->id,
+    ], $headers)->json('data');
+
+    $this->postJson("/api/admin/v1/projects/proj-1/content/posts/{$post['id']}/status", [
+        'status' => 'published',
+    ], $headers)->assertOk();
+
+    ResponseSnapshot::assertMatches(
+        $this->getJson('/api/v1/content/posts/illustrated-post', actingAsProjectSite()),
+        'public-post-with-images',
+    );
 });

@@ -40,9 +40,9 @@ final class ProjectController
         summary: 'POST /api/admin/v1/projects',
         security: [['bearerAuth' => []]],
         requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(
-            required: ['key', 'name'],
+            required: ['name'],
             properties: [
-                new OA\Property(property: 'key', type: 'string', maxLength: 64),
+                new OA\Property(property: 'key', type: 'string', maxLength: 64, description: 'Необязателен: без него ключ выводится из названия'),
                 new OA\Property(property: 'name', type: 'string', maxLength: 255),
                 new OA\Property(property: 'locales', type: 'array', minItems: 1, items: new OA\Items(type: 'string', maxLength: 10)),
             ],

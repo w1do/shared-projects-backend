@@ -11,6 +11,11 @@ return [
     ],
 
     'engine' => env('RESEARCH_ENGINE', 'yandex'),
+
+    // Подбор изображений идёт в ту же службу отдельным движком картинок
+    'image_engine' => env('RESEARCH_IMAGE_ENGINE', 'google_images'),
+    'image_results_limit' => (int) env('RESEARCH_IMAGE_RESULTS_LIMIT', 24),
+
     'sub_queries_count' => (int) env('RESEARCH_SUBQUERIES_COUNT', 4),
     'results_per_sub_query' => (int) env('RESEARCH_RESULTS_PER_SUBQUERY', 5),
     'page_fetch_timeout' => (int) env('RESEARCH_PAGE_FETCH_TIMEOUT', 10),

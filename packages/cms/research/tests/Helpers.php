@@ -6,6 +6,7 @@ use Cms\Research\Domain\Contracts\KnowledgeBase;
 use Cms\Research\Domain\Contracts\PageContentFetcher;
 use Cms\Research\Domain\Contracts\SerpSearchClient;
 use Cms\Research\Domain\Enums\SearchEngine;
+use Cms\Research\Domain\ValueObjects\ImageResultItem;
 use Cms\Research\Domain\ValueObjects\KnowledgeFilter;
 use Cms\Research\Domain\ValueObjects\KnowledgeHit;
 use Cms\Research\Domain\ValueObjects\KnowledgePoint;
@@ -17,6 +18,13 @@ final class FakeSerpSearchClient implements SerpSearchClient
 {
     public int $calls = 0;
 
+    public int $imageCalls = 0;
+
+    /** @var list<ImageResultItem> */
+    public array $images = [];
+
+    public ?Throwable $imageFailure = null;
+
     /** @param array<string, list<SearchResultItem>> $resultsByQuery */
     public function __construct(private array $resultsByQuery = [], private array $fallback = []) {}
 
@@ -25,6 +33,17 @@ final class FakeSerpSearchClient implements SerpSearchClient
         $this->calls++;
 
         return array_slice($this->resultsByQuery[$query] ?? $this->fallback, 0, $limit);
+    }
+
+    public function searchImages(string $query, SearchEngine $engine, int $limit): array
+    {
+        $this->imageCalls++;
+
+        if ($this->imageFailure !== null) {
+            throw $this->imageFailure;
+        }
+
+        return array_slice($this->images, 0, $limit);
     }
 }
 

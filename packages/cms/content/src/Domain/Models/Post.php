@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
@@ -30,7 +31,11 @@ use Spatie\Tags\HasTags;
  * @property ?Carbon $published_at
  * @property bool $is_index
  * @property ?string $author_id
+ * @property ?int $cover_media_id
+ * @property ?int $banner_media_id
  * @property-read ?SeoMeta $seo
+ * @property-read ?MediaFile $cover
+ * @property-read ?MediaFile $banner
  * @property-read Collection<int, Category> $categories
  */
 class Post extends Model
@@ -42,6 +47,7 @@ class Post extends Model
     protected $fillable = [
         'project_id', 'title', 'slug', 'body', 'locale', 'translation_group',
         'status', 'scheduled_at', 'published_at', 'is_index', 'author_id',
+        'cover_media_id', 'banner_media_id',
     ];
 
     protected $attributes = ['is_index' => true, 'status' => 'draft', 'locale' => 'ru'];
@@ -66,6 +72,18 @@ class Post extends Model
     public function seo(): MorphOne
     {
         return $this->morphOne(SeoMeta::class, 'seoable');
+    }
+
+    /** @return BelongsTo<MediaFile, $this> */
+    public function cover(): BelongsTo
+    {
+        return $this->belongsTo(MediaFile::class, 'cover_media_id');
+    }
+
+    /** @return BelongsTo<MediaFile, $this> */
+    public function banner(): BelongsTo
+    {
+        return $this->belongsTo(MediaFile::class, 'banner_media_id');
     }
 
     /** @return MorphMany<Revision, $this> */

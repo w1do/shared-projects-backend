@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 use Cms\Ai\Infrastructure\Agents\StructuredAgent;
 use Cms\Instructs\Infrastructure\Persistence\SystemInstructSeeder;
+use Cms\Research\Application\Exceptions\ResearchRuleViolation;
+use Cms\Research\Domain\Contracts\SerpSearchClient;
 use Cms\Research\Domain\Models\Research;
 use Cms\Research\Domain\Models\ResearchSource;
 use Cms\Research\Domain\Models\ResearchTopic;
+use Cms\Research\Domain\ValueObjects\ImageResultItem;
 use Cms\Shared\Tenant\ProjectContext;
 use Cms\Shared\Testing\ResponseSnapshot;
 use Illuminate\Support\Facades\Bus;
@@ -312,4 +315,65 @@ test('contract: project topics index', function () {
     $response = $this->getJson('/api/admin/v1/projects/proj-1/content/topics', researchContractHeaders());
 
     ResponseSnapshot::assertMatches($response, 'topics-index-project');
+});
+
+test('contract: content images search', function () {
+    $client = new FakeSerpSearchClient;
+    $client->images = [
+        new ImageResultItem(
+            link: 'https://cdn.test/car.jpg',
+            thumbnail: 'https://cdn.test/car-thumb.jpg',
+            width: 1200,
+            height: 800,
+            source: 'cdn.test',
+        ),
+        new ImageResultItem(link: 'https://cdn.test/plain.jpg'),
+    ];
+    app()->instance(SerpSearchClient::class, $client);
+
+    ResponseSnapshot::assertMatches(
+        $this->getJson(
+            '/api/admin/v1/projects/proj-1/content/images/search?query=cars&limit=2',
+            actingAsContentOperator('proj-1', ['content.media.manage']),
+        ),
+        'images-search',
+    );
+});
+
+test('contract: content images search validation error', function () {
+    app()->instance(SerpSearchClient::class, new FakeSerpSearchClient);
+
+    ResponseSnapshot::assertMatches(
+        $this->getJson(
+            '/api/admin/v1/projects/proj-1/content/images/search?query=a&limit=99',
+            actingAsContentOperator('proj-1', ['content.media.manage']),
+        ),
+        'images-search-422',
+    );
+});
+
+test('contract: content images search when the service is unavailable', function () {
+    $client = new FakeSerpSearchClient;
+    $client->imageFailure = ResearchRuleViolation::imageSearchUnavailable();
+    app()->instance(SerpSearchClient::class, $client);
+
+    ResponseSnapshot::assertMatches(
+        $this->getJson(
+            '/api/admin/v1/projects/proj-1/content/images/search?query=cars',
+            actingAsContentOperator('proj-1', ['content.media.manage']),
+        ),
+        'images-search-422-unavailable',
+    );
+});
+
+test('contract: content images search forbidden', function () {
+    app()->instance(SerpSearchClient::class, new FakeSerpSearchClient);
+
+    ResponseSnapshot::assertMatches(
+        $this->getJson(
+            '/api/admin/v1/projects/proj-1/content/images/search?query=cars',
+            actingAsContentOperator('proj-1', ['content.media.view']),
+        ),
+        'images-search-403',
+    );
 });

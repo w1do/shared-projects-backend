@@ -1,0 +1,17 @@
+{
+    "status": 201,
+    "content_type": "application/json",
+    "body": {
+        "data": {
+            "id": "<string>",
+            "key": "site-b",
+            "name": "Site B",
+            "description": null,
+            "topic": null,
+            "locales": [
+                "ru"
+            ],
+            "archived_at": null
+        }
+    }
+}

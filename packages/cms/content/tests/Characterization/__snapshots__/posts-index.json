@@ -16,7 +16,9 @@
                 "is_index": false,
                 "categories": [],
                 "tags": [],
-                "seo": null
+                "seo": null,
+                "cover": null,
+                "banner": null
             },
             {
                 "id": "<int>",
@@ -44,7 +46,9 @@
                     "og_image": null,
                     "twitter_card": null,
                     "json_ld": null
-                }
+                },
+                "cover": null,
+                "banner": null
             }
         ],
         "meta": {

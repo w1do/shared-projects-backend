@@ -19,7 +19,7 @@ final class ListPostsQuery
      */
     public function handle(?string $status = null, ?string $locale = null, ?int $categoryId = null, bool $publishedOnly = false, int $perPage = 25, ?string $tag = null): CursorPaginator
     {
-        $query = Post::query()->with(['categories:id', 'tags', 'seo'])->orderByDesc('id');
+        $query = Post::query()->with(['categories:id', 'tags', 'seo', 'cover', 'banner'])->orderByDesc('id');
 
         if ($publishedOnly) {
             $query->published();

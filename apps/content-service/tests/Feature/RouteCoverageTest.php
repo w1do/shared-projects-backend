@@ -32,11 +32,14 @@ function contentRouteCoverageCoveredPairs(): array
     return [
         'GET api/admin/v1/projects/{project}/content/categories',                                 // content/CategoryContractTest.php
         'POST api/admin/v1/projects/{project}/content/categories',                                // content/CategoryContractTest.php, content/PostContractTest.php, content/PublicContractTest.php, content/SeoContractTest.php
+        'DELETE api/admin/v1/projects/{project}/content/categories',                              // content/CategoryContractTest.php
+        'POST api/admin/v1/projects/{project}/content/categories/bulk-delete',                    // content/CategoryContractTest.php
         'DELETE api/admin/v1/projects/{project}/content/categories/{category}',                   // content/CategoryContractTest.php
         'PUT api/admin/v1/projects/{project}/content/categories/{category}',                      // content/CategoryContractTest.php
         'POST api/admin/v1/projects/{project}/content/categories/{category}/move',                // content/CategoryContractTest.php
         'GET api/admin/v1/projects/{project}/content/media',                                      // content/MediaContractTest.php
         'POST api/admin/v1/projects/{project}/content/media',                                     // content/MediaContractTest.php
+        'POST api/admin/v1/projects/{project}/content/media/import',                              // content/MediaContractTest.php
         'GET api/admin/v1/projects/{project}/content/pages',                                      // content/PageContractTest.php
         'POST api/admin/v1/projects/{project}/content/pages',                                     // content/PageContractTest.php, content/PublicContractTest.php, content/SeoContractTest.php
         'PUT api/admin/v1/projects/{project}/content/pages/{page}',                               // content/PageContractTest.php
@@ -62,6 +65,7 @@ function contentRouteCoverageCoveredPairs(): array
         'GET api/admin/v1/projects/{project}/content/instructs',                                  // instructs/InstructContractTest.php
         'POST api/admin/v1/projects/{project}/content/instructs',                                 // instructs/InstructContractTest.php
         'GET api/admin/v1/projects/{project}/content/instructs/categories',                       // instructs/InstructContractTest.php
+        'GET api/admin/v1/projects/{project}/content/instructs/schema-presets',                   // instructs/InstructContractTest.php
         'GET api/admin/v1/projects/{project}/content/instructs/{instruct}',                       // instructs/InstructContractTest.php
         'PUT api/admin/v1/projects/{project}/content/instructs/{instruct}',                       // instructs/InstructContractTest.php
         'DELETE api/admin/v1/projects/{project}/content/instructs/{instruct}',                    // instructs/InstructContractTest.php
@@ -74,6 +78,7 @@ function contentRouteCoverageCoveredPairs(): array
         'GET api/admin/v1/projects/{project}/content/topics',                                     // research/ResearchContractTest.php
         'POST api/admin/v1/projects/{project}/content/topics/{topic}/reject',                     // research/ResearchContractTest.php
         'POST api/admin/v1/projects/{project}/content/posts/generate',                            // research/ResearchContractTest.php
+        'GET api/admin/v1/projects/{project}/content/images/search',                              // research/ResearchContractTest.php
         'GET api/admin/v1/projects/{project}/content/buildout',                                           // research/ResearchContractTest.php
         'POST api/admin/v1/projects/{project}/content/buildout',                                          // research/ResearchContractTest.php
         'GET api/v1/content/categories',                                                          // content/PublicContractTest.php

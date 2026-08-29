@@ -1,0 +1,22 @@
+{
+    "status": 200,
+    "content_type": "application/json",
+    "body": {
+        "data": [
+            {
+                "link": "https://cdn.test/car.jpg",
+                "thumbnail": "https://cdn.test/car-thumb.jpg",
+                "width": 1200,
+                "height": 800,
+                "source": "cdn.test"
+            },
+            {
+                "link": "https://cdn.test/plain.jpg",
+                "thumbnail": null,
+                "width": null,
+                "height": null,
+                "source": null
+            }
+        ]
+    }
+}

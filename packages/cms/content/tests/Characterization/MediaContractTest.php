@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Cms\Shared\Testing\ResponseSnapshot;
 use Illuminate\Http\Testing\File;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -111,5 +112,63 @@ test('contract: content media forbidden', function () {
             'file' => File::create('photo.jpg', 12),
         ], $headers),
         'media-store-403',
+    );
+});
+
+test('contract: content media import', function () {
+    fakeHostResolver();
+    Http::fake(['images.test/*' => Http::response(onePixelPng(), 200, ['Content-Type' => 'image/png'])]);
+
+    $headers = actingAsContentOperator();
+
+    ResponseSnapshot::assertMatches(
+        $this->postJson('/api/admin/v1/projects/proj-1/content/media/import', [
+            'url' => 'https://images.test/photo.png',
+            'alt' => 'Imported photo',
+        ], $headers),
+        'media-import',
+    );
+});
+
+test('contract: content media import validation error', function () {
+    fakeHostResolver();
+    Http::fake();
+
+    $headers = actingAsContentOperator();
+
+    ResponseSnapshot::assertMatches(
+        $this->postJson('/api/admin/v1/projects/proj-1/content/media/import', [
+            'url' => 'not a url',
+            'alt' => str_repeat('a', 256),
+        ], $headers),
+        'media-import-422',
+    );
+});
+
+test('contract: content media import of an unreachable link', function () {
+    fakeHostResolver();
+    Http::fake(['images.test/*' => Http::response('', 500)]);
+
+    $headers = actingAsContentOperator();
+
+    ResponseSnapshot::assertMatches(
+        $this->postJson('/api/admin/v1/projects/proj-1/content/media/import', [
+            'url' => 'https://images.test/broken.png',
+        ], $headers),
+        'media-import-422-unreachable',
+    );
+});
+
+test('contract: content media import forbidden', function () {
+    fakeHostResolver();
+    Http::fake();
+
+    $headers = actingAsContentOperator(permissions: ['content.media.view']);
+
+    ResponseSnapshot::assertMatches(
+        $this->postJson('/api/admin/v1/projects/proj-1/content/media/import', [
+            'url' => 'https://images.test/photo.png',
+        ], $headers),
+        'media-import-403',
     );
 });

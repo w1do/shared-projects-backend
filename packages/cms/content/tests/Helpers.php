@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use Cms\Content\Domain\Contracts\HostResolver;
+use Cms\Content\Domain\Contracts\RemoteFileFetcher;
 use Cms\Contracts\Introspection\IntrospectionResult;
 use Cms\Contracts\Introspection\Subject;
 use Cms\Shared\AuthClient\Introspector;
@@ -54,4 +56,32 @@ function actingAsProjectSite(string $projectId = 'proj-1', array $services = ['c
     actingAsContentOperator($projectId, services: $services);
 
     return ['X-Api-Key' => 'pk_live_test'];
+}
+
+/** Однопиксельный PNG: finfo обязан опознать его как image/png. */
+function onePixelPng(): string
+{
+    return (string) base64_decode(
+        'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==',
+        true,
+    );
+}
+
+/** Резолвер имён под тестом: любое имя разрешается в заданные адреса. */
+function fakeHostResolver(array $addresses = ['93.184.216.34']): void
+{
+    // Fetcher — синглтон: без сброса он остался бы с прежним резолвером
+    app()->forgetInstance(RemoteFileFetcher::class);
+
+    app()->instance(HostResolver::class, new class($addresses) implements HostResolver
+    {
+        /** @param  list<string>  $addresses */
+        public function __construct(private readonly array $addresses) {}
+
+        /** @return list<string> */
+        public function addresses(string $host): array
+        {
+            return $this->addresses;
+        }
+    });
 }

@@ -1,0 +1,19 @@
+{
+    "status": 422,
+    "content_type": "application/json",
+    "body": {
+        "error": {
+            "code": "validation_failed",
+            "message": "The given data was invalid.",
+            "details": {
+                "url": [
+                    "The url field must be a valid URL."
+                ],
+                "alt": [
+                    "The alt field must not be greater than 255 characters."
+                ]
+            },
+            "trace_id": "<string>"
+        }
+    }
+}

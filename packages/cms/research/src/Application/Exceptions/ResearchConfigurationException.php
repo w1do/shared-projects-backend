@@ -18,4 +18,9 @@ final class ResearchConfigurationException extends RuntimeException
     {
         return new self('Knowledge base address is not configured. Set QDRANT_URL in the environment.');
     }
+
+    public static function unknownImageEngine(): self
+    {
+        return new self('Image search engine is not configured. Set RESEARCH_IMAGE_ENGINE to a supported images engine.');
+    }
 }

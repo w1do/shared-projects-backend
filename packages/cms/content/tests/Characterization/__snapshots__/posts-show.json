@@ -28,7 +28,9 @@
                 "og_image": null,
                 "twitter_card": "summary",
                 "json_ld": null
-            }
+            },
+            "cover": null,
+            "banner": null
         }
     }
 }

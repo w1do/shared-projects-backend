@@ -12,11 +12,13 @@ use Cms\Instructs\Application\Handlers\DeleteInstructHandler;
 use Cms\Instructs\Application\Handlers\UpsertInstructHandler;
 use Cms\Instructs\Application\Queries\GetInstructQuery;
 use Cms\Instructs\Application\Queries\ListInstructsQuery;
+use Cms\Instructs\Application\Queries\ListSchemaPresetsQuery;
 use Cms\Instructs\Domain\Enums\InstructCategory;
 use Cms\Instructs\Presentation\Http\Api\V1\Requests\ListInstructsRequest;
 use Cms\Instructs\Presentation\Http\Api\V1\Requests\UpsertInstructRequest;
 use Cms\Instructs\Presentation\Http\Api\V1\Resources\InstructCategoryResource;
 use Cms\Instructs\Presentation\Http\Api\V1\Resources\InstructResource;
+use Cms\Instructs\Presentation\Http\Api\V1\Resources\SchemaPresetResource;
 use Cms\Shared\AuthClient\RequestIntrospection;
 use Cms\Shared\Http\ApiResponse;
 use Illuminate\Http\JsonResponse;
@@ -38,6 +40,12 @@ final class InstructController
     public function categories(Request $request): JsonResponse
     {
         return InstructCategoryResource::collection(InstructCategory::cases())->toResponse($request);
+    }
+
+    #[OA\Get(path: '/api/admin/v1/projects/{project}/content/instructs/schema-presets', operationId: 'content_schemaPresets_api_admin_v1_projects_project_content_instructs_schema_presets', tags: ['content'], summary: 'GET /api/admin/v1/projects/{project}/content/instructs/schema-presets', security: [['bearerAuth' => []]], parameters: [new OA\Parameter(name: 'project', in: 'path', required: true, schema: new OA\Schema(type: 'string'))], responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated')])]
+    public function schemaPresets(Request $request, ListSchemaPresetsQuery $query): JsonResponse
+    {
+        return SchemaPresetResource::collection($query->handle())->toResponse($request);
     }
 
     #[OA\Get(path: '/api/admin/v1/projects/{project}/content/instructs/{instruct}', operationId: 'content_show_api_admin_v1_projects_project_content_instructs_instruct', tags: ['content'], summary: 'GET /api/admin/v1/projects/{project}/content/instructs/{instruct}', security: [['bearerAuth' => []]], parameters: [new OA\Parameter(name: 'project', in: 'path', required: true, schema: new OA\Schema(type: 'string')), new OA\Parameter(name: 'instruct', in: 'path', required: true, schema: new OA\Schema(type: 'integer'))], responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 404, description: 'Not found')])]

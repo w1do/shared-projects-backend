@@ -76,6 +76,8 @@ final class PostController
                 new OA\Property(property: 'translation_group', type: 'string', maxLength: 64, nullable: true),
                 new OA\Property(property: 'categories', type: 'array', items: new OA\Items(type: 'integer')),
                 new OA\Property(property: 'is_index', type: 'boolean'),
+                new OA\Property(property: 'cover_media_id', type: 'integer', nullable: true),
+                new OA\Property(property: 'banner_media_id', type: 'integer', nullable: true),
             ],
         )),
         responses: [new OA\Response(response: 201, description: 'Created'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')],
@@ -93,7 +95,7 @@ final class PostController
     #[OA\Get(path: '/api/admin/v1/projects/{project}/content/posts/{post}', operationId: 'content_show_api_admin_v1_projects_project_content_posts_post', tags: ['content'], summary: 'GET /api/admin/v1/projects/{project}/content/posts/{post}', security: [['bearerAuth' => []]], parameters: [new OA\Parameter(name: 'project', in: 'path', required: true, schema: new OA\Schema(type: 'string')), new OA\Parameter(name: 'post', in: 'path', required: true, schema: new OA\Schema(type: 'integer'))], responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')])]
     public function show(Request $request, string $project, int $postId): JsonResponse
     {
-        $post = Post::query()->with(['categories:id', 'tags', 'seo'])->findOrFail($postId);
+        $post = Post::query()->with(['categories:id', 'tags', 'seo', 'cover', 'banner'])->findOrFail($postId);
 
         return (new PostResource(PostDTO::fromModel($post)))->toResponse($request);
     }
@@ -118,6 +120,8 @@ final class PostController
                 new OA\Property(property: 'translation_group', type: 'string', maxLength: 64, nullable: true),
                 new OA\Property(property: 'categories', type: 'array', items: new OA\Items(type: 'integer')),
                 new OA\Property(property: 'is_index', type: 'boolean'),
+                new OA\Property(property: 'cover_media_id', type: 'integer', nullable: true),
+                new OA\Property(property: 'banner_media_id', type: 'integer', nullable: true),
             ],
         )),
         responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')],

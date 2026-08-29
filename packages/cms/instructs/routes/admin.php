@@ -13,6 +13,7 @@ $authorize = fn (string $permission): array => [AuthorizeOperator::class.':'.$pe
 Route::prefix('api/admin/v1/projects/{project}/content')->group(function () use ($authorize) {
     Route::get('instructs', [InstructController::class, 'index'])->middleware($authorize('content.instructs.view'));
     Route::get('instructs/categories', [InstructController::class, 'categories'])->middleware($authorize('content.instructs.view'));
+    Route::get('instructs/schema-presets', [InstructController::class, 'schemaPresets'])->middleware($authorize('content.instructs.view'));
     Route::get('instructs/{instruct}', [InstructController::class, 'show'])->whereNumber('instruct')->middleware($authorize('content.instructs.view'));
     Route::post('instructs', [InstructController::class, 'store'])->middleware($authorize('content.instructs.manage'));
     Route::put('instructs/{instruct}', [InstructController::class, 'update'])->whereNumber('instruct')->middleware($authorize('content.instructs.manage'));

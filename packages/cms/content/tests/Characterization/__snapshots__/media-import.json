@@ -1,0 +1,15 @@
+{
+    "status": 201,
+    "content_type": "application/json",
+    "body": {
+        "data": {
+            "id": "<int>",
+            "path": "projects/proj-1/media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png",
+            "url": "/storage/projects/proj-1/media/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png",
+            "mime": "image/png",
+            "size": 70,
+            "alt": "Imported photo",
+            "variants": null
+        }
+    }
+}

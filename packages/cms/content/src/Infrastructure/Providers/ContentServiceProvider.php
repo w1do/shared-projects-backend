@@ -6,7 +6,11 @@ namespace Cms\Content\Infrastructure\Providers;
 
 use Cms\Content\Console\PublishManifestCommand;
 use Cms\Content\Domain\Contracts\ContentCache;
+use Cms\Content\Domain\Contracts\HostResolver;
+use Cms\Content\Domain\Contracts\RemoteFileFetcher;
 use Cms\Content\Domain\Models\Tag;
+use Cms\Content\Infrastructure\Http\DnsHostResolver;
+use Cms\Content\Infrastructure\Http\GuardedRemoteFileFetcher;
 use Cms\Content\Infrastructure\Jobs\PublishScheduledJob;
 use Cms\Content\Infrastructure\Persistence\CategoryTranslatableSubjectRepository;
 use Cms\Content\Infrastructure\Persistence\VersionedContentCache;
@@ -25,6 +29,10 @@ final class ContentServiceProvider extends ServiceProvider
 
         // Кэш публичных ответов — за портом: Application знает только контракт.
         $this->app->singleton(ContentCache::class, VersionedContentCache::class);
+
+        // Скачивание по внешней ссылке — за портом: в тестах подменяется целиком.
+        $this->app->singleton(HostResolver::class, DnsHostResolver::class);
+        $this->app->singleton(RemoteFileFetcher::class, GuardedRemoteFileFetcher::class);
 
         // Имена категорий доступны автопереводу словаря только через порт localization.
         $this->app->tag([CategoryTranslatableSubjectRepository::class], TranslatableSubjectRegistry::TAG);

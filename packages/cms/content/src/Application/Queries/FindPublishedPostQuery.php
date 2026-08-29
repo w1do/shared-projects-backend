@@ -15,7 +15,7 @@ final class FindPublishedPostQuery
             ->published()
             ->where('slug', $slug)
             ->when($locale, fn ($q) => $q->where('locale', $locale))
-            ->with(['categories:id', 'tags', 'seo'])
+            ->with(['categories:id', 'tags', 'seo', 'cover', 'banner'])
             ->firstOrFail();
     }
 }

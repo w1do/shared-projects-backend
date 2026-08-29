@@ -15,7 +15,9 @@
             "is_index": true,
             "categories": [],
             "tags": [],
-            "seo": null
+            "seo": null,
+            "cover": null,
+            "banner": null
         }
     }
 }

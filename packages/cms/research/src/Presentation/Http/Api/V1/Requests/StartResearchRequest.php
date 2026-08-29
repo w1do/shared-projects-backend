@@ -16,7 +16,7 @@ final class StartResearchRequest extends FormRequest
         return [
             'query' => ['required', 'string', 'min:3', 'max:255'],
             'offer' => ['sometimes', 'nullable', 'string', 'max:2000'],
-            'engine' => ['sometimes', 'nullable', 'string', Rule::in(SearchEngine::values())],
+            'engine' => ['sometimes', 'nullable', 'string', Rule::in(SearchEngine::webSearchValues())],
             'sub_queries_count' => ['sometimes', 'nullable', 'integer', 'min:1', 'max:10'],
             'results_per_sub_query' => ['sometimes', 'nullable', 'integer', 'min:1', 'max:10'],
         ];

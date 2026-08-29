@@ -28,6 +28,8 @@ final class PostDTO extends Data
         public array $categories = [],
         public array $tags = [],
         public ?SeoDTO $seo = null,
+        public ?PostImageDTO $cover = null,
+        public ?PostImageDTO $banner = null,
     ) {}
 
     public static function fromModel(Post $post): self
@@ -46,6 +48,9 @@ final class PostDTO extends Data
             categories: $post->relationLoaded('categories') ? array_values(array_map('intval', $post->categories->pluck('id')->all())) : [],
             tags: $post->relationLoaded('tags') ? array_values(array_map('strval', $post->tags->pluck('name')->all())) : [],
             seo: $post->relationLoaded('seo') && $post->seo ? SeoDTO::fromModel($post->seo) : null,
+            // Изображения отдаются всегда: адрес нужен и admin-, и публичному клиенту
+            cover: $post->cover ? PostImageDTO::fromModel($post->cover) : null,
+            banner: $post->banner ? PostImageDTO::fromModel($post->banner) : null,
         );
     }
 }

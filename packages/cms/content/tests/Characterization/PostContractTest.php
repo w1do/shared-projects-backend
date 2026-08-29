@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Cms\Content\Domain\Models\MediaFile;
 use Cms\Content\Domain\Models\Post;
 use Cms\Shared\Tenant\ProjectContext;
 use Cms\Shared\Testing\ResponseSnapshot;
@@ -450,4 +451,55 @@ test('contract: content posts destroy without the manage permission', function (
     );
 
     ResponseSnapshot::assertMatches($response, 'posts-destroy-403');
+});
+
+test('contract: content posts with images', function () {
+    Storage::fake('s3');
+    config(['cms-content.media_disk' => 's3']);
+
+    $headers = actingAsContentOperator();
+    app(ProjectContext::class)->set('proj-1');
+
+    $cover = MediaFile::create([
+        'disk' => 's3', 'path' => 'projects/proj-1/media/cover.jpg',
+        'mime' => 'image/jpeg', 'size' => 1024, 'alt' => 'Cover alt',
+    ]);
+    $banner = MediaFile::create([
+        'disk' => 's3', 'path' => 'projects/proj-1/media/banner.jpg',
+        'mime' => 'image/jpeg', 'size' => 2048, 'alt' => null,
+    ]);
+
+    $response = $this->postJson('/api/admin/v1/projects/proj-1/content/posts', [
+        'title' => 'Illustrated post', 'slug' => 'illustrated-post',
+        'cover_media_id' => $cover->id, 'banner_media_id' => $banner->id,
+    ], $headers);
+
+    ResponseSnapshot::assertMatches($response, 'posts-store-with-images');
+
+    ResponseSnapshot::assertMatches(
+        $this->getJson("/api/admin/v1/projects/proj-1/content/posts/{$response->json('data.id')}", $headers),
+        'posts-show-with-images',
+    );
+});
+
+test('contract: content posts with a media file of another project', function () {
+    Storage::fake('s3');
+    config(['cms-content.media_disk' => 's3']);
+
+    actingAsContentOperator('proj-2');
+    app(ProjectContext::class)->set('proj-2');
+    $foreign = MediaFile::create([
+        'disk' => 's3', 'path' => 'projects/proj-2/media/cover.jpg',
+        'mime' => 'image/jpeg', 'size' => 1024, 'alt' => null,
+    ]);
+
+    app()->forgetScopedInstances();
+    $headers = actingAsContentOperator();
+
+    ResponseSnapshot::assertMatches(
+        $this->postJson('/api/admin/v1/projects/proj-1/content/posts', [
+            'title' => 'Stolen cover', 'cover_media_id' => $foreign->id,
+        ], $headers),
+        'posts-store-422-foreign-media',
+    );
 });

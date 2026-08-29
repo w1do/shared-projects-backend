@@ -90,6 +90,17 @@ test('contract: project create', function () {
     ResponseSnapshot::assertMatches($response, 'projects-create');
 });
 
+test('contract: project create from the name alone', function () {
+    $admin = Admin::factory()->create(['email' => 'op@example.com', 'name' => 'Operator']);
+    createProjectFor($admin, 'site-a');
+
+    $response = $this->postJson('/api/admin/v1/projects', [
+        'name' => 'Site B',
+    ], adminHeaders($admin));
+
+    ResponseSnapshot::assertMatches($response, 'projects-create-derived-key');
+});
+
 test('contract: project create validation error', function () {
     $admin = Admin::factory()->create(['email' => 'op@example.com', 'name' => 'Operator']);
     createProjectFor($admin, 'site-a');

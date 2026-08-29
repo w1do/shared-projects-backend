@@ -18,7 +18,7 @@ final class UploadMediaRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'file' => ['required', 'file', 'max:20480'],
+            'file' => ['required', 'file', 'max:'.(int) config('cms-content.media_max_size_kb', 20480)],
             'alt' => ['sometimes', 'nullable', 'string', 'max:255'],
         ];
     }

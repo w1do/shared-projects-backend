@@ -14,6 +14,7 @@ final class MediaDTO extends Data
     public function __construct(
         public int $id,
         public string $path,
+        public string $url,
         public string $mime,
         public int $size,
         public ?string $alt,
@@ -25,6 +26,8 @@ final class MediaDTO extends Data
         return new self(
             id: $media->id,
             path: $media->path,
+            // Ссылка платформы: клиент не знает адреса хранилища проекта
+            url: $media->url(),
             mime: $media->mime,
             size: $media->size,
             alt: $media->alt,

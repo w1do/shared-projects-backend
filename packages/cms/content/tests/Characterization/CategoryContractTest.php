@@ -248,6 +248,68 @@ test('contract: content categories destroy not found', function () {
     );
 });
 
+test('contract: content categories bulk delete', function () {
+    $headers = actingAsContentOperator();
+
+    $first = $this->postJson('/api/admin/v1/projects/proj-1/content/categories', [
+        'name' => 'News', 'slug' => 'news',
+    ], $headers)->json('data');
+    $second = $this->postJson('/api/admin/v1/projects/proj-1/content/categories', [
+        'name' => 'Sport', 'slug' => 'sport',
+    ], $headers)->json('data');
+
+    ResponseSnapshot::assertMatches(
+        $this->postJson('/api/admin/v1/projects/proj-1/content/categories/bulk-delete', [
+            'ids' => [$first['id'], $second['id']],
+        ], $headers),
+        'categories-bulk-delete-204',
+    );
+});
+
+test('contract: content categories bulk delete validation error', function () {
+    $headers = actingAsContentOperator();
+
+    ResponseSnapshot::assertMatches(
+        $this->postJson('/api/admin/v1/projects/proj-1/content/categories/bulk-delete', [
+            'ids' => [],
+        ], $headers),
+        'categories-bulk-delete-422',
+    );
+});
+
+test('contract: content categories bulk delete forbidden', function () {
+    $headers = actingAsContentOperator(permissions: ['content.categories.view']);
+
+    ResponseSnapshot::assertMatches(
+        $this->postJson('/api/admin/v1/projects/proj-1/content/categories/bulk-delete', [
+            'ids' => [1],
+        ], $headers),
+        'categories-bulk-delete-403',
+    );
+});
+
+test('contract: content categories purge', function () {
+    $headers = actingAsContentOperator();
+
+    $this->postJson('/api/admin/v1/projects/proj-1/content/categories', [
+        'name' => 'News', 'slug' => 'news',
+    ], $headers)->assertCreated();
+
+    ResponseSnapshot::assertMatches(
+        $this->deleteJson('/api/admin/v1/projects/proj-1/content/categories', [], $headers),
+        'categories-purge-204',
+    );
+});
+
+test('contract: content categories purge forbidden', function () {
+    $headers = actingAsContentOperator(permissions: ['content.categories.view']);
+
+    ResponseSnapshot::assertMatches(
+        $this->deleteJson('/api/admin/v1/projects/proj-1/content/categories', [], $headers),
+        'categories-purge-403',
+    );
+});
+
 test('contract: content categories unauthenticated', function () {
     actingAsContentOperator();
 

@@ -142,3 +142,23 @@ test('contract: instructs update of a system instruct is refused', function () {
 
     ResponseSnapshot::assertMatches($response, 'instructs-update-422-system');
 });
+
+test('contract: content instructs schema presets', function () {
+    ResponseSnapshot::assertMatches(
+        $this->getJson(
+            '/api/admin/v1/projects/proj-1/content/instructs/schema-presets',
+            actingAsContentOperator('proj-1', ['content.instructs.view']),
+        ),
+        'instructs-schema-presets',
+    );
+});
+
+test('contract: content instructs schema presets forbidden', function () {
+    ResponseSnapshot::assertMatches(
+        $this->getJson(
+            '/api/admin/v1/projects/proj-1/content/instructs/schema-presets',
+            actingAsContentOperator('proj-1', ['content.posts.view']),
+        ),
+        'instructs-schema-presets-403',
+    );
+});

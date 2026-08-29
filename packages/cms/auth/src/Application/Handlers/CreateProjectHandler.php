@@ -14,6 +14,7 @@ use Cms\Auth\Infrastructure\Persistence\AuditRecorder;
 use Cms\Auth\Infrastructure\Persistence\BootstrapCache;
 use Cms\Auth\Infrastructure\Persistence\PermissionSyncer;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Spatie\LaravelData\Optional;
 
 final class CreateProjectHandler
@@ -24,11 +25,20 @@ final class CreateProjectHandler
         private readonly AuditRecorder $audit,
     ) {}
 
+    /** Ключ, выведенный из названия, обрезается до этого предела — остаток отдан числовому суффиксу. */
+    private const DERIVED_KEY_LIMIT = 56;
+
     public function handle(CreateProjectCommand $command): Project
     {
         $project = DB::transaction(function () use ($command) {
+            // Подбор идёт в той же транзакции, что и вставка: между проверкой
+            // занятости и созданием проекта чужой ключ не появляется.
+            $key = $command->data->key instanceof Optional
+                ? $this->deriveKey($command->data->name)
+                : $command->data->key;
+
             $project = Project::create([
-                'key' => $command->data->key,
+                'key' => $key,
                 'name' => $command->data->name,
                 'locales' => $command->data->locales instanceof Optional ? ['ru'] : $command->data->locales,
             ]);
@@ -57,5 +67,26 @@ final class CreateProjectHandler
         BootstrapCache::bump();
 
         return $project;
+    }
+
+    /** Транслитерация названия в kebab-case; занятый ключ получает числовой суффикс. */
+    private function deriveKey(string $name): string
+    {
+        $base = Str::limit(Str::slug($name), self::DERIVED_KEY_LIMIT, '');
+
+        // Название без латинизируемых символов ключа не даёт — берётся нейтральная основа
+        if ($base === '') {
+            $base = 'project';
+        }
+
+        $candidate = $base;
+        $suffix = 2;
+
+        while (Project::query()->where('key', $candidate)->exists()) {
+            $candidate = $base.'-'.$suffix;
+            $suffix++;
+        }
+
+        return $candidate;
     }
 }

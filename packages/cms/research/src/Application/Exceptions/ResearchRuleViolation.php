@@ -51,4 +51,9 @@ final class ResearchRuleViolation extends ValidationException
     {
         return self::withMessages(['topic' => ['No research material found for this topic in the knowledge base.']]);
     }
+
+    public static function imageSearchUnavailable(): self
+    {
+        return self::withMessages(['query' => ['The image search service is unavailable or rejected the request.']]);
+    }
 }

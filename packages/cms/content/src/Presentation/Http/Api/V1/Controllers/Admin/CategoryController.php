@@ -4,15 +4,20 @@ declare(strict_types=1);
 
 namespace Cms\Content\Presentation\Http\Api\V1\Controllers\Admin;
 
+use Cms\Content\Application\Commands\DeleteCategoriesCommand;
 use Cms\Content\Application\Commands\DeleteCategoryCommand;
 use Cms\Content\Application\Commands\MoveCategoryCommand;
+use Cms\Content\Application\Commands\PurgeCategoriesCommand;
 use Cms\Content\Application\Commands\UpsertCategoryCommand;
 use Cms\Content\Application\DTOs\Category\CategoryDTO;
+use Cms\Content\Application\Handlers\DeleteCategoriesHandler;
 use Cms\Content\Application\Handlers\DeleteCategoryHandler;
 use Cms\Content\Application\Handlers\MoveCategoryHandler;
+use Cms\Content\Application\Handlers\PurgeCategoriesHandler;
 use Cms\Content\Application\Handlers\UpsertCategoryHandler;
 use Cms\Content\Application\Queries\CategoryTreeQuery;
 use Cms\Content\Domain\Models\Category;
+use Cms\Content\Presentation\Http\Api\V1\Requests\Category\BulkDeleteCategoriesRequest;
 use Cms\Content\Presentation\Http\Api\V1\Requests\Category\MoveCategoryRequest;
 use Cms\Content\Presentation\Http\Api\V1\Requests\Category\UpsertCategoryRequest;
 use Cms\Content\Presentation\Http\Api\V1\Resources\Category\CategoryResource;
@@ -115,6 +120,38 @@ final class CategoryController
     public function destroy(string $project, int $categoryId, DeleteCategoryHandler $command): JsonResponse
     {
         $command->handle(new DeleteCategoryCommand(Category::query()->findOrFail($categoryId)));
+
+        return ApiResponse::noContent();
+    }
+
+    #[OA\Post(
+        path: '/api/admin/v1/projects/{project}/content/categories/bulk-delete',
+        operationId: 'content_bulkDestroy_api_admin_v1_projects_project_content_categories_bulk_delete',
+        tags: ['content'],
+        summary: 'POST /api/admin/v1/projects/{project}/content/categories/bulk-delete',
+        security: [['bearerAuth' => []]],
+        parameters: [
+            new OA\Parameter(name: 'project', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+        ],
+        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(
+            required: ['ids'],
+            properties: [
+                new OA\Property(property: 'ids', type: 'array', items: new OA\Items(type: 'integer'), minItems: 1),
+            ],
+        )),
+        responses: [new OA\Response(response: 204, description: 'No content'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')],
+    )]
+    public function bulkDestroy(BulkDeleteCategoriesRequest $request, DeleteCategoriesHandler $command): JsonResponse
+    {
+        $command->handle(new DeleteCategoriesCommand($request->ids()));
+
+        return ApiResponse::noContent();
+    }
+
+    #[OA\Delete(path: '/api/admin/v1/projects/{project}/content/categories', operationId: 'content_purge_api_admin_v1_projects_project_content_categories', tags: ['content'], summary: 'DELETE /api/admin/v1/projects/{project}/content/categories', security: [['bearerAuth' => []]], parameters: [new OA\Parameter(name: 'project', in: 'path', required: true, schema: new OA\Schema(type: 'string'))], responses: [new OA\Response(response: 204, description: 'No content'), new OA\Response(response: 401, description: 'Unauthenticated')])]
+    public function purge(PurgeCategoriesHandler $command): JsonResponse
+    {
+        $command->handle(new PurgeCategoriesCommand);
 
         return ApiResponse::noContent();
     }
