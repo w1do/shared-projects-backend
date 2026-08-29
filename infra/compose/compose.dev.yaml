@@ -2,6 +2,12 @@
 # Запуск: docker compose -f infra/compose/compose.yaml -f infra/compose/compose.dev.yaml up -d
 # (`./tools/cms up` делает это сам).
 services:
+  gateway:
+    volumes:
+      # каталог целиком поверх запечённого конфига: file-provider перечитывает
+      # dynamic.yml при замене файла без пересоздания контейнера
+      - ../gateway:/etc/traefik:ro
+
   auth-service:
     volumes: &src-mount
       - ../..:/var/www

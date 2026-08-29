@@ -77,13 +77,13 @@ x-php-service: &php-service
 
 services:
   gateway:
-    image: traefik:v3
+    image: platform-gateway
+    build:
+      context: ../gateway
+      dockerfile: ../docker/gateway.Dockerfile
     restart: unless-stopped
     ports:
       - "${GATEWAY_PORT:-8080}:80"
-    volumes:
-      # каталог целиком: file-provider перечитывает dynamic.yml при замене файла
-      - ../gateway:/etc/traefik:ro
     depends_on: [auth-service, content-service, analytics-service, pay-service, admin-front]
     networks: [platform]
 
@@ -229,14 +229,16 @@ services:
     networks: [platform]
 
   postgres:
-    image: postgres:17
+    image: platform-postgres
+    build:
+      context: .
+      dockerfile: ../docker/postgres.Dockerfile
     restart: unless-stopped
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-platform}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-platform}
     volumes:
       - postgres-data:/var/lib/postgresql/data
-      - ./init-databases.sql:/docker-entrypoint-initdb.d/init-databases.sql:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-platform}"]
       interval: 3s
