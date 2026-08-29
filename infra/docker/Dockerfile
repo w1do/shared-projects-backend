@@ -3,7 +3,7 @@
 FROM phpswoole/swoole:php8.4 AS base
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-        libpq-dev libicu-dev libzip-dev unzip supervisor \
+        libpq-dev libicu-dev libzip-dev unzip \
     && docker-php-ext-install pdo_pgsql intl zip pcntl exif \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 

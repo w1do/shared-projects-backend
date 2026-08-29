@@ -24,6 +24,16 @@ if [ "${AUTO_MIGRATE:-0}" = "1" ]; then
     php artisan migrate --force || true
 fi
 
+# Схема ClickHouse (analytics): без неё отчёты падают на UNKNOWN_TABLE.
+# ClickHouse может подниматься дольше сервиса — ретраим.
+if [ "${CLICKHOUSE_MIGRATE:-0}" = "1" ]; then
+    for _ in $(seq 30); do
+        php artisan clickhouse:migrate && break
+        echo "clickhouse:migrate failed — retry in 2s..."
+        sleep 2
+    done
+fi
+
 # Публикация манифеста сервиса в реестре платформы (auth-service может стартовать
 # позже — ретраим, при исчерпании попыток сервис всё равно поднимается)
 if [ "${MANIFEST_PUBLISH:-0}" = "1" ]; then

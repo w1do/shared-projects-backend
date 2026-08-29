@@ -37,7 +37,7 @@ spatie/laravel-permission (teams, `team_id = project_id`); категории �
 │   ├── docker/                    Dockerfile PHP-сервисов (APP_SERVICE), entrypoint (бутстрап), образы панели и docs
 │   ├── compose/                   compose.yaml (производственный, env-дефолты) + compose.dev.yaml + .env.example
 │   ├── gateway/                   traefik.yml + dynamic.yml — матрица маршрутизации по префиксам
-│   └── services/<service>/        supervisor-конфиги сервисов
+│                                  (воркеры, флаш и планировщики — сервисами compose)
 ├── tools/cms                      CLI: up|down|migrate|test [service], api (сборка единого swagger)
 ├── openspec/                      планирование (spec-driven)
 └── CLAUDE.md · STRUCTURE.md

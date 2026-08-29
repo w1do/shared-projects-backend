@@ -157,6 +157,7 @@ services:
     environment:
       <<: *analytics-env
       AUTO_MIGRATE: "1"
+      CLICKHOUSE_MIGRATE: "1"
       MANIFEST_PUBLISH: "1"
     depends_on:
       postgres:
@@ -171,13 +172,29 @@ services:
     build: *analytics-build
     command: ["php", "artisan", "queue:work", "--queue=exports,default", "--sleep=2", "--tries=2", "--timeout=120"]
     environment: *analytics-env
-    depends_on:
+    depends_on: &analytics-deps
       postgres:
         condition: service_healthy
       redis:
         condition: service_started
       clickhouse:
         condition: service_started
+
+  # Перенос событий из Redis-буфера в ClickHouse: без демона отчёты остаются пустыми
+  analytics-flush:
+    <<: *php-service
+    build: *analytics-build
+    command: ["php", "artisan", "analytics:flush", "--daemon"]
+    environment: *analytics-env
+    depends_on: *analytics-deps
+
+  # Расписание analytics: дневные роллапы и очистка сырых событий
+  analytics-scheduler:
+    <<: *php-service
+    build: *analytics-build
+    command: ["php", "artisan", "schedule:work"]
+    environment: *analytics-env
+    depends_on: *analytics-deps
 
   pay-service:
     <<: *php-service
@@ -194,6 +211,13 @@ services:
     <<: *php-service
     build: *pay-build
     command: ["php", "artisan", "queue:work", "--queue=critical,webhooks,default", "--sleep=2", "--tries=2", "--timeout=120"]
+    environment: *pay-env
+
+  # Расписание pay: почасовое автопродление подписок с истёкшим периодом
+  pay-scheduler:
+    <<: *php-service
+    build: *pay-build
+    command: ["php", "artisan", "schedule:work"]
     environment: *pay-env
 
   docs:
