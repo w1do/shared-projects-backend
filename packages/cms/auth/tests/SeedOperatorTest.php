@@ -34,6 +34,14 @@ test('operator:seed is idempotent and never overwrites an existing operator', fu
         ->and($admin->isSuperAdmin())->toBeTrue();
 });
 
+test('operator:seed refuses the public dev password in production', function () {
+    app()->detectEnvironment(fn () => 'production');
+
+    $this->artisan('operator:seed')->assertSuccessful();
+
+    expect(Admin::query()->count())->toBe(0);
+});
+
 test('operator:seed skips when credentials are not configured', function () {
     config()->set('cms-auth.operator.email', null);
 

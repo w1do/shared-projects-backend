@@ -38,6 +38,12 @@ http:
       priority: 100
       service: pay
 
+    # Публичные медиа из объектного хранилища (bucket media, path-style URL)
+    media:
+      rule: "PathPrefix(`/media`)"
+      priority: 50
+      service: minio
+
     # Документация API — выше публичных /api/*-групп сервисов
     docs:
       rule: "PathPrefix(`/api/docs`)"
@@ -103,3 +109,7 @@ http:
       loadBalancer:
         servers:
           - url: "http://docs:8080"
+    minio:
+      loadBalancer:
+        servers:
+          - url: "http://minio:9000"

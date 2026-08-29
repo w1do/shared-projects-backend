@@ -17,6 +17,9 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // За gateway/внешним прокси: схема и хост берутся из X-Forwarded-*,
+        // иначе абсолютные ссылки строятся от http://контейнер:8000
+        $middleware->trustProxies(at: '*');
         $middleware->append(AssignTraceId::class);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

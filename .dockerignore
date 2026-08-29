@@ -20,6 +20,11 @@ node_modules
 package.json
 package-lock.json
 
+# тесты в прод-образ не нужны (пер-app .dockerignore не действуют:
+# контекст сборки — корень репозитория, Docker читает только этот файл)
+apps/*/tests
+packages/cms/*/tests
+
 # зависимости и артефакты — ставятся внутри образа
 **/vendor
 **/node_modules

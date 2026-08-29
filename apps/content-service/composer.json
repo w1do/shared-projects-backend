@@ -21,6 +21,7 @@
         "laravel/horizon": "^5.48",
         "laravel/octane": "^2.19",
         "laravel/tinker": "^3.0",
+        "league/flysystem-aws-s3-v3": "^3.0",
         "spatie/laravel-data": "^4.23",
         "spatie/laravel-medialibrary": "^11.23",
         "spatie/laravel-query-builder": "^6.4",

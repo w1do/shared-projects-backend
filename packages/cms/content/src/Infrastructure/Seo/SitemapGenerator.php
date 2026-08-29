@@ -17,7 +17,7 @@ final class SitemapGenerator
 {
     public function generate(string $projectId): string
     {
-        $base = rtrim((string) config('cms-content.site_url', config('app.url')), '/');
+        $base = rtrim((string) (config('cms-content.site_url') ?: config('app.url')), '/');
         $urls = [];
 
         $posts = Post::acrossProjects()->where('project_id', $projectId)

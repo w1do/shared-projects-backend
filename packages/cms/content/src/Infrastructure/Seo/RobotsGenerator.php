@@ -15,7 +15,7 @@ final class RobotsGenerator
 {
     public function generate(string $projectId): string
     {
-        $base = rtrim((string) config('cms-content.site_url', config('app.url')), '/');
+        $base = rtrim((string) (config('cms-content.site_url') ?: config('app.url')), '/');
 
         $lines = ['User-agent: *'];
 
