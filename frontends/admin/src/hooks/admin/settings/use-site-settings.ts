@@ -6,7 +6,7 @@ import {
   getSiteSettings,
   putSiteSettings,
   type PlatformSiteSettings,
-} from "@/lib/admin/data-source/platform/auth";
+} from "@/lib/admin/data-source/platform/auth-access";
 
 /** Настройки сайта проекта: язык и валюты по умолчанию (auth-service). */
 export function useSiteSettingsQuery() {

@@ -28,7 +28,10 @@ export function taskStageLabel(stage: string | null): string | null {
 export function taskSubjectLabel(task: PlatformTask): string {
   if (!task.subject_type) return "—";
 
-  const subject = label(`console.tasks.subject.${task.subject_type}`, task.subject_type);
+  const subject = label(
+    `console.tasks.subject.${task.subject_type}`,
+    task.subject_type,
+  );
 
   return task.subject_id ? `${subject} ${task.subject_id}` : subject;
 }

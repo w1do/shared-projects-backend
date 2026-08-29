@@ -11,7 +11,10 @@ test("manage открывается явным правом или полным 
   assert.equal(canManageLicensing(["*"]), true);
   assert.equal(canManageLicensing([LICENSING_MANAGE_PERMISSION]), true);
   assert.equal(
-    canManageLicensing([LICENSING_VIEW_PERMISSION, LICENSING_MANAGE_PERMISSION]),
+    canManageLicensing([
+      LICENSING_VIEW_PERMISSION,
+      LICENSING_MANAGE_PERMISSION,
+    ]),
     true,
   );
 });

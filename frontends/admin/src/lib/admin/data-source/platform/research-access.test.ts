@@ -21,7 +21,11 @@ test("полный доступ покрывает все права разде�
 });
 
 test("без права раздел остаётся только для чтения", () => {
-  const viewOnly = ["content.research.view", "content.instructs.view", "auth.projects.view"];
+  const viewOnly = [
+    "content.research.view",
+    "content.instructs.view",
+    "auth.projects.view",
+  ];
 
   assert.equal(canManageProject(viewOnly), false);
   assert.equal(canRunResearch(viewOnly), false);

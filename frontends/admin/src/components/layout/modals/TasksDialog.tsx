@@ -44,7 +44,9 @@ export function TasksDialog({ open, tasks, onClose }: Props) {
         </DialogDescription>
 
         {tasks.length === 0 ? (
-          <p className="mt-6 text-xs text-muted-foreground">{t("console.tasks.empty")}</p>
+          <p className="mt-6 text-xs text-muted-foreground">
+            {t("console.tasks.empty")}
+          </p>
         ) : (
           <ul className="mt-6 flex flex-col gap-2">
             {tasks.map((task) => (
@@ -63,11 +65,17 @@ export function TasksDialog({ open, tasks, onClose }: Props) {
                       .join(" · ")}
                   </span>
                   {task.failure_reason && (
-                    <span className="text-caption text-destructive">{task.failure_reason}</span>
+                    <span className="text-caption text-destructive">
+                      {task.failure_reason}
+                    </span>
                   )}
                 </div>
 
-                <Badge variant="soft" shape="circle" color={STATE_COLOR[task.state]}>
+                <Badge
+                  variant="soft"
+                  shape="circle"
+                  color={STATE_COLOR[task.state]}
+                >
                   {taskStateLabel(task.state)}
                 </Badge>
               </li>

@@ -11,8 +11,8 @@ use Cms\Shared\AuthClient\AuthClient;
 use Cms\Shared\AuthClient\CachedIntrospector;
 use Cms\Shared\AuthClient\Introspector;
 use Cms\Shared\BackgroundTasks\EloquentTaskProgress;
-use Cms\Shared\BackgroundTasks\PruneFinishedTasksJob;
 use Cms\Shared\BackgroundTasks\TaskProgress;
+use Cms\Shared\BackgroundTasks\TidyBackgroundTasksJob;
 use Cms\Shared\Http\TraceId;
 use Cms\Shared\Tenant\ProjectContext;
 use Illuminate\Console\Scheduling\Schedule;
@@ -27,9 +27,9 @@ final class SharedServiceProvider extends ServiceProvider
         $this->loadRoutesFrom(__DIR__.'/../routes/internal.php');
         $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
 
-        // Завершённые задачи живут ровно столько, сколько их показывает консоль.
+        // Уборка реестра: заброшенные задачи закрываются, старые завершённые удаляются.
         $this->callAfterResolving(Schedule::class, function (Schedule $schedule): void {
-            $schedule->job(new PruneFinishedTasksJob)->hourly();
+            $schedule->job(new TidyBackgroundTasksJob)->hourly();
         });
     }
 

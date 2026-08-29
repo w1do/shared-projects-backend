@@ -77,6 +77,13 @@ jobs:
       - name: Install dependencies
         working-directory: frontends/admin
         run: bun install --frozen-lockfile
+      # Линт идёт по собственным файлам консоли: перенесённая вёрстка не форматируется
+      - name: Lint console-owned files
+        working-directory: frontends/admin
+        run: bun run lint:own
+      - name: Unit tests
+        working-directory: frontends/admin
+        run: bun test
       - name: Production build
         working-directory: frontends/admin
         run: bun run build

@@ -18,11 +18,19 @@ test("пользователь платформы → клиент вёрстк�
   assert.equal(customer.name, "Анна");
   assert.equal(customer.email, "anna@example.com");
   assert.equal(customer.status, "Active");
-  assert.equal(customer.tier, undefined, "tier не назначается — платформа лояльность не ведёт");
+  assert.equal(
+    customer.tier,
+    undefined,
+    "tier не назначается — платформа лояльность не ведёт",
+  );
 });
 
 test("blocked → Inactive; имя падает обратно на email", () => {
-  const customer = projectUserToCustomer({ ...USER, name: null, blocked: true });
+  const customer = projectUserToCustomer({
+    ...USER,
+    name: null,
+    blocked: true,
+  });
 
   assert.equal(customer.status, "Inactive");
   assert.equal(customer.name, "anna@example.com");

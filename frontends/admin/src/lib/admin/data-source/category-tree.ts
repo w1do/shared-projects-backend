@@ -23,7 +23,10 @@ export type FlatNode<T> = T & { depth: number };
  * Дерево → плоский список в префиксном порядке с уровнем вложенности.
  * Порядок узлов внутри уровня сохраняется тем, в каком их отдала платформа.
  */
-export function flattenTree<T extends TreeNode>(nodes: readonly T[], depth = 0): FlatNode<T>[] {
+export function flattenTree<T extends TreeNode>(
+  nodes: readonly T[],
+  depth = 0,
+): FlatNode<T>[] {
   return nodes.flatMap((node) => [
     { ...node, depth } as FlatNode<T>,
     ...flattenTree((node.children ?? []) as T[], depth + 1),
@@ -35,7 +38,10 @@ export function flattenTree<T extends TreeNode>(nodes: readonly T[], depth = 0):
  * дерева. Список уже в префиксном порядке, но опираться на это не обязательно:
  * потомки собираются по `parentId` в ширину.
  */
-export function descendantIds(nodes: readonly TreeNode[], id: string): Set<string> {
+export function descendantIds(
+  nodes: readonly TreeNode[],
+  id: string,
+): Set<string> {
   const byParent = new Map<string, string[]>();
 
   for (const node of nodes) {
@@ -77,7 +83,10 @@ export function countChildren(nodes: readonly TreeNode[]): Map<string, number> {
  * Родители, которых нельзя предложить для узла: он сам и всё его поддерево.
  * Иначе оператор мог бы замкнуть дерево на себя.
  */
-export function invalidParentIds(nodes: readonly TreeNode[], id: string): Set<string> {
+export function invalidParentIds(
+  nodes: readonly TreeNode[],
+  id: string,
+): Set<string> {
   const invalid = descendantIds(nodes, id);
   invalid.add(id);
 
@@ -94,7 +103,10 @@ export type SluggedNode = TreeNode & { slug?: string | null };
  * источника правды у платформы нет. Неизвестный узел даёт пустую строку,
  * узел без слага — свой идентификатор.
  */
-export function categoryPath(nodes: readonly SluggedNode[], id: string): string {
+export function categoryPath(
+  nodes: readonly SluggedNode[],
+  id: string,
+): string {
   const byId = new Map(nodes.map((node) => [node.id, node]));
   const segments: string[] = [];
   const seen = new Set<string>();

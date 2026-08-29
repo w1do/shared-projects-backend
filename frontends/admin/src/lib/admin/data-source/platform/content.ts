@@ -1,6 +1,11 @@
 /** content-service: посты, категории, SEO. Пути скоупятся текущим проектом. */
 
-import { adminApiGet, adminApiGetPage, adminApiSend, adminApiUpload } from "../api-client";
+import {
+  adminApiGet,
+  adminApiGetPage,
+  adminApiSend,
+  adminApiUpload,
+} from "../api-client";
 import type {
   PlatformCategory,
   PlatformImageResult,
@@ -23,7 +28,11 @@ export type UpsertPostBody = {
   banner_media_id?: number | null;
 };
 
-export async function listPosts(params?: { status?: string; locale?: string; category?: number }) {
+export async function listPosts(params?: {
+  status?: string;
+  locale?: string;
+  category?: number;
+}) {
   const query = new URLSearchParams();
   if (params?.status) query.set("status", params.status);
   if (params?.locale) query.set("locale", params.locale);
@@ -43,14 +52,21 @@ export function createPost(body: UpsertPostBody) {
 }
 
 export function updatePost(id: number, body: UpsertPostBody) {
-  return adminApiSend<PlatformPost>(`${base}/posts/${id}`, { method: "PUT", body });
+  return adminApiSend<PlatformPost>(`${base}/posts/${id}`, {
+    method: "PUT",
+    body,
+  });
 }
 
 export function deletePost(id: number) {
   return adminApiSend<null>(`${base}/posts/${id}`, { method: "DELETE" });
 }
 
-export function changePostStatus(id: number, status: string, scheduledAt?: string) {
+export function changePostStatus(
+  id: number,
+  status: string,
+  scheduledAt?: string,
+) {
   return adminApiSend<PlatformPost>(`${base}/posts/${id}/status`, {
     method: "POST",
     body: scheduledAt ? { status, scheduled_at: scheduledAt } : { status },
@@ -62,9 +78,12 @@ export function listPostRevisions(id: number) {
 }
 
 export function restorePostRevision(id: number, revisionId: number) {
-  return adminApiSend<PlatformPost>(`${base}/posts/${id}/revisions/${revisionId}/restore`, {
-    method: "POST",
-  });
+  return adminApiSend<PlatformPost>(
+    `${base}/posts/${id}/revisions/${revisionId}/restore`,
+    {
+      method: "POST",
+    },
+  );
 }
 
 export function listCategories() {
@@ -76,18 +95,31 @@ export function createCategory(body: {
   slug?: string;
   parent_id?: number | null;
 }) {
-  return adminApiSend<PlatformCategory>(`${base}/categories`, { method: "POST", body });
+  return adminApiSend<PlatformCategory>(`${base}/categories`, {
+    method: "POST",
+    body,
+  });
 }
 
 export function updateCategory(
   id: number,
-  body: { name: string | Record<string, string>; slug?: string; parent_id?: number | null },
+  body: {
+    name: string | Record<string, string>;
+    slug?: string;
+    parent_id?: number | null;
+  },
 ) {
-  return adminApiSend<PlatformCategory>(`${base}/categories/${id}`, { method: "PUT", body });
+  return adminApiSend<PlatformCategory>(`${base}/categories/${id}`, {
+    method: "PUT",
+    body,
+  });
 }
 
 /** Перемещение узла дерева: новый родитель и позиция среди сиблингов. */
-export function moveCategory(id: number, body: { parent_id?: number | null; position?: number }) {
+export function moveCategory(
+  id: number,
+  body: { parent_id?: number | null; position?: number },
+) {
   return adminApiSend<PlatformCategory>(`${base}/categories/${id}/move`, {
     method: "POST",
     body,
@@ -115,7 +147,9 @@ export function purgeCategories() {
 }
 
 export function listMedia() {
-  return adminApiGetPage<PlatformMedia>(`${base}/media`).then((page) => page.items);
+  return adminApiGetPage<PlatformMedia>(`${base}/media`).then(
+    (page) => page.items,
+  );
 }
 
 /** Загрузка файла в медиатеку проекта — multipart, поэтому мимо adminApiSend. */
@@ -140,7 +174,9 @@ export function searchImages(query: string, limit?: number) {
   const params = new URLSearchParams({ query });
   if (limit != null) params.set("limit", String(limit));
 
-  return adminApiGet<PlatformImageResult[]>(`${base}/images/search?${params.toString()}`);
+  return adminApiGet<PlatformImageResult[]>(
+    `${base}/images/search?${params.toString()}`,
+  );
 }
 
 export type SeoSubjectType = "post" | "page" | "category";
@@ -149,6 +185,13 @@ export function getSeo(type: SeoSubjectType, id: number | string) {
   return adminApiGet<PlatformSeo>(`${base}/seo/${type}/${id}`);
 }
 
-export function updateSeo(type: SeoSubjectType, id: number | string, body: PlatformSeo) {
-  return adminApiSend<PlatformSeo>(`${base}/seo/${type}/${id}`, { method: "PUT", body });
+export function updateSeo(
+  type: SeoSubjectType,
+  id: number | string,
+  body: PlatformSeo,
+) {
+  return adminApiSend<PlatformSeo>(`${base}/seo/${type}/${id}`, {
+    method: "PUT",
+    body,
+  });
 }

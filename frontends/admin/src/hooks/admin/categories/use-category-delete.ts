@@ -29,7 +29,9 @@ export function useCategoryDelete(categories: Category[]) {
   const [deleteIntent, setDeleteIntent] = useState<DeleteIntent | null>(null);
 
   const isDeleting =
-    deleteMutation.isPending || bulkDeleteMutation.isPending || purgeMutation.isPending;
+    deleteMutation.isPending ||
+    bulkDeleteMutation.isPending ||
+    purgeMutation.isPending;
 
   const requestDelete = useCallback(
     (id: string) => {
@@ -78,7 +80,9 @@ export function useCategoryDelete(categories: Category[]) {
     if (deleteIntent.type === "single") {
       const { category } = deleteIntent;
       deleteMutation.mutate(category.id, {
-        onSuccess: done(tf("console.categories.delete.done", { name: category.name })),
+        onSuccess: done(
+          tf("console.categories.delete.done", { name: category.name }),
+        ),
         onError,
       });
       return;
@@ -94,7 +98,9 @@ export function useCategoryDelete(categories: Category[]) {
 
     const { ids } = deleteIntent;
     bulkDeleteMutation.mutate(ids, {
-      onSuccess: done(tf("console.categories.delete.done-bulk", { count: ids.length })),
+      onSuccess: done(
+        tf("console.categories.delete.done-bulk", { count: ids.length }),
+      ),
       onError,
     });
   }, [deleteIntent, deleteMutation, bulkDeleteMutation, purgeMutation]);

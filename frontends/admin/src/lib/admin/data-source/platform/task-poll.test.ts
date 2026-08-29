@@ -21,7 +21,10 @@ function task(state: PlatformTaskState, id = 1): PlatformTask {
     failure_reason: state === "failed" ? "Не удалось написать пост." : null,
     queued_at: "2026-08-30T10:00:00+00:00",
     started_at: state === "queued" ? null : "2026-08-30T10:00:01+00:00",
-    finished_at: state === "succeeded" || state === "failed" ? "2026-08-30T10:01:00+00:00" : null,
+    finished_at:
+      state === "succeeded" || state === "failed"
+        ? "2026-08-30T10:01:00+00:00"
+        : null,
   };
 }
 

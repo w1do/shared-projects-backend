@@ -1,10 +1,17 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { payBaseFor, paymentProviderPath, paymentProvidersPath } from "./pay-paths.ts";
+import {
+  payBaseFor,
+  paymentProviderPath,
+  paymentProvidersPath,
+} from "./pay-paths.ts";
 
 test("пути провайдеров строятся от {project}-плейсхолдера текущего проекта", () => {
-  assert.equal(paymentProvidersPath(), "/api/admin/v1/projects/{project}/pay/providers");
+  assert.equal(
+    paymentProvidersPath(),
+    "/api/admin/v1/projects/{project}/pay/providers",
+  );
   assert.equal(
     paymentProviderPath("platega"),
     "/api/admin/v1/projects/{project}/pay/providers/platega",

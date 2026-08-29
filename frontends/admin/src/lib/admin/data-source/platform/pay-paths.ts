@@ -15,6 +15,9 @@ export function paymentProvidersPath(): string {
   return `${PAY_BASE}/providers`;
 }
 
-export function paymentProviderPath(provider: string, projectKey?: string): string {
+export function paymentProviderPath(
+  provider: string,
+  projectKey?: string,
+): string {
   return `${payBaseFor(projectKey)}/providers/${encodeURIComponent(provider)}`;
 }

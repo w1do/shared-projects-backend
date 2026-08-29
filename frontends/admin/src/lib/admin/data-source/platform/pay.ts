@@ -70,7 +70,10 @@ export function getPaymentProvider(provider: string) {
  * проекта»: путь строится с явным ключом, минуя подстановку из cookie.
  * Право на проект-источник проверяет штатный AuthorizeOperator (Д9).
  */
-export function getPaymentProviderFromProject(projectKey: string, provider: string) {
+export function getPaymentProviderFromProject(
+  projectKey: string,
+  provider: string,
+) {
   return adminApiGet<PlatformPaymentProvider>(
     paymentProviderPath(provider, projectKey),
   );

@@ -12,7 +12,10 @@ import type { PlatformSeo } from "@/lib/admin/data-source/platform/types";
 export type SeoSubjectType = platformContent.SeoSubjectType;
 export type SeoMeta = PlatformSeo;
 
-export async function getSeo(type: SeoSubjectType, id: string | number): Promise<SeoMeta> {
+export async function getSeo(
+  type: SeoSubjectType,
+  id: string | number,
+): Promise<SeoMeta> {
   return platformContent.getSeo(type, id);
 }
 

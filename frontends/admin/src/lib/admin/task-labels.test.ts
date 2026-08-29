@@ -1,7 +1,12 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { taskKindLabel, taskStageLabel, taskStateLabel, taskSubjectLabel } from "./task-labels.ts";
+import {
+  taskKindLabel,
+  taskStageLabel,
+  taskStateLabel,
+  taskSubjectLabel,
+} from "./task-labels.ts";
 import type { PlatformTask } from "./data-source/platform/tasks.ts";
 
 const task: PlatformTask = {

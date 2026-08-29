@@ -17,6 +17,9 @@ export function listStateMessage(
 }
 
 /** Пустое состояние показывается только после того, как данные пришли. */
-export function showsEmptyState(isLoading: boolean, itemCount: number): boolean {
+export function showsEmptyState(
+  isLoading: boolean,
+  itemCount: number,
+): boolean {
   return !isLoading && itemCount === 0;
 }

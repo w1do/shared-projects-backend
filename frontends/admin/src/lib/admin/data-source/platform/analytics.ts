@@ -1,7 +1,11 @@
 /** analytics-service: обзор, топ-страницы, выручка за период. */
 
 import { adminApiGet } from "../api-client";
-import type { PlatformOverviewRow, PlatformRevenueRow, PlatformTopPageRow } from "./types";
+import type {
+  PlatformOverviewRow,
+  PlatformRevenueRow,
+  PlatformTopPageRow,
+} from "./types";
 
 const base = "/api/admin/v1/projects/{project}/analytics";
 

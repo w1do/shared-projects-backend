@@ -2,7 +2,7 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { projectServices } from "@/lib/admin/services/content-domain/settings";
-import type { PlatformServiceStatus } from "@/lib/admin/data-source/platform/auth";
+import type { PlatformServiceStatus } from "@/lib/admin/data-source/platform/auth-access";
 import { getBootstrap } from "@/lib/admin/data-source/platform/auth";
 import { getProjectKey } from "@/lib/admin/data-source/session";
 

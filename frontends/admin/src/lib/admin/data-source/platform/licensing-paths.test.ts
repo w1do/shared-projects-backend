@@ -36,8 +36,14 @@ test("пути организаций и планов строятся от {pro
     licensingOrganizationPath(7),
     "/api/admin/v1/projects/{project}/pay/licensing/organizations/7",
   );
-  assert.equal(licensingPlansPath(), "/api/admin/v1/projects/{project}/pay/licensing/plans");
-  assert.equal(licensingPlanPath(3), "/api/admin/v1/projects/{project}/pay/licensing/plans/3");
+  assert.equal(
+    licensingPlansPath(),
+    "/api/admin/v1/projects/{project}/pay/licensing/plans",
+  );
+  assert.equal(
+    licensingPlanPath(3),
+    "/api/admin/v1/projects/{project}/pay/licensing/plans/3",
+  );
   assert.equal(
     licensingPlanFeaturesPath(3),
     "/api/admin/v1/projects/{project}/pay/licensing/plans/3/features",
@@ -64,7 +70,10 @@ test("курсор добавляется query-параметром и экра
 });
 
 test("фильтры лицензий кодируются в filter[...]-параметры laravel-query-builder", () => {
-  assert.equal(licensingLicensesPath(), "/api/admin/v1/projects/{project}/pay/licensing/licenses");
+  assert.equal(
+    licensingLicensesPath(),
+    "/api/admin/v1/projects/{project}/pay/licensing/licenses",
+  );
   assert.equal(
     licensingLicensesPath({ organizationId: 5 }),
     "/api/admin/v1/projects/{project}/pay/licensing/licenses?filter%5Borganization_id%5D=5",

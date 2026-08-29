@@ -42,7 +42,16 @@ const TREE = [
 test("дерево раскладывается в префиксном порядке", () => {
   assert.deepEqual(
     flattenTree(TREE).map((n) => n.name),
-    ["Новости", "Компания", "Продукт", "Аналитика", "Рынок", "Обзоры", "Прогнозы", "Исследования"],
+    [
+      "Новости",
+      "Компания",
+      "Продукт",
+      "Аналитика",
+      "Рынок",
+      "Обзоры",
+      "Прогнозы",
+      "Исследования",
+    ],
   );
 });
 
@@ -87,7 +96,11 @@ test("прямые потомки считаются по плоскому сп�
   const counts = countChildren(flattenTree(TREE));
 
   assert.equal(counts.get("1"), 2, "Новости: Компания и Продукт");
-  assert.equal(counts.get("4"), 2, "Аналитика: Рынок и Исследования — без внуков");
+  assert.equal(
+    counts.get("4"),
+    2,
+    "Аналитика: Рынок и Исследования — без внуков",
+  );
   assert.equal(counts.get("5"), 2);
   assert.equal(counts.get("6"), undefined, "лист");
   assert.deepEqual(countChildren([]), new Map());
@@ -119,5 +132,8 @@ test("узел без слага подставляет идентификато
 });
 
 test("оборванная цепочка предков не роняет построение пути", () => {
-  assert.equal(categoryPath([{ id: "9", slug: "orphan", parentId: "gone" }], "9"), "/orphan");
+  assert.equal(
+    categoryPath([{ id: "9", slug: "orphan", parentId: "gone" }], "9"),
+    "/orphan",
+  );
 });

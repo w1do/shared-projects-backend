@@ -21,8 +21,13 @@ function readingTime(body: string | null | undefined) {
 }
 
 /** Тело поста платформы — единый HTML/текст: отдаём одним блоком абзаца. */
-export function postToArticle(post: PlatformPost, categoryNames: Map<number, string>): ApiArticle {
-  const category = post.categories?.length ? categoryNames.get(post.categories[0]) : undefined;
+export function postToArticle(
+  post: PlatformPost,
+  categoryNames: Map<number, string>,
+): ApiArticle {
+  const category = post.categories?.length
+    ? categoryNames.get(post.categories[0])
+    : undefined;
 
   return {
     id: String(post.id),
@@ -30,7 +35,9 @@ export function postToArticle(post: PlatformPost, categoryNames: Map<number, str
     title: post.title,
     subtitle: post.seo?.description ?? null,
     category: category ?? null,
-    tags: post.seo?.keywords ? post.seo.keywords.split(",").map((tag) => tag.trim()) : [],
+    tags: post.seo?.keywords
+      ? post.seo.keywords.split(",").map((tag) => tag.trim())
+      : [],
     authorName: null,
     readingTimeMin: readingTime(post.body),
     // Изображения поста — медиа проекта; og:image остаётся запасным адресом
@@ -72,7 +79,9 @@ export function categoryToApiCategory(
 }
 
 /** Плоский список имён категорий по id — для подписи категории поста. */
-export function categoryNameIndex(tree: PlatformCategory[]): Map<number, string> {
+export function categoryNameIndex(
+  tree: PlatformCategory[],
+): Map<number, string> {
   const index = new Map<number, string>();
   const walk = (nodes: PlatformCategory[]) => {
     for (const node of nodes) {
@@ -114,7 +123,11 @@ export function revenueToPoints(rows: PlatformRevenueRow[]): ApiRevenuePoint[] {
 
   return [...byDate.entries()]
     .sort(([a], [b]) => a.localeCompare(b))
-    .map(([date, value]) => ({ label: date, revenue: value.revenue, orders: value.payments }));
+    .map(([date, value]) => ({
+      label: date,
+      revenue: value.revenue,
+      orders: value.payments,
+    }));
 }
 
 /** Обзор + выручка → KPI-статистика дашборда. */
@@ -122,9 +135,15 @@ export function toDashboardStats(
   overview: PlatformOverviewRow[],
   revenue: PlatformRevenueRow[],
 ): ApiDashboardStats {
-  const revenueTotal = revenue.reduce((sum, row) => sum + num(row.revenue_minor) / 100, 0);
+  const revenueTotal = revenue.reduce(
+    (sum, row) => sum + num(row.revenue_minor) / 100,
+    0,
+  );
   const payments = revenue.reduce((sum, row) => sum + num(row.payments), 0);
-  const subjects = overview.reduce((max, row) => Math.max(max, num(row.subjects)), 0);
+  const subjects = overview.reduce(
+    (max, row) => Math.max(max, num(row.subjects)),
+    0,
+  );
 
   return {
     revenue: revenueTotal,

@@ -58,9 +58,18 @@ test("дубликат ключа — побеждает последняя ст
 
 test("разбор сырого JSON принимает только объект", () => {
   assert.deepEqual(parseJsonObject('{"a": 1}'), { ok: true, value: { a: 1 } });
-  assert.deepEqual(parseJsonObject("{oops"), { ok: false, error: "invalid-json" });
-  assert.deepEqual(parseJsonObject("[1, 2]"), { ok: false, error: "not-an-object" });
-  assert.deepEqual(parseJsonObject('"строка"'), { ok: false, error: "not-an-object" });
+  assert.deepEqual(parseJsonObject("{oops"), {
+    ok: false,
+    error: "invalid-json",
+  });
+  assert.deepEqual(parseJsonObject("[1, 2]"), {
+    ok: false,
+    error: "not-an-object",
+  });
+  assert.deepEqual(parseJsonObject('"строка"'), {
+    ok: false,
+    error: "not-an-object",
+  });
 });
 
 test("formatJsonObject выводит читаемый JSON с отступами", () => {

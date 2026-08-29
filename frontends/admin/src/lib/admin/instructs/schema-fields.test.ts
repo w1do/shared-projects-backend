@@ -17,9 +17,19 @@ const CATEGORY_FIELDS: SchemaField[] = [
     item: {
       type: "object",
       fields: [
-        { name: "name", type: "string", required: true, description: "Название" },
+        {
+          name: "name",
+          type: "string",
+          required: true,
+          description: "Название",
+        },
         { name: "slug", type: "string", required: true, description: "Слаг" },
-        { name: "parent_slug", type: "string", required: false, description: "Слаг родителя" },
+        {
+          name: "parent_slug",
+          type: "string",
+          required: false,
+          description: "Слаг родителя",
+        },
       ],
     },
   },
@@ -47,7 +57,10 @@ test("поля без имени в схему не попадают", () => {
     { name: "kept", type: "string", required: false },
   ]);
 
-  assert.deepEqual(Object.keys((schema.properties as Record<string, unknown>) ?? {}), ["kept"]);
+  assert.deepEqual(
+    Object.keys((schema.properties as Record<string, unknown>) ?? {}),
+    ["kept"],
+  );
 });
 
 test("массив объектов сохраняет поля элемента", () => {
@@ -89,7 +102,14 @@ test("круговое преобразование не теряет полей
       name: "meta",
       type: "object",
       required: false,
-      fields: [{ name: "locale", type: "string", required: true, description: "Локаль" }],
+      fields: [
+        {
+          name: "locale",
+          type: "string",
+          required: true,
+          description: "Локаль",
+        },
+      ],
     },
     { name: "is_index", type: "boolean", required: false },
   ];
@@ -108,7 +128,9 @@ test("тип с null читается как основной тип", () => {
   });
 
   assert.equal(back.supported, true);
-  assert.deepEqual(back.fields, [{ name: "parent_slug", type: "string", required: false }]);
+  assert.deepEqual(back.fields, [
+    { name: "parent_slug", type: "string", required: false },
+  ]);
 });
 
 test("объект без properties остаётся допустимым свободным объектом", () => {
@@ -119,12 +141,17 @@ test("объект без properties остаётся допустимым св�
   });
 
   assert.equal(back.supported, true);
-  assert.deepEqual(back.fields, [{ name: "json_ld", type: "object", required: false, fields: [] }]);
+  assert.deepEqual(back.fields, [
+    { name: "json_ld", type: "object", required: false, fields: [] },
+  ]);
 });
 
 test("пустая схема даёт пустой список полей", () => {
   assert.deepEqual(jsonSchemaToFields({}), { fields: [], supported: true });
-  assert.deepEqual(jsonSchemaToFields(undefined), { fields: [], supported: true });
+  assert.deepEqual(jsonSchemaToFields(undefined), {
+    fields: [],
+    supported: true,
+  });
 });
 
 test("комбинаторы и $ref помечают схему как сложнее редактора", () => {
@@ -132,7 +159,10 @@ test("комбинаторы и $ref помечают схему как слож
     { oneOf: [{ type: "object" }] },
     { type: "object", properties: { a: { $ref: "#/definitions/a" } } },
     { type: "object", properties: { a: { anyOf: [{ type: "string" }] } } },
-    { type: "object", properties: { a: { type: "array", items: { oneOf: [] } } } },
+    {
+      type: "object",
+      properties: { a: { type: "array", items: { oneOf: [] } } },
+    },
   ]) {
     const result = jsonSchemaToFields(schema);
     assert.equal(result.supported, false, JSON.stringify(schema));
@@ -141,9 +171,15 @@ test("комбинаторы и $ref помечают схему как слож
 });
 
 test("неподдерживаемый тип свойства уводит схему в JSON-режим", () => {
-  assert.equal(jsonSchemaToFields({ type: "array", items: { type: "string" } }).supported, false);
   assert.equal(
-    jsonSchemaToFields({ type: "object", properties: { a: { type: "integer" } } }).supported,
+    jsonSchemaToFields({ type: "array", items: { type: "string" } }).supported,
+    false,
+  );
+  assert.equal(
+    jsonSchemaToFields({
+      type: "object",
+      properties: { a: { type: "integer" } },
+    }).supported,
     false,
   );
 });

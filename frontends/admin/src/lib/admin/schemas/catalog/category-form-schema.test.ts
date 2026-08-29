@@ -26,7 +26,10 @@ test("схема принимает категорию без денежных �
 });
 
 test("схема проверяет слаг", () => {
-  const result = categoryFormSchema.safeParse({ ...VALUES, slug: "Плохой Слаг" });
+  const result = categoryFormSchema.safeParse({
+    ...VALUES,
+    slug: "Плохой Слаг",
+  });
 
   assert.equal(result.success, false);
 });

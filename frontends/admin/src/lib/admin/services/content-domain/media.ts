@@ -16,13 +16,19 @@ export type ImageSearchResult = {
   source: string | null;
 };
 
-export async function uploadProjectMedia(file: File, alt?: string): Promise<ProjectMedia> {
+export async function uploadProjectMedia(
+  file: File,
+  alt?: string,
+): Promise<ProjectMedia> {
   const media = await adminMutations.uploadMedia(file, alt);
   return { id: media.id, url: media.url, alt: media.alt ?? null };
 }
 
 /** Импорт по внешней ссылке: платформа скачивает файл в хранилище проекта. */
-export async function importProjectMedia(url: string, alt?: string): Promise<ProjectMedia> {
+export async function importProjectMedia(
+  url: string,
+  alt?: string,
+): Promise<ProjectMedia> {
   const media = await adminMutations.importMedia(url, alt);
   return { id: media.id, url: media.url, alt: media.alt ?? null };
 }

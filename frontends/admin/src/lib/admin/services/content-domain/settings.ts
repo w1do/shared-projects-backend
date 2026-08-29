@@ -2,6 +2,7 @@ import type { StoreSettings } from "@/lib/admin/types/settings";
 import { t } from "@/lib/admin/console-texts";
 import { getAdminStoreSettings } from "@/lib/admin/data-source/admin-data";
 import * as platformAuth from "@/lib/admin/data-source/platform/auth";
+import * as platformAccess from "@/lib/admin/data-source/platform/auth-access";
 
 export type SettingsPersistResult = {
   ok: boolean;
@@ -37,18 +38,18 @@ export async function saveSettingsSection<K extends keyof StoreSettings>(
 
 /** API-ключи проекта: чтение, выдача (ключ показывается один раз) и отзыв. */
 export const projectApiKeys = {
-  list: () => platformAuth.listApiKeys(),
+  list: () => platformAccess.listApiKeys(),
   issue: (type: "public" | "secret", scopes?: string[]) =>
-    platformAuth.issueApiKey({ type, scopes }),
-  revoke: (id: string) => platformAuth.revokeApiKey(id),
+    platformAccess.issueApiKey({ type, scopes }),
+  revoke: (id: string) => platformAccess.revokeApiKey(id),
 };
 
 /** Сервисы проекта: включение/выключение и их настройки. */
 export const projectServices = {
-  list: () => platformAuth.listServices(),
+  list: () => platformAccess.listServices(),
   toggle: (service: string, enabled: boolean) =>
-    platformAuth.toggleService(service, enabled),
-  getSettings: (service: string) => platformAuth.getServiceSettings(service),
+    platformAccess.toggleService(service, enabled),
+  getSettings: (service: string) => platformAccess.getServiceSettings(service),
   putSettings: (service: string, values: Record<string, unknown>) =>
-    platformAuth.putServiceSettings(service, values),
+    platformAccess.putServiceSettings(service, values),
 };

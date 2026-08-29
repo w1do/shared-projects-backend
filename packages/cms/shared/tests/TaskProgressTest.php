@@ -5,8 +5,8 @@ declare(strict_types=1);
 use Cms\Shared\BackgroundTasks\BackgroundTask;
 use Cms\Shared\BackgroundTasks\BackgroundTaskKind;
 use Cms\Shared\BackgroundTasks\BackgroundTaskState;
-use Cms\Shared\BackgroundTasks\PruneFinishedTasksJob;
 use Cms\Shared\BackgroundTasks\TaskProgress;
+use Cms\Shared\BackgroundTasks\TidyBackgroundTasksJob;
 use Cms\Shared\Tenant\ProjectContext;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Validation\ValidationException;
@@ -111,9 +111,26 @@ test('чистка убирает старые завершённые задач
     $running = $progress->queue(BackgroundTaskKind::Research);
     $progress->start($running);
 
-    (new PruneFinishedTasksJob)->handle();
+    (new TidyBackgroundTasksJob)->handle();
 
     expect(BackgroundTask::query()->find($old))->toBeNull()
         ->and(BackgroundTask::query()->find($fresh))->not->toBeNull()
         ->and(BackgroundTask::query()->find($running))->not->toBeNull();
+});
+
+test('заброшенная задача закрывается отказом, а не висит принятой', function () {
+    $progress = app(TaskProgress::class);
+
+    $abandoned = $progress->queue(BackgroundTaskKind::ProjectBuildout);
+    BackgroundTask::query()->whereKey($abandoned)->update(['created_at' => now()->subHours(5)]);
+
+    $fresh = $progress->queue(BackgroundTaskKind::ProjectBuildout);
+
+    (new TidyBackgroundTasksJob)->handle();
+
+    $closed = BackgroundTask::query()->findOrFail($abandoned);
+    expect($closed->state)->toBe(BackgroundTaskState::Failed)
+        ->and($closed->failure_reason)->not->toBeNull()
+        ->and($closed->finished_at)->not->toBeNull()
+        ->and(BackgroundTask::query()->findOrFail($fresh)->state)->toBe(BackgroundTaskState::Queued);
 });

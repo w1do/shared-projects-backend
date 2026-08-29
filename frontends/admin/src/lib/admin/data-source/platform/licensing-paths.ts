@@ -97,7 +97,9 @@ export function licensingLicenseRevokePath(id: string): string {
   return `${licensingLicensePath(id)}/revoke`;
 }
 
-export function licensingInstallationRevokePath(installationId: number): string {
+export function licensingInstallationRevokePath(
+  installationId: number,
+): string {
   return `${LICENSING_BASE}/installations/${installationId}/revoke`;
 }
 

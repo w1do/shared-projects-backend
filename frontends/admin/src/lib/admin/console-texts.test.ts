@@ -49,7 +49,10 @@ test("каждый ключ реестра — console.* с непустым р�
 
 test("пункты меню в реестре — ровно разделы консоли, без осиротевших", () => {
   const navKeys = Object.keys(CONSOLE_TEXTS)
-    .filter((key) => key.startsWith("console.nav.") && !key.startsWith("console.nav.group."))
+    .filter(
+      (key) =>
+        key.startsWith("console.nav.") && !key.startsWith("console.nav.group."),
+    )
     .map((key) => key.slice("console.nav.".length))
     .filter((key) => key !== "quick-actions");
 

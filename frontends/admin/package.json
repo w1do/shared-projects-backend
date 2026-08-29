@@ -9,6 +9,7 @@
     "start": "next start",
     "test": "node --test \"src/**/*.test.ts\"",
     "lint": "eslint ",
+    "lint:own": "../../tools/mirror-own-files.sh | xargs -r eslint",
     "format": "prettier --write "
   },
   "dependencies": {

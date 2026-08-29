@@ -9,7 +9,10 @@ import type { PlatformTask } from "@/lib/admin/services";
 
 /** Задачи написания постов: одна выдача на весь список тем, а не запрос на строку. */
 export function useTopicTasksQuery() {
-  const query = useTasksQuery({ kind: "post_generation", subjectType: "topic" });
+  const query = useTasksQuery({
+    kind: "post_generation",
+    subjectType: "topic",
+  });
   const queryClient = useQueryClient();
 
   const running = (query.data ?? [])
@@ -23,7 +26,9 @@ export function useTopicTasksQuery() {
     // сам приходит к обычному виду с готовым постом.
     if (previousRunning.current !== running) {
       previousRunning.current = running;
-      void queryClient.invalidateQueries({ queryKey: adminQueryKeys.research.all });
+      void queryClient.invalidateQueries({
+        queryKey: adminQueryKeys.research.all,
+      });
     }
   }, [running, queryClient]);
 
@@ -31,11 +36,15 @@ export function useTopicTasksQuery() {
 
   for (const task of query.data ?? []) {
     if (!task.subject_id) continue;
-    byTopic.set(task.subject_id, [...(byTopic.get(task.subject_id) ?? []), task]);
+    byTopic.set(task.subject_id, [
+      ...(byTopic.get(task.subject_id) ?? []),
+      task,
+    ]);
   }
 
   return {
     ...query,
-    tasksOfTopic: (topicId: number): PlatformTask[] => byTopic.get(String(topicId)) ?? [],
+    tasksOfTopic: (topicId: number): PlatformTask[] =>
+      byTopic.get(String(topicId)) ?? [],
   };
 }

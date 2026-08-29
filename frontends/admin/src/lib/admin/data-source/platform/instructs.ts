@@ -25,7 +25,10 @@ export type PlatformSchemaPresetField = {
   required: boolean;
   description?: string;
   fields?: PlatformSchemaPresetField[];
-  item?: { type: "string" | "number" | "boolean" | "object"; fields?: PlatformSchemaPresetField[] };
+  item?: {
+    type: "string" | "number" | "boolean" | "object";
+    fields?: PlatformSchemaPresetField[];
+  };
 };
 
 export type PlatformSchemaPreset = {
@@ -71,7 +74,9 @@ export function listInstructCategories() {
 }
 
 export function listSchemaPresets() {
-  return adminApiGet<PlatformSchemaPreset[]>(`${base}/instructs/schema-presets`);
+  return adminApiGet<PlatformSchemaPreset[]>(
+    `${base}/instructs/schema-presets`,
+  );
 }
 
 export function createInstruct(body: UpsertInstructBody) {

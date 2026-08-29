@@ -54,7 +54,10 @@ export function mapProjectEvents(
   if (!Array.isArray(entries)) return [];
 
   return entries
-    .filter((entry): entry is PlatformAuditEntryLike => Boolean(entry) && typeof entry === "object")
+    .filter(
+      (entry): entry is PlatformAuditEntryLike =>
+        Boolean(entry) && typeof entry === "object",
+    )
     .map(mapProjectEvent)
     .sort((a, b) => (b.createdAt ?? "").localeCompare(a.createdAt ?? ""))
     .slice(0, Math.max(limit, 0));

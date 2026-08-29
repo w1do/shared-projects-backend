@@ -66,7 +66,9 @@ export async function saveProjectCard(body: {
  */
 export async function getProjectEvents(): Promise<ProjectEvent[]> {
   try {
-    return mapProjectEvents(await platformAuth.listAuditEntries(PROJECT_EVENTS_LIMIT));
+    return mapProjectEvents(
+      await platformAuth.listAuditEntries(PROJECT_EVENTS_LIMIT),
+    );
   } catch {
     return [];
   }

@@ -11,7 +11,9 @@ export function isTaskRunning(task: PlatformTask): boolean {
  * Интервал опроса по составу списка: есть работа — опрашиваем, нет — молчим.
  * `false` — TanStack Query это понимает как «опрос выключен».
  */
-export function taskPollInterval(tasks: PlatformTask[] | undefined): number | false {
+export function taskPollInterval(
+  tasks: PlatformTask[] | undefined,
+): number | false {
   if (!tasks || tasks.length === 0) return false;
 
   return tasks.some(isTaskRunning) ? TASK_POLL_MS : false;
@@ -26,11 +28,15 @@ export function runningTaskCount(tasks: PlatformTask[] | undefined): number {
 }
 
 /** Задача, из-за которой предмет сейчас занят: она в очереди или выполняется. */
-export function runningTaskOf(tasks: PlatformTask[] | undefined): PlatformTask | undefined {
+export function runningTaskOf(
+  tasks: PlatformTask[] | undefined,
+): PlatformTask | undefined {
   return (tasks ?? []).find(isTaskRunning);
 }
 
 /** Последний отказ по предмету: показывается, пока задача не запущена заново. */
-export function lastFailedTaskOf(tasks: PlatformTask[] | undefined): PlatformTask | undefined {
+export function lastFailedTaskOf(
+  tasks: PlatformTask[] | undefined,
+): PlatformTask | undefined {
   return (tasks ?? []).find((task) => task.state === "failed");
 }

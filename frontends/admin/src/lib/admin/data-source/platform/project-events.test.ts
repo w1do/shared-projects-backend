@@ -7,7 +7,11 @@ import {
   mapProjectEvents,
 } from "./project-events.ts";
 
-const entry = (id: number, createdAt: string | null, action = "post.published") => ({
+const entry = (
+  id: number,
+  createdAt: string | null,
+  action = "post.published",
+) => ({
   id,
   actor_type: "admin",
   actor_id: "1",
@@ -27,7 +31,12 @@ test("запись журнала приводится к событию пан�
 });
 
 test("пустые предмет и актор становятся null, а не пустой строкой", () => {
-  const mapped = mapProjectEvent({ id: 1, action: " project.created ", subject: "  ", actor_id: "" });
+  const mapped = mapProjectEvent({
+    id: 1,
+    action: " project.created ",
+    subject: "  ",
+    actor_id: "",
+  });
 
   assert.equal(mapped.subject, null);
   assert.equal(mapped.actor, null);
@@ -53,7 +62,10 @@ test("события идут от свежих к старым и обреза�
 
 test("предел по умолчанию — последние десять событий", () => {
   const many = Array.from({ length: 25 }, (_, index) =>
-    entry(index + 1, `2026-08-${String((index % 28) + 1).padStart(2, "0")}T00:00:00+00:00`),
+    entry(
+      index + 1,
+      `2026-08-${String((index % 28) + 1).padStart(2, "0")}T00:00:00+00:00`,
+    ),
   );
 
   assert.equal(PROJECT_EVENTS_LIMIT, 10);
@@ -68,7 +80,10 @@ test("пустой журнал и ответ не-массивом дают п�
 });
 
 test("записи без времени не роняют сортировку", () => {
-  const mapped = mapProjectEvents([entry(1, null), entry(2, "2026-08-02T00:00:00+00:00")]);
+  const mapped = mapProjectEvents([
+    entry(1, null),
+    entry(2, "2026-08-02T00:00:00+00:00"),
+  ]);
 
   assert.deepEqual(
     mapped.map((event) => event.id),
