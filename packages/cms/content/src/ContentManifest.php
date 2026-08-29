@@ -11,7 +11,7 @@ use Cms\Contracts\Manifest\SettingDefinition;
 
 final class ContentManifest
 {
-    public const VERSION = '0.2.0';
+    public const VERSION = '0.3.0';
 
     public static function build(): ServiceManifest
     {
@@ -37,6 +37,7 @@ final class ContentManifest
                 new PermissionDefinition('content.topics.manage', 'Управление темами', 'topics'),
                 new PermissionDefinition('content.instructs.view', 'Просмотр инструкций', 'instructs'),
                 new PermissionDefinition('content.instructs.manage', 'Управление инструкциями', 'instructs'),
+                new PermissionDefinition('content.tasks.view', 'Просмотр фоновых задач', 'tasks'),
             ],
             navigation: [
                 new NavigationItem('content.posts', 'nav.content.posts', '/content/posts', 'content.posts.view', 'file-text', 20),

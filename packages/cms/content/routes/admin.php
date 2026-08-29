@@ -39,4 +39,6 @@ Route::prefix('api/admin/v1/projects/{project}/content')->group(function () use 
     Route::get('media', [Admin\MediaController::class, 'index'])->middleware($authorize('content.media.view'));
     Route::post('media', [Admin\MediaController::class, 'store'])->middleware($authorize('content.media.manage'));
     Route::post('media/import', [Admin\MediaController::class, 'import'])->middleware($authorize('content.media.manage'));
+
+    Route::get('tasks', [Admin\TaskController::class, 'index'])->middleware($authorize('content.tasks.view'));
 });

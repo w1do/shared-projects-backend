@@ -1,0 +1,32 @@
+{
+    "status": 200,
+    "content_type": "application/json",
+    "body": {
+        "data": [
+            {
+                "id": "<int>",
+                "kind": "research",
+                "state": "running",
+                "stage": "searching",
+                "subject_type": "research",
+                "subject_id": "<string>",
+                "failure_reason": null,
+                "queued_at": "<string>",
+                "started_at": "<string>",
+                "finished_at": null
+            },
+            {
+                "id": "<int>",
+                "kind": "post_generation",
+                "state": "succeeded",
+                "stage": "preparing",
+                "subject_type": "topic",
+                "subject_id": "<string>",
+                "failure_reason": null,
+                "queued_at": "<string>",
+                "started_at": "<string>",
+                "finished_at": "<string>"
+            }
+        ]
+    }
+}
