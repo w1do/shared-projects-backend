@@ -9,4 +9,5 @@ use OpenApi\Attributes as OA;
 #[OA\Info(version: '0.1.0', description: 'API сервиса pay платформы', title: 'Platform Pay API')]
 #[OA\SecurityScheme(securityScheme: 'bearerAuth', type: 'http', scheme: 'bearer')]
 #[OA\SecurityScheme(securityScheme: 'apiKey', type: 'apiKey', name: 'X-Api-Key', in: 'header')]
+#[OA\SecurityScheme(securityScheme: 'userToken', type: 'apiKey', in: 'header', name: 'X-User-Token')]
 final class OpenApiInfo {}

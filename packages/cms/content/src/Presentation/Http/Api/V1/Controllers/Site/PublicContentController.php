@@ -21,7 +21,19 @@ use OpenApi\Attributes as OA;
 /** Публичное API контента: только published, курсорная пагинация, Redis-кэш. */
 final class PublicContentController
 {
-    #[OA\Get(path: '/api/v1/content/posts', operationId: 'content_posts_api_v1_content_posts', tags: ['content'], summary: 'GET /api/v1/content/posts', responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')])]
+    #[OA\Get(
+        path: '/api/v1/content/posts',
+        operationId: 'content_posts_api_v1_content_posts',
+        tags: ['content'],
+        summary: 'GET /api/v1/content/posts',
+        security: [['apiKey' => []]],
+        parameters: [
+            new OA\Parameter(name: 'locale', in: 'query', required: false, schema: new OA\Schema(type: 'string')),
+            new OA\Parameter(name: 'category', in: 'query', required: false, schema: new OA\Schema(type: 'integer')),
+            new OA\Parameter(name: 'cursor', in: 'query', required: false, schema: new OA\Schema(type: 'string')),
+        ],
+        responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')],
+    )]
     public function posts(PublicPostsRequest $request, PublicPostsQuery $query): JsonResponse
     {
         // В кэше лежит готовое тело ответа целиком (вместе с конвертом), поэтому
@@ -29,7 +41,18 @@ final class PublicContentController
         return new JsonResponse($query->handle($request->filter()));
     }
 
-    #[OA\Get(path: '/api/v1/content/posts/{slug}', operationId: 'content_post_api_v1_content_posts_slug', tags: ['content'], summary: 'GET /api/v1/content/posts/{slug}', responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')])]
+    #[OA\Get(
+        path: '/api/v1/content/posts/{slug}',
+        operationId: 'content_post_api_v1_content_posts_slug',
+        tags: ['content'],
+        summary: 'GET /api/v1/content/posts/{slug}',
+        security: [['apiKey' => []]],
+        parameters: [
+            new OA\Parameter(name: 'slug', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+            new OA\Parameter(name: 'locale', in: 'query', required: false, schema: new OA\Schema(type: 'string')),
+        ],
+        responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')],
+    )]
     public function post(Request $request, string $slug, FindPublishedPostQuery $query): JsonResponse
     {
         $post = $query->handle($slug, $request->query('locale'));
@@ -37,13 +60,13 @@ final class PublicContentController
         return (new PostResource(PostDTO::fromModel($post)))->toResponse($request);
     }
 
-    #[OA\Get(path: '/api/v1/content/pages/{slug}', operationId: 'content_page_api_v1_content_pages_slug', tags: ['content'], summary: 'GET /api/v1/content/pages/{slug}', responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')])]
+    #[OA\Get(path: '/api/v1/content/pages/{slug}', operationId: 'content_page_api_v1_content_pages_slug', tags: ['content'], summary: 'GET /api/v1/content/pages/{slug}', security: [['apiKey' => []]], parameters: [new OA\Parameter(name: 'slug', in: 'path', required: true, schema: new OA\Schema(type: 'string'))], responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')])]
     public function page(Request $request, string $slug, FindPublishedPageQuery $query): JsonResponse
     {
         return (new PageResource(PageDTO::fromModel($query->handle($slug))))->toResponse($request);
     }
 
-    #[OA\Get(path: '/api/v1/content/categories', operationId: 'content_categories_api_v1_content_categories', tags: ['content'], summary: 'GET /api/v1/content/categories', responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')])]
+    #[OA\Get(path: '/api/v1/content/categories', operationId: 'content_categories_api_v1_content_categories', tags: ['content'], summary: 'GET /api/v1/content/categories', security: [['apiKey' => []]], responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')])]
     public function categories(Request $request, PublicCategoriesQuery $query): JsonResponse
     {
         return CategoryResource::collection($query->handle())->toResponse($request);

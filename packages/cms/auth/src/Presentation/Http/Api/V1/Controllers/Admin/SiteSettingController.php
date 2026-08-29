@@ -16,13 +16,31 @@ use OpenApi\Attributes as OA;
 
 final class SiteSettingController
 {
-    #[OA\Get(path: '/api/admin/v1/projects/{project}/site-settings', operationId: 'auth_show_api_admin_v1_projects_project_site_settings', tags: ['auth'], summary: 'GET /api/admin/v1/projects/{project}/site-settings', responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 403, description: 'Forbidden')])]
+    #[OA\Get(path: '/api/admin/v1/projects/{project}/site-settings', operationId: 'auth_show_api_admin_v1_projects_project_site_settings', tags: ['auth'], summary: 'GET /api/admin/v1/projects/{project}/site-settings', security: [['bearerAuth' => []]], parameters: [new OA\Parameter(name: 'project', in: 'path', required: true, schema: new OA\Schema(type: 'string'))], responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 403, description: 'Forbidden')])]
     public function show(Request $request, string $project, GetSiteSettingsQuery $query): JsonResponse
     {
         return (new SiteSettingsResource($query->handle()))->toResponse($request);
     }
 
-    #[OA\Put(path: '/api/admin/v1/projects/{project}/site-settings', operationId: 'auth_update_api_admin_v1_projects_project_site_settings', tags: ['auth'], summary: 'PUT /api/admin/v1/projects/{project}/site-settings', responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')])]
+    #[OA\Put(
+        path: '/api/admin/v1/projects/{project}/site-settings',
+        operationId: 'auth_update_api_admin_v1_projects_project_site_settings',
+        tags: ['auth'],
+        summary: 'PUT /api/admin/v1/projects/{project}/site-settings',
+        security: [['bearerAuth' => []]],
+        parameters: [
+            new OA\Parameter(name: 'project', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+        ],
+        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(
+            required: ['language', 'currency_default', 'currencies'],
+            properties: [
+                new OA\Property(property: 'language', type: 'string'),
+                new OA\Property(property: 'currency_default', type: 'string', minLength: 3, maxLength: 3),
+                new OA\Property(property: 'currencies', type: 'array', minItems: 1, items: new OA\Items(type: 'string', enum: ['RUB', 'USD'])),
+            ],
+        )),
+        responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')],
+    )]
     public function update(UpdateSiteSettingsRequest $request, string $project, UpdateSiteSettingsHandler $handler): JsonResponse
     {
         $saved = $handler->handle(new UpdateSiteSettingsCommand(SiteSettingsDTO::fromValidated($request->validated())));

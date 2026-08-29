@@ -4,7 +4,7 @@ FROM phpswoole/swoole:php8.4 AS base
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
         libpq-dev libicu-dev libzip-dev unzip supervisor \
-    && docker-php-ext-install pdo_pgsql intl zip pcntl \
+    && docker-php-ext-install pdo_pgsql intl zip pcntl exif \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
@@ -20,8 +20,9 @@ COPY apps/${APP_SERVICE} /var/www/apps/${APP_SERVICE}
 
 WORKDIR /var/www/apps/${APP_SERVICE}
 
+# composer-ошибка должна валить сборку; допустим только сбой package:discover (нет env)
 RUN composer install --no-interaction --no-dev --optimize-autoloader --no-scripts \
-    && php artisan package:discover || true
+    && (php artisan package:discover || true)
 
 COPY infra/docker/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh

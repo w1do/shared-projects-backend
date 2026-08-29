@@ -25,7 +25,20 @@ use OpenApi\Attributes as OA;
 
 final class AuthController
 {
-    #[OA\Post(path: '/api/admin/v1/auth/login', operationId: 'auth_login_api_admin_v1_auth_login', tags: ['auth'], summary: 'POST /api/admin/v1/auth/login', responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')])]
+    #[OA\Post(
+        path: '/api/admin/v1/auth/login',
+        operationId: 'auth_login_api_admin_v1_auth_login',
+        tags: ['auth'],
+        summary: 'POST /api/admin/v1/auth/login',
+        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(
+            required: ['email', 'password'],
+            properties: [
+                new OA\Property(property: 'email', type: 'string', format: 'email'),
+                new OA\Property(property: 'password', type: 'string'),
+            ],
+        )),
+        responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')],
+    )]
     public function login(LoginRequest $request, LoginAdminHandler $command): JsonResponse
     {
         $result = $command->handle(new LoginAdminCommand(
@@ -36,7 +49,7 @@ final class AuthController
         return (new AuthTokenResource($result))->toResponse($request);
     }
 
-    #[OA\Post(path: '/api/admin/v1/auth/logout', operationId: 'auth_logout_api_admin_v1_auth_logout', tags: ['auth'], summary: 'POST /api/admin/v1/auth/logout', responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')])]
+    #[OA\Post(path: '/api/admin/v1/auth/logout', operationId: 'auth_logout_api_admin_v1_auth_logout', tags: ['auth'], summary: 'POST /api/admin/v1/auth/logout', security: [['bearerAuth' => []]], responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')])]
     public function logout(Request $request, LogoutHandler $command): JsonResponse
     {
         /** @var Admin $admin */
@@ -47,7 +60,7 @@ final class AuthController
         return ApiResponse::noContent();
     }
 
-    #[OA\Get(path: '/api/admin/v1/me', operationId: 'auth_me_api_admin_v1_me', tags: ['auth'], summary: 'GET /api/admin/v1/me', responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')])]
+    #[OA\Get(path: '/api/admin/v1/me', operationId: 'auth_me_api_admin_v1_me', tags: ['auth'], summary: 'GET /api/admin/v1/me', security: [['bearerAuth' => []]], responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')])]
     public function me(Request $request): JsonResponse
     {
         /** @var Admin $admin */
@@ -56,6 +69,22 @@ final class AuthController
         return (new AdminProfileResource(AdminProfileDTO::fromModel($admin)))->toResponse($request);
     }
 
+    #[OA\Patch(
+        path: '/api/admin/v1/me',
+        operationId: 'auth_updateProfile_api_admin_v1_me',
+        tags: ['auth'],
+        summary: 'PATCH /api/admin/v1/me',
+        security: [['bearerAuth' => []]],
+        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(
+            properties: [
+                new OA\Property(property: 'name', type: 'string', maxLength: 255),
+                new OA\Property(property: 'locale', type: 'string', maxLength: 10),
+                new OA\Property(property: 'password', type: 'string', minLength: 8),
+                new OA\Property(property: 'current_password', type: 'string'),
+            ],
+        )),
+        responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')],
+    )]
     public function updateProfile(UpdateProfileRequest $request, UpdateAdminProfileHandler $command): JsonResponse
     {
         /** @var Admin $current */

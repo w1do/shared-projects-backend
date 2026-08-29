@@ -80,7 +80,7 @@ pay-service) и перевод подписок `cms/pay` на полиморф�
 
 ## API
 
-Все маршруты под pay-префиксами gateway (Caddyfile не менялся):
+Все маршруты под pay-префиксами gateway (матрица маршрутов не менялась):
 `/api/admin/v1/projects/{project}/pay/licensing/*` (организации, планы, фичи,
 лицензии: выпуск/файл/отзыв/список, публичный ключ) и
 `/api/v1/pay/licensing/validate`. Swagger пересобирается `./tools/cms api`

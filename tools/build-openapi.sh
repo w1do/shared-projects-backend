@@ -28,14 +28,14 @@ $merged = [
     "paths" => [], "components" => ["securitySchemes" => []], "tags" => [],
 ];
 foreach (["auth", "content", "analytics", "pay"] as $s) {
-    $doc = json_decode(file_get_contents("$root/openapi/$s.json"), true);
-    foreach ($doc["paths"] ?? [] as $path => $ops) {
-        $merged["paths"][$path] = array_merge($merged["paths"][$path] ?? [], $ops);
+    $doc = json_decode(file_get_contents("$root/openapi/$s.json"));
+    foreach (get_object_vars($doc->paths ?? new stdClass) as $path => $ops) {
+        $merged["paths"][$path] = array_merge($merged["paths"][$path] ?? [], get_object_vars($ops));
     }
-    foreach ($doc["components"]["securitySchemes"] ?? [] as $k => $v) {
+    foreach (get_object_vars($doc->components->securitySchemes ?? new stdClass) as $k => $v) {
         $merged["components"]["securitySchemes"][$k] = $v;
     }
-    foreach ($doc["components"]["schemas"] ?? [] as $k => $v) {
+    foreach (get_object_vars($doc->components->schemas ?? new stdClass) as $k => $v) {
         $merged["components"]["schemas"][$k] = $v;
     }
     $merged["tags"][] = ["name" => $s];

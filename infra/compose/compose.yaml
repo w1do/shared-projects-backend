@@ -1,12 +1,73 @@
+# Производственный базовый compose: `docker compose -f infra/compose/compose.yaml up -d`
+# из любого каталога (пути относительны файлу). Dev-режим — override compose.dev.yaml.
+# Секреты и домен переопределяются корневым env (см. .env.example); без него — dev-дефолты.
 name: platform
 
+x-php-env: &php-env
+  APP_ENV: ${APP_ENV:-local}
+  APP_DEBUG: ${APP_DEBUG:-true}
+  APP_URL: ${APP_URL:-http://localhost:8080}
+  LOG_CHANNEL: stderr
+  LOG_LEVEL: ${LOG_LEVEL:-debug}
+  DB_CONNECTION: pgsql
+  DB_HOST: postgres
+  DB_PORT: 5432
+  DB_USERNAME: ${POSTGRES_USER:-platform}
+  DB_PASSWORD: ${POSTGRES_PASSWORD:-platform}
+  CACHE_STORE: redis
+  QUEUE_CONNECTION: redis
+  SESSION_DRIVER: redis
+  REDIS_HOST: redis
+  REDIS_PORT: 6379
+  AUTH_SERVICE_URL: http://auth-service:8000
+  ANALYTICS_SERVICE_URL: http://analytics-service:8000
+  SERVICE_TOKEN: ${SERVICE_TOKEN:-dev-service-token}
+  INTROSPECTION_CACHE_TTL: 90
+
+x-auth-env: &auth-env
+  <<: *php-env
+  APP_NAME: auth-service
+  APP_KEY: ${AUTH_APP_KEY:-base64:G+ZlqDBdCJN3ndEW676SdQrq7MZUrChIj6uAEsHiNsw=}
+  DB_DATABASE: auth_service
+
+x-content-env: &content-env
+  <<: *php-env
+  APP_NAME: content-service
+  APP_KEY: ${CONTENT_APP_KEY:-base64:P4wUl4vHsWbfP3HHxxwyBD2oOmkSPt+Wej/rr0GNPE0=}
+  DB_DATABASE: content_service
+  FILESYSTEM_DISK: s3
+  AWS_ACCESS_KEY_ID: ${MINIO_ROOT_USER:-platform}
+  AWS_SECRET_ACCESS_KEY: ${MINIO_ROOT_PASSWORD:-platform-secret}
+  AWS_DEFAULT_REGION: us-east-1
+  AWS_BUCKET: media
+  AWS_ENDPOINT: http://minio:9000
+  AWS_USE_PATH_STYLE_ENDPOINT: true
+  AWS_URL: ${AWS_URL:-http://localhost:9000/media}
+  OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+  OPENAI_BASE_URL: ${OPENAI_BASE_URL:-https://polza.ai/api/v1}
+  CMS_AI_MODEL: ${CMS_AI_MODEL:-openai/gpt-5.4-mini}
+
+x-analytics-env: &analytics-env
+  <<: *php-env
+  APP_NAME: analytics-service
+  APP_KEY: ${ANALYTICS_APP_KEY:-base64:tnoU5BGXTIn/LnEgJVk2Cy55eCQ9EmkBHb7yvT8RF4U=}
+  DB_DATABASE: analytics_service
+  CLICKHOUSE_HOST: clickhouse
+  CLICKHOUSE_PORT: 8123
+  CLICKHOUSE_DATABASE: analytics
+  CLICKHOUSE_USERNAME: ${CLICKHOUSE_USER:-platform}
+  CLICKHOUSE_PASSWORD: ${CLICKHOUSE_PASSWORD:-platform}
+  ANALYTICS_IP_SALT: ${ANALYTICS_IP_SALT:-change-me}
+
+x-pay-env: &pay-env
+  <<: *php-env
+  APP_NAME: pay-service
+  APP_KEY: ${PAY_APP_KEY:-base64:A0VfKChTQY4C105/ldHHXQVwkG5UNj8CnZYkTl8EYGU=}
+  DB_DATABASE: pay_service
+  PLATEGA_BASE_URL: ${PLATEGA_BASE_URL:-https://app.platega.io}
+
 x-php-service: &php-service
-  build:
-    context: .
-    dockerfile: infra/docker/Dockerfile
   restart: unless-stopped
-  volumes:
-    - .:/var/www
   depends_on:
     postgres:
       condition: service_healthy
@@ -16,78 +77,75 @@ x-php-service: &php-service
 
 services:
   gateway:
-    image: caddy:2
+    image: traefik:v3
     restart: unless-stopped
     ports:
       - "${GATEWAY_PORT:-8080}:80"
     volumes:
-      - ./infra/gateway/Caddyfile:/etc/caddy/Caddyfile:ro
+      # каталог целиком: file-provider перечитывает dynamic.yml при замене файла
+      - ../gateway:/etc/traefik:ro
     depends_on: [auth-service, content-service, analytics-service, pay-service, admin-front]
     networks: [platform]
 
   auth-service:
     <<: *php-service
+    image: platform-auth-service
+    build: &auth-build
+      context: ../..
+      dockerfile: infra/docker/Dockerfile
+      args: { APP_SERVICE: auth-service }
     environment:
-      APP_SERVICE: auth-service
+      <<: *auth-env
       AUTO_MIGRATE: "1"
-    env_file: [./infra/services/auth-service/.env]
+      MANIFEST_PUBLISH: "1"
+      ADMIN_SEED: "1"
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-root@example.com}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-secret-123}
+
+  auth-worker:
+    <<: *php-service
+    image: platform-auth-service
+    build: *auth-build
+    command: ["php", "artisan", "queue:work", "--sleep=2", "--tries=2", "--timeout=120"]
+    environment: *auth-env
 
   content-service:
     <<: *php-service
+    image: platform-content-service
+    build: &content-build
+      context: ../..
+      dockerfile: infra/docker/Dockerfile
+      args: { APP_SERVICE: content-service }
     environment:
-      APP_SERVICE: content-service
+      <<: *content-env
       AUTO_MIGRATE: "1"
-    env_file:
-      - ./infra/services/content-service/.env
-      # локальные секреты (OPENAI_API_KEY и т.п.) — файл не в репозитории
-      - path: ./infra/services/content-service/.env.local
-        required: false
+      MANIFEST_PUBLISH: "1"
 
-  # Воркер очередей контента: автоперевод, sitemap и прочие фоновые задачи.
   content-worker:
     <<: *php-service
+    image: platform-content-service
+    build: *content-build
     command: ["php", "artisan", "queue:work", "--queue=default,media", "--sleep=2", "--tries=2", "--timeout=120"]
-    environment:
-      APP_SERVICE: content-service
-    env_file:
-      - ./infra/services/content-service/.env
-      - path: ./infra/services/content-service/.env.local
-        required: false
+    environment: *content-env
 
-  # Планировщик content: nightly localize:sync и прочие расписания пакетов.
   content-scheduler:
     <<: *php-service
+    image: platform-content-service
+    build: *content-build
     command: ["php", "artisan", "schedule:work"]
-    environment:
-      APP_SERVICE: content-service
-    env_file:
-      - ./infra/services/content-service/.env
-      - path: ./infra/services/content-service/.env.local
-        required: false
+    environment: *content-env
 
-  # Воркер очередей auth: аудит и рассылка cache-bust после переноса в Jobs (этап 6).
-  auth-worker:
+  analytics-service:
     <<: *php-service
-    command: ["php", "artisan", "queue:work", "--sleep=2", "--tries=2", "--timeout=120"]
+    image: platform-analytics-service
+    build: &analytics-build
+      context: ../..
+      dockerfile: infra/docker/Dockerfile
+      args: { APP_SERVICE: analytics-service }
     environment:
-      APP_SERVICE: auth-service
-    env_file: [./infra/services/auth-service/.env]
-
-  # Воркер очередей платежей: вебхуки (queues: webhooks, critical) и default.
-  pay-worker:
-    <<: *php-service
-    command: ["php", "artisan", "queue:work", "--queue=critical,webhooks,default", "--sleep=2", "--tries=2", "--timeout=120"]
-    environment:
-      APP_SERVICE: pay-service
-    env_file: [./infra/services/pay-service/.env]
-
-  # Воркер очередей аналитики: экспорт отчётов (queue: exports) и default.
-  analytics-worker:
-    <<: *php-service
-    command: ["php", "artisan", "queue:work", "--queue=exports,default", "--sleep=2", "--tries=2", "--timeout=120"]
-    environment:
-      APP_SERVICE: analytics-service
-    env_file: [./infra/services/analytics-service/.env]
+      <<: *analytics-env
+      AUTO_MIGRATE: "1"
+      MANIFEST_PUBLISH: "1"
     depends_on:
       postgres:
         condition: service_healthy
@@ -96,12 +154,12 @@ services:
       clickhouse:
         condition: service_started
 
-  analytics-service:
+  analytics-worker:
     <<: *php-service
-    environment:
-      APP_SERVICE: analytics-service
-      AUTO_MIGRATE: "1"
-    env_file: [./infra/services/analytics-service/.env]
+    image: platform-analytics-service
+    build: *analytics-build
+    command: ["php", "artisan", "queue:work", "--queue=exports,default", "--sleep=2", "--tries=2", "--timeout=120"]
+    environment: *analytics-env
     depends_on:
       postgres:
         condition: service_healthy
@@ -112,22 +170,41 @@ services:
 
   pay-service:
     <<: *php-service
+    image: platform-pay-service
+    build: &pay-build
+      context: ../..
+      dockerfile: infra/docker/Dockerfile
+      args: { APP_SERVICE: pay-service }
     environment:
-      APP_SERVICE: pay-service
+      <<: *pay-env
       AUTO_MIGRATE: "1"
-    env_file: [./infra/services/pay-service/.env]
+      MANIFEST_PUBLISH: "1"
+
+  pay-worker:
+    <<: *php-service
+    image: platform-pay-service
+    build: *pay-build
+    command: ["php", "artisan", "queue:work", "--queue=critical,webhooks,default", "--sleep=2", "--tries=2", "--timeout=120"]
+    environment: *pay-env
+
+  docs:
+    image: platform-docs
+    build:
+      context: ../../openapi
+      dockerfile: ../infra/docker/docs.Dockerfile
+    restart: unless-stopped
+    networks: [platform]
 
   admin-front:
-    image: oven/bun:1.2.21-alpine
+    image: platform-admin-front
+    build:
+      context: ../../frontends/admin
+      dockerfile: ../../infra/docker/admin-front.Dockerfile
     restart: unless-stopped
-    working_dir: /app
-    command: sh -c "bun install --frozen-lockfile && bun run build && bun run start"
     environment:
-      PORT: "3000"
-      HOSTNAME: "0.0.0.0"
-    env_file: [./infra/services/admin-front/.env]
-    volumes:
-      - ./frontends/admin:/app
+      PORT: 3000
+      HOSTNAME: 0.0.0.0
+      ADMIN_INTERNAL_API_BASE_URL: http://gateway:80
     expose:
       - "3000"
     networks: [platform]
@@ -137,8 +214,8 @@ services:
     restart: unless-stopped
     command: server /data --console-address ":9001"
     environment:
-      MINIO_ROOT_USER: platform
-      MINIO_ROOT_PASSWORD: platform-secret
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-platform}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-platform-secret}
     volumes:
       - minio-data:/data
     networks: [platform]
@@ -147,7 +224,7 @@ services:
     image: minio/mc:latest
     depends_on: [minio]
     entrypoint: >
-      sh -c "sleep 3 && mc alias set local http://minio:9000 platform platform-secret &&
+      sh -c "sleep 3 && mc alias set local http://minio:9000 ${MINIO_ROOT_USER:-platform} ${MINIO_ROOT_PASSWORD:-platform-secret} &&
              mc mb -p local/media && mc anonymous set download local/media"
     networks: [platform]
 
@@ -155,13 +232,13 @@ services:
     image: postgres:17
     restart: unless-stopped
     environment:
-      POSTGRES_USER: platform
-      POSTGRES_PASSWORD: platform
+      POSTGRES_USER: ${POSTGRES_USER:-platform}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-platform}
     volumes:
       - postgres-data:/var/lib/postgresql/data
-      - ./infra/compose/init-databases.sql:/docker-entrypoint-initdb.d/init-databases.sql:ro
+      - ./init-databases.sql:/docker-entrypoint-initdb.d/init-databases.sql:ro
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U platform"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-platform}"]
       interval: 3s
       timeout: 3s
       retries: 20
@@ -180,8 +257,8 @@ services:
     restart: unless-stopped
     environment:
       CLICKHOUSE_DB: analytics
-      CLICKHOUSE_USER: platform
-      CLICKHOUSE_PASSWORD: platform
+      CLICKHOUSE_USER: ${CLICKHOUSE_USER:-platform}
+      CLICKHOUSE_PASSWORD: ${CLICKHOUSE_PASSWORD:-platform}
     volumes:
       - clickhouse-data:/var/lib/clickhouse
     ulimits:

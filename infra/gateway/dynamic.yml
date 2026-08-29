@@ -1,0 +1,105 @@
+# Матрица маршрутизации платформы (перенос Caddyfile 1:1).
+# Приоритеты явные: health (200) > модульные admin-пути (100) > catch-all auth
+# и публичные группы (50) > панель (1). У Traefik решает длина правила — не полагаемся.
+http:
+  routers:
+    health-auth:
+      rule: "Path(`/health/auth`)"
+      priority: 200
+      middlewares: [health-rewrite]
+      service: auth
+    health-content:
+      rule: "Path(`/health/content`)"
+      priority: 200
+      middlewares: [health-rewrite]
+      service: content
+    health-analytics:
+      rule: "Path(`/health/analytics`)"
+      priority: 200
+      middlewares: [health-rewrite]
+      service: analytics
+    health-pay:
+      rule: "Path(`/health/pay`)"
+      priority: 200
+      middlewares: [health-rewrite]
+      service: pay
+
+    # Модульные admin-маршруты внутри проекта — раньше catch-all auth'а
+    content-admin:
+      rule: "PathRegexp(`^/api/admin/v1/projects/[^/]+/content(/|$)`)"
+      priority: 100
+      service: content
+    analytics-admin:
+      rule: "PathRegexp(`^/api/admin/v1/projects/[^/]+/analytics(/|$)`)"
+      priority: 100
+      service: analytics
+    pay-admin:
+      rule: "PathRegexp(`^/api/admin/v1/projects/[^/]+/pay(/|$)`)"
+      priority: 100
+      service: pay
+
+    # Документация API — выше публичных /api/*-групп сервисов
+    docs:
+      rule: "PathPrefix(`/api/docs`)"
+      priority: 90
+      service: docs
+
+    # auth-service: аутентификация, tenant, bootstrap
+    auth:
+      rule: "PathPrefix(`/api/admin/v1`) || PathPrefix(`/api/v1/auth`)"
+      priority: 50
+      service: auth
+
+    # Публичные маршруты сервисов
+    content-public:
+      rule: "PathPrefix(`/api/v1/content`) || Path(`/sitemap.xml`) || Path(`/robots.txt`)"
+      priority: 50
+      service: content
+    analytics-public:
+      rule: "Path(`/api/v1/collect`) || PathPrefix(`/api/v1/analytics`)"
+      priority: 50
+      service: analytics
+    pay-public:
+      rule: "PathPrefix(`/api/v1/pay`) || PathPrefix(`/webhooks`)"
+      priority: 50
+      service: pay
+
+    # Всё остальное — панель управления (Next.js):
+    # статика /_next/*, /login, /admin* и корень (Next редиректит / → /admin)
+    admin-front:
+      rule: "PathPrefix(`/`)"
+      priority: 1
+      service: admin-front
+
+  middlewares:
+    compress:
+      compress: {}
+    health-rewrite:
+      replacePath:
+        path: /health
+
+  services:
+    auth:
+      loadBalancer:
+        servers:
+          - url: "http://auth-service:8000"
+    content:
+      loadBalancer:
+        servers:
+          - url: "http://content-service:8000"
+    analytics:
+      loadBalancer:
+        servers:
+          - url: "http://analytics-service:8000"
+    pay:
+      loadBalancer:
+        servers:
+          - url: "http://pay-service:8000"
+    admin-front:
+      loadBalancer:
+        servers:
+          - url: "http://admin-front:3000"
+    docs:
+      loadBalancer:
+        servers:
+          - url: "http://docs:8080"

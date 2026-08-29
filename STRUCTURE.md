@@ -34,10 +34,10 @@ spatie/laravel-permission (teams, `team_id = project_id`); категории �
 │   ├── source-admin/              референс-вёрстка (источник правды дизайна, не менять)
 │   └── admin/                     панель управления (Vite + React + TanStack Query из packages/frontend)
 ├── infra/
-│   ├── docker/                    один Dockerfile на все сервисы (APP_SERVICE), entrypoint
-│   ├── compose/                   compose.yaml: gateway, 4 сервиса, postgres, redis, clickhouse, minio, admin-front
-│   ├── gateway/                   Caddyfile — маршрутизация по префиксам
-│   └── services/<service>/        .env(.example), octane- и supervisor-конфиги каждого сервиса
+│   ├── docker/                    Dockerfile PHP-сервисов (APP_SERVICE), entrypoint (бутстрап), образы панели и docs
+│   ├── compose/                   compose.yaml (производственный, env-дефолты) + compose.dev.yaml + .env.example
+│   ├── gateway/                   traefik.yml + dynamic.yml — матрица маршрутизации по префиксам
+│   └── services/<service>/        supervisor-конфиги сервисов
 ├── tools/cms                      CLI: up|down|migrate|test [service], api (сборка единого swagger)
 ├── openspec/                      планирование (spec-driven)
 └── CLAUDE.md · STRUCTURE.md
@@ -116,5 +116,5 @@ packages/cms/<module>/src/
 1. `make:module <name>` (cms/generators) — пара пакетов backend+frontend по эталону §2.
 2. Заполнить манифест (права, навигация, настройки), домен, handlers, контроллеры.
 3. `composer require` в своём приложении apps/<name>-service (или подключить к существующему),
-   маршрут в gateway, env в infra/services/.
+   маршрут в `infra/gateway/dynamic.yml`, переменные — в env-якоря `infra/compose/compose.yaml`.
 4. `manifest:publish` — модуль появляется в bootstrap, права — в ролях.

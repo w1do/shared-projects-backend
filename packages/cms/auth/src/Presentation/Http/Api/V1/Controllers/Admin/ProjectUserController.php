@@ -21,13 +21,13 @@ use OpenApi\Attributes as OA;
 /** Управление пользователями сайта проекта из админки (права auth.users.*). */
 final class ProjectUserController
 {
-    #[OA\Get(path: '/api/admin/v1/projects/{project}/users', operationId: 'auth_index_api_admin_v1_projects_project_users', tags: ['auth'], summary: 'GET /api/admin/v1/projects/{project}/users', responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')])]
+    #[OA\Get(path: '/api/admin/v1/projects/{project}/users', operationId: 'auth_index_api_admin_v1_projects_project_users', tags: ['auth'], summary: 'GET /api/admin/v1/projects/{project}/users', security: [['bearerAuth' => []]], parameters: [new OA\Parameter(name: 'project', in: 'path', required: true, schema: new OA\Schema(type: 'string')), new OA\Parameter(name: 'cursor', in: 'query', required: false, schema: new OA\Schema(type: 'string'))], responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')])]
     public function index(Request $request, ListProjectUsersQuery $query): JsonResponse
     {
         return (new SiteUserCollection($query->handle()))->toResponse($request);
     }
 
-    #[OA\Post(path: '/api/admin/v1/projects/{project}/users/{user}/block', operationId: 'auth_block_api_admin_v1_projects_project_users_user_block', tags: ['auth'], summary: 'POST /api/admin/v1/projects/{project}/users/{user}/block', responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')])]
+    #[OA\Post(path: '/api/admin/v1/projects/{project}/users/{user}/block', operationId: 'auth_block_api_admin_v1_projects_project_users_user_block', tags: ['auth'], summary: 'POST /api/admin/v1/projects/{project}/users/{user}/block', security: [['bearerAuth' => []]], parameters: [new OA\Parameter(name: 'project', in: 'path', required: true, schema: new OA\Schema(type: 'string')), new OA\Parameter(name: 'user', in: 'path', required: true, schema: new OA\Schema(type: 'integer'))], responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')])]
     public function block(Request $request, string $project, int $userId, BlockUserHandler $command, FindProjectUserQuery $users): JsonResponse
     {
         $user = $command->handle(new BlockUserCommand($users->handle($userId), true));
@@ -35,7 +35,7 @@ final class ProjectUserController
         return (new SiteUserResource(SiteUserDTO::fromModel($user)))->toResponse($request);
     }
 
-    #[OA\Post(path: '/api/admin/v1/projects/{project}/users/{user}/unblock', operationId: 'auth_unblock_api_admin_v1_projects_project_users_user_unblock', tags: ['auth'], summary: 'POST /api/admin/v1/projects/{project}/users/{user}/unblock', responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')])]
+    #[OA\Post(path: '/api/admin/v1/projects/{project}/users/{user}/unblock', operationId: 'auth_unblock_api_admin_v1_projects_project_users_user_unblock', tags: ['auth'], summary: 'POST /api/admin/v1/projects/{project}/users/{user}/unblock', security: [['bearerAuth' => []]], parameters: [new OA\Parameter(name: 'project', in: 'path', required: true, schema: new OA\Schema(type: 'string')), new OA\Parameter(name: 'user', in: 'path', required: true, schema: new OA\Schema(type: 'integer'))], responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')])]
     public function unblock(Request $request, string $project, int $userId, BlockUserHandler $command, FindProjectUserQuery $users): JsonResponse
     {
         $user = $command->handle(new BlockUserCommand($users->handle($userId), false));
@@ -43,7 +43,7 @@ final class ProjectUserController
         return (new SiteUserResource(SiteUserDTO::fromModel($user)))->toResponse($request);
     }
 
-    #[OA\Delete(path: '/api/admin/v1/projects/{project}/users/{user}', operationId: 'auth_destroy_api_admin_v1_projects_project_users_user', tags: ['auth'], summary: 'DELETE /api/admin/v1/projects/{project}/users/{user}', responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')])]
+    #[OA\Delete(path: '/api/admin/v1/projects/{project}/users/{user}', operationId: 'auth_destroy_api_admin_v1_projects_project_users_user', tags: ['auth'], summary: 'DELETE /api/admin/v1/projects/{project}/users/{user}', security: [['bearerAuth' => []]], parameters: [new OA\Parameter(name: 'project', in: 'path', required: true, schema: new OA\Schema(type: 'string')), new OA\Parameter(name: 'user', in: 'path', required: true, schema: new OA\Schema(type: 'integer'))], responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')])]
     public function destroy(Request $request, string $project, int $userId, DeleteUserHandler $command, FindProjectUserQuery $users): JsonResponse
     {
         $command->handle(new DeleteUserCommand($users->handle($userId)));

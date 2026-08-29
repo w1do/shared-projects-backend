@@ -22,14 +22,36 @@ use OpenApi\Attributes as OA;
 
 final class PaymentController
 {
-    #[OA\Get(path: '/api/admin/v1/projects/{project}/pay/payments', operationId: 'pay_index_api_admin_v1_projects_project_pay_payments', tags: ['pay'], summary: 'GET /api/admin/v1/projects/{project}/pay/payments', responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')])]
+    #[OA\Get(
+        path: '/api/admin/v1/projects/{project}/pay/payments',
+        operationId: 'pay_index_api_admin_v1_projects_project_pay_payments',
+        tags: ['pay'],
+        summary: 'GET /api/admin/v1/projects/{project}/pay/payments',
+        security: [['bearerAuth' => []]],
+        parameters: [
+            new OA\Parameter(name: 'project', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+            new OA\Parameter(name: 'cursor', in: 'query', required: false, schema: new OA\Schema(type: 'string')),
+        ],
+        responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')],
+    )]
     public function index(Request $request, ListPaymentsQuery $query): JsonResponse
     {
         return (new PaymentCursorCollection($query->handle()))->toResponse($request);
     }
 
     /** Ручное подтверждение оплаты по счёту (ManualProvider). */
-    #[OA\Post(path: '/api/admin/v1/projects/{project}/pay/payments/{payment}/confirm', operationId: 'pay_confirm_api_admin_v1_projects_project_pay_payments_payment_confirm', tags: ['pay'], summary: 'POST /api/admin/v1/projects/{project}/pay/payments/{payment}/confirm', responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')])]
+    #[OA\Post(
+        path: '/api/admin/v1/projects/{project}/pay/payments/{payment}/confirm',
+        operationId: 'pay_confirm_api_admin_v1_projects_project_pay_payments_payment_confirm',
+        tags: ['pay'],
+        summary: 'POST /api/admin/v1/projects/{project}/pay/payments/{payment}/confirm',
+        security: [['bearerAuth' => []]],
+        parameters: [
+            new OA\Parameter(name: 'project', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+            new OA\Parameter(name: 'payment', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+        ],
+        responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')],
+    )]
     public function confirm(Request $request, string $project, string $paymentId, ApplyPaymentStatusHandler $handler): JsonResponse
     {
         // Скоуп проекта — глобальный (BelongsToProject); чужой платёж не находится
@@ -41,7 +63,23 @@ final class PaymentController
         return (new PaymentResource(PaymentDTO::fromModel($updated)))->toResponse($request);
     }
 
-    #[OA\Post(path: '/api/admin/v1/projects/{project}/pay/payments/{payment}/refund', operationId: 'pay_refund_api_admin_v1_projects_project_pay_payments_payment_refund', tags: ['pay'], summary: 'POST /api/admin/v1/projects/{project}/pay/payments/{payment}/refund', responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')])]
+    #[OA\Post(
+        path: '/api/admin/v1/projects/{project}/pay/payments/{payment}/refund',
+        operationId: 'pay_refund_api_admin_v1_projects_project_pay_payments_payment_refund',
+        tags: ['pay'],
+        summary: 'POST /api/admin/v1/projects/{project}/pay/payments/{payment}/refund',
+        security: [['bearerAuth' => []]],
+        parameters: [
+            new OA\Parameter(name: 'project', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+            new OA\Parameter(name: 'payment', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+        ],
+        requestBody: new OA\RequestBody(required: false, content: new OA\JsonContent(
+            properties: [
+                new OA\Property(property: 'amount_minor', type: 'integer', minimum: 1),
+            ],
+        )),
+        responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')],
+    )]
     public function refund(RefundPaymentRequest $request, string $project, string $paymentId, RefundPaymentHandler $handler): JsonResponse
     {
         $payment = Payment::query()->findOrFail($paymentId);

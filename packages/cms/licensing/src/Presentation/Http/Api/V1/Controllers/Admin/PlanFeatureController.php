@@ -22,7 +22,26 @@ use OpenApi\Attributes as OA;
 /** Фичи плана поставки: базовые и пер-организационные переопределения (Д4). */
 final class PlanFeatureController
 {
-    #[OA\Post(path: '/api/admin/v1/projects/{project}/pay/licensing/plans/{plan}/features', operationId: 'licensing_store_plan_feature', tags: ['pay'], summary: 'POST /api/admin/v1/projects/{project}/pay/licensing/plans/{plan}/features', responses: [new OA\Response(response: 201, description: 'Created'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 404, description: 'Not found'), new OA\Response(response: 422, description: 'Validation error')])]
+    #[OA\Post(
+        path: '/api/admin/v1/projects/{project}/pay/licensing/plans/{plan}/features',
+        operationId: 'licensing_store_plan_feature',
+        tags: ['pay'],
+        summary: 'POST /api/admin/v1/projects/{project}/pay/licensing/plans/{plan}/features',
+        security: [['bearerAuth' => []]],
+        parameters: [
+            new OA\Parameter(name: 'project', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+            new OA\Parameter(name: 'plan', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
+        ],
+        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(
+            required: ['code', 'name'],
+            properties: [
+                new OA\Property(property: 'code', type: 'string', maxLength: 64),
+                new OA\Property(property: 'name', type: 'string', maxLength: 255),
+                new OA\Property(property: 'organization_id', type: 'integer', nullable: true),
+            ],
+        )),
+        responses: [new OA\Response(response: 201, description: 'Created'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 404, description: 'Not found'), new OA\Response(response: 422, description: 'Validation error')],
+    )]
     public function store(
         UpsertPlanFeatureRequest $request,
         string $project,
@@ -38,7 +57,27 @@ final class PlanFeatureController
         return (new PlanFeatureResource(PlanFeatureDTO::fromModel($feature)))->toCreatedResponse($request);
     }
 
-    #[OA\Put(path: '/api/admin/v1/projects/{project}/pay/licensing/plans/{plan}/features/{feature}', operationId: 'licensing_update_plan_feature', tags: ['pay'], summary: 'PUT /api/admin/v1/projects/{project}/pay/licensing/plans/{plan}/features/{feature}', responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 404, description: 'Not found'), new OA\Response(response: 422, description: 'Validation error')])]
+    #[OA\Put(
+        path: '/api/admin/v1/projects/{project}/pay/licensing/plans/{plan}/features/{feature}',
+        operationId: 'licensing_update_plan_feature',
+        tags: ['pay'],
+        summary: 'PUT /api/admin/v1/projects/{project}/pay/licensing/plans/{plan}/features/{feature}',
+        security: [['bearerAuth' => []]],
+        parameters: [
+            new OA\Parameter(name: 'project', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+            new OA\Parameter(name: 'plan', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
+            new OA\Parameter(name: 'feature', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
+        ],
+        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(
+            required: ['code', 'name'],
+            properties: [
+                new OA\Property(property: 'code', type: 'string', maxLength: 64),
+                new OA\Property(property: 'name', type: 'string', maxLength: 255),
+                new OA\Property(property: 'organization_id', type: 'integer', nullable: true),
+            ],
+        )),
+        responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 404, description: 'Not found'), new OA\Response(response: 422, description: 'Validation error')],
+    )]
     public function update(
         UpsertPlanFeatureRequest $request,
         string $project,
@@ -59,7 +98,19 @@ final class PlanFeatureController
         return (new PlanFeatureResource(PlanFeatureDTO::fromModel($feature)))->toResponse($request);
     }
 
-    #[OA\Delete(path: '/api/admin/v1/projects/{project}/pay/licensing/plans/{plan}/features/{feature}', operationId: 'licensing_delete_plan_feature', tags: ['pay'], summary: 'DELETE /api/admin/v1/projects/{project}/pay/licensing/plans/{plan}/features/{feature}', responses: [new OA\Response(response: 204, description: 'No content'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 404, description: 'Not found')])]
+    #[OA\Delete(
+        path: '/api/admin/v1/projects/{project}/pay/licensing/plans/{plan}/features/{feature}',
+        operationId: 'licensing_delete_plan_feature',
+        tags: ['pay'],
+        summary: 'DELETE /api/admin/v1/projects/{project}/pay/licensing/plans/{plan}/features/{feature}',
+        security: [['bearerAuth' => []]],
+        parameters: [
+            new OA\Parameter(name: 'project', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+            new OA\Parameter(name: 'plan', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
+            new OA\Parameter(name: 'feature', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
+        ],
+        responses: [new OA\Response(response: 204, description: 'No content'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 404, description: 'Not found')],
+    )]
     public function destroy(
         Request $request,
         string $project,

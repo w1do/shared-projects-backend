@@ -3,14 +3,14 @@ set -euo pipefail
 
 cd "/var/www/apps/${APP_SERVICE}"
 
-# .env сервиса лежит в infra/services/<service>/ и монтируется compose'ом
-if [ ! -f .env ] && [ -f "/var/www/infra/services/${APP_SERVICE}/.env" ]; then
-    cp "/var/www/infra/services/${APP_SERVICE}/.env" .env
-fi
-
+# Dev-ветка: bind-mount исходников без установленных зависимостей
 if [ ! -d vendor ]; then
     composer install --no-interaction --no-scripts
 fi
+
+# Самолечение манифеста пакетов: при bind-mount в bootstrap/cache могут лежать
+# устаревшие хостовые FQCN; кэш регенерируется на старте
+rm -f bootstrap/cache/packages.php bootstrap/cache/services.php
 
 # Ждём Postgres, чтобы миграции/старт не падали на гонке
 if [ -n "${DB_HOST:-}" ]; then
@@ -20,12 +20,28 @@ if [ -n "${DB_HOST:-}" ]; then
     done
 fi
 
-# Самолечение манифеста пакетов: bind-mount отдаёт контейнеру хостовый
-# bootstrap/cache, где после переноса сервис-провайдеров лежат устаревшие FQCN.
-rm -f bootstrap/cache/packages.php bootstrap/cache/services.php
-
 if [ "${AUTO_MIGRATE:-0}" = "1" ]; then
     php artisan migrate --force || true
+fi
+
+# Публикация манифеста сервиса в реестре платформы (auth-service может стартовать
+# позже — ретраим, при исчерпании попыток сервис всё равно поднимается)
+if [ "${MANIFEST_PUBLISH:-0}" = "1" ]; then
+    for _ in $(seq 30); do
+        if php artisan manifest:publish; then
+            if [ "${APP_SERVICE}" = "pay-service" ]; then
+                php artisan manifest:publish-licensing || true
+            fi
+            break
+        fi
+        echo "manifest:publish failed — retry in 2s..."
+        sleep 2
+    done
+fi
+
+# Корневой оператор панели (идемпотентно, только auth-service)
+if [ "${ADMIN_SEED:-0}" = "1" ]; then
+    php artisan operator:seed || true
 fi
 
 exec "$@"

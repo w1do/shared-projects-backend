@@ -33,7 +33,23 @@ final class SiteSubscriptionController
 {
     public function __construct(private readonly RequestIntrospection $introspection) {}
 
-    #[OA\Post(path: '/api/v1/pay/subscriptions', operationId: 'pay_subscribe_api_v1_pay_subscriptions', tags: ['pay'], summary: 'POST /api/v1/pay/subscriptions', responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')])]
+    #[OA\Post(
+        path: '/api/v1/pay/subscriptions',
+        operationId: 'pay_subscribe_api_v1_pay_subscriptions',
+        tags: ['pay'],
+        summary: 'POST /api/v1/pay/subscriptions',
+        security: [['apiKey' => [], 'userToken' => []]],
+        parameters: [
+            new OA\Parameter(name: 'Idempotency-Key', in: 'header', required: false, schema: new OA\Schema(type: 'string', maxLength: 128)),
+        ],
+        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(
+            required: ['plan_code'],
+            properties: [
+                new OA\Property(property: 'plan_code', type: 'string', maxLength: 64),
+            ],
+        )),
+        responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')],
+    )]
     public function subscribe(SubscribeRequest $request, FindSitePlanQuery $plans, SubscribeHandler $handler): JsonResponse
     {
         $subscriber = $this->subscriber($request);
@@ -47,7 +63,7 @@ final class SiteSubscriptionController
         return (new SubscriptionCheckoutResource($checkout))->toCreatedResponse($request);
     }
 
-    #[OA\Get(path: '/api/v1/pay/subscriptions', operationId: 'pay_mine_api_v1_pay_subscriptions', tags: ['pay'], summary: 'GET /api/v1/pay/subscriptions', responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated')])]
+    #[OA\Get(path: '/api/v1/pay/subscriptions', operationId: 'pay_mine_api_v1_pay_subscriptions', tags: ['pay'], summary: 'GET /api/v1/pay/subscriptions', security: [['apiKey' => [], 'userToken' => []]], responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated')])]
     public function mine(Request $request, ListSiteSubscriptionsQuery $query): JsonResponse
     {
         $subscriber = $this->subscriber($request);
@@ -59,7 +75,19 @@ final class SiteSubscriptionController
         return SubscriptionResource::collection($query->handle($subscriber))->toResponse($request);
     }
 
-    #[OA\Post(path: '/api/v1/pay/subscriptions/{subscription}/{action}', operationId: 'pay_change_api_v1_pay_subscriptions_subscription_action', tags: ['pay'], summary: 'POST /api/v1/pay/subscriptions/{subscription}/{action}', responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')])]
+    #[OA\Post(
+        path: '/api/v1/pay/subscriptions/{subscription}/{action}',
+        operationId: 'pay_change_api_v1_pay_subscriptions_subscription_action',
+        tags: ['pay'],
+        summary: 'POST /api/v1/pay/subscriptions/{subscription}/{action}',
+        security: [['apiKey' => [], 'userToken' => []]],
+        parameters: [
+            new OA\Parameter(name: 'subscription', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+            new OA\Parameter(name: 'action', in: 'path', required: true, schema: new OA\Schema(type: 'string', enum: ['cancel', 'resume', 'pause'])),
+            new OA\Parameter(name: 'Idempotency-Key', in: 'header', required: false, schema: new OA\Schema(type: 'string', maxLength: 128)),
+        ],
+        responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')],
+    )]
     public function change(
         Request $request,
         string $subscriptionId,

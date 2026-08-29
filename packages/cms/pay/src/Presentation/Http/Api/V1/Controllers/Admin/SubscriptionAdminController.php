@@ -27,7 +27,27 @@ use Spatie\LaravelData\Optional;
 final class SubscriptionAdminController
 {
     /** Оформление подписки оператором: полиморфные подписчик и предмет (Д16). */
-    #[OA\Post(path: '/api/admin/v1/projects/{project}/pay/subscriptions', operationId: 'pay_store_api_admin_v1_projects_project_pay_subscriptions', tags: ['pay'], summary: 'POST /api/admin/v1/projects/{project}/pay/subscriptions', responses: [new OA\Response(response: 201, description: 'Created'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 403, description: 'Forbidden'), new OA\Response(response: 422, description: 'Validation error')])]
+    #[OA\Post(
+        path: '/api/admin/v1/projects/{project}/pay/subscriptions',
+        operationId: 'pay_store_api_admin_v1_projects_project_pay_subscriptions',
+        tags: ['pay'],
+        summary: 'POST /api/admin/v1/projects/{project}/pay/subscriptions',
+        security: [['bearerAuth' => []]],
+        parameters: [
+            new OA\Parameter(name: 'project', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+        ],
+        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(
+            required: ['subscriber_type', 'subscriber_id', 'subject_type', 'subject_id'],
+            properties: [
+                new OA\Property(property: 'subscriber_type', type: 'string', maxLength: 32),
+                new OA\Property(property: 'subscriber_id', type: 'string', maxLength: 64),
+                new OA\Property(property: 'subject_type', type: 'string', maxLength: 32),
+                new OA\Property(property: 'subject_id', type: 'string', maxLength: 64),
+                new OA\Property(property: 'provider', type: 'string', maxLength: 32),
+            ],
+        )),
+        responses: [new OA\Response(response: 201, description: 'Created'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 403, description: 'Forbidden'), new OA\Response(response: 422, description: 'Validation error')],
+    )]
     public function store(
         AdminSubscribeRequest $request,
         FindSubscriberQuery $subscribers,
@@ -45,14 +65,37 @@ final class SubscriptionAdminController
         return (new SubscriptionCheckoutResource($checkout))->toCreatedResponse($request);
     }
 
-    #[OA\Get(path: '/api/admin/v1/projects/{project}/pay/subscriptions', operationId: 'pay_index_api_admin_v1_projects_project_pay_subscriptions', tags: ['pay'], summary: 'GET /api/admin/v1/projects/{project}/pay/subscriptions', responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')])]
+    #[OA\Get(
+        path: '/api/admin/v1/projects/{project}/pay/subscriptions',
+        operationId: 'pay_index_api_admin_v1_projects_project_pay_subscriptions',
+        tags: ['pay'],
+        summary: 'GET /api/admin/v1/projects/{project}/pay/subscriptions',
+        security: [['bearerAuth' => []]],
+        parameters: [
+            new OA\Parameter(name: 'project', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+            new OA\Parameter(name: 'cursor', in: 'query', required: false, schema: new OA\Schema(type: 'string')),
+        ],
+        responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')],
+    )]
     public function index(Request $request, ListSubscriptionsQuery $query): JsonResponse
     {
         return (new SubscriptionCursorCollection($query->handle()))->toResponse($request);
     }
 
     /** action ∈ cancel | resume | pause | delete */
-    #[OA\Post(path: '/api/admin/v1/projects/{project}/pay/subscriptions/{subscription}/{action}', operationId: 'pay_change_api_admin_v1_projects_project_pay_subscriptions_subscription_action', tags: ['pay'], summary: 'POST /api/admin/v1/projects/{project}/pay/subscriptions/{subscription}/{action}', responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')])]
+    #[OA\Post(
+        path: '/api/admin/v1/projects/{project}/pay/subscriptions/{subscription}/{action}',
+        operationId: 'pay_change_api_admin_v1_projects_project_pay_subscriptions_subscription_action',
+        tags: ['pay'],
+        summary: 'POST /api/admin/v1/projects/{project}/pay/subscriptions/{subscription}/{action}',
+        security: [['bearerAuth' => []]],
+        parameters: [
+            new OA\Parameter(name: 'project', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+            new OA\Parameter(name: 'subscription', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+            new OA\Parameter(name: 'action', in: 'path', required: true, schema: new OA\Schema(type: 'string', enum: ['cancel', 'resume', 'pause', 'delete'])),
+        ],
+        responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')],
+    )]
     public function change(Request $request, string $project, string $subscriptionId, string $action, ChangeSubscriptionHandler $handler): JsonResponse
     {
         // Скоуп проекта — глобальный (BelongsToProject); чужая подписка не

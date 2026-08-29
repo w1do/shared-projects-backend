@@ -49,7 +49,8 @@ bun run build && bun run start   # production
 (образ `oven/bun`) и отдаётся через gateway на том же порту, что и API
 (`/` → `/admin`).
 
-Переменные — `infra/services/admin-front/.env`:
+Переменные (dev — environment сервиса в `infra/compose/compose.dev.yaml`;
+прод — build-args `infra/docker/admin-front.Dockerfile`, `NEXT_PUBLIC_*` фиксируются на сборке):
 
 | Переменная | Назначение |
 | --- | --- |

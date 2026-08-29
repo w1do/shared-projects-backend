@@ -16,10 +16,11 @@ cd shared-projects-backend
 ./tools/cms bootstrap
 ```
 
-Команда сама: создаст `.env` каждого сервиса из примеров → соберёт и поднимет стек
-(gateway, 4 сервиса, воркер очередей, postgres, redis, clickhouse, minio, панель) →
-дождётся health-чеков → накатит миграции → заведёт оператора, проект `demo`,
-манифесты сервисов и демо-контент (дерево категорий, посты).
+Команда сама: соберёт и поднимет стек (Traefik-gateway, 4 сервиса, воркеры очередей,
+postgres, redis, clickhouse, minio, панель, swagger) → дождётся health-чеков → накатит
+миграции → заведёт оператора, проект `demo`, манифесты сервисов и демо-контент
+(дерево категорий, посты). Все настройки — с dev-дефолтами прямо в compose;
+производственный запуск и Dokploy — [`docs/deploy.md`](docs/deploy.md).
 
 После разворота:
 
@@ -27,14 +28,14 @@ cd shared-projects-backend
 | --- | --- |
 | Панель управления | http://localhost:8080/login |
 | Логин / пароль | `root@example.com` / `secret-123` |
-| API | http://localhost:8080/api/… (swagger: `openapi/openapi.json`) |
+| API | http://localhost:8080/api/… (документация: http://localhost:8080/api/docs) |
 | Health | `/health/{auth\|content\|analytics\|pay}` |
 
 Для AI-функций (автоперевод, генерация) положите ключ в неотслеживаемый файл:
 
 ```bash
-echo "OPENAI_API_KEY=<ключ>" > infra/services/content-service/.env.local
-docker compose -f infra/compose/compose.yaml --project-directory . up -d content-service content-worker
+echo "OPENAI_API_KEY=<ключ>" >> infra/compose/.env
+./tools/cms up content-service content-worker
 ```
 
 ## Сервисы

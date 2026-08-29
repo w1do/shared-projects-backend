@@ -20,6 +20,12 @@ return [
     // Явное выключение администратором сохраняется — авто-включение его не перезаписывает.
     'default_enabled_services' => [ServiceName::Licensing->value],
 
+    // Корневой оператор, создаваемый бутстрапом стека (operator:seed)
+    'operator' => [
+        'email' => env('ADMIN_EMAIL'),
+        'password' => env('ADMIN_PASSWORD'),
+    ],
+
     // Rate limit входа: попыток в минуту
     'login_rate_limit' => (int) env('AUTH_LOGIN_RATE_LIMIT', 5),
 
