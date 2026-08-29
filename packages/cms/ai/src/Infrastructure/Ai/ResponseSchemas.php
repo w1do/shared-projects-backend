@@ -62,4 +62,18 @@ final class ResponseSchemas
             'body' => $schema->string()->required(),
         ];
     }
+
+    /** @return callable(JsonSchema): array<string, mixed> */
+    public static function topics(): callable
+    {
+        return fn (JsonSchema $schema): array => [
+            'topics' => $schema->array()->items(
+                $schema->object([
+                    'title' => $schema->string()->required(),
+                    'rationale' => $schema->string()->required(),
+                    'category' => $schema->string()->nullable()->required(),
+                ]),
+            )->required(),
+        ];
+    }
 }

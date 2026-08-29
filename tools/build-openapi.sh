@@ -8,8 +8,8 @@ SERVICES=(auth content analytics pay)
 for s in "${SERVICES[@]}"; do
     app="$ROOT/apps/${s}-service"
     extra=""
-    # словарь переводов живёт в content-service отдельным пакетом
-    [ "$s" = "content" ] && extra="$ROOT/packages/cms/localization/src"
+    # словарь переводов, инструкции и ресёрч живут в content-service отдельными пакетами
+    [ "$s" = "content" ] && extra="$ROOT/packages/cms/localization/src $ROOT/packages/cms/instructs/src $ROOT/packages/cms/research/src"
     # платформенные internal-маршруты (cache-bust) живут в shared; документируем через auth
     [ "$s" = "auth" ] && extra="$ROOT/packages/cms/shared/src"
     # модуль лицензирования живёт в pay-service отдельным пакетом

@@ -14,6 +14,8 @@ final class ProjectDTO extends Data
         public string $id,
         public string $key,
         public string $name,
+        public ?string $description,
+        public ?string $topic,
         public array $locales,
         public ?string $archived_at,
     ) {}
@@ -24,6 +26,8 @@ final class ProjectDTO extends Data
             id: $project->id,
             key: $project->key,
             name: $project->name,
+            description: $project->description,
+            topic: $project->topic,
             locales: $project->locales ?? [],
             archived_at: $project->archived_at?->toIso8601String(),
         );

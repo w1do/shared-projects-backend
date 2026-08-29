@@ -51,6 +51,19 @@ class AuthClient
         return $response->successful();
     }
 
+    /** Описание и тематика проекта, заполненные сборкой по AI. */
+    public function setProjectProfile(string $projectId, ?string $description, ?string $topic, bool $overwrite = false): bool
+    {
+        $response = $this->request()->post('/internal/project-profile', array_filter([
+            'project_id' => $projectId,
+            'description' => $description,
+            'topic' => $topic,
+            'overwrite' => $overwrite,
+        ], static fn (mixed $value): bool => $value !== null));
+
+        return $response->successful();
+    }
+
     private function introspect(array $payload): IntrospectionResult
     {
         try {

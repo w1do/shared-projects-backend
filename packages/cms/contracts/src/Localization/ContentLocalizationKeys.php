@@ -13,6 +13,8 @@ enum ContentLocalizationKeys: string implements LocalizationKeys
     case NavPages = 'nav.content.pages';
     case NavCategories = 'nav.content.categories';
     case NavMedia = 'nav.content.media';
+    case NavResearch = 'nav.content.research';
+    case NavInstructs = 'nav.content.instructs';
     case ServiceTitle = 'service.content.title';
     case ServiceDescription = 'service.content.description';
 
@@ -33,6 +35,8 @@ enum ContentLocalizationKeys: string implements LocalizationKeys
             self::NavPages => 'Страницы',
             self::NavCategories => 'Категории',
             self::NavMedia => 'Медиа',
+            self::NavResearch => 'Ресёрч',
+            self::NavInstructs => 'Инструкции',
             self::ServiceTitle => 'Контент',
             self::ServiceDescription => 'Посты, страницы, категории и медиабиблиотека',
         };

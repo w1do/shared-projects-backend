@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Support\Carbon;
+use Spatie\Tags\HasTags;
 
 /**
  * @property int $id
@@ -36,6 +37,7 @@ class Post extends Model
 {
     use BelongsToProject;
     use HasFactory;
+    use HasTags;
 
     protected $fillable = [
         'project_id', 'title', 'slug', 'body', 'locale', 'translation_group',

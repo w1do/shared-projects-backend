@@ -1,0 +1,32 @@
+{
+    "status": 201,
+    "content_type": "application/json",
+    "body": {
+        "data": [
+            {
+                "id": "<int>",
+                "research_id": "<int>",
+                "title": "Кроссоверы против седанов",
+                "rationale": "Есть сравнения",
+                "category_id": null,
+                "suggested_category": null,
+                "status": "suggested",
+                "status_label": "Предложена",
+                "post_id": null,
+                "created_at": "<string>"
+            },
+            {
+                "id": "<int>",
+                "research_id": "<int>",
+                "title": "Топ-10 седанов 2026 года",
+                "rationale": "В источниках есть подборки",
+                "category_id": null,
+                "suggested_category": "Седаны",
+                "status": "suggested",
+                "status_label": "Предложена",
+                "post_id": null,
+                "created_at": "<string>"
+            }
+        ]
+    }
+}

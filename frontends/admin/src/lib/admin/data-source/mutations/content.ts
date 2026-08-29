@@ -70,6 +70,8 @@ export const contentMutations = {
     return post;
   },
   /** Смена статуса поста (публикация/черновик/архив). */
+  deleteArticle: (id: string) => platformContent.deletePost(Number(id)),
+
   changeArticleStatus: (id: string, status: string, scheduledAt?: string) =>
     platformContent.changePostStatus(Number(id), status, scheduledAt),
   restoreArticleRevision: (id: string, revisionId: string) =>

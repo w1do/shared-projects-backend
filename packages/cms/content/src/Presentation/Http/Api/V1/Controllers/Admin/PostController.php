@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace Cms\Content\Presentation\Http\Api\V1\Controllers\Admin;
 
 use Cms\Content\Application\Commands\ChangeStatusCommand;
+use Cms\Content\Application\Commands\DeletePostCommand;
 use Cms\Content\Application\Commands\RestoreRevisionCommand;
 use Cms\Content\Application\Commands\UpsertPostCommand;
 use Cms\Content\Application\DTOs\Post\PostDTO;
 use Cms\Content\Application\Handlers\ChangeStatusHandler;
+use Cms\Content\Application\Handlers\DeletePostHandler;
 use Cms\Content\Application\Handlers\RestoreRevisionHandler;
 use Cms\Content\Application\Handlers\UpsertPostHandler;
 use Cms\Content\Application\Queries\ListPostsQuery;
@@ -20,6 +22,7 @@ use Cms\Content\Presentation\Http\Api\V1\Resources\Post\PostCursorCollection;
 use Cms\Content\Presentation\Http\Api\V1\Resources\Post\PostResource;
 use Cms\Content\Presentation\Http\Api\V1\Resources\Revision\RevisionResource;
 use Cms\Shared\AuthClient\RequestIntrospection;
+use Cms\Shared\Http\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use OpenApi\Attributes as OA;
@@ -90,7 +93,7 @@ final class PostController
     #[OA\Get(path: '/api/admin/v1/projects/{project}/content/posts/{post}', operationId: 'content_show_api_admin_v1_projects_project_content_posts_post', tags: ['content'], summary: 'GET /api/admin/v1/projects/{project}/content/posts/{post}', security: [['bearerAuth' => []]], parameters: [new OA\Parameter(name: 'project', in: 'path', required: true, schema: new OA\Schema(type: 'string')), new OA\Parameter(name: 'post', in: 'path', required: true, schema: new OA\Schema(type: 'integer'))], responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')])]
     public function show(Request $request, string $project, int $postId): JsonResponse
     {
-        $post = Post::query()->with(['categories:id', 'seo'])->findOrFail($postId);
+        $post = Post::query()->with(['categories:id', 'tags', 'seo'])->findOrFail($postId);
 
         return (new PostResource(PostDTO::fromModel($post)))->toResponse($request);
     }
@@ -189,5 +192,13 @@ final class PostController
         $restored = $command->handle(new RestoreRevisionCommand($post, $revision, $this->introspection->actorId($request)));
 
         return (new PostResource(PostDTO::fromModel($restored)))->toResponse($request);
+    }
+
+    #[OA\Delete(path: '/api/admin/v1/projects/{project}/content/posts/{post}', operationId: 'content_destroy_api_admin_v1_projects_project_content_posts_post', tags: ['content'], summary: 'DELETE /api/admin/v1/projects/{project}/content/posts/{post}', security: [['bearerAuth' => []]], parameters: [new OA\Parameter(name: 'project', in: 'path', required: true, schema: new OA\Schema(type: 'string')), new OA\Parameter(name: 'post', in: 'path', required: true, schema: new OA\Schema(type: 'integer'))], responses: [new OA\Response(response: 204, description: 'No content'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 404, description: 'Not found')])]
+    public function destroy(string $project, int $postId, DeletePostHandler $command): JsonResponse
+    {
+        $command->handle(new DeletePostCommand(Post::query()->findOrFail($postId)));
+
+        return ApiResponse::noContent();
     }
 }

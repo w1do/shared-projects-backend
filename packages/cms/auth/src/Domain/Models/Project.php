@@ -16,6 +16,8 @@ use Illuminate\Support\Carbon;
  * @property string $id
  * @property string $key
  * @property string $name
+ * @property ?string $description
+ * @property ?string $topic
  * @property list<string> $locales
  * @property ?Carbon $archived_at
  */
@@ -28,7 +30,7 @@ class Project extends Model
 
     public $incrementing = false;
 
-    protected $fillable = ['key', 'name', 'locales'];
+    protected $fillable = ['key', 'name', 'description', 'topic', 'locales'];
 
     protected function casts(): array
     {

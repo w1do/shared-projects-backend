@@ -54,10 +54,16 @@ final class UpsertPostHandler
                 $post->categories()->sync($command->data->categories);
             }
 
+            // Теги проекта: существующий переиспользуется, новый создаётся,
+            // повтор того же имени дубликата не даёт (модель тега — скоуп проекта).
+            if (! $command->data->tags instanceof Optional) {
+                $post->syncTags(array_values(array_unique($command->data->tags)));
+            }
+
             // Каждое сохранение — ревизия
             $this->revision->handle(new SnapshotRevisionCommand($post, $command->authorId));
 
-            return $post->fresh(['categories']) ?? $post;
+            return $post->fresh(['categories', 'tags']) ?? $post;
         });
     }
 }

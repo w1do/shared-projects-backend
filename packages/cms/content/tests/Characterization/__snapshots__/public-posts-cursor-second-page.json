@@ -15,6 +15,7 @@
                 "published_at": "<string>",
                 "is_index": true,
                 "categories": [],
+                "tags": [],
                 "seo": null
             }
         ],

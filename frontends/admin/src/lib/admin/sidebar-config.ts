@@ -11,6 +11,8 @@ import {
   BadgePercent,
   LifeBuoy,
   Newspaper,
+  Search,
+  ListChecks,
   FileText,
   Bell,
   Settings,
@@ -164,6 +166,18 @@ export const sections = [
         url: "/admin/blogs",
         icon: Newspaper,
         section: "blogs",
+      },
+      {
+        title: t("console.nav.research"),
+        url: "/admin/research",
+        icon: Search,
+        section: "research",
+      },
+      {
+        title: t("console.nav.instructs"),
+        url: "/admin/instructs",
+        icon: ListChecks,
+        section: "instructs",
       },
       {
         title: t("console.nav.notifications"),

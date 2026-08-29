@@ -22,5 +22,6 @@ final class PublicPostsFilterDTO extends Data
         public ?string $locale,
         public ?int $categoryId,
         public array $cacheKeyParts,
+        public ?string $tag = null,
     ) {}
 }

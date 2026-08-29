@@ -16,6 +16,7 @@ import {
 import { getArticlesCapabilities } from "@/lib/admin/services";
 import { useConsoleText } from "@/lib/admin/use-console-text";
 import { useCreateArticleForm } from "@/hooks/admin/articles";
+import { TopicPicker } from "@/components/pages/blogs/sections/TopicPicker";
 
 export function AddBlogForm() {
   const t = useConsoleText();
@@ -68,6 +69,8 @@ export function AddBlogForm() {
             isSubmitting={isSubmitting}
             onAutoFill={handleAutoFill}
           />
+
+          <TopicPicker />
 
           <BlogFormBody />
         </div>

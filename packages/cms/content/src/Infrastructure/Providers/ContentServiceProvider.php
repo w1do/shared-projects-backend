@@ -6,6 +6,7 @@ namespace Cms\Content\Infrastructure\Providers;
 
 use Cms\Content\Console\PublishManifestCommand;
 use Cms\Content\Domain\Contracts\ContentCache;
+use Cms\Content\Domain\Models\Tag;
 use Cms\Content\Infrastructure\Jobs\PublishScheduledJob;
 use Cms\Content\Infrastructure\Persistence\CategoryTranslatableSubjectRepository;
 use Cms\Content\Infrastructure\Persistence\VersionedContentCache;
@@ -18,6 +19,9 @@ final class ContentServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->mergeConfigFrom(__DIR__.'/../../../config/cms-content.php', 'cms-content');
+
+        // Теги проекта: модель пакета подменяется своей, с project_id и scope.
+        $this->app->make('config')->set('tags.tag_model', Tag::class);
 
         // Кэш публичных ответов — за портом: Application знает только контракт.
         $this->app->singleton(ContentCache::class, VersionedContentCache::class);

@@ -1,0 +1,240 @@
+{
+    "status": 200,
+    "content_type": "application/json",
+    "body": {
+        "data": [
+            {
+                "id": "<int>",
+                "title": "Темы для автоблога",
+                "category": "post_topics",
+                "category_label": "Темы постов",
+                "rule": "Собери 10 тем по материалам ресёрча",
+                "schema": {
+                    "type": "object",
+                    "properties": {
+                        "topics": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "required": [
+                        "topics"
+                    ]
+                },
+                "published": false,
+                "is_system": false,
+                "updated_at": "<string>"
+            },
+            {
+                "id": "<int>",
+                "title": "Дерево категорий проекта",
+                "category": "category_tree",
+                "category_label": "Дерево категорий",
+                "rule": "Собери дерево категорий для описанного проекта: понятные названия на языке проекта и латинские slug в kebab-case. Вложенность задаётся через parent_slug (null у корневых). Slug уникальны.",
+                "schema": {
+                    "type": "object",
+                    "properties": {
+                        "categories": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "slug": {
+                                        "type": "string"
+                                    },
+                                    "parent_slug": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    }
+                                },
+                                "required": [
+                                    "name",
+                                    "slug",
+                                    "parent_slug"
+                                ]
+                            }
+                        }
+                    },
+                    "required": [
+                        "categories"
+                    ]
+                },
+                "published": true,
+                "is_system": true,
+                "updated_at": "<string>"
+            },
+            {
+                "id": "<int>",
+                "title": "Текст поста по теме",
+                "category": "post_body",
+                "category_label": "Текст поста",
+                "rule": "Напиши пост по заданной теме, опираясь только на переданные материалы. Дай заголовок, латинский slug в kebab-case и текст в виде простых HTML-абзацев с подзаголовками. Не выдумывай фактов, которых нет в материалах.",
+                "schema": {
+                    "type": "object",
+                    "properties": {
+                        "title": {
+                            "type": "string"
+                        },
+                        "slug": {
+                            "type": "string"
+                        },
+                        "body": {
+                            "type": "string"
+                        },
+                        "tags": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            },
+                            "description": "Теги поста, 3–7 штук"
+                        }
+                    },
+                    "required": [
+                        "title",
+                        "slug",
+                        "body",
+                        "tags"
+                    ]
+                },
+                "published": true,
+                "is_system": true,
+                "updated_at": "<string>"
+            },
+            {
+                "id": "<int>",
+                "title": "SEO-поля поста",
+                "category": "post_seo",
+                "category_label": "SEO поста",
+                "rule": "Заполни SEO-поля для готового поста: заголовок до 60 символов, описание до 160 символов и ключевые слова через запятую. Опирайся на текст поста, не выдумывай фактов.",
+                "schema": {
+                    "type": "object",
+                    "properties": {
+                        "title": {
+                            "type": "string",
+                            "maxLength": 60
+                        },
+                        "description": {
+                            "type": "string",
+                            "maxLength": 160
+                        },
+                        "keywords": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "title",
+                        "description",
+                        "keywords"
+                    ]
+                },
+                "published": true,
+                "is_system": true,
+                "updated_at": "<string>"
+            },
+            {
+                "id": "<int>",
+                "title": "Темы постов по материалам ресёрча",
+                "category": "post_topics",
+                "category_label": "Темы постов",
+                "rule": "Преврати собранный материал в темы отдельных публикаций. Каждая тема выводится только из переданных материалов. Для каждой темы дай заголовок, одно-два предложения о том, чем она интересна, и категорию: из категорий проекта, если подходит, иначе предложи новую.",
+                "schema": {
+                    "type": "object",
+                    "properties": {
+                        "topics": {
+                            "type": "array",
+                            "maxItems": 10,
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "title": {
+                                        "type": "string"
+                                    },
+                                    "rationale": {
+                                        "type": "string"
+                                    },
+                                    "category": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    }
+                                },
+                                "required": [
+                                    "title",
+                                    "rationale",
+                                    "category"
+                                ]
+                            }
+                        }
+                    },
+                    "required": [
+                        "topics"
+                    ]
+                },
+                "published": true,
+                "is_system": true,
+                "updated_at": "<string>"
+            },
+            {
+                "id": "<int>",
+                "title": "Сборка проекта по теме",
+                "category": "project_description",
+                "category_label": "Описание проекта",
+                "rule": "Ты помогаешь запустить контентный проект. По заданной тематике опиши проект в 3–5 предложениях, укажи его тему одной строкой и собери дерево категорий: понятные названия на языке проекта и латинские slug в kebab-case. Вложенность задаётся через parent_slug (null у корневых). Slug уникальны.",
+                "schema": {
+                    "type": "object",
+                    "properties": {
+                        "description": {
+                            "type": "string",
+                            "description": "Описание проекта"
+                        },
+                        "topic": {
+                            "type": "string",
+                            "description": "Тематика проекта одной строкой"
+                        },
+                        "categories": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "slug": {
+                                        "type": "string"
+                                    },
+                                    "parent_slug": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    }
+                                },
+                                "required": [
+                                    "name",
+                                    "slug",
+                                    "parent_slug"
+                                ]
+                            }
+                        }
+                    },
+                    "required": [
+                        "description",
+                        "topic",
+                        "categories"
+                    ]
+                },
+                "published": true,
+                "is_system": true,
+                "updated_at": "<string>"
+            }
+        ]
+    }
+}

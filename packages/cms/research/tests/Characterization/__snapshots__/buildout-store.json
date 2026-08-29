@@ -1,0 +1,17 @@
+{
+    "status": 201,
+    "content_type": "application/json",
+    "body": {
+        "data": {
+            "id": "<int>",
+            "topic": "автомобили",
+            "status": "process",
+            "status_label": "Выполняется",
+            "categories_created": 0,
+            "project_updated": false,
+            "error_message": null,
+            "completed_at": null,
+            "created_at": "<string>"
+        }
+    }
+}

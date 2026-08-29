@@ -15,6 +15,7 @@
                 "published_at": null,
                 "is_index": false,
                 "categories": [],
+                "tags": [],
                 "seo": null
             },
             {
@@ -31,6 +32,7 @@
                 "categories": [
                     1
                 ],
+                "tags": [],
                 "seo": {
                     "title": "First post — seo",
                     "description": null,

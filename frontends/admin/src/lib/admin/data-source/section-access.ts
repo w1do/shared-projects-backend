@@ -26,6 +26,8 @@ export const CONSOLE_SECTION_KEYS = [
   "promotions",
   "support",
   "blogs",
+  "research",
+  "instructs",
   "notifications",
   "team",
   "settings",
@@ -47,6 +49,8 @@ export type SectionRequirement = { service: string; permission: string };
 export const SECTION_REQUIREMENTS: Partial<Record<ConsoleSectionKey, SectionRequirement>> = {
   dashboard: { service: "analytics", permission: "analytics.reports.view" },
   blogs: { service: "content", permission: "content.posts.view" },
+  research: { service: "content", permission: "content.research.view" },
+  instructs: { service: "content", permission: "content.instructs.view" },
   categories: { service: "content", permission: "content.categories.view" },
   customers: { service: "auth", permission: "auth.users.view" },
   team: { service: "auth", permission: "auth.members.view" },

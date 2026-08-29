@@ -25,6 +25,8 @@ final readonly class AiProviderConfig
         public string $baseUrl,
         public string $model,
         public int $timeout,
+        public string $embeddingModel = 'openai/text-embedding-3-small',
+        public int $embeddingDimension = 1536,
     ) {}
 
     /** @param array<string, mixed> $config значения cms-ai */
@@ -36,6 +38,8 @@ final readonly class AiProviderConfig
             baseUrl: (string) ($config['base_url'] ?? ''),
             model: (string) ($config['model'] ?? ''),
             timeout: (int) ($config['timeout'] ?? 30),
+            embeddingModel: (string) ($config['embedding_model'] ?? 'openai/text-embedding-3-small'),
+            embeddingDimension: (int) ($config['embedding_dimension'] ?? 1536),
         );
     }
 

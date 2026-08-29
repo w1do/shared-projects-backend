@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Cms\Ai\Infrastructure\Providers;
 
 use Cms\Ai\Application\Contracts\AiOperations;
+use Cms\Ai\Infrastructure\Ai\EmbeddingsRunner;
+use Cms\Ai\Infrastructure\Ai\JsonSchemaCompiler;
 use Cms\Ai\Infrastructure\Ai\LaravelAiOperations;
 use Cms\Ai\Infrastructure\Ai\StructuredPromptRunner;
 use Cms\Ai\Infrastructure\Ai\StructuredResponseMapper;
@@ -41,6 +43,8 @@ final class AiPackageServiceProvider extends ServiceProvider
         $this->app->singleton(AiOperations::class, fn (Application $app): AiOperations => new LaravelAiOperations(
             new StructuredPromptRunner($app->make(AiProviderConfig::class)),
             new StructuredResponseMapper,
+            new JsonSchemaCompiler,
+            new EmbeddingsRunner($app->make(AiProviderConfig::class)),
         ));
     }
 

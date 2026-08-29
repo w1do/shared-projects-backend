@@ -137,6 +137,26 @@ test('translate-missing fills only missing locales and marks them machine', func
         {
             throw new RuntimeException('unused');
         }
+
+        public function embed($r): never
+        {
+            throw new RuntimeException('unused');
+        }
+
+        public function embeddingDimension(): never
+        {
+            throw new RuntimeException('unused');
+        }
+
+        public function runInstruct($r): never
+        {
+            throw new RuntimeException('unused');
+        }
+
+        public function extractTopics($r): never
+        {
+            throw new RuntimeException('unused');
+        }
     });
 
     app()->call([new TranslateMissingJob('proj-1', ['en', 'ru'], 'en'), 'handle']);
@@ -190,6 +210,26 @@ test('ai failure leaves records unchanged', function () {
         }
 
         public function generatePost($r): never
+        {
+            throw new RuntimeException('unused');
+        }
+
+        public function embed($r): never
+        {
+            throw new RuntimeException('unused');
+        }
+
+        public function embeddingDimension(): never
+        {
+            throw new RuntimeException('unused');
+        }
+
+        public function runInstruct($r): never
+        {
+            throw new RuntimeException('unused');
+        }
+
+        public function extractTopics($r): never
         {
             throw new RuntimeException('unused');
         }

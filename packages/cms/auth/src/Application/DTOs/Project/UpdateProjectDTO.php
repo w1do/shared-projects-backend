@@ -13,6 +13,8 @@ final class UpdateProjectDTO extends Data
     public function __construct(
         public string|Optional $name,
         public array|Optional $locales,
+        public string|null|Optional $description = new Optional,
+        public string|null|Optional $topic = new Optional,
     ) {}
 
 }

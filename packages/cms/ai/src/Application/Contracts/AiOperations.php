@@ -4,12 +4,18 @@ declare(strict_types=1);
 
 namespace Cms\Ai\Application\Contracts;
 
+use Cms\Ai\Application\DTOs\Embed\EmbedRequestDTO;
+use Cms\Ai\Application\DTOs\Embed\EmbedResultDTO;
+use Cms\Ai\Application\DTOs\ExtractTopics\ExtractTopicsRequestDTO;
+use Cms\Ai\Application\DTOs\ExtractTopics\TopicListDTO;
 use Cms\Ai\Application\DTOs\GeneratePost\GeneratePostRequestDTO;
 use Cms\Ai\Application\DTOs\GeneratePost\PostDraftDTO;
 use Cms\Ai\Application\DTOs\Normalize\NormalizeRequestDTO;
 use Cms\Ai\Application\DTOs\Normalize\NormalizeResultDTO;
 use Cms\Ai\Application\DTOs\Rewrite\RewriteRequestDTO;
 use Cms\Ai\Application\DTOs\Rewrite\RewriteResultDTO;
+use Cms\Ai\Application\DTOs\RunInstruct\RunInstructRequestDTO;
+use Cms\Ai\Application\DTOs\RunInstruct\RunInstructResultDTO;
 use Cms\Ai\Application\DTOs\SuggestCategories\CategoryTreeDTO;
 use Cms\Ai\Application\DTOs\SuggestCategories\SuggestCategoriesRequestDTO;
 use Cms\Ai\Application\DTOs\Translate\TranslateRequestDTO;
@@ -38,4 +44,16 @@ interface AiOperations
 
     /** Черновик поста: заголовок, slug, тело. */
     public function generatePost(GeneratePostRequestDTO $request): PostDraftDTO;
+
+    /** Векторные представления текстов: по вектору на текст, в том же порядке. */
+    public function embed(EmbedRequestDTO $request): EmbedResultDTO;
+
+    /** Размерность векторов текущей модели — без обращения к провайдеру. */
+    public function embeddingDimension(): int;
+
+    /** Выполнение правила по переданной схеме ответа: форму задаёт потребитель. */
+    public function runInstruct(RunInstructRequestDTO $request): RunInstructResultDTO;
+
+    /** Темы постов по исходному запросу и собранным материалам. */
+    public function extractTopics(ExtractTopicsRequestDTO $request): TopicListDTO;
 }

@@ -33,12 +33,17 @@ abstract class ProjectAwareJob implements ShouldQueue
     final public function handle(): void
     {
         $context = app(ProjectContext::class);
+
+        // Синхронная диспетчеризация выполняет джобу внутри чужого контекста:
+        // прежнее значение возвращается, иначе вложенный запуск обнулил бы
+        // проект вызывающего. В воркере прежнего значения нет — контекст чистится.
+        $previous = $context->id();
         $context->set($this->projectId);
 
         try {
             $this->execute();
         } finally {
-            $context->clear();
+            $previous === null ? $context->clear() : $context->set($previous);
         }
     }
 

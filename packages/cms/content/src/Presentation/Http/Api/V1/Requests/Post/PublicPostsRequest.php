@@ -30,8 +30,10 @@ final class PublicPostsRequest extends FormRequest
         return new PublicPostsFilterDTO(
             locale: $this->query('locale'),
             categoryId: $category !== null ? (int) $category : null,
-            // only() возвращает только присутствующие ключи — ровно как прежде
-            cacheKeyParts: $this->only(['locale', 'category', 'cursor']),
+            // only() возвращает только присутствующие ключи — ключ запроса без
+            // `tag` остаётся прежним, поэтому кэш переживает деплой (И12)
+            cacheKeyParts: $this->only(['locale', 'category', 'cursor', 'tag']),
+            tag: $this->query('tag'),
         );
     }
 }

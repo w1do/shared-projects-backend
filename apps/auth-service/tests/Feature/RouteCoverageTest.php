@@ -75,6 +75,7 @@ function authRouteCoverageCoveredPairs(): array
         'POST internal/introspect',                                  // auth/InternalContractTest.php
         'POST internal/manifests',                                   // auth/InternalContractTest.php
         'POST internal/translations-version',                        // auth/InternalContractTest.php
+        'POST internal/project-profile',                             // auth/InternalContractTest.php
     ];
 }
 

@@ -17,9 +17,9 @@ final class ListPostsQuery
      *
      * @return CursorPaginator<int, PostDTO>
      */
-    public function handle(?string $status = null, ?string $locale = null, ?int $categoryId = null, bool $publishedOnly = false, int $perPage = 25): CursorPaginator
+    public function handle(?string $status = null, ?string $locale = null, ?int $categoryId = null, bool $publishedOnly = false, int $perPage = 25, ?string $tag = null): CursorPaginator
     {
-        $query = Post::query()->with(['categories:id', 'seo'])->orderByDesc('id');
+        $query = Post::query()->with(['categories:id', 'tags', 'seo'])->orderByDesc('id');
 
         if ($publishedOnly) {
             $query->published();
@@ -37,6 +37,10 @@ final class ListPostsQuery
             if ($ids !== null) {
                 $query->whereHas('categories', fn ($q) => $q->whereIn('categories.id', $ids));
             }
+        }
+
+        if ($tag !== null && $tag !== '') {
+            $query->withAnyTags([$tag]);
         }
 
         /** @var CursorPaginator<int, Post> $page */

@@ -68,14 +68,10 @@ export async function updateArticle(
   return updateStoredArticle(id, data);
 }
 
-/**
- * «Удаление» в режиме api — перевод в архив: платформа постов не удаляет
- * (маршрута DELETE нет). Из черновика архив недоступен по статус-машине —
- * платформа ответит отказом, и оператор увидит причину, а не ложный успех.
- */
+/** Удаление поста: платформа удаляет его вместе с SEO, ревизиями и связями. */
 export async function deleteArticle(id: string): Promise<void> {
   if (shouldUseAdminApi()) {
-    await adminMutations.changeArticleStatus(id, "archived");
+    await adminMutations.deleteArticle(id);
     return;
   }
   deleteStoredArticle(id);

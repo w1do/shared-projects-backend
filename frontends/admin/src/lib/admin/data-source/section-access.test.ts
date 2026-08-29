@@ -21,6 +21,8 @@ const LIVE = [
   "categories",
   "customers",
   "blogs",
+  "research",
+  "instructs",
   "team",
   "settings",
   "licensing",
@@ -37,7 +39,7 @@ const ALL_SERVICES = [
   { key: "licensing", enabled: true },
 ];
 
-test("требование объявлено ровно для семи живых разделов", () => {
+test("требование объявлено ровно для девяти живых разделов", () => {
   assert.deepEqual(
     CONSOLE_SECTION_KEYS.filter((key) => key in SECTION_REQUIREMENTS),
     LIVE,

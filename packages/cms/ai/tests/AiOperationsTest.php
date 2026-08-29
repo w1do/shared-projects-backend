@@ -3,16 +3,21 @@
 declare(strict_types=1);
 
 use Cms\Ai\Application\Contracts\AiOperations;
+use Cms\Ai\Application\DTOs\Embed\EmbedRequestDTO;
+use Cms\Ai\Application\DTOs\ExtractTopics\ExtractTopicsRequestDTO;
 use Cms\Ai\Application\DTOs\GeneratePost\GeneratePostRequestDTO;
 use Cms\Ai\Application\DTOs\Normalize\NormalizeRequestDTO;
 use Cms\Ai\Application\DTOs\Rewrite\RewriteRequestDTO;
+use Cms\Ai\Application\DTOs\RunInstruct\RunInstructRequestDTO;
 use Cms\Ai\Application\DTOs\SuggestCategories\SuggestCategoriesRequestDTO;
 use Cms\Ai\Application\DTOs\Translate\TranslateRequestDTO;
 use Cms\Ai\Application\Exceptions\AiConfigurationException;
 use Cms\Ai\Application\Exceptions\AiRequestException;
 use Cms\Ai\Application\Exceptions\AiResponseException;
+use Cms\Ai\Application\Exceptions\AiSchemaException;
 use Cms\Ai\Infrastructure\Agents\StructuredAgent;
 use Cms\Ai\Infrastructure\Config\AiProviderConfig;
+use Laravel\Ai\Embeddings;
 
 beforeEach(function () {
     config()->set('cms-ai.api_key', 'test-key');
@@ -131,3 +136,168 @@ test('provider config reaches the sdk as an own instance without touching foreig
         // чужая запись провайдера не переписывается (было — мутация в boot())
         ->and(config('ai.providers.openai.key'))->not->toBe('test-key');
 });
+
+test('embeddings return one vector per text in the input order', function () {
+    Embeddings::fake([[[0.1, 0.2], [0.3, 0.4], [0.5, 0.6]]]);
+
+    $result = app(AiOperations::class)->embed(new EmbedRequestDTO(texts: ['раз', 'два', 'три']));
+
+    expect($result->vectors)->toBe([[0.1, 0.2], [0.3, 0.4], [0.5, 0.6]]);
+});
+
+test('embeddings for an empty set never reach the provider', function () {
+    Embeddings::fake();
+
+    $result = app(AiOperations::class)->embed(new EmbedRequestDTO(texts: []));
+
+    expect($result->vectors)->toBe([]);
+    Embeddings::assertNothingGenerated();
+});
+
+test('embedding dimension is known without calling the provider', function () {
+    config()->set('cms-ai.embedding_dimension', 768);
+    Embeddings::fake();
+
+    expect(app(AiOperations::class)->embeddingDimension())->toBe(768);
+    Embeddings::assertNothingGenerated();
+});
+
+test('embeddings count mismatch is a response error', function () {
+    Embeddings::fake([[[0.1, 0.2]]]);
+
+    app(AiOperations::class)->embed(new EmbedRequestDTO(texts: ['раз', 'два']));
+})->throws(AiResponseException::class);
+
+test('run instruct returns the response parsed by the given schema', function () {
+    fakeAi(['description' => 'Автомобильный портал', 'categories' => [
+        ['name' => 'Седаны', 'slug' => 'sedany'],
+    ]]);
+
+    $result = app(AiOperations::class)->runInstruct(new RunInstructRequestDTO(
+        rule: 'Опиши проект и собери категории',
+        schema: [
+            'type' => 'object',
+            'properties' => [
+                'description' => ['type' => 'string'],
+                'categories' => [
+                    'type' => 'array',
+                    'items' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'name' => ['type' => 'string'],
+                            'slug' => ['type' => 'string'],
+                        ],
+                        'required' => ['name', 'slug'],
+                    ],
+                ],
+            ],
+            'required' => ['description', 'categories'],
+        ],
+        input: ['topic' => 'автомобили'],
+    ));
+
+    expect($result->output['description'])->toBe('Автомобильный портал')
+        ->and($result->output['categories'][0]['slug'])->toBe('sedany');
+});
+
+test('run instruct supports a nullable property', function () {
+    fakeAi(['title' => 'Тема', 'category' => null]);
+
+    $result = app(AiOperations::class)->runInstruct(new RunInstructRequestDTO(
+        rule: 'Собери тему',
+        schema: [
+            'type' => 'object',
+            'properties' => [
+                'title' => ['type' => 'string', 'description' => 'Заголовок темы'],
+                'category' => ['type' => ['string', 'null']],
+            ],
+            'required' => ['title', 'category'],
+        ],
+    ));
+
+    expect($result->output)->toBe(['title' => 'Тема', 'category' => null]);
+});
+
+test('run instruct rejects a schema that is not an object at the root', function () {
+    Embeddings::fake();
+
+    app(AiOperations::class)->runInstruct(new RunInstructRequestDTO(
+        rule: 'x',
+        schema: ['type' => 'array', 'items' => ['type' => 'string']],
+    ));
+})->throws(AiSchemaException::class);
+
+test('run instruct rejects a schema without properties', function () {
+    app(AiOperations::class)->runInstruct(new RunInstructRequestDTO(rule: 'x', schema: ['type' => 'object']));
+})->throws(AiSchemaException::class);
+
+test('run instruct rejects an unsupported construct before any network call', function () {
+    StructuredAgent::fake([fn (): never => throw new RuntimeException('provider must not be called')]);
+
+    app(AiOperations::class)->runInstruct(new RunInstructRequestDTO(
+        rule: 'x',
+        schema: [
+            'type' => 'object',
+            'properties' => [
+                'value' => ['$ref' => 'https://example.com/schema.json'],
+            ],
+        ],
+    ));
+})->throws(AiSchemaException::class);
+
+test('extract topics maps rows to dtos and caps them at the requested count', function () {
+    fakeAi(['topics' => [
+        ['title' => 'Топ-10 седанов', 'rationale' => 'Есть подборки в источниках', 'category' => 'Седаны'],
+        ['title' => 'Электромобили 2026', 'rationale' => 'Обзоры новинок', 'category' => null],
+        ['title' => 'Лишняя тема', 'rationale' => 'сверх запроса', 'category' => null],
+    ]]);
+
+    $result = app(AiOperations::class)->extractTopics(new ExtractTopicsRequestDTO(
+        query: 'Расскажи про топ 10 автомобилей',
+        materials: ['обзор седанов', 'обзор электромобилей'],
+        maxCount: 2,
+        categories: ['Седаны'],
+    ));
+
+    expect($result->topics)->toHaveCount(2)
+        ->and($result->topics[0]->title)->toBe('Топ-10 седанов')
+        ->and($result->topics[0]->category)->toBe('Седаны')
+        ->and($result->topics[1]->category)->toBeNull();
+});
+
+test('extract topics returns fewer topics when materials do not support more', function () {
+    fakeAi(['topics' => [
+        ['title' => 'Единственная тема', 'rationale' => 'материала мало', 'category' => null],
+    ]]);
+
+    $result = app(AiOperations::class)->extractTopics(new ExtractTopicsRequestDTO(
+        query: 'узкий запрос',
+        materials: ['короткий материал'],
+        maxCount: 10,
+    ));
+
+    expect($result->topics)->toHaveCount(1);
+});
+
+test('malformed topic row is a response error', function () {
+    fakeAi(['topics' => [['title' => 'Без пояснения']]]);
+
+    app(AiOperations::class)->extractTopics(new ExtractTopicsRequestDTO(query: 'q', materials: ['m']));
+})->throws(AiResponseException::class);
+
+test('run instruct rejects a response missing a required field', function () {
+    fakeAi(['description' => 'Есть', 'categories' => []]);
+
+    app(AiOperations::class)->runInstruct(new RunInstructRequestDTO(
+        rule: 'x',
+        schema: [
+            'type' => 'object',
+            'properties' => [
+                'description' => ['type' => 'string'],
+                'topic' => ['type' => 'string'],
+                'categories' => ['type' => 'array', 'items' => ['type' => 'string']],
+            ],
+            'required' => ['description', 'topic', 'categories'],
+        ],
+    ));
+})->throws(AiResponseException::class);

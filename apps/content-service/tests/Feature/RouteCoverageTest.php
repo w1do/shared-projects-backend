@@ -47,6 +47,7 @@ function contentRouteCoverageCoveredPairs(): array
         'POST api/admin/v1/projects/{project}/content/posts',                                     // content/PostContractTest.php, content/PublicContractTest.php, content/SeoContractTest.php
         'GET api/admin/v1/projects/{project}/content/posts/{post}',                               // content/PostContractTest.php
         'PUT api/admin/v1/projects/{project}/content/posts/{post}',                               // content/PostContractTest.php
+        'DELETE api/admin/v1/projects/{project}/content/posts/{post}',                            // content/PostContractTest.php
         'GET api/admin/v1/projects/{project}/content/posts/{post}/revisions',                     // content/PostContractTest.php
         'POST api/admin/v1/projects/{project}/content/posts/{post}/revisions/{revision}/restore', // content/PostContractTest.php
         'POST api/admin/v1/projects/{project}/content/posts/{post}/status',                       // content/PostContractTest.php, content/PublicContractTest.php
@@ -58,6 +59,23 @@ function contentRouteCoverageCoveredPairs(): array
         'DELETE api/admin/v1/projects/{project}/content/translations/{translation}',              // localization/TranslationContractTest.php
         'PUT api/admin/v1/projects/{project}/content/translations/{translation}',                 // localization/TranslationContractTest.php
         'GET api/admin/v1/projects/{project}/content/localizations',                              // localization/LocalizationContractTest.php
+        'GET api/admin/v1/projects/{project}/content/instructs',                                  // instructs/InstructContractTest.php
+        'POST api/admin/v1/projects/{project}/content/instructs',                                 // instructs/InstructContractTest.php
+        'GET api/admin/v1/projects/{project}/content/instructs/categories',                       // instructs/InstructContractTest.php
+        'GET api/admin/v1/projects/{project}/content/instructs/{instruct}',                       // instructs/InstructContractTest.php
+        'PUT api/admin/v1/projects/{project}/content/instructs/{instruct}',                       // instructs/InstructContractTest.php
+        'DELETE api/admin/v1/projects/{project}/content/instructs/{instruct}',                    // instructs/InstructContractTest.php
+        'GET api/admin/v1/projects/{project}/content/research',                                   // research/ResearchContractTest.php
+        'POST api/admin/v1/projects/{project}/content/research',                                  // research/ResearchContractTest.php
+        'GET api/admin/v1/projects/{project}/content/research/{research}',                        // research/ResearchContractTest.php
+        'POST api/admin/v1/projects/{project}/content/research/{research}/cancel',                // research/ResearchContractTest.php
+        'GET api/admin/v1/projects/{project}/content/research/{research}/topics',                 // research/ResearchContractTest.php
+        'POST api/admin/v1/projects/{project}/content/research/{research}/topics',                // research/ResearchContractTest.php
+        'GET api/admin/v1/projects/{project}/content/topics',                                     // research/ResearchContractTest.php
+        'POST api/admin/v1/projects/{project}/content/topics/{topic}/reject',                     // research/ResearchContractTest.php
+        'POST api/admin/v1/projects/{project}/content/posts/generate',                            // research/ResearchContractTest.php
+        'GET api/admin/v1/projects/{project}/content/buildout',                                           // research/ResearchContractTest.php
+        'POST api/admin/v1/projects/{project}/content/buildout',                                          // research/ResearchContractTest.php
         'GET api/v1/content/categories',                                                          // content/PublicContractTest.php
         'GET api/v1/content/pages/{slug}',                                                        // content/PublicContractTest.php
         'GET api/v1/content/posts',                                                               // content/PublicContractTest.php

@@ -1,0 +1,16 @@
+{
+    "status": 422,
+    "content_type": "application/json",
+    "body": {
+        "error": {
+            "code": "validation_failed",
+            "message": "The given data was invalid.",
+            "details": {
+                "query": [
+                    "The project already has 1 running researches. Wait for one to finish."
+                ]
+            },
+            "trace_id": "<string>"
+        }
+    }
+}

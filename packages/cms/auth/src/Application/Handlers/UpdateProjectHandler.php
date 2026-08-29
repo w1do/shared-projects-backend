@@ -19,10 +19,14 @@ final class UpdateProjectHandler
 
     public function handle(UpdateProjectCommand $command): Project
     {
+        // «Поле не передано» ≠ «поле = null»: непереданное отбрасывается по типу
+        // Optional, а явный null сбрасывает значение.
         $changes = array_filter([
-            'name' => $command->data->name instanceof Optional ? null : $command->data->name,
-            'locales' => $command->data->locales instanceof Optional ? null : $command->data->locales,
-        ], fn ($v) => $v !== null);
+            'name' => $command->data->name,
+            'locales' => $command->data->locales,
+            'description' => $command->data->description,
+            'topic' => $command->data->topic,
+        ], fn ($v) => ! $v instanceof Optional);
 
         $before = $command->project->only(array_keys($changes));
         $command->project->fill($changes)->save();

@@ -18,7 +18,7 @@ function cmsPackagesRoot(): string
 /** @return list<string> */
 function modulePackages(): array
 {
-    return ['auth', 'content', 'pay', 'analytics', 'localization', 'ai', 'licensing'];
+    return ['auth', 'content', 'pay', 'analytics', 'localization', 'ai', 'licensing', 'instructs', 'research'];
 }
 
 /** @return list<string> php-файлы каталога рекурсивно */
@@ -168,6 +168,13 @@ test('arch: layers respect dependency direction and package boundaries', functio
             foreach (grepFiles(phpFilesIn("{$root}/{$pkg}/src"), "/use\\s+Cms\\\\{$otherStudly}\\\\Domain\\\\Models\\\\/") as $hit) {
                 // Разрешённое направление: content реализует порты localization (Decision 10).
                 if ($pkg === 'content' && $other === 'localization') {
+                    continue;
+                }
+                // Разрешённое направление: research стоит НАД content и instructs
+                // и объявляет их зависимостями в composer.json — ресёрч пишет
+                // посты и категории и применяет инструкции. Обратного импорта нет,
+                // цикла не возникает.
+                if ($pkg === 'research' && in_array($other, ['content', 'instructs'], true)) {
                     continue;
                 }
                 $violations[] = "граница пакетов {$pkg} → {$other}: {$hit[0]}";

@@ -1,0 +1,30 @@
+{
+    "status": 201,
+    "content_type": "application/json",
+    "body": {
+        "data": {
+            "id": "<int>",
+            "title": "Темы для автоблога",
+            "category": "post_topics",
+            "category_label": "Темы постов",
+            "rule": "Собери 10 тем по материалам ресёрча",
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "topics": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "required": [
+                    "topics"
+                ]
+            },
+            "published": false,
+            "is_system": false,
+            "updated_at": "<string>"
+        }
+    }
+}

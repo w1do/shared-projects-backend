@@ -5,12 +5,18 @@ declare(strict_types=1);
 namespace Cms\Ai\Infrastructure\Ai;
 
 use Cms\Ai\Application\Contracts\AiOperations;
+use Cms\Ai\Application\DTOs\Embed\EmbedRequestDTO;
+use Cms\Ai\Application\DTOs\Embed\EmbedResultDTO;
+use Cms\Ai\Application\DTOs\ExtractTopics\ExtractTopicsRequestDTO;
+use Cms\Ai\Application\DTOs\ExtractTopics\TopicListDTO;
 use Cms\Ai\Application\DTOs\GeneratePost\GeneratePostRequestDTO;
 use Cms\Ai\Application\DTOs\GeneratePost\PostDraftDTO;
 use Cms\Ai\Application\DTOs\Normalize\NormalizeRequestDTO;
 use Cms\Ai\Application\DTOs\Normalize\NormalizeResultDTO;
 use Cms\Ai\Application\DTOs\Rewrite\RewriteRequestDTO;
 use Cms\Ai\Application\DTOs\Rewrite\RewriteResultDTO;
+use Cms\Ai\Application\DTOs\RunInstruct\RunInstructRequestDTO;
+use Cms\Ai\Application\DTOs\RunInstruct\RunInstructResultDTO;
 use Cms\Ai\Application\DTOs\SuggestCategories\CategoryTreeDTO;
 use Cms\Ai\Application\DTOs\SuggestCategories\SuggestCategoriesRequestDTO;
 use Cms\Ai\Application\DTOs\Translate\TranslateRequestDTO;
@@ -28,6 +34,8 @@ final readonly class LaravelAiOperations implements AiOperations
     public function __construct(
         private StructuredPromptRunner $runner,
         private StructuredResponseMapper $mapper,
+        private JsonSchemaCompiler $schemaCompiler,
+        private EmbeddingsRunner $embeddings,
     ) {}
 
     public function rewrite(RewriteRequestDTO $request): RewriteResultDTO
@@ -103,6 +111,57 @@ final readonly class LaravelAiOperations implements AiOperations
             title: $this->mapper->stringField($structured, 'title'),
             slug: $this->mapper->stringField($structured, 'slug'),
             body: $this->mapper->stringField($structured, 'body'),
+        );
+    }
+
+    public function embed(EmbedRequestDTO $request): EmbedResultDTO
+    {
+        return new EmbedResultDTO(vectors: $this->embeddings->run($request->texts));
+    }
+
+    public function embeddingDimension(): int
+    {
+        return $this->embeddings->dimension();
+    }
+
+    public function runInstruct(RunInstructRequestDTO $request): RunInstructResultDTO
+    {
+        // Схема компилируется до вызова: непригодная схема не тратит запрос.
+        $schema = $this->schemaCompiler->compile($request->schema);
+
+        $structured = $this->runner->run(
+            PromptCatalog::RUN_INSTRUCT."\n\n".$request->rule,
+            $schema,
+            $request->input,
+        );
+
+        $this->mapper->assertMatchesSchema($structured, $request->schema);
+
+        return new RunInstructResultDTO(output: $structured);
+    }
+
+    public function extractTopics(ExtractTopicsRequestDTO $request): TopicListDTO
+    {
+        $instructions = PromptCatalog::EXTRACT_TOPICS;
+
+        if ($request->rule !== null && $request->rule !== '') {
+            $instructions .= "\n\n".$request->rule;
+        }
+
+        $structured = $this->runner->run(
+            $instructions,
+            ResponseSchemas::topics(),
+            [
+                'query' => $request->query,
+                'materials' => $request->materials,
+                'max_count' => $request->maxCount,
+                'project_categories' => $request->categories,
+                'locale' => $request->locale,
+            ],
+        );
+
+        return new TopicListDTO(
+            topics: $this->mapper->topics($this->mapper->listField($structured, 'topics'), $request->maxCount),
         );
     }
 }

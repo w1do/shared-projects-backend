@@ -65,7 +65,12 @@ export function getProject() {
   return adminApiGet<PlatformProject>(`${base}/`);
 }
 
-export function updateProject(body: { name?: string; locales?: string[] }) {
+export function updateProject(body: {
+  name?: string;
+  description?: string | null;
+  topic?: string | null;
+  locales?: string[];
+}) {
   return adminApiSend<PlatformProject>(`${base}/`, { method: "PATCH", body });
 }
 

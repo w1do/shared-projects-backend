@@ -1,0 +1,45 @@
+{
+    "status": 200,
+    "content_type": "application/json",
+    "body": {
+        "data": [
+            {
+                "id": "<int>",
+                "title": "Текст поста по теме",
+                "category": "post_body",
+                "category_label": "Текст поста",
+                "rule": "Напиши пост по заданной теме, опираясь только на переданные материалы. Дай заголовок, латинский slug в kebab-case и текст в виде простых HTML-абзацев с подзаголовками. Не выдумывай фактов, которых нет в материалах.",
+                "schema": {
+                    "type": "object",
+                    "properties": {
+                        "title": {
+                            "type": "string"
+                        },
+                        "slug": {
+                            "type": "string"
+                        },
+                        "body": {
+                            "type": "string"
+                        },
+                        "tags": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            },
+                            "description": "Теги поста, 3–7 штук"
+                        }
+                    },
+                    "required": [
+                        "title",
+                        "slug",
+                        "body",
+                        "tags"
+                    ]
+                },
+                "published": true,
+                "is_system": true,
+                "updated_at": "<string>"
+            }
+        ]
+    }
+}

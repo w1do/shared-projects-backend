@@ -82,6 +82,26 @@ test('translate-missing fills category names and marks them machine', function (
         {
             throw new RuntimeException('unused');
         }
+
+        public function embed($r): never
+        {
+            throw new RuntimeException('unused');
+        }
+
+        public function embeddingDimension(): never
+        {
+            throw new RuntimeException('unused');
+        }
+
+        public function runInstruct($r): never
+        {
+            throw new RuntimeException('unused');
+        }
+
+        public function extractTopics($r): never
+        {
+            throw new RuntimeException('unused');
+        }
     });
 
     app()->call([new TranslateMissingJob('proj-1', ['en', 'ru'], 'en', subject: 'categories'), 'handle']);

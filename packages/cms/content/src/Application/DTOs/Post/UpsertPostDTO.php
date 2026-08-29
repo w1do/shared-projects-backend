@@ -9,7 +9,10 @@ use Spatie\LaravelData\Optional;
 
 final class UpsertPostDTO extends Data
 {
-    /** @param list<int>|Optional $categories */
+    /**
+     * @param  list<int>|Optional  $categories
+     * @param  list<string>|Optional  $tags
+     */
     public function __construct(
         public string $title,
         public string|Optional $slug,
@@ -18,5 +21,6 @@ final class UpsertPostDTO extends Data
         public string|Optional|null $translation_group,
         public array|Optional $categories,
         public bool|Optional $is_index,
+        public array|Optional $tags = new Optional,
     ) {}
 }

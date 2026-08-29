@@ -1,0 +1,28 @@
+{
+    "status": 200,
+    "content_type": "application/json",
+    "body": {
+        "data": [
+            {
+                "value": "project_description",
+                "label": "Описание проекта"
+            },
+            {
+                "value": "category_tree",
+                "label": "Дерево категорий"
+            },
+            {
+                "value": "post_topics",
+                "label": "Темы постов"
+            },
+            {
+                "value": "post_body",
+                "label": "Текст поста"
+            },
+            {
+                "value": "post_seo",
+                "label": "SEO поста"
+            }
+        ]
+    }
+}

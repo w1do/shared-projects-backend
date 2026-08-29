@@ -1,0 +1,25 @@
+{
+    "status": 200,
+    "content_type": "application/json",
+    "body": {
+        "data": {
+            "id": "<int>",
+            "query": "идущее",
+            "offer": null,
+            "engine": "yandex",
+            "status": "canceled",
+            "status_label": "Отменено",
+            "progress_stage": "starting",
+            "progress_stage_label": "Подготовка",
+            "sub_queries": [],
+            "summary": null,
+            "error_message": null,
+            "sources_count": 0,
+            "topics_count": 0,
+            "started_at": null,
+            "completed_at": "<string>",
+            "created_at": "<string>",
+            "sources": []
+        }
+    }
+}

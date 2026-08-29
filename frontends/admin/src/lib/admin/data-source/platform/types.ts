@@ -50,6 +50,8 @@ export type PlatformProject = {
   id: string;
   key: string;
   name: string;
+  description?: string | null;
+  topic?: string | null;
   locales: string[];
   archived_at?: string | null;
 };

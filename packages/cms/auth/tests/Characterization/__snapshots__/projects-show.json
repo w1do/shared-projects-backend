@@ -6,6 +6,8 @@
             "id": "<string>",
             "key": "site-a",
             "name": "SITE-A",
+            "description": null,
+            "topic": null,
             "locales": [
                 "ru"
             ],

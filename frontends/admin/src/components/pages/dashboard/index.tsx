@@ -3,6 +3,7 @@
 import * as React from "react";
 import { DashboardHeader } from "./sections/DashboardHeader";
 import { KpiCards } from "./sections/KpiCards";
+import { ProjectCard } from "./sections/ProjectCard";
 import { QuickActions } from "./sections/QuickActions";
 import { RecentPosts } from "./sections/RecentPosts";
 import { RevenueChart } from "./sections/RevenueChart";
@@ -74,6 +75,7 @@ export function AdminDashboardClient() {
           onTimeRangeChange={setTimeRange}
         />
         <QuickActions timeRange={timeRange} onTimeRangeChange={setTimeRange} />
+        <ProjectCard />
         <KpiCards items={kpis} />
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
           <div className="lg:col-span-2">

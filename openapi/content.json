@@ -1023,6 +1023,47 @@
                         "bearerAuth": []
                     }
                 ]
+            },
+            "delete": {
+                "tags": [
+                    "content"
+                ],
+                "summary": "DELETE /api/admin/v1/projects/{project}/content/posts/{post}",
+                "operationId": "content_destroy_api_admin_v1_projects_project_content_posts_post",
+                "parameters": [
+                    {
+                        "name": "project",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "post",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "404": {
+                        "description": "Not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/admin/v1/projects/{project}/content/posts/{post}/status": {
@@ -1388,6 +1429,14 @@
                         }
                     },
                     {
+                        "name": "tag",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
                         "name": "cursor",
                         "in": "query",
                         "required": false,
@@ -1563,6 +1612,297 @@
                 "security": [
                     {
                         "apiKey": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/v1/projects/{project}/content/instructs": {
+            "get": {
+                "tags": [
+                    "content"
+                ],
+                "summary": "GET /api/admin/v1/projects/{project}/content/instructs",
+                "operationId": "content_index_api_admin_v1_projects_project_content_instructs",
+                "parameters": [
+                    {
+                        "name": "project",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "category",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "content"
+                ],
+                "summary": "POST /api/admin/v1/projects/{project}/content/instructs",
+                "operationId": "content_store_api_admin_v1_projects_project_content_instructs",
+                "parameters": [
+                    {
+                        "name": "project",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "title",
+                                    "category",
+                                    "rule",
+                                    "schema"
+                                ],
+                                "properties": {
+                                    "title": {
+                                        "type": "string",
+                                        "maxLength": 120
+                                    },
+                                    "category": {
+                                        "type": "string"
+                                    },
+                                    "rule": {
+                                        "type": "string",
+                                        "maxLength": 20000
+                                    },
+                                    "schema": {
+                                        "type": "object"
+                                    },
+                                    "published": {
+                                        "type": "boolean"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/v1/projects/{project}/content/instructs/categories": {
+            "get": {
+                "tags": [
+                    "content"
+                ],
+                "summary": "GET /api/admin/v1/projects/{project}/content/instructs/categories",
+                "operationId": "content_categories_api_admin_v1_projects_project_content_instructs",
+                "parameters": [
+                    {
+                        "name": "project",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/v1/projects/{project}/content/instructs/{instruct}": {
+            "get": {
+                "tags": [
+                    "content"
+                ],
+                "summary": "GET /api/admin/v1/projects/{project}/content/instructs/{instruct}",
+                "operationId": "content_show_api_admin_v1_projects_project_content_instructs_instruct",
+                "parameters": [
+                    {
+                        "name": "project",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "instruct",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "404": {
+                        "description": "Not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "content"
+                ],
+                "summary": "PUT /api/admin/v1/projects/{project}/content/instructs/{instruct}",
+                "operationId": "content_update_api_admin_v1_projects_project_content_instructs_instruct",
+                "parameters": [
+                    {
+                        "name": "project",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "instruct",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "title",
+                                    "category",
+                                    "rule",
+                                    "schema"
+                                ],
+                                "properties": {
+                                    "title": {
+                                        "type": "string",
+                                        "maxLength": 120
+                                    },
+                                    "category": {
+                                        "type": "string"
+                                    },
+                                    "rule": {
+                                        "type": "string",
+                                        "maxLength": 20000
+                                    },
+                                    "schema": {
+                                        "type": "object"
+                                    },
+                                    "published": {
+                                        "type": "boolean"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "content"
+                ],
+                "summary": "DELETE /api/admin/v1/projects/{project}/content/instructs/{instruct}",
+                "operationId": "content_destroy_api_admin_v1_projects_project_content_instructs_instruct",
+                "parameters": [
+                    {
+                        "name": "project",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "instruct",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
                     }
                 ]
             }
@@ -1873,6 +2213,508 @@
                     },
                     "401": {
                         "description": "Unauthenticated"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/v1/projects/{project}/content/posts/generate": {
+            "post": {
+                "tags": [
+                    "content"
+                ],
+                "summary": "POST /api/admin/v1/projects/{project}/content/posts/generate",
+                "operationId": "content_generate_api_admin_v1_projects_project_content_posts",
+                "parameters": [
+                    {
+                        "name": "project",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "topic_id"
+                                ],
+                                "properties": {
+                                    "topic_id": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "202": {
+                        "description": "Accepted"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/v1/projects/{project}/content/buildout": {
+            "get": {
+                "tags": [
+                    "content"
+                ],
+                "summary": "GET /api/admin/v1/projects/{project}/content/buildout",
+                "operationId": "content_show_api_admin_v1_projects_project_content_buildout",
+                "parameters": [
+                    {
+                        "name": "project",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "content"
+                ],
+                "summary": "POST /api/admin/v1/projects/{project}/content/buildout",
+                "operationId": "content_store_api_admin_v1_projects_project_content_buildout",
+                "parameters": [
+                    {
+                        "name": "project",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "topic"
+                                ],
+                                "properties": {
+                                    "topic": {
+                                        "type": "string",
+                                        "maxLength": 255
+                                    },
+                                    "overwrite": {
+                                        "type": "boolean"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/v1/projects/{project}/content/research": {
+            "get": {
+                "tags": [
+                    "content"
+                ],
+                "summary": "GET /api/admin/v1/projects/{project}/content/research",
+                "operationId": "content_index_api_admin_v1_projects_project_content_research",
+                "parameters": [
+                    {
+                        "name": "project",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "content"
+                ],
+                "summary": "POST /api/admin/v1/projects/{project}/content/research",
+                "operationId": "content_store_api_admin_v1_projects_project_content_research",
+                "parameters": [
+                    {
+                        "name": "project",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "query"
+                                ],
+                                "properties": {
+                                    "query": {
+                                        "type": "string",
+                                        "maxLength": 255
+                                    },
+                                    "offer": {
+                                        "type": "string",
+                                        "nullable": true,
+                                        "maxLength": 2000
+                                    },
+                                    "engine": {
+                                        "type": "string",
+                                        "nullable": true
+                                    },
+                                    "sub_queries_count": {
+                                        "type": "integer",
+                                        "nullable": true
+                                    },
+                                    "results_per_sub_query": {
+                                        "type": "integer",
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/v1/projects/{project}/content/research/{research}": {
+            "get": {
+                "tags": [
+                    "content"
+                ],
+                "summary": "GET /api/admin/v1/projects/{project}/content/research/{research}",
+                "operationId": "content_show_api_admin_v1_projects_project_content_research_research",
+                "parameters": [
+                    {
+                        "name": "project",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "research",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "404": {
+                        "description": "Not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/v1/projects/{project}/content/research/{research}/cancel": {
+            "post": {
+                "tags": [
+                    "content"
+                ],
+                "summary": "POST /api/admin/v1/projects/{project}/content/research/{research}/cancel",
+                "operationId": "content_cancel_api_admin_v1_projects_project_content_research_research",
+                "parameters": [
+                    {
+                        "name": "project",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "research",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "404": {
+                        "description": "Not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/v1/projects/{project}/content/research/{research}/topics": {
+            "get": {
+                "tags": [
+                    "content"
+                ],
+                "summary": "GET /api/admin/v1/projects/{project}/content/research/{research}/topics",
+                "operationId": "content_index_api_admin_v1_projects_project_content_research_research_topics",
+                "parameters": [
+                    {
+                        "name": "project",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "research",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "content"
+                ],
+                "summary": "POST /api/admin/v1/projects/{project}/content/research/{research}/topics",
+                "operationId": "content_store_api_admin_v1_projects_project_content_research_research_topics",
+                "parameters": [
+                    {
+                        "name": "project",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "research",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": false,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "max_count": {
+                                        "type": "integer",
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/v1/projects/{project}/content/topics": {
+            "get": {
+                "tags": [
+                    "content"
+                ],
+                "summary": "GET /api/admin/v1/projects/{project}/content/topics",
+                "operationId": "content_all_api_admin_v1_projects_project_content_topics",
+                "parameters": [
+                    {
+                        "name": "project",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/v1/projects/{project}/content/topics/{topic}/reject": {
+            "post": {
+                "tags": [
+                    "content"
+                ],
+                "summary": "POST /api/admin/v1/projects/{project}/content/topics/{topic}/reject",
+                "operationId": "content_reject_api_admin_v1_projects_project_content_topics_topic",
+                "parameters": [
+                    {
+                        "name": "project",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "topic",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "422": {
+                        "description": "Validation error"
                     }
                 },
                 "security": [

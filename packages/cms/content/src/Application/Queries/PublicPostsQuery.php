@@ -36,6 +36,7 @@ final class PublicPostsQuery
                 locale: $filter->locale,
                 categoryId: $filter->categoryId,
                 publishedOnly: true,
+                tag: $filter->tag,
             );
 
             return [

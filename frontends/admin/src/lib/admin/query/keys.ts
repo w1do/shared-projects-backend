@@ -111,6 +111,24 @@ export const adminQueryKeys = {
     signingKey: () => ["admin", "licensing", "signing-key"] as const,
     access: () => ["admin", "licensing", "access"] as const,
   },
+  project: {
+    all: ["admin", "project"] as const,
+    card: () => ["admin", "project", "card"] as const,
+    buildout: () => ["admin", "project", "buildout"] as const,
+    access: () => ["admin", "project", "access"] as const,
+  },
+  research: {
+    all: ["admin", "research"] as const,
+    list: (status?: string) => ["admin", "research", "list", status ?? ""] as const,
+    detail: (id: number) => ["admin", "research", "detail", id] as const,
+    topics: (researchId: number) => ["admin", "research", "topics", researchId] as const,
+    allTopics: (status?: string) => ["admin", "research", "topics", "all", status ?? ""] as const,
+  },
+  instructs: {
+    all: ["admin", "instructs"] as const,
+    list: (category?: string) => ["admin", "instructs", "list", category ?? ""] as const,
+    categories: () => ["admin", "instructs", "categories"] as const,
+  },
   content: {
     all: ["admin", "content"] as const,
     pages: () => ["admin", "content", "pages"] as const,

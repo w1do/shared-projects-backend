@@ -14,6 +14,8 @@ final class UpdateProjectRequest extends FormRequest
     {
         return [
             'name' => ['sometimes', 'string', 'max:255'],
+            'description' => ['sometimes', 'nullable', 'string', 'max:5000'],
+            'topic' => ['sometimes', 'nullable', 'string', 'max:255'],
             'locales' => ['sometimes', 'array', 'min:1'],
             'locales.*' => ['string', 'max:10'],
         ];

@@ -1,0 +1,30 @@
+{
+    "status": 200,
+    "content_type": "application/json",
+    "body": {
+        "data": [
+            {
+                "id": "<int>",
+                "query": "Расскажи про топ 10 автомобилей",
+                "offer": null,
+                "engine": "yandex",
+                "status": "done",
+                "status_label": "Завершено",
+                "progress_stage": "completed",
+                "progress_stage_label": "Готово",
+                "sub_queries": [
+                    "седаны",
+                    "кроссоверы"
+                ],
+                "summary": "Сводный материал по автомобилям",
+                "error_message": null,
+                "sources_count": 1,
+                "topics_count": 1,
+                "started_at": "<string>",
+                "completed_at": "<string>",
+                "created_at": "<string>",
+                "sources": []
+            }
+        ]
+    }
+}

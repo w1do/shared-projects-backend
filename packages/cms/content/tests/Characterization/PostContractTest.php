@@ -419,3 +419,35 @@ test('contract: content posts publish forbidden', function () {
         'posts-status-403',
     );
 });
+
+test('contract: content posts destroy', function () {
+    $post = $this->postJson(
+        '/api/admin/v1/projects/proj-1/content/posts',
+        ['title' => 'Пост под удаление'],
+        actingAsContentOperator(),
+    )->json('data');
+
+    $response = $this->deleteJson(
+        "/api/admin/v1/projects/proj-1/content/posts/{$post['id']}",
+        [],
+        actingAsContentOperator(),
+    );
+
+    ResponseSnapshot::assertMatches($response, 'posts-destroy');
+});
+
+test('contract: content posts destroy without the manage permission', function () {
+    $post = $this->postJson(
+        '/api/admin/v1/projects/proj-1/content/posts',
+        ['title' => 'Пост под удаление'],
+        actingAsContentOperator(),
+    )->json('data');
+
+    $response = $this->deleteJson(
+        "/api/admin/v1/projects/proj-1/content/posts/{$post['id']}",
+        [],
+        actingAsContentOperator('proj-1', ['content.posts.view']),
+    );
+
+    ResponseSnapshot::assertMatches($response, 'posts-destroy-403');
+});

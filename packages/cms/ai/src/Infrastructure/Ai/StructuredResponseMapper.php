@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Cms\Ai\Infrastructure\Ai;
 
+use Cms\Ai\Application\DTOs\ExtractTopics\TopicSuggestionDTO;
 use Cms\Ai\Application\DTOs\SuggestCategories\CategorySuggestionDTO;
 use Cms\Ai\Application\Exceptions\AiResponseException;
 
@@ -66,6 +67,59 @@ final class StructuredResponseMapper
         }
 
         return $translations;
+    }
+
+    /**
+     * Проверка ответа по схеме, заданной потребителем: обязательные поля обязаны
+     * присутствовать. Схему соблюдает провайдер, но полагаться на это нельзя —
+     * неструктурированный ответ не должен доехать до сущностей проекта.
+     *
+     * @param  array<string, mixed>  $structured
+     * @param  array<string, mixed>  $schema
+     */
+    public function assertMatchesSchema(array $structured, array $schema): void
+    {
+        $required = $schema['required'] ?? [];
+
+        if (! is_array($required)) {
+            return;
+        }
+
+        foreach ($required as $field) {
+            if (! array_key_exists((string) $field, $structured)) {
+                throw new AiResponseException("AI response is missing the required '{$field}' field.");
+            }
+        }
+    }
+
+    /**
+     * Список {title, rationale, category} → DTO тем; лишние сверх запрошенного
+     * числа отбрасываются здесь, а не остаются на усмотрение модели.
+     *
+     * @param  list<mixed>  $rows
+     * @return list<TopicSuggestionDTO>
+     */
+    public function topics(array $rows, int $maxCount): array
+    {
+        $topics = [];
+
+        foreach ($rows as $row) {
+            if (! is_array($row) || ! isset($row['title'], $row['rationale'])) {
+                throw new AiResponseException('AI topic suggestion is malformed.');
+            }
+
+            $category = isset($row['category']) && is_string($row['category']) && $row['category'] !== ''
+                ? $row['category']
+                : null;
+
+            $topics[] = new TopicSuggestionDTO(
+                title: (string) $row['title'],
+                rationale: (string) $row['rationale'],
+                category: $category,
+            );
+        }
+
+        return array_slice($topics, 0, $maxCount);
     }
 
     /**

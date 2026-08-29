@@ -42,6 +42,10 @@ export function updatePost(id: number, body: UpsertPostBody) {
   return adminApiSend<PlatformPost>(`${base}/posts/${id}`, { method: "PUT", body });
 }
 
+export function deletePost(id: number) {
+  return adminApiSend<null>(`${base}/posts/${id}`, { method: "DELETE" });
+}
+
 export function changePostStatus(id: number, status: string, scheduledAt?: string) {
   return adminApiSend<PlatformPost>(`${base}/posts/${id}/status`, {
     method: "POST",

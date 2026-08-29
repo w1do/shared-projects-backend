@@ -16,6 +16,8 @@
             <directory>../../packages/cms/content/tests</directory>
             <directory>../../packages/cms/ai/tests</directory>
             <directory>../../packages/cms/localization/tests</directory>
+            <directory>../../packages/cms/instructs/tests</directory>
+            <directory>../../packages/cms/research/tests</directory>
         </testsuite>
     </testsuites>
     <source>

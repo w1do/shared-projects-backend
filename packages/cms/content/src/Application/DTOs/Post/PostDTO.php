@@ -10,7 +10,10 @@ use Spatie\LaravelData\Data;
 
 final class PostDTO extends Data
 {
-    /** @param list<int> $categories */
+    /**
+     * @param  list<int>  $categories
+     * @param  list<string>  $tags
+     */
     public function __construct(
         public int $id,
         public string $title,
@@ -23,6 +26,7 @@ final class PostDTO extends Data
         public ?string $published_at,
         public bool $is_index,
         public array $categories = [],
+        public array $tags = [],
         public ?SeoDTO $seo = null,
     ) {}
 
@@ -40,6 +44,7 @@ final class PostDTO extends Data
             published_at: $post->published_at?->toIso8601String(),
             is_index: $post->is_index,
             categories: $post->relationLoaded('categories') ? array_values(array_map('intval', $post->categories->pluck('id')->all())) : [],
+            tags: $post->relationLoaded('tags') ? array_values(array_map('strval', $post->tags->pluck('name')->all())) : [],
             seo: $post->relationLoaded('seo') && $post->seo ? SeoDTO::fromModel($post->seo) : null,
         );
     }

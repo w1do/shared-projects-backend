@@ -7,6 +7,7 @@ use Cms\Auth\Application\Commands\ToggleServiceCommand;
 use Cms\Auth\Application\Handlers\BlockUserHandler;
 use Cms\Auth\Application\Handlers\ToggleServiceHandler;
 use Cms\Auth\Domain\Models\Admin;
+use Cms\Auth\Domain\Models\Project;
 use Cms\Auth\Domain\Models\ProjectApiKey;
 use Cms\Auth\Domain\Models\User;
 use Cms\Auth\Infrastructure\Persistence\PermissionSyncer;
@@ -226,4 +227,52 @@ test('contract: internal translations version without service token', function (
     $response = $this->postJson('/internal/translations-version', ['project_id' => 'x', 'version' => 2]);
 
     ResponseSnapshot::assertMatches($response, 'internal-translations-version-401');
+});
+
+test('contract: internal project profile fills description and topic', function () {
+    $project = Project::factory()->create(['key' => 'site-a', 'name' => 'SITE-A']);
+
+    $response = $this->postJson('/internal/project-profile', [
+        'project_id' => $project->id,
+        'description' => 'Автомобильный портал',
+        'topic' => 'автомобили',
+    ], internalContractServiceHeaders());
+
+    ResponseSnapshot::assertMatches($response, 'internal-project-profile');
+
+    expect($project->fresh()->description)->toBe('Автомобильный портал')
+        ->and($project->fresh()->topic)->toBe('автомобили');
+});
+
+test('contract: internal project profile keeps a filled description without overwrite', function () {
+    $project = Project::factory()->create([
+        'key' => 'site-a', 'name' => 'SITE-A', 'description' => 'Прежнее описание',
+    ]);
+
+    $this->postJson('/internal/project-profile', [
+        'project_id' => $project->id,
+        'description' => 'Новое описание',
+    ], internalContractServiceHeaders())->assertAccepted();
+
+    expect($project->fresh()->description)->toBe('Прежнее описание');
+
+    $this->postJson('/internal/project-profile', [
+        'project_id' => $project->id,
+        'description' => 'Новое описание',
+        'overwrite' => true,
+    ], internalContractServiceHeaders())->assertAccepted();
+
+    expect($project->fresh()->description)->toBe('Новое описание');
+});
+
+test('contract: internal project profile validation error', function () {
+    $response = $this->postJson('/internal/project-profile', [], internalContractServiceHeaders());
+
+    ResponseSnapshot::assertMatches($response, 'internal-project-profile-422');
+});
+
+test('contract: internal project profile without service token', function () {
+    $response = $this->postJson('/internal/project-profile', ['project_id' => 'x']);
+
+    ResponseSnapshot::assertMatches($response, 'internal-project-profile-401');
 });
