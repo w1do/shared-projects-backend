@@ -1,7 +1,13 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { countChildren, descendantIds, flattenTree, invalidParentIds } from "./category-tree.ts";
+import {
+  categoryPath,
+  countChildren,
+  descendantIds,
+  flattenTree,
+  invalidParentIds,
+} from "./category-tree.ts";
 
 /** Три уровня, как в демо-дереве: Аналитика → Рынок → Обзоры/Прогнозы. */
 const TREE = [
@@ -85,4 +91,33 @@ test("прямые потомки считаются по плоскому сп�
   assert.equal(counts.get("5"), 2);
   assert.equal(counts.get("6"), undefined, "лист");
   assert.deepEqual(countChildren([]), new Map());
+});
+
+/** Одноимённые «Обзоры» в двух ветках: различает их только полный путь. */
+const SLUGGED = [
+  { id: "1", slug: "news", parentId: null },
+  { id: "2", slug: "reviews", parentId: "1" },
+  { id: "3", slug: "analytics", parentId: null },
+  { id: "4", slug: "market", parentId: "3" },
+  { id: "5", slug: "reviews", parentId: "4" },
+  { id: "6", slug: "", parentId: "3" },
+];
+
+test("полный путь узла собирается по слагам предков", () => {
+  assert.equal(categoryPath(SLUGGED, "1"), "/news");
+  assert.equal(categoryPath(SLUGGED, "2"), "/news/reviews");
+  assert.equal(categoryPath(SLUGGED, "5"), "/analytics/market/reviews");
+});
+
+test("одноимённые категории в разных ветках различаются путём", () => {
+  assert.notEqual(categoryPath(SLUGGED, "2"), categoryPath(SLUGGED, "5"));
+});
+
+test("узел без слага подставляет идентификатор, неизвестный узел даёт пустой путь", () => {
+  assert.equal(categoryPath(SLUGGED, "6"), "/analytics/6");
+  assert.equal(categoryPath(SLUGGED, "404"), "");
+});
+
+test("оборванная цепочка предков не роняет построение пути", () => {
+  assert.equal(categoryPath([{ id: "9", slug: "orphan", parentId: "gone" }], "9"), "/orphan");
 });

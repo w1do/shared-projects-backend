@@ -4,6 +4,7 @@ import * as React from "react";
 import { ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { IconButton } from "@/components/ui/inputs/icon-button";
+import { Checkbox } from "@/components/ui/inputs/checkbox";
 import {
   Table,
   TableBody,
@@ -27,6 +28,11 @@ import type { ColumnDef } from "@/components/ui/data-display/data-grid.types";
  * Зоны броска на строке: верхняя треть — поставить ПЕРЕД строкой (сосед по её
  * уровню), нижняя треть — ПОСЛЕ, середина — ВЛОЖИТЬ в строку. Семантика
  * файловых менеджеров: линия-вставка сверху/снизу, подсветка строки — вложение.
+ *
+ * Выбор строк — тот же контракт, что у `DataGrid` (`checkbox`, `selectedRowIds`,
+ * `onSelectionChange`). Потомки отмеченного узла помечаются как «уйдут вместе с
+ * ним», но в `selectedRowIds` не попадают: счётчик выбранного считает только то,
+ * что оператор отметил сам.
  */
 
 export interface TreeNodeRow {
@@ -51,6 +57,10 @@ export interface TreeTableProps<T extends TreeNodeRow> {
   busyIds?: Set<string>;
   /** Выключает перетаскивание (например, при активном поиске). */
   dragDisabled?: boolean;
+  /** Колонка выбора — контракт тот же, что у DataGrid. */
+  checkbox?: boolean;
+  selectedRowIds?: Set<string>;
+  onSelectionChange?: (ids: Set<string>) => void;
   onRowClick?: (row: T) => void;
   emptyMessage?: React.ReactNode;
 }
@@ -64,6 +74,9 @@ export function TreeTable<T extends TreeNodeRow>({
   isInvalidTarget,
   busyIds,
   dragDisabled = false,
+  checkbox = false,
+  selectedRowIds,
+  onSelectionChange,
   onRowClick,
   emptyMessage,
 }: TreeTableProps<T>) {
@@ -90,6 +103,48 @@ export function TreeTable<T extends TreeNodeRow>({
       return true;
     });
   }, [rows, collapsed, byId]);
+
+  const selected = React.useMemo(() => selectedRowIds ?? new Set<string>(), [selectedRowIds]);
+  const showCheckbox = checkbox && Boolean(onSelectionChange);
+
+  /**
+   * Потомки отмеченного узла уйдут вместе с ним, но в выборе не числятся:
+   * иначе счётчик выбранного показывал бы больше, чем отметил оператор.
+   */
+  const impliedIds = React.useMemo(() => {
+    if (selected.size === 0) return new Set<string>();
+    const implied = new Set<string>();
+
+    for (const row of rows) {
+      let parentId = row.parentId ?? null;
+      while (parentId != null) {
+        if (selected.has(parentId)) {
+          implied.add(row.id);
+          break;
+        }
+        parentId = byId.get(parentId)?.parentId ?? null;
+      }
+    }
+
+    return implied;
+  }, [rows, selected, byId]);
+
+  const allSelected = rows.length > 0 && rows.every((row) => selected.has(row.id));
+
+  const toggleAll = () => {
+    if (!onSelectionChange) return;
+    const next = new Set(selected);
+    rows.forEach((row) => (allSelected ? next.delete(row.id) : next.add(row.id)));
+    onSelectionChange(next);
+  };
+
+  const toggleRow = (id: string) => {
+    if (!onSelectionChange) return;
+    const next = new Set(selected);
+    if (next.has(id)) next.delete(id);
+    else next.add(id);
+    onSelectionChange(next);
+  };
 
   const toggleCollapse = (id: string) =>
     setCollapsed((current) => {
@@ -154,6 +209,16 @@ export function TreeTable<T extends TreeNodeRow>({
     <Table data-testid="tree-table">
       <TableHeader>
         <TableRow>
+          {showCheckbox && (
+            <TableHead className="w-12 pl-4 md:pl-6">
+              <Checkbox
+                checked={allSelected}
+                onCheckedChange={toggleAll}
+                aria-label="Select all rows"
+                size="small"
+              />
+            </TableHead>
+          )}
           {columns.map((column) => (
             <TableHead
               key={column.field}
@@ -168,7 +233,10 @@ export function TreeTable<T extends TreeNodeRow>({
       <TableBody>
         {visibleRows.length === 0 && (
           <TableRow>
-            <TableCell colSpan={columns.length} className="py-10 text-center">
+            <TableCell
+              colSpan={columns.length + (showCheckbox ? 1 : 0)}
+              className="py-10 text-center"
+            >
               {emptyMessage ?? "No rows."}
             </TableCell>
           </TableRow>
@@ -178,12 +246,16 @@ export function TreeTable<T extends TreeNodeRow>({
           const isBusy = busyIds?.has(row.id) ?? false;
           const target = dropTarget?.id === row.id ? dropTarget : null;
           const invalid = target ? invalidFor(row.id, target.zone) : false;
+          const isSelected = selected.has(row.id);
+          const isImplied = impliedIds.has(row.id);
 
           return (
             <TableRow
               key={row.id}
               data-tree-node={row.id}
               data-tree-depth={row.depth}
+              data-state={isSelected ? "selected" : undefined}
+              data-tree-implied={isImplied ? "" : undefined}
               data-drop-zone={target && !invalid ? target.zone : undefined}
               data-drop-invalid={target && invalid ? "" : undefined}
               draggable={!dragDisabled && !isBusy && Boolean(onMove)}
@@ -224,8 +296,26 @@ export function TreeTable<T extends TreeNodeRow>({
                   target.zone === "after" &&
                   "shadow-[inset_0_-2px_0_0_var(--color-brand-accent,theme(colors.orange.500))]",
                 target && invalid && "cursor-not-allowed bg-destructive/10",
+                isImplied && "bg-destructive/5",
               )}
             >
+              {showCheckbox && (
+                <TableCell
+                  className="pl-4 md:pl-6"
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    if (!isImplied) toggleRow(row.id);
+                  }}
+                >
+                  <Checkbox
+                    checked={isSelected || isImplied}
+                    disabled={isImplied}
+                    onCheckedChange={() => toggleRow(row.id)}
+                    aria-label={`Select row ${row.id}`}
+                    size="small"
+                  />
+                </TableCell>
+              )}
               {columns.map((column, columnIndex) => (
                 <TableCell key={column.field} className={cn(column.cellClassName)}>
                   {columnIndex === 0 ? (

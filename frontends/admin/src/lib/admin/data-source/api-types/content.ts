@@ -40,6 +40,9 @@ export type ApiArticle = {
   readingTimeMin: number;
   thumbnail?: string | null;
   banner?: string | null;
+  /** Медиа проекта за обложкой и баннером поста. */
+  coverMediaId?: number | null;
+  bannerMediaId?: number | null;
   status: "PUBLISHED" | "DRAFT" | "SCHEDULED" | "ARCHIVED";
   /** Идентификаторы категорий проекта, к которым привязан пост. */
   categoryIds?: string[];

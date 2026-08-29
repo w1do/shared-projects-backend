@@ -3,6 +3,8 @@ export {
   useCreateCategoryMutation,
   useUpdateCategoryMutation,
   useDeleteCategoryMutation,
+  useBulkDeleteCategoriesMutation,
+  usePurgeCategoriesMutation,
   useMoveCategoryMutation,
 } from "./use-category-mutations";
 export { useCategoriesPage } from "./use-categories-page";

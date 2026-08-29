@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { Clock, Eye, Pencil, Trash2 } from "lucide-react";
+import { Clock, Eye, ImageOff, Pencil, Trash2 } from "lucide-react";
 import { Avatar } from "@/components/ui/data-display/avatar";
 import { Badge } from "@/components/ui/data-display/badge";
 import { Button } from "@/components/ui/inputs/button";
@@ -35,13 +35,25 @@ export function ArticleCard({ article, onOpen, onEdit, onDelete }: ArticleCardPr
       />
 
       <div className="pointer-events-none aspect-thumb relative overflow-hidden">
-        <Image
-          src={article.thumbnail}
-          alt={article.title}
-          fill
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-          className="object-cover transition-transform duration-500 group-hover:scale-105"
-        />
+        {/* Обложка приходит из медиатеки проекта; её отсутствие — единая заглушка. */}
+        {article.thumbnail ? (
+          <Image
+            src={article.thumbnail}
+            alt={article.title}
+            fill
+            unoptimized
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            className="object-cover transition-transform duration-500 group-hover:scale-105"
+          />
+        ) : (
+          <div
+            className="flex h-full w-full flex-col items-center justify-center gap-2 bg-muted/50 text-muted-foreground-lighter"
+            data-testid="article-cover-placeholder"
+          >
+            <ImageOff className="size-6" />
+            <span className="text-caption">{t("console.images.placeholder")}</span>
+          </div>
+        )}
         <div className="absolute left-4 top-4 z-10 rounded-full bg-background/85 backdrop-blur">
           <Badge color="neutral" variant="ghost" shape="circle">
             {article.category}

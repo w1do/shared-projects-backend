@@ -33,8 +33,11 @@ export function postToArticle(post: PlatformPost, categoryNames: Map<number, str
     tags: post.seo?.keywords ? post.seo.keywords.split(",").map((tag) => tag.trim()) : [],
     authorName: null,
     readingTimeMin: readingTime(post.body),
-    thumbnail: post.seo?.og_image ?? null,
-    banner: post.seo?.og_image ?? null,
+    // Изображения поста — медиа проекта; og:image остаётся запасным адресом
+    thumbnail: post.cover?.url ?? post.seo?.og_image ?? null,
+    banner: post.banner?.url ?? post.seo?.og_image ?? null,
+    coverMediaId: post.cover?.id ?? null,
+    bannerMediaId: post.banner?.id ?? null,
     status: post.status.toUpperCase() as ApiArticle["status"],
     categoryIds: (post.categories ?? []).map(String),
     contentBlocks: post.body ? [{ type: "paragraph", content: post.body }] : [],

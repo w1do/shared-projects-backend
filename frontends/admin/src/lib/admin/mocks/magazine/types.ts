@@ -79,6 +79,9 @@ export interface Article {
   readingTimeMin: number;
   banner: string;
   thumbnail: string;
+  /** Медиа проекта за изображениями поста (режим api). */
+  coverMediaId?: number | null;
+  bannerMediaId?: number | null;
   layoutStyle: "minimalist" | "editorial" | "botanical" | string;
   relatedProducts: string[];
   contentBlocks: ContentBlock[];

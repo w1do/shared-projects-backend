@@ -3,6 +3,7 @@
 import * as React from "react";
 import { GeneralInfoSection } from "@/components/pages/blogs/pages/add/sections/general-info";
 import { useCategoriesQuery } from "@/hooks/admin/categories";
+import { useConsoleAccessQuery } from "@/hooks/admin/project";
 import { shouldUseAdminApi } from "@/lib/admin/data-source/config";
 import { MediaSection } from "@/components/pages/blogs/pages/add/sections/media";
 import { ContentBlocksSection } from "@/components/pages/blogs/pages/add/sections/content-blocks";
@@ -17,6 +18,7 @@ export function BlogFormBody({ sidebarExtra }: { sidebarExtra?: React.ReactNode 
   // Дерево категорий проекта для привязки поста — только в режиме api.
   const isApi = shouldUseAdminApi();
   const { data: categories } = useCategoriesQuery({ enabled: isApi });
+  const { data: access } = useConsoleAccessQuery();
   const platformCategories = React.useMemo(
     () =>
       isApi
@@ -35,7 +37,7 @@ export function BlogFormBody({ sidebarExtra }: { sidebarExtra?: React.ReactNode 
       {/* Left column */}
       <div className="flex flex-col gap-8 lg:col-span-2">
         <GeneralInfoSection platformCategories={platformCategories} />
-        <MediaSection />
+        <MediaSection canManageMedia={access?.canManageMedia ?? false} />
         <ContentBlocksSection />
       </div>
 

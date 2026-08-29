@@ -1,16 +1,12 @@
 "use client";
 
-import * as React from "react";
 import { ArrowLeft, ExternalLink } from "lucide-react";
-import { Button } from "@/components/ui/inputs/button";
 import { Badge } from "@/components/ui/data-display/badge";
-import { t } from "@/lib/admin/console-texts";
-import {
-  useCancelResearchMutation,
-  useResearchQuery,
-} from "@/hooks/admin/research";
-
-import { ResearchTopicsPanel } from "./ResearchTopicsPanel";
+import { Card } from "@/components/ui/data-display/card";
+import { Button } from "@/components/ui/inputs/button";
+import { useConsoleText } from "@/lib/admin/use-console-text";
+import { useCancelResearchMutation, useResearchQuery } from "@/hooks/admin/research";
+import { ResearchTopicsSection } from "@/components/pages/research/sections/research-topics";
 
 type Props = {
   researchId: number;
@@ -28,6 +24,7 @@ export function ResearchDetailSection({
   canGeneratePosts,
   onBack,
 }: Props) {
+  const t = useConsoleText();
   const { data: research } = useResearchQuery(researchId);
   const cancel = useCancelResearchMutation();
 
@@ -36,13 +33,24 @@ export function ResearchDetailSection({
   return (
     <div className="flex flex-col gap-6" data-testid="research-detail">
       <div className="flex flex-wrap items-center justify-between gap-4">
-        <Button variant="ghost" onClick={onBack} data-testid="research-back">
-          <ArrowLeft className="size-4" />
+        <Button
+          variant="ghost"
+          shape="circle"
+          size="sm"
+          startIcon={<ArrowLeft />}
+          onClick={onBack}
+          data-testid="research-back"
+        >
           {t("console.research.back")}
         </Button>
 
         <div className="flex items-center gap-2">
-          <Badge variant="outline" data-testid="research-detail-status">
+          <Badge
+            variant="soft"
+            color={research.status === "failed" ? "error" : "neutral"}
+            shape="circle"
+            data-testid="research-detail-status"
+          >
             {research.status === "process"
               ? `${research.status_label} · ${research.progress_stage_label}`
               : research.status_label}
@@ -51,7 +59,10 @@ export function ResearchDetailSection({
           {canRun && research.status === "process" && (
             <Button
               variant="ghost"
+              color="error"
+              shape="circle"
               size="sm"
+              isLoading={cancel.isPending}
               onClick={() => cancel.mutate(research.id)}
             >
               {t("console.research.cancel")}
@@ -60,40 +71,40 @@ export function ResearchDetailSection({
         </div>
       </div>
 
-      <div className="rounded-3xl bg-card p-6 shadow-subtle-3">
-        <h3 className="font-openrunde text-heading text-foreground">
-          {research.query}
-        </h3>
-
-        {research.error_message && (
-          <p
-            className="mt-2 text-caption text-destructive"
-            data-testid="research-detail-error"
-          >
-            {research.error_message}
-          </p>
-        )}
+      <Card variant="form-section">
+        <div className="flex flex-col gap-2">
+          <h2 className="text-heading font-medium leading-tight text-foreground">
+            {research.query}
+          </h2>
+          {research.error_message && (
+            <p className="text-xs font-medium text-destructive" data-testid="research-detail-error">
+              {research.error_message}
+            </p>
+          )}
+        </div>
 
         {research.sub_queries.length > 0 && (
-          <div
-            className="mt-4 flex flex-wrap gap-2"
-            data-testid="research-sub-queries"
-          >
+          <div className="flex flex-wrap gap-2" data-testid="research-sub-queries">
             {research.sub_queries.map((subQuery) => (
-              <Badge key={subQuery} variant="secondary">
+              <Badge key={subQuery} variant="soft" color="neutral" shape="circle">
                 {subQuery}
               </Badge>
             ))}
           </div>
         )}
-      </div>
+      </Card>
 
-      <div className="rounded-3xl bg-card p-6 shadow-subtle-3">
-        <h4 className="text-body text-foreground">
-          {t("console.research.sources")}
-        </h4>
+      <Card variant="form-section">
+        <div className="flex flex-col gap-2">
+          <h2 className="text-heading font-medium leading-tight text-foreground">
+            {t("console.research.sources")}
+          </h2>
+          <p className="text-xs text-muted-foreground-lighter">
+            {t("console.research.sources-hint")}
+          </p>
+        </div>
 
-        <ul className="mt-4 flex flex-col gap-2" data-testid="research-sources">
+        <ul className="flex flex-col gap-2" data-testid="research-sources">
           {research.sources.map((source) => (
             <li key={source.id} className="flex items-center gap-2">
               <a
@@ -108,23 +119,23 @@ export function ResearchDetailSection({
             </li>
           ))}
         </ul>
-      </div>
+      </Card>
 
       {research.summary && (
-        <div className="rounded-3xl bg-card p-6 shadow-subtle-3">
-          <h4 className="text-body text-foreground">
+        <Card variant="form-section">
+          <h2 className="text-heading font-medium leading-tight text-foreground">
             {t("console.research.summary")}
-          </h4>
+          </h2>
           <p
-            className="mt-4 whitespace-pre-line text-caption text-muted-foreground"
+            className="whitespace-pre-line text-caption text-muted-foreground"
             data-testid="research-summary"
           >
             {research.summary}
           </p>
-        </div>
+        </Card>
       )}
 
-      <ResearchTopicsPanel
+      <ResearchTopicsSection
         researchId={researchId}
         canExtract={canManageTopics && research.status === "done"}
         canManageTopics={canManageTopics}

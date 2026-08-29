@@ -83,3 +83,29 @@ export function invalidParentIds(nodes: readonly TreeNode[], id: string): Set<st
 
   return invalid;
 }
+
+export type SluggedNode = TreeNode & { slug?: string | null };
+
+/**
+ * Полный путь узла по слагам его предков: `/родитель/потомок/узел`.
+ *
+ * Путь нужен там, где одного имени мало: одноимённые категории из разных веток
+ * различимы только путём. Считается по уже загруженному дереву — второго
+ * источника правды у платформы нет. Неизвестный узел даёт пустую строку,
+ * узел без слага — свой идентификатор.
+ */
+export function categoryPath(nodes: readonly SluggedNode[], id: string): string {
+  const byId = new Map(nodes.map((node) => [node.id, node]));
+  const segments: string[] = [];
+  const seen = new Set<string>();
+
+  let current = byId.get(id);
+  while (current !== undefined && !seen.has(current.id)) {
+    seen.add(current.id);
+    segments.unshift(current.slug?.trim() || current.id);
+    const parentId = current.parentId ?? null;
+    current = parentId === null ? undefined : byId.get(parentId);
+  }
+
+  return segments.length === 0 ? "" : `/${segments.join("/")}`;
+}

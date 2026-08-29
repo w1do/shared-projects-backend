@@ -61,6 +61,17 @@ export async function getBootstrap(projectKey?: string) {
   return bootstrap;
 }
 
+/**
+ * Создание проекта: платформа выводит ключ из названия сама.
+ * Путь не скоупится текущим проектом — нового проекта у оператора ещё нет.
+ */
+export function createProject(body: { name: string }) {
+  return adminApiSend<PlatformProject>("/api/admin/v1/projects", {
+    method: "POST",
+    body,
+  });
+}
+
 export function getProject() {
   return adminApiGet<PlatformProject>(`${base}/`);
 }

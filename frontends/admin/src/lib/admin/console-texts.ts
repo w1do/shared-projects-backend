@@ -58,6 +58,12 @@ export const CONSOLE_TEXTS = {
   "console.project.name": "Название",
   "console.project.description": "Описание",
   "console.project.topic": "Тематика",
+  "console.project.create.action": "Новый проект",
+  "console.project.create.title": "Новый проект",
+  "console.project.create.subtitle":
+    "Введите название — ключ проекта платформа выведет сама. Проект будет пустым, а вы станете его владельцем.",
+  "console.project.create.name-required": "Введите название проекта",
+  "console.project.create.failed": "Не удалось создать проект.",
   "console.project.description-empty": "Описание проекта не заполнено",
   "console.project.copy-id": "Скопировать идентификатор",
   "console.project.copied": "Идентификатор скопирован",
@@ -100,6 +106,15 @@ export const CONSOLE_TEXTS = {
   "console.research.topic-category": "Категория",
   "console.research.open-post": "Открыть пост",
   "console.research.back": "К списку исследований",
+  "console.research.new-subtitle":
+    "Платформа соберёт материалы по запросу и предложит темы для постов.",
+  "console.research.empty-hint": "Запустите первое исследование — материалы появятся здесь.",
+  "console.research.sources-hint": "Страницы, из которых собран материал исследования.",
+  "console.research.topics-hint": "Темы будущих постов, выведенные из собранного материала.",
+  "console.research.status.process": "В работе",
+  "console.research.status.done": "Завершено",
+  "console.research.status.failed": "Ошибка",
+  "console.research.status.canceled": "Отменено",
 
   // Инструкции
   "console.instructs.title": "Инструкции",
@@ -123,6 +138,30 @@ export const CONSOLE_TEXTS = {
   "console.instructs.delete": "Удалить",
   "console.instructs.empty": "Инструкций пока нет",
   "console.instructs.filter-all": "Все категории",
+  "console.instructs.form.details": "Данные инструкции",
+  "console.instructs.form.details-hint":
+    "Название, категория генерации и правило, по которому модель пишет ответ.",
+  "console.instructs.delete.title": "Удалить инструкцию",
+  "console.instructs.delete.question": "Удалить инструкцию «{name}»? Действие нельзя отменить.",
+  "console.instructs.schema.preset": "Пресет полей",
+  "console.instructs.schema.preset-apply": "Применить пресет",
+  "console.instructs.schema.preset-replace-title": "Заменить поля схемы",
+  "console.instructs.schema.preset-replace-question":
+    "Пресет «{name}» заменит уже заданные поля схемы. Продолжить?",
+  "console.instructs.schema.add-field": "Добавить поле",
+  "console.instructs.schema.remove-field": "Убрать поле",
+  "console.instructs.schema.empty": "Полей пока нет — добавьте первое или примените пресет.",
+  "console.instructs.schema.too-complex":
+    "Схема сложнее редактора полей — она открыта в режиме JSON.",
+  "console.instructs.schema.field-name": "Имя поля",
+  "console.instructs.schema.field-type": "Тип",
+  "console.instructs.schema.field-description": "Назначение",
+  "console.instructs.schema.field-required": "Обязательное",
+  "console.instructs.schema.type-string": "Строка",
+  "console.instructs.schema.type-number": "Число",
+  "console.instructs.schema.type-boolean": "Да/нет",
+  "console.instructs.schema.type-object": "Объект",
+  "console.instructs.schema.type-array": "Список",
   "console.quick-actions.add-product": "Добавить товар",
   "console.quick-actions.new-promotion": "Новая акция",
   "console.quick-actions.import-inventory": "Импорт склада",
@@ -401,6 +440,37 @@ export const CONSOLE_TEXTS = {
     "Материалы сохранятся — они лишь потеряют привязку к удалённым категориям.",
   "console.categories.delete.irreversible": "Действие нельзя отменить.",
   "console.categories.delete.confirm": "Удалить",
+  "console.categories.delete.paths-label": "Полные пути удаляемых категорий:",
+  "console.categories.delete.done": "Категория «{name}» удалена.",
+  "console.categories.delete.done-bulk": "Удалено категорий: {count}.",
+  "console.categories.delete.failed": "Не удалось удалить категорию.",
+  "console.categories.move.done": "Категория «{name}» перемещена.",
+  "console.categories.move.failed": "Не удалось переместить категорию.",
+
+  // Подбор изображения материала
+  "console.images.title": "Подбор изображения",
+  "console.images.subtitle":
+    "Найдите изображение по запросу и выберите подходящее — оно попадёт в медиатеку проекта.",
+  "console.images.query-placeholder": "например: красный седан на трассе",
+  "console.images.search": "Найти",
+  "console.images.pick": "Подобрать изображение",
+  "console.images.hint": "Введите запрос и нажмите «Найти».",
+  "console.images.empty": "По запросу ничего не найдено.",
+  "console.images.source-unknown": "Источник неизвестен",
+  "console.images.search-failed": "Не удалось выполнить поиск изображений.",
+  "console.images.import-failed": "Не удалось перенести изображение в медиатеку проекта.",
+  "console.images.upload-failed": "Не удалось загрузить изображение.",
+  "console.images.placeholder": "Обложка не задана",
+
+  // Категории: очистка каталога — отдельное опасное действие
+  "console.categories.purge.action": "Удалить все категории",
+  "console.categories.purge.title": "Удалить все категории проекта",
+  "console.categories.purge.question":
+    "Будут безвозвратно удалены все категории проекта ({count}) вместе со всем деревом.",
+  "console.categories.purge.acknowledge":
+    "Понимаю: весь каталог категорий проекта будет удалён.",
+  "console.categories.purge.confirm": "Удалить весь каталог",
+  "console.categories.purge.done": "Каталог категорий очищен.",
 
   // Категории: форма
   "console.categories.form.details": "Данные категории",

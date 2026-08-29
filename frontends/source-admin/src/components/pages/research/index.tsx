@@ -5,8 +5,8 @@ import { PageHeader } from "@/components/shared/layout/PageHeader";
 import { t } from "@/lib/admin/console-texts";
 import { useConsoleAccessQuery } from "@/hooks/admin/project";
 
-import { ResearchListSection } from "./sections/ResearchListSection";
-import { ResearchDetailSection } from "./sections/ResearchDetailSection";
+import { ResearchListSection } from "./sections/research-list";
+import { ResearchDetailSection } from "./sections/research-detail";
 
 /** Раздел «Ресёрч»: список исследований и карточка выбранного с темами. */
 export default function ResearchPage() {

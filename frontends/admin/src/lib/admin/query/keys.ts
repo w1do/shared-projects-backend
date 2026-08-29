@@ -128,6 +128,7 @@ export const adminQueryKeys = {
     all: ["admin", "instructs"] as const,
     list: (category?: string) => ["admin", "instructs", "list", category ?? ""] as const,
     categories: () => ["admin", "instructs", "categories"] as const,
+    schemaPresets: () => ["admin", "instructs", "schema-presets"] as const,
   },
   content: {
     all: ["admin", "content"] as const,

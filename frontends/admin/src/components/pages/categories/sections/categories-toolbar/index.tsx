@@ -1,9 +1,9 @@
 "use client";
 
-import { Search, LayoutGrid, List } from "lucide-react";
+import { Search, LayoutGrid, List, Trash2 } from "lucide-react";
 import { Input } from "@/components/ui/inputs/input";
+import { Button } from "@/components/ui/inputs/button";
 import { ButtonGroup } from "@/components/ui/inputs/button-group";
-import { cn } from "@/lib/utils";
 import { Select } from "@/components/ui/inputs/select";
 import { useConsoleText } from "@/lib/admin/use-console-text";
 
@@ -22,6 +22,10 @@ interface CategoriesToolbarProps {
   setFilterStatus: (value: string) => void;
   viewMode: "grid" | "table";
   setViewMode: (value: "grid" | "table") => void;
+  /** Очистка каталога; отсутствует — действие не показывается. */
+  onPurgeClick?: () => void;
+  /** Каталог пуст: очищать нечего. */
+  purgeDisabled?: boolean;
 }
 
 export function CategoriesToolbar({
@@ -31,6 +35,8 @@ export function CategoriesToolbar({
   setFilterStatus,
   viewMode,
   setViewMode,
+  onPurgeClick,
+  purgeDisabled = false,
 }: CategoriesToolbarProps) {
   const t = useConsoleText();
   const viewModeOptions = [
@@ -79,6 +85,22 @@ export function CategoriesToolbar({
           shape="circle"
           className="h-10 border border-border/40"
         />
+
+        {/* Опасное действие отделено от обычного удаления: отдельная кнопка тулбара. */}
+        {onPurgeClick && (
+          <Button
+            variant="outlined"
+            color="error"
+            shape="circle"
+            size="sm"
+            startIcon={<Trash2 />}
+            disabled={purgeDisabled}
+            onClick={onPurgeClick}
+            data-testid="categories-purge"
+          >
+            {t("console.categories.purge.action")}
+          </Button>
+        )}
       </div>
     </div>
   );

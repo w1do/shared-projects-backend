@@ -28,6 +28,8 @@ function toArticleBody(data: BlogFormValues) {
     readingTimeMin: data.readingTimeMin,
     banner: data.banner,
     thumbnail: data.thumbnail,
+    coverMediaId: data.coverMediaId ?? null,
+    bannerMediaId: data.bannerMediaId ?? null,
     contentBlocks: data.contentBlocks,
   };
 }

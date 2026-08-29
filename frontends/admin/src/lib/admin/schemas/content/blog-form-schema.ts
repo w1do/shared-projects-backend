@@ -39,6 +39,9 @@ export const blogFormSchema = z.object({
     .min(1, { message: t("console.blogs.validation.reading-time-min") }),
   banner: z.string().optional(),
   thumbnail: z.string().optional(),
+  /** Медиа проекта за изображениями поста: платформа хранит ссылку на файл, а не сам файл. */
+  coverMediaId: z.number().nullable().optional(),
+  bannerMediaId: z.number().nullable().optional(),
   layoutStyle: z.enum(["minimalist", "editorial", "botanical"]),
   contentBlocks: z
     .array(blogContentBlockSchema)

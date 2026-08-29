@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Upload, X, Check } from "lucide-react";
+import { Upload, X, Check, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/data-display/badge";
 import { Button } from "@/components/ui/inputs/button";
@@ -17,6 +17,15 @@ export interface ImageUploaderProps {
   error?: string;
   aspectRatio?: "square" | "video" | "banner" | "logo";
   previewClassName?: string;
+  /**
+   * Отправка файла во внешнее хранилище: возвращает адрес сохранённого файла.
+   * Без него содержимое остаётся data URL в состоянии формы.
+   */
+  onUpload?: (file: File) => Promise<string>;
+  /** Сообщение об отказе загрузки; без него используется текст ошибки. */
+  uploadErrorText?: string;
+  /** Дополнительное действие рядом с зоной загрузки (например, подбор изображения). */
+  action?: React.ReactNode;
 }
 
 export function ImageUploader({
@@ -31,34 +40,57 @@ export function ImageUploader({
   error,
   aspectRatio = "square",
   previewClassName,
+  onUpload,
+  uploadErrorText,
+  action,
 }: ImageUploaderProps) {
   const fileInputRef = React.useRef<HTMLInputElement>(null);
+  const [isUploading, setIsUploading] = React.useState(false);
+  const [uploadError, setUploadError] = React.useState<string | null>(null);
+
+  const readAsDataUrl = (file: File) =>
+    new Promise<string | null>((resolve) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(typeof reader.result === "string" ? reader.result : null);
+      reader.onerror = () => resolve(null);
+      reader.readAsDataURL(file);
+    });
+
+  /**
+   * С `onUpload` файл уходит в хранилище и в значение попадает его адрес.
+   * Отказ загрузки оставляет прежние изображения нетронутыми.
+   */
+  const acceptFiles = async (files: FileList) => {
+    if (maxFiles && value.length + files.length > maxFiles) return;
+
+    setUploadError(null);
+    const list = Array.from(files);
+
+    if (!onUpload) {
+      const read = await Promise.all(list.map(readAsDataUrl));
+      onChange([...value, ...read.filter((item): item is string => item !== null)]);
+      return;
+    }
+
+    setIsUploading(true);
+    try {
+      const uploaded: string[] = [];
+      for (const file of list) {
+        uploaded.push(await onUpload(file));
+      }
+      onChange([...value, ...uploaded]);
+    } catch (error) {
+      setUploadError(uploadErrorText ?? (error as Error).message);
+    } finally {
+      setIsUploading(false);
+    }
+  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files) return;
-
-    if (maxFiles && value.length + files.length > maxFiles) {
-      // Could show a toast, but keeping it simple
-      return;
-    }
-
-    const newImages: string[] = [...value];
-    let loadedCount = 0;
-
-    Array.from(files).forEach((file) => {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        if (typeof reader.result === "string") {
-          newImages.push(reader.result);
-        }
-        loadedCount++;
-        if (loadedCount === files.length) {
-          onChange(newImages);
-        }
-      };
-      reader.readAsDataURL(file);
-    });
+    void acceptFiles(files);
+    e.target.value = "";
   };
 
   const handleDragOver = (e: React.DragEvent) => {
@@ -69,27 +101,7 @@ export function ImageUploader({
     e.preventDefault();
     const files = e.dataTransfer.files;
     if (!files) return;
-
-    if (maxFiles && value.length + files.length > maxFiles) {
-      return;
-    }
-
-    const newImages: string[] = [...value];
-    let loadedCount = 0;
-
-    Array.from(files).forEach((file) => {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        if (typeof reader.result === "string") {
-          newImages.push(reader.result);
-        }
-        loadedCount++;
-        if (loadedCount === files.length) {
-          onChange(newImages);
-        }
-      };
-      reader.readAsDataURL(file);
-    });
+    void acceptFiles(files);
   };
 
   const handleRemoveImage = (idx: number) => {
@@ -112,8 +124,11 @@ export function ImageUploader({
         <div
           onDragOver={handleDragOver}
           onDrop={handleDrop}
-          onClick={() => fileInputRef.current?.click()}
-          className="border border-dashed border-border hover:border-primary/60 bg-muted/50 cursor-pointer py-10 px-4 rounded-(--radius-2xl) transition-all flex flex-col items-center justify-center gap-2 group text-center"
+          onClick={() => !isUploading && fileInputRef.current?.click()}
+          className={cn(
+            "border border-dashed border-border hover:border-primary/60 bg-muted/50 cursor-pointer py-10 px-4 rounded-(--radius-2xl) transition-all flex flex-col items-center justify-center gap-2 group text-center",
+            isUploading && "pointer-events-none opacity-60",
+          )}
         >
           <input
             type="file"
@@ -124,7 +139,7 @@ export function ImageUploader({
             className="hidden"
           />
           <div className="h-8 w-8 rounded-(--radius-xl) bg-background flex items-center justify-center text-muted-foreground shadow-subtle-3 border border-border/10 group-hover:scale-105 transition-transform duration-300">
-            <Upload size={16} />
+            {isUploading ? <Loader2 size={16} className="animate-spin" /> : <Upload size={16} />}
           </div>
           <div className="text-xs font-medium text-foreground mt-1">{placeholder}</div>
           {description && (
@@ -134,6 +149,8 @@ export function ImageUploader({
           )}
         </div>
       )}
+
+      {action && <div className="flex flex-wrap items-center gap-2">{action}</div>}
 
       {/* Images Grid Previews */}
       {value.length > 0 && (
@@ -222,7 +239,9 @@ export function ImageUploader({
           })}
         </div>
       )}
-      {error && <p className="ui-form-help-text font-medium text-destructive mt-1">{error}</p>}
+      {(error || uploadError) && (
+        <p className="ui-form-help-text font-medium text-destructive mt-1">{error ?? uploadError}</p>
+      )}
     </div>
   );
 }

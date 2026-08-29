@@ -12,6 +12,7 @@ import type {
   PlatformBuildout,
   PlatformInstruct,
   PlatformInstructCategory,
+  PlatformSchemaPreset,
   UpsertInstructBody,
 } from "../platform/instructs";
 import type {
@@ -69,6 +70,11 @@ export async function saveProjectCard(body: {
     topic: project.topic ?? null,
     locales: project.locales ?? [],
   } satisfies ProjectCard;
+}
+
+/** Создание проекта оператором: в mock-режиме платформы нет, поэтому только api. */
+export function createProject(name: string) {
+  return platformAuth.createProject({ name });
 }
 
 export async function getBuildout(): Promise<PlatformBuildout | null> {
@@ -131,6 +137,11 @@ export async function getInstructCategories(): Promise<
   PlatformInstructCategory[]
 > {
   return fromSource(() => platformInstructs.listInstructCategories(), []);
+}
+
+/** Каталог пресетов схем ответа: одинаков для всех проектов. */
+export async function getSchemaPresets(): Promise<PlatformSchemaPreset[]> {
+  return fromSource(() => platformInstructs.listSchemaPresets(), []);
 }
 
 export function createInstruct(body: UpsertInstructBody) {

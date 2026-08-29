@@ -6,8 +6,8 @@ import { t } from "@/lib/admin/console-texts";
 import { useConsoleAccessQuery } from "@/hooks/admin/project";
 import type { PlatformInstruct } from "@/lib/admin/services";
 
-import { InstructListSection } from "./sections/InstructListSection";
-import { InstructFormSection } from "./sections/InstructFormSection";
+import { InstructListSection } from "./sections/instruct-list";
+import { InstructFormSection } from "./sections/instruct-form";
 
 /** Раздел «Инструкции»: правила генерации и схема ответа модели. */
 export default function InstructsPage() {

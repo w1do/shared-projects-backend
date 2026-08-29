@@ -21,6 +21,8 @@ interface CategoriesPanelProps {
   onDeleteClick: (id: string) => void;
   onMoveClick?: (category: Category) => void;
   onBulkDeleteClick?: (ids: string[]) => void;
+  /** Очистка каталога; отсутствует — действие не показывается. */
+  onPurgeClick?: () => void;
   /** Перемещение перетаскиванием (режим api); отсутствует — DnD выключен. */
   onMoveNode?: (nodeId: string, parentId: string | null, position: number) => void;
   movingIds?: Set<string>;
@@ -32,6 +34,7 @@ export function CategoriesPanel({
   onDeleteClick,
   onMoveClick,
   onBulkDeleteClick,
+  onPurgeClick,
   onMoveNode,
   movingIds,
 }: CategoriesPanelProps) {
@@ -92,6 +95,8 @@ export function CategoriesPanel({
         setFilterStatus={panel.setFilterStatus}
         viewMode={panel.viewMode}
         setViewMode={panel.setViewMode}
+        onPurgeClick={onPurgeClick}
+        purgeDisabled={categories.length === 0}
       />
 
       {selectedCount > 0 && (
@@ -105,7 +110,7 @@ export function CategoriesPanel({
             >
               <X />
             </IconButton>
-            <span className="font-medium">{`${selectedCount} ${t("console.categories.footer-unit")} выбрано`}</span>
+            <span className="font-medium">{`${t("console.categories.bulk-selected")} ${selectedCount}`}</span>
           </div>
           <Button
             variant="ghost"
@@ -135,6 +140,9 @@ export function CategoriesPanel({
           busyIds={movingIds}
           // Отфильтрованный список не отражает соседства — DnD в нём обманчив.
           dragDisabled={isFiltering}
+          checkbox
+          selectedRowIds={panel.selectedRowIds}
+          onSelectionChange={panel.setSelectedRowIds}
           emptyMessage={t("console.categories.empty-filtered")}
         />
       ) : panel.viewMode === "table" ? (

@@ -4,8 +4,10 @@ import { useCallback, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import type { Category } from "@/lib/admin/mocks/types";
+import { t, tf } from "@/lib/admin/console-texts";
 import { useCategoriesQuery } from "./use-categories-query";
-import { useDeleteCategoryMutation, useMoveCategoryMutation } from "./use-category-mutations";
+import { useCategoryDelete } from "./use-category-delete";
+import { useMoveCategoryMutation } from "./use-category-mutations";
 
 type UseCategoriesPageOptions = {
   /**
@@ -15,12 +17,8 @@ type UseCategoriesPageOptions = {
   initialCategories?: Category[];
 };
 
-type DeleteIntent =
-  | { type: "single"; category: Category }
-  | { type: "bulk"; ids: string[]; names: string[] };
-
 /**
- * Categories list page data + delete confirmation (single / bulk).
+ * Categories list page data + delete confirmation (single / bulk / purge).
  * Exposes isPending so the page can render CategoriesLoadingState.
  */
 export function useCategoriesPage(options: UseCategoriesPageOptions = {}) {
@@ -33,8 +31,7 @@ export function useCategoriesPage(options: UseCategoriesPageOptions = {}) {
   });
   const categories = useMemo(() => data ?? initialCategories ?? [], [data, initialCategories]);
 
-  const deleteMutation = useDeleteCategoryMutation();
-  const [deleteIntent, setDeleteIntent] = useState<DeleteIntent | null>(null);
+  const remove = useCategoryDelete(categories);
   const moveMutation = useMoveCategoryMutation();
   const [moveTarget, setMoveTarget] = useState<Category | null>(null);
 
@@ -44,73 +41,6 @@ export function useCategoriesPage(options: UseCategoriesPageOptions = {}) {
     },
     [router],
   );
-
-  const requestDelete = useCallback(
-    (id: string) => {
-      const category = categories.find((item) => item.id === id);
-      if (!category) return;
-      setDeleteIntent({ type: "single", category });
-    },
-    [categories],
-  );
-
-  const requestBulkDelete = useCallback(
-    (ids: string[]) => {
-      if (ids.length === 0) return;
-      const selected = categories.filter((item) => ids.includes(item.id));
-      if (selected.length === 0) return;
-      setDeleteIntent({
-        type: "bulk",
-        ids: selected.map((item) => item.id),
-        names: selected.map((item) => item.name),
-      });
-    },
-    [categories],
-  );
-
-  const cancelDelete = useCallback(() => {
-    if (deleteMutation.isPending) return;
-    setDeleteIntent(null);
-  }, [deleteMutation.isPending]);
-
-  const confirmDelete = useCallback(() => {
-    if (!deleteIntent) return;
-
-    if (deleteIntent.type === "single") {
-      const { category } = deleteIntent;
-      deleteMutation.mutate(category.id, {
-        onSuccess: () => {
-          toast.success(`Category "${category.name}" deleted.`);
-          setDeleteIntent(null);
-        },
-        // Текст платформы понятнее общего: там причина отказа (права, валидация).
-        onError: (error: Error) => toast.error(error.message || "Could not delete category."),
-      });
-      return;
-    }
-
-    const { ids } = deleteIntent;
-    let remaining = ids.length;
-    let failed = 0;
-
-    ids.forEach((id) => {
-      deleteMutation.mutate(id, {
-        onSettled: () => {
-          remaining -= 1;
-          if (remaining > 0) return;
-          if (failed > 0) {
-            toast.error("Some categories could not be deleted.");
-          } else {
-            toast.success(`${ids.length} categor${ids.length > 1 ? "ies" : "y"} deleted.`);
-          }
-          setDeleteIntent(null);
-        },
-        onError: () => {
-          failed += 1;
-        },
-      });
-    });
-  }, [deleteIntent, deleteMutation]);
 
   const requestMove = useCallback((category: Category) => setMoveTarget(category), []);
 
@@ -123,8 +53,10 @@ export function useCategoriesPage(options: UseCategoriesPageOptions = {}) {
       moveMutation.mutate(
         { id: nodeId, parentId, position },
         {
-          onSuccess: () => toast.success(`Category "${node?.name ?? nodeId}" moved.`),
-          onError: (error: Error) => toast.error(error.message || "Could not move category."),
+          onSuccess: () =>
+            toast.success(tf("console.categories.move.done", { name: node?.name ?? nodeId })),
+          onError: (error: Error) =>
+            toast.error(error.message || t("console.categories.move.failed")),
           onSettled: () =>
             setMovingIds((current) => {
               const next = new Set(current);
@@ -152,10 +84,11 @@ export function useCategoriesPage(options: UseCategoriesPageOptions = {}) {
         { id: target.id, parentId: parentId === "" ? null : parentId },
         {
           onSuccess: () => {
-            toast.success(`Category "${target.name}" moved.`);
+            toast.success(tf("console.categories.move.done", { name: target.name }));
             setMoveTarget(null);
           },
-          onError: (error: Error) => toast.error(error.message || "Could not move category."),
+          onError: (error: Error) =>
+            toast.error(error.message || t("console.categories.move.failed")),
         },
       );
     },
@@ -167,12 +100,7 @@ export function useCategoriesPage(options: UseCategoriesPageOptions = {}) {
     /** No cached data yet — show full-page CategoriesLoadingState. */
     isPending: hasSeed ? false : isPending,
     openEdit,
-    requestDelete,
-    requestBulkDelete,
-    deleteIntent,
-    cancelDelete,
-    confirmDelete,
-    isDeleting: deleteMutation.isPending,
+    ...remove,
     requestMove,
     moveNode,
     movingIds,

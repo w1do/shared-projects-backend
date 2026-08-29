@@ -72,6 +72,8 @@ export function articleToFormValues(article: Article): BlogFormValues {
     readingTimeMin: article.readingTimeMin,
     banner: article.banner,
     thumbnail: article.thumbnail,
+    coverMediaId: article.coverMediaId ?? null,
+    bannerMediaId: article.bannerMediaId ?? null,
     layoutStyle: (article.layoutStyle as BlogFormValues["layoutStyle"]) ?? "editorial",
     contentBlocks: toFormBlocks(article),
   };

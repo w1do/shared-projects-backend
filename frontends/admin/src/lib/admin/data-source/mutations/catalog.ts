@@ -81,6 +81,10 @@ export const catalogMutations = {
       position,
     }),
   deleteCategory: (id: string) => platformContent.deleteCategory(Number(id)),
+  /** Массовое удаление — один запрос платформе, а не серия одиночных DELETE. */
+  bulkDeleteCategories: (ids: string[]) =>
+    platformContent.bulkDeleteCategories(ids.map((id) => Number(id))),
+  purgeCategories: () => platformContent.purgeCategories(),
   createCollection: (body: {
     name: string;
     slug: string;

@@ -20,6 +20,14 @@ export function useInstructCategoriesQuery() {
   });
 }
 
+/** Пресеты схем не зависят от проекта: их состав кэшируется целиком. */
+export function useSchemaPresetsQuery() {
+  return useQuery({
+    queryKey: adminQueryKeys.instructs.schemaPresets(),
+    queryFn: () => instructs.schemaPresets(),
+  });
+}
+
 function useInvalidateInstructs() {
   const queryClient = useQueryClient();
   return () =>

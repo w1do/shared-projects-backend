@@ -3,7 +3,14 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { CategoryFormValues } from "@/lib/admin/schemas/catalog/category-form-schema";
 import type { Category } from "@/lib/admin/mocks/types";
-import { createCategory, deleteCategory, moveCategory, updateCategory } from "@/lib/admin/services";
+import {
+  createCategory,
+  deleteCategories,
+  deleteCategory,
+  moveCategory,
+  purgeCategories,
+  updateCategory,
+} from "@/lib/admin/services";
 import { adminQueryKeys } from "@/lib/admin/query/keys";
 
 type QueryClient = ReturnType<typeof useQueryClient>;
@@ -68,6 +75,36 @@ export function useMoveCategoryMutation() {
       parentId: string | null;
       position?: number;
     }) => moveCategory(id, parentId, position),
+    onSettled: async () => {
+      await queryClient.invalidateQueries({ queryKey: adminQueryKeys.categories.all });
+    },
+  });
+}
+
+/**
+ * Массовое удаление одним запросом платформы.
+ *
+ * Оптимистично не убираем узлы: платформа удаляет и их поддеревья, а повторять
+ * этот пересчёт на клиенте означало бы держать вторую реализацию nested set.
+ */
+export function useBulkDeleteCategoriesMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (ids: string[]) => deleteCategories(ids),
+    onSettled: async () => {
+      await queryClient.invalidateQueries({ queryKey: adminQueryKeys.categories.all });
+    },
+  });
+}
+
+/** Очистка каталога: после успеха список заведомо пуст. */
+export function usePurgeCategoriesMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: () => purgeCategories(),
+    onSuccess: () => setCategoriesCache(queryClient, []),
     onSettled: async () => {
       await queryClient.invalidateQueries({ queryKey: adminQueryKeys.categories.all });
     },

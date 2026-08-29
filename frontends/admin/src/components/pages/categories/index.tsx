@@ -4,7 +4,7 @@ import { CategoriesHeader } from "./sections/categories-header";
 import { CategoriesPanel } from "./sections/categories-panel";
 import { CategoryDeleteDialog } from "./sections/category-delete-dialog";
 import { CategoryMoveDialog } from "./sections/category-move-dialog";
-import { descendantIds } from "@/lib/admin/data-source/category-tree";
+import { categoryPath, descendantIds } from "@/lib/admin/data-source/category-tree";
 import { CategoriesLoadingState } from "./loading";
 import type { Category } from "@/lib/admin/mocks/types";
 import { useCategoriesPage } from "@/hooks/admin/categories";
@@ -34,6 +34,7 @@ export default function CategoriesPage({
     confirmMove,
     isMoving,
     requestBulkDelete,
+    requestPurge,
     deleteIntent,
     cancelDelete,
     confirmDelete,
@@ -41,11 +42,25 @@ export default function CategoriesPage({
   } = useCategoriesPage(initialCategories !== undefined ? { initialCategories } : {});
 
   const deleteCount =
-    deleteIntent?.type === "bulk" ? deleteIntent.ids.length : deleteIntent ? 1 : 0;
+    deleteIntent?.type === "bulk"
+      ? deleteIntent.ids.length
+      : deleteIntent?.type === "purge"
+        ? deleteIntent.count
+        : deleteIntent
+          ? 1
+          : 0;
   const deleteName = deleteIntent?.type === "single" ? deleteIntent.category.name : undefined;
   // Платформа удаляет всё поддерево — оператор должен видеть это до подтверждения.
   const deleteDescendants =
     deleteIntent?.type === "single" ? descendantIds(categories, deleteIntent.category.id).size : 0;
+
+  // Полный путь различает одноимённые категории из разных веток.
+  const deletePaths =
+    deleteIntent?.type === "single"
+      ? [categoryPath(categories, deleteIntent.category.id)]
+      : deleteIntent?.type === "bulk"
+        ? deleteIntent.ids.map((id) => categoryPath(categories, id))
+        : [];
 
   if (isPending) {
     return <CategoriesLoadingState />;
@@ -63,6 +78,7 @@ export default function CategoriesPage({
         onMoveNode={moveNode}
         movingIds={movingIds}
         onBulkDeleteClick={requestBulkDelete}
+        onPurgeClick={requestPurge}
       />
 
       <CategoryMoveDialog
@@ -79,6 +95,8 @@ export default function CategoriesPage({
         categoryName={deleteName}
         count={deleteCount}
         descendantCount={deleteDescendants}
+        paths={deletePaths}
+        variant={deleteIntent?.type === "purge" ? "purge" : "delete"}
         isBusy={isDeleting}
         onClose={cancelDelete}
         onConfirm={confirmDelete}

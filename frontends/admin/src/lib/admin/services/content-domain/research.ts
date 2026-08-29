@@ -8,6 +8,8 @@ export type {
   PlatformBuildout,
   PlatformInstruct,
   PlatformInstructCategory,
+  PlatformSchemaPreset,
+  PlatformSchemaPresetField,
   UpsertInstructBody,
 } from "@/lib/admin/data-source/platform/instructs";
 
@@ -21,6 +23,10 @@ export type {
 export const projectCard = {
   get: queries.getProjectCard,
   save: queries.saveProjectCard,
+};
+
+export const projects = {
+  create: queries.createProject,
 };
 
 export const projectBuildout = {
@@ -46,6 +52,7 @@ export const researchTopics = {
 export const instructs = {
   list: queries.getInstructs,
   categories: queries.getInstructCategories,
+  schemaPresets: queries.getSchemaPresets,
   create: queries.createInstruct,
   update: queries.updateInstruct,
   remove: queries.deleteInstruct,

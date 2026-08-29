@@ -1,7 +1,9 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/inputs/button";
+import { Checkbox } from "@/components/ui/inputs/checkbox";
 import {
   Dialog,
   DialogContent,
@@ -16,6 +18,10 @@ type CategoryDeleteDialogProps = {
   count?: number;
   /** Сколько вложенных категорий уйдёт вместе с этой. */
   descendantCount?: number;
+  /** Полные пути удаляемых узлов: по имени одноимённые ветки неразличимы. */
+  paths?: string[];
+  /** Очистка каталога — отдельное действие с усиленным подтверждением. */
+  variant?: "delete" | "purge";
   isBusy?: boolean;
   onClose: () => void;
   onConfirm: () => void;
@@ -26,15 +32,27 @@ export function CategoryDeleteDialog({
   categoryName,
   count = 1,
   descendantCount = 0,
+  paths = [],
+  variant = "delete",
   isBusy = false,
   onClose,
   onConfirm,
 }: CategoryDeleteDialogProps) {
   const t = useConsoleText();
+  const isPurge = variant === "purge";
   const isBulk = count > 1;
-  const title = isBulk
-    ? t("console.categories.delete.title-bulk").replace("{count}", String(count))
-    : t("console.categories.delete.title");
+
+  // Очистка каталога необратима: обычного «Удалить» для неё мало.
+  const [acknowledged, setAcknowledged] = useState(false);
+  useEffect(() => {
+    if (!open) setAcknowledged(false);
+  }, [open]);
+
+  const title = isPurge
+    ? t("console.categories.purge.title")
+    : isBulk
+      ? t("console.categories.delete.title-bulk").replace("{count}", String(count))
+      : t("console.categories.delete.title");
 
   // Поведение платформы: удаляется всё поддерево, посты сохраняются и теряют
   // только привязку к удалённым категориям.
@@ -48,9 +66,11 @@ export function CategoryDeleteDialog({
     ? t("console.categories.delete.question").replace("{name}", categoryName)
     : t("console.categories.delete.question-plain");
 
-  const description = isBulk
-    ? `${t("console.categories.delete.question-bulk").replace("{count}", String(count))}${postsNote}`
-    : `${question}${subtreeNote}${postsNote} ${t("console.categories.delete.irreversible")}`;
+  const description = isPurge
+    ? `${t("console.categories.purge.question").replace("{count}", String(count))}${postsNote} ${t("console.categories.delete.irreversible")}`
+    : isBulk
+      ? `${t("console.categories.delete.question-bulk").replace("{count}", String(count))}${postsNote}`
+      : `${question}${subtreeNote}${postsNote} ${t("console.categories.delete.irreversible")}`;
 
   return (
     <Dialog open={open} onOpenChange={(nextOpen) => !nextOpen && !isBusy && onClose()}>
@@ -70,6 +90,36 @@ export function CategoryDeleteDialog({
           {description}
         </DialogDescription>
 
+        {paths.length > 0 && (
+          <div className="mt-4 w-full text-left" data-testid="category-delete-paths">
+            <p className="text-xs text-muted-foreground-lighter">
+              {t("console.categories.delete.paths-label")}
+            </p>
+            <ul className="mt-2 flex max-h-40 flex-col gap-1 overflow-y-auto">
+              {paths.map((path) => (
+                <li
+                  key={path}
+                  className="truncate rounded-xl bg-muted/40 px-4 py-2 font-mono text-xs text-foreground"
+                >
+                  {path}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {isPurge && (
+          <label className="mt-4 flex w-full items-center gap-4 rounded-2xl bg-destructive/5 px-4 py-2 text-left text-xs text-foreground">
+            <Checkbox
+              checked={acknowledged}
+              onCheckedChange={(checked) => setAcknowledged(checked === true)}
+              size="small"
+              data-testid="category-purge-acknowledge"
+            />
+            <span>{t("console.categories.purge.acknowledge")}</span>
+          </label>
+        )}
+
         <div className="mt-6 grid w-full grid-cols-2 gap-4">
           <Button
             variant="outlined"
@@ -88,9 +138,13 @@ export function CategoryDeleteDialog({
             size="sm"
             fullWidth
             isLoading={isBusy}
+            disabled={isPurge && !acknowledged}
             onClick={onConfirm}
+            data-testid="category-delete-confirm"
           >
-            {t("console.categories.delete.confirm")}
+            {isPurge
+              ? t("console.categories.purge.confirm")
+              : t("console.categories.delete.confirm")}
           </Button>
         </div>
       </DialogContent>

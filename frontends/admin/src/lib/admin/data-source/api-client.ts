@@ -222,3 +222,26 @@ export async function adminApiSend<T>(
 ) {
   return request<T>(path, { method: init.method, body: init.body });
 }
+
+/**
+ * Загрузка файла: тело уходит как multipart, поэтому мимо `request()` —
+ * `Content-Type` с границей проставляет сам браузер.
+ */
+export async function adminApiUpload<T>(path: string, form: FormData): Promise<T> {
+  const url = `${apiBaseUrl()}${resolvePath(path)}`;
+
+  let response: Response;
+  try {
+    response = await fetch(url, {
+      method: "POST",
+      headers: authHeaders(),
+      body: form,
+      cache: "no-store",
+    });
+  } catch {
+    throw new AdminApiError(t("console.api.unreachable"), "network", 0);
+  }
+
+  const envelope = await toEnvelope<T>(response);
+  return envelope.data;
+}

@@ -5,6 +5,7 @@ import { getBootstrap } from "@/lib/admin/data-source/platform/auth";
 import {
   canGeneratePosts,
   canManageInstructs,
+  canManageMedia,
   canManageProject,
   canManageTopics,
   canRunResearch,
@@ -18,6 +19,9 @@ export type ConsoleAccess = {
   canManageTopics: boolean;
   canManageInstructs: boolean;
   canGeneratePosts: boolean;
+  canManageMedia: boolean;
+  /** Признак супер-админа платформы: он заводит новые проекты. */
+  isSuperAdmin: boolean;
 };
 
 /** Права оператора для разделов проекта, ресёрча и инструкций — из bootstrap. */
@@ -34,6 +38,8 @@ export function useConsoleAccessQuery() {
         canManageTopics: canManageTopics(permissions),
         canManageInstructs: canManageInstructs(permissions),
         canGeneratePosts: canGeneratePosts(permissions),
+        canManageMedia: canManageMedia(permissions),
+        isSuperAdmin: bootstrap.user?.is_super_admin === true,
       };
     },
   });

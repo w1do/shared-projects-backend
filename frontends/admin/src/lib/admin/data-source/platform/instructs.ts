@@ -18,6 +18,25 @@ export type PlatformInstruct = {
 
 export type PlatformInstructCategory = { value: string; label: string };
 
+/** Поле пресета схемы: описание совпадает с тем, что платформа разбирает. */
+export type PlatformSchemaPresetField = {
+  name: string;
+  type: "string" | "number" | "boolean" | "object" | "array";
+  required: boolean;
+  description?: string;
+  fields?: PlatformSchemaPresetField[];
+  item?: { type: "string" | "number" | "boolean" | "object"; fields?: PlatformSchemaPresetField[] };
+};
+
+export type PlatformSchemaPreset = {
+  key: string;
+  title: string;
+  entity: string;
+  /** Категории инструкций, к которым пресет применим. */
+  categories: string[];
+  fields: PlatformSchemaPresetField[];
+};
+
 export type PlatformBuildout = {
   id: number;
   topic: string;
@@ -49,6 +68,10 @@ export function listInstructCategories() {
   return adminApiGet<PlatformInstructCategory[]>(
     `${base}/instructs/categories`,
   );
+}
+
+export function listSchemaPresets() {
+  return adminApiGet<PlatformSchemaPreset[]>(`${base}/instructs/schema-presets`);
 }
 
 export function createInstruct(body: UpsertInstructBody) {

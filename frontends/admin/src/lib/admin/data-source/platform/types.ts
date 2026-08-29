@@ -13,6 +13,13 @@ export type PlatformSeo = {
   json_ld?: Record<string, unknown> | null;
 };
 
+/** Изображение материала: платформа отдаёт свою ссылку, а не внешний адрес. */
+export type PlatformPostImage = {
+  id: number;
+  url: string;
+  alt?: string | null;
+};
+
 export type PlatformPost = {
   id: number;
   title: string;
@@ -26,6 +33,28 @@ export type PlatformPost = {
   is_index: boolean;
   categories?: number[];
   seo?: PlatformSeo | null;
+  cover?: PlatformPostImage | null;
+  banner?: PlatformPostImage | null;
+};
+
+export type PlatformMedia = {
+  id: number;
+  path: string;
+  /** Ссылка платформы: клиент не знает адреса хранилища проекта. */
+  url: string;
+  mime: string;
+  size: number;
+  alt?: string | null;
+  variants?: Record<string, string> | null;
+};
+
+/** Позиция выдачи подбора изображений: ссылка, превью, размеры и источник. */
+export type PlatformImageResult = {
+  link: string;
+  thumbnail?: string | null;
+  width?: number | null;
+  height?: number | null;
+  source?: string | null;
 };
 
 export type PlatformRevision = {

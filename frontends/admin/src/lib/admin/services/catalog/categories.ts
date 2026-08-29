@@ -114,3 +114,26 @@ export async function deleteCategory(id: string): Promise<void> {
   }
   deleteStoredCategory(id);
 }
+
+/**
+ * Удаление набора категорий одним запросом.
+ *
+ * Платформа выполняет его одной транзакцией: частично применённого удаления
+ * не остаётся, а дерево пересчитывается один раз, а не на каждом узле.
+ */
+export async function deleteCategories(ids: string[]): Promise<void> {
+  if (shouldUseAdminApi()) {
+    await adminMutations.bulkDeleteCategories(ids);
+    return;
+  }
+  ids.forEach((id) => deleteStoredCategory(id));
+}
+
+/** Удаление всех категорий проекта одним запросом. */
+export async function purgeCategories(): Promise<void> {
+  if (shouldUseAdminApi()) {
+    await adminMutations.purgeCategories();
+    return;
+  }
+  readStoredCategories().forEach((category) => deleteStoredCategory(category.id));
+}

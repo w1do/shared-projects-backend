@@ -26,6 +26,9 @@ type ArticleBody = {
   readingTimeMin: number;
   banner?: string;
   thumbnail?: string;
+  /** Медиа проекта за обложкой и баннером; `null` снимает изображение. */
+  coverMediaId?: number | null;
+  bannerMediaId?: number | null;
   contentBlocks: Array<{ type: string; content: string }>;
 };
 
@@ -41,6 +44,9 @@ function toPostBody(body: ArticleBody, options: { withSlug?: boolean } = {}) {
       .filter(Boolean)
       .join("\n\n"),
     ...(body.categoryIds ? { categories: body.categoryIds.map(Number) } : {}),
+    // Ключ уходит всегда: `null` — осознанное снятие изображения поста
+    cover_media_id: body.coverMediaId ?? null,
+    banner_media_id: body.bannerMediaId ?? null,
   };
 }
 
@@ -71,6 +77,11 @@ export const contentMutations = {
   },
   /** Смена статуса поста (публикация/черновик/архив). */
   deleteArticle: (id: string) => platformContent.deletePost(Number(id)),
+
+  // Медиатека проекта: загрузка файла, импорт по ссылке и подбор изображения.
+  uploadMedia: (file: File, alt?: string) => platformContent.uploadMedia(file, alt),
+  importMedia: (url: string, alt?: string) => platformContent.importMedia(url, alt),
+  searchImages: (query: string, limit?: number) => platformContent.searchImages(query, limit),
 
   changeArticleStatus: (id: string, status: string, scheduledAt?: string) =>
     platformContent.changePostStatus(Number(id), status, scheduledAt),

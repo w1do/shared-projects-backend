@@ -7,6 +7,7 @@ export const RESEARCH_RUN_PERMISSION = "content.research.run";
 export const TOPICS_MANAGE_PERMISSION = "content.topics.manage";
 export const INSTRUCTS_MANAGE_PERMISSION = "content.instructs.manage";
 export const POSTS_MANAGE_PERMISSION = "content.posts.manage";
+export const MEDIA_MANAGE_PERMISSION = "content.media.manage";
 
 /** `*` — полный доступ (owner/admin); иначе нужно явное право. */
 export function hasPermission(
@@ -45,4 +46,11 @@ export function canGeneratePosts(
   permissions: readonly string[] | null | undefined,
 ): boolean {
   return hasPermission(permissions, POSTS_MANAGE_PERMISSION);
+}
+
+/** Медиатека проекта: загрузка, импорт по ссылке и подбор изображения. */
+export function canManageMedia(
+  permissions: readonly string[] | null | undefined,
+): boolean {
+  return hasPermission(permissions, MEDIA_MANAGE_PERMISSION);
 }
