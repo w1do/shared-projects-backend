@@ -14,6 +14,11 @@ WORKDIR /var/www
 ARG APP_SERVICE=auth-service
 ENV APP_SERVICE=${APP_SERVICE}
 
+# Версия работающего кода: сервис, воркер и планировщик собираются из одного
+# образа, поэтому расхождение версий видно сравнением.
+ARG APP_VERSION=unknown
+ENV APP_VERSION=${APP_VERSION}
+
 # Пакеты (path-репозитории) и приложение
 COPY packages/cms /var/www/packages/cms
 COPY apps/${APP_SERVICE} /var/www/apps/${APP_SERVICE}

@@ -8,6 +8,8 @@
 #   ./tools/cms api                           собрать единый swagger из всех сервисов
 #   ./tools/cms e2e [--headed] [args...]      сценарии панели (Playwright) против поднятого стека
 #   ./tools/cms seed-demo [project]           демо-контент в проект (по умолчанию demo)
+#   ./tools/cms deploy [версия]               выкатить: пересобрать и поднять сервисы вместе с воркерами
+#   ./tools/cms version                       версия кода в каждом контейнере платформы
 #   ./tools/cms image:build [тег]             собрать backend-образы четырёх сервисов для реестра
 #   ./tools/cms image:push [тег]              отправить собранные образы в GitLab registry
 #   ./tools/cms image:publish [тег]           собрать и отправить одной командой
@@ -105,6 +107,28 @@ case "$cmd" in
         ;;
     api)
         exec "$ROOT/tools/build-openapi.sh"
+        ;;
+    deploy)
+        # Воркеры и планировщики поднимаются той же командой, что и сервисы:
+        # долгоживущий обработчик иначе остаётся на прежнем коде.
+        version="${1:-$(image_tag)}"
+        echo "==> выкат версии $version"
+        APP_VERSION="$version" $COMPOSE up -d --build
+        echo ""
+        "$0" version
+        ;;
+    version)
+        # Версия читается из окружения контейнера: расхождение сервиса и его
+        # обработчика видно здесь, а не по логам приложения.
+        for c in $($COMPOSE ps --services); do
+            id=$($COMPOSE ps -q "$c" 2>/dev/null | head -n1)
+            [ -n "$id" ] || continue
+            env=$(docker inspect "$id" --format '{{range .Config.Env}}{{println .}}{{end}}' 2>/dev/null)
+            # Контейнеры платформы отличает APP_SERVICE: базы и брокер версии не несут.
+            echo "$env" | grep -q '^APP_SERVICE=' || continue
+            v=$(echo "$env" | sed -n 's/^APP_VERSION=//p' | head -n1)
+            printf '  %-22s %s\n' "$c" "${v:-unknown}"
+        done
         ;;
     image:build)
         base=$(registry_base)

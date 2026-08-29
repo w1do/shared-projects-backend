@@ -120,7 +120,7 @@ services:
     build: &auth-build
       context: ../..
       dockerfile: infra/docker/Dockerfile
-      args: { APP_SERVICE: auth-service }
+      args: { APP_SERVICE: auth-service, APP_VERSION: "${APP_VERSION:-unknown}" }
     environment:
       <<: *auth-env
       AUTO_MIGRATE: "1"
@@ -142,7 +142,7 @@ services:
     build: &content-build
       context: ../..
       dockerfile: infra/docker/Dockerfile
-      args: { APP_SERVICE: content-service }
+      args: { APP_SERVICE: content-service, APP_VERSION: "${APP_VERSION:-unknown}" }
     environment:
       <<: *content-env
       AUTO_MIGRATE: "1"
@@ -177,7 +177,7 @@ services:
     build: &analytics-build
       context: ../..
       dockerfile: infra/docker/Dockerfile
-      args: { APP_SERVICE: analytics-service }
+      args: { APP_SERVICE: analytics-service, APP_VERSION: "${APP_VERSION:-unknown}" }
     environment:
       <<: *analytics-env
       AUTO_MIGRATE: "1"
@@ -225,7 +225,7 @@ services:
     build: &pay-build
       context: ../..
       dockerfile: infra/docker/Dockerfile
-      args: { APP_SERVICE: pay-service }
+      args: { APP_SERVICE: pay-service, APP_VERSION: "${APP_VERSION:-unknown}" }
     environment:
       <<: *pay-env
       AUTO_MIGRATE: "1"
