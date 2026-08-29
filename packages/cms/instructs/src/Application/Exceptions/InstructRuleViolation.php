@@ -39,4 +39,19 @@ final class InstructRuleViolation extends ValidationException
             'instruct' => ["Instruct for '{$category}' is a draft and cannot be applied."],
         ]);
     }
+
+    /**
+     * Ни своей опубликованной инструкции, ни предустановленной: чаще всего
+     * предустановленные не разложены на стенде — сообщение называет причину,
+     * а не выдаёт её за черновик.
+     */
+    public static function missingInstruct(string $category): self
+    {
+        return self::withMessages([
+            'instruct' => [
+                "No instruct found for '{$category}': the project has no published one "
+                .'and the platform defaults are not seeded (run instructs:seed-system).',
+            ],
+        ]);
+    }
 }

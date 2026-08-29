@@ -49,6 +49,24 @@ if [ "${MANIFEST_PUBLISH:-0}" = "1" ]; then
     done
 fi
 
+# Предустановленные инструкции генерации (идемпотентно, только content-service):
+# без них сборка проекта и генерация контента падают — своей инструкции у нового
+# проекта нет, а применять нечего
+if [ "${INSTRUCTS_SEED:-0}" = "1" ]; then
+    php artisan instructs:seed-system || true
+fi
+
+# Коллекция базы знаний под текущую размерность векторов (идемпотентно).
+# Qdrant может подниматься дольше сервиса — ретраим; при исчерпании попыток
+# сервис всё равно стартует, а индексация повторится сама.
+if [ "${KNOWLEDGE_PROVISION:-0}" = "1" ]; then
+    for _ in $(seq 30); do
+        php artisan knowledge:provision && break
+        echo "knowledge:provision failed — retry in 2s..."
+        sleep 2
+    done
+fi
+
 # Корневой оператор и стартовый проект панели (идемпотентно, только auth-service):
 # без проекта консоль не показывает разделов — bootstrap собирается из его сервисов
 if [ "${ADMIN_SEED:-0}" = "1" ]; then

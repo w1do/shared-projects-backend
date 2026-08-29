@@ -187,3 +187,29 @@ test('every system instruct schema is accepted by the compiler', function () {
 
     expect(Instruct::query()->where('is_system', false)->count())->toBe(count(SystemInstructCatalog::all()));
 });
+
+test('resolve names the real cause when nothing is seeded', function () {
+    // Предустановленные инструкции не разложены — именно так выглядит свежий стенд
+    try {
+        app(ResolveInstructAction::class)->handle(InstructCategory::ProjectDescription);
+        $this->fail('expected InstructRuleViolation');
+    } catch (InstructRuleViolation $violation) {
+        $message = $violation->validator->errors()->first('instruct');
+
+        expect($message)->toContain('instructs:seed-system')
+            ->and($message)->not->toContain('draft');
+    }
+});
+
+test('resolve still refuses a project draft when defaults are seeded', function () {
+    seedSystemInstructs();
+    Instruct::withoutGlobalScope(InstructProjectScope::class)->where('is_system', true)->delete();
+    upsertInstruct(['published' => false]);
+
+    try {
+        app(ResolveInstructAction::class)->handle(InstructCategory::PostTopics);
+        $this->fail('expected InstructRuleViolation');
+    } catch (InstructRuleViolation $violation) {
+        expect($violation->validator->errors()->first('instruct'))->toContain('instructs:seed-system');
+    }
+});

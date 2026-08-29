@@ -38,6 +38,6 @@ final readonly class ResolveInstructAction
             ->orderByDesc('id')
             ->first();
 
-        return $system ?? throw InstructRuleViolation::draftIsNotApplicable($category->value);
+        return $system ?? throw InstructRuleViolation::missingInstruct($category->value);
     }
 }

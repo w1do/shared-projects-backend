@@ -147,6 +147,7 @@ services:
       <<: *content-env
       AUTO_MIGRATE: "1"
       MANIFEST_PUBLISH: "1"
+      INSTRUCTS_SEED: "1"
       KNOWLEDGE_PROVISION: "1"
     depends_on: &content-deps
       postgres:
