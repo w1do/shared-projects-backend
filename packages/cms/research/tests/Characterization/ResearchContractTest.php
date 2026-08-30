@@ -3,10 +3,10 @@
 declare(strict_types=1);
 
 use Cms\Ai\Infrastructure\Agents\StructuredAgent;
+use Cms\Content\Domain\Models\Post;
 use Cms\Instructs\Infrastructure\Persistence\SystemInstructSeeder;
 use Cms\Research\Application\Exceptions\ResearchRuleViolation;
 use Cms\Research\Domain\Contracts\SerpSearchClient;
-use Cms\Content\Domain\Models\Post;
 use Cms\Research\Domain\Models\Research;
 use Cms\Research\Domain\Models\ResearchSource;
 use Cms\Research\Domain\Models\ResearchTopic;

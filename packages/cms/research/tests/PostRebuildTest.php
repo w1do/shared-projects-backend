@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-use Cms\Ai\Infrastructure\Agents\StructuredAgent;
 use Cms\Content\Domain\Models\Post;
 use Cms\Instructs\Infrastructure\Persistence\SystemInstructSeeder;
 use Cms\Research\Application\Commands\RebuildPostCommand;
