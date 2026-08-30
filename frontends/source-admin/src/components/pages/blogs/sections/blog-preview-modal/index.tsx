@@ -9,12 +9,11 @@ import {
   DialogDescription,
 } from "@/components/ui/overlay/dialog";
 import { ScrollArea } from "@/components/ui/layout/scroll-area";
-import { Avatar } from "@/components/ui/data-display/avatar";
 import { Badge } from "@/components/ui/data-display/badge";
-import type { Article } from "@/lib/admin/types/magazine";
+import { MarkdownEditor } from "@/components/ui/inputs/markdown-editor";
+import type { Article, ArticleBlock } from "@/lib/admin/types/magazine";
 import { tf } from "@/lib/admin/console-texts";
 import { formatArticleDate } from "@/components/pages/blogs/utils";
-import { ArticleContent } from "./components/ArticleContent";
 
 interface BlogPreviewModalProps {
   article: Article | null;
@@ -22,8 +21,17 @@ interface BlogPreviewModalProps {
   onClose: () => void;
 }
 
+/** Содержимое поста одним markdown: название блока — заголовок второго уровня. */
+function articleMarkdown(blocks: ArticleBlock[]): string {
+  return blocks
+    .map((block) => (block.title ? `## ${block.title}\n\n${block.markdown}` : block.markdown))
+    .join("\n\n");
+}
+
 export function BlogPreviewModal({ article, isOpen, onClose }: BlogPreviewModalProps) {
   if (!article) return null;
+
+  const content = articleMarkdown(article.blocks ?? []);
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
@@ -38,7 +46,7 @@ export function BlogPreviewModal({ article, isOpen, onClose }: BlogPreviewModalP
             <img src={article.banner} alt={article.title} className="size-full object-cover" />
           </div>
 
-          <div className="mx-auto flex max-w-prose flex-col gap-6 px-6 py-8">
+          <div className="flex flex-col gap-6 px-6 py-8">
             <div className="flex flex-col gap-4">
               <div className="flex items-center gap-2">
                 <Badge color="accent" shape="circle">
@@ -55,20 +63,7 @@ export function BlogPreviewModal({ article, isOpen, onClose }: BlogPreviewModalP
               </h1>
               <p className="text-body-lg text-muted-foreground">{article.subtitle}</p>
 
-              <div className="flex items-center justify-between gap-4 border-y border-border/50 py-4">
-                <div className="flex items-center gap-2">
-                  <Avatar src={article.author.avatar} alt={article.author.name}>
-                    {article.author.name.slice(0, 1)}
-                  </Avatar>
-                  <div className="flex flex-col">
-                    <span className="text-xs font-semibold text-foreground">
-                      {article.author.name}
-                    </span>
-                    <span className="text-caption text-muted-foreground-lighter">
-                      {article.author.role}
-                    </span>
-                  </div>
-                </div>
+              <div className="flex items-center justify-end gap-4 border-y border-border/50 py-4">
                 <span className="flex items-center gap-2 text-caption text-muted-foreground-lighter">
                   <Clock className="size-4" />
                   {tf("console.blogs.minutes", { count: article.readingTimeMin })} ·{" "}
@@ -77,7 +72,13 @@ export function BlogPreviewModal({ article, isOpen, onClose }: BlogPreviewModalP
               </div>
             </div>
 
-            <ArticleContent blocks={article.contentBlocks} />
+            <MarkdownEditor
+              value={content}
+              onChange={() => {}}
+              readOnly
+              rows={Math.max(12, content.split("\n").length)}
+              data-testid="post-preview-content"
+            />
           </div>
         </ScrollArea>
       </DialogContent>

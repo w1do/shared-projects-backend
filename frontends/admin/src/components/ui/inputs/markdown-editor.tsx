@@ -22,6 +22,8 @@ export interface MarkdownEditorProps {
   error?: string;
   rows?: number;
   disabled?: boolean;
+  /** Только чтение: разметка применяется, правка запрещена. */
+  readOnly?: boolean;
   className?: string;
   "data-testid"?: string;
 }
@@ -34,6 +36,7 @@ export function MarkdownEditor({
   error,
   rows = 10,
   disabled = false,
+  readOnly = false,
   className,
   ...rest
 }: MarkdownEditorProps) {
@@ -80,6 +83,7 @@ export function MarkdownEditor({
         rows={rows}
         placeholder={placeholder}
         disabled={disabled}
+        readOnly={readOnly}
         onChange={(event) => onChange(event.target.value)}
         className="w-full rounded-(--radius-2xl) border-2 border-border/70 bg-background/80 px-4 py-2 font-mono text-caption text-foreground shadow-inner outline-none transition-all focus-visible:border-primary disabled:opacity-50"
         {...rest}
