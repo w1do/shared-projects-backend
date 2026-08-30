@@ -83,6 +83,24 @@ function sidebarItems(page: Page) {
   return navGroups(page).locator('a[href^="/admin"]');
 }
 
+/**
+ * Состав групп одним снимком: подпись и число пунктов.
+ *
+ * Читается через `evaluateAll` — за один заход в страницу. Обход по индексам
+ * (`count()`, затем `nth(i)`) ловил уже отсоединённые узлы: после гидрации
+ * сайдбар перерисовывается снимком разделов, до него меню на миг полное.
+ */
+async function navGroupSummary(page: Page): Promise<Array<{ label: string; links: number }>> {
+  return navGroups(page)
+    .filter({ has: page.locator('[data-sidebar="group-label"]') })
+    .evaluateAll((groups) =>
+      groups.map((group) => ({
+        label: (group.querySelector('[data-sidebar="group-label"]')?.textContent ?? "").trim(),
+        links: group.querySelectorAll('a[href^="/admin"]').length,
+      })),
+    );
+}
+
 /** Названия пунктов меню — для сравнения состава целиком. */
 async function sidebarTitles(page: Page): Promise<string[]> {
   const titles = (await sidebarItems(page).allInnerTexts()).map((t) => t.trim()).filter(Boolean);
@@ -111,20 +129,14 @@ test.describe("состав меню", () => {
 
   test("группы без видимых пунктов не отображаются", async ({ page }) => {
     await page.goto("/admin");
-    await expect(sidebarItems(page).first()).toBeVisible();
+    // Сначала дожидаемся устоявшегося состава: до применения снимка разделов
+    // меню полное, и пустых групп в нём не бывает — проверять было бы нечего.
+    await expect.poll(() => sidebarTitles(page), { timeout: 10_000 }).toEqual(VISIBLE);
 
-    const groups = navGroups(page).filter({
-      has: page.locator('[data-sidebar="group-label"]'),
-    });
+    const groups = await navGroupSummary(page);
+    expect(groups.length, "группы навигации найдены").toBeGreaterThan(0);
 
-    const count = await groups.count();
-    expect(count, "группы навигации найдены").toBeGreaterThan(0);
-
-    for (let i = 0; i < count; i++) {
-      const group = groups.nth(i);
-      const label = (await group.locator('[data-sidebar="group-label"]').first().innerText()).trim();
-      const links = await group.locator('a[href^="/admin"]').count();
-
+    for (const { label, links } of groups) {
       expect(links, `группа «${label}» не отображается пустой`).toBeGreaterThan(0);
     }
   });
