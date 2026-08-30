@@ -16,6 +16,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
+  useSidebar,
 } from "@/components/ui/navigation/sidebar";
 import * as React from "react";
 import { StatusDot } from "@/components/ui/feedback/status-dot";
@@ -28,7 +29,11 @@ import { SidebarCampaignBanner } from "./components/SidebarCampaignBanner";
 
 export function AdminSidebar() {
   const pathname = usePathname();
+  const { isMobile, setOpenMobile } = useSidebar();
   const { openModal } = useAdminModals();
+  // Выбранный пункт подсвечивается по нажатию: ждать конца навигации и
+  // анимации панели оператору незачем.
+  const [pressedUrl, setPressedUrl] = React.useState<string | null>(null);
   const [currentUserRole, setCurrentUserRole] = React.useState<string>("");
   const { sections, quickActions } = useVisibleNavigation();
   const t = useConsoleText();
@@ -75,8 +80,19 @@ export function AdminSidebar() {
       .filter((section) => section.items.length > 0);
   }, [currentUserRole, sections]);
 
-  const isActive = (url: string) =>
-    url === "/admin" ? pathname === "/admin" : pathname.startsWith(url);
+  React.useEffect(() => setPressedUrl(null), [pathname]);
+
+  const isActive = (url: string) => {
+    if (pressedUrl !== null) return url === pressedUrl;
+
+    return url === "/admin" ? pathname === "/admin" : pathname.startsWith(url);
+  };
+
+  const openSection = (url: string) => {
+    setPressedUrl(url);
+    // Панель закрывается сразу: анимация не должна задерживать показ раздела.
+    if (isMobile) setOpenMobile(false);
+  };
 
   return (
     <Sidebar collapsible="icon" className="border-r border-border">
@@ -148,6 +164,7 @@ export function AdminSidebar() {
                       <Button
                         component="Link"
                         href={item.url}
+                        onClick={() => openSection(item.url)}
                         variant={active ? "soft" : "ghost"}
                         color={active ? "secondary" : "primary"}
                         size="md"
