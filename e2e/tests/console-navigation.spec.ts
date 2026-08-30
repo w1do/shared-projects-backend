@@ -1,7 +1,12 @@
 import { expect, test } from "@playwright/test";
 
-import { operatorToken, setService, withServiceDisabled } from "../support/platform";
-import { signIn } from "../support/session";
+import {
+  operatorToken,
+  setService,
+  waitForContentService,
+  withServiceDisabled,
+} from "../support/platform";
+import { sessionToken, signIn } from "../support/session";
 import { env } from "../support/env";
 
 /**
@@ -217,6 +222,10 @@ test.describe("переключение сервисов из консоли", (
     } finally {
       // Страховка: упавший сценарий не должен оставить проект без content.
       await setService(token, "content", true);
+      // Включение доходит до content-service фоновой задачей: пока она не
+      // прошла, его маршруты отвечают 404 по прежнему снимку интроспекции.
+      // Ждём именно токеном браузера — снимок кэшируется по токену.
+      await waitForContentService(await sessionToken(page));
     }
   });
 

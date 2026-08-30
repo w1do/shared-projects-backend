@@ -19,3 +19,20 @@ export async function signIn(page: Page): Promise<void> {
 
   await page.waitForURL("**/admin");
 }
+
+/**
+ * Токен сессии панели из куки: им ходит браузер, поэтому доступность сервиса
+ * проверяется именно им — у другого токена снимок интроспекции свой.
+ *
+ * Значение куки процентно закодировано (`|` разделителя токена уезжает в
+ * `%7C`), поэтому возвращается уже раскодированным.
+ */
+export async function sessionToken(page: Page): Promise<string> {
+  const cookie = (await page.context().cookies()).find((item) => item.name === "auth_token");
+
+  if (!cookie) {
+    throw new Error("Куки auth_token нет: сценарий выполняется без входа.");
+  }
+
+  return decodeURIComponent(cookie.value);
+}

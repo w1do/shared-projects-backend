@@ -62,6 +62,39 @@ export async function setService(token: string, service: string, enabled: boolea
 }
 
 /**
+ * Ждёт, пока `content` снова отвечает этому токену.
+ *
+ * Включение сервиса auth-service разносит по остальным фоновой задачей
+ * (`/internal/cache-bust`), а до неё content отвечает 404 по прежнему снимку
+ * интроспекции — снимок кэшируется на 90 секунд. Сценарий, который трогал
+ * сервис, обязан дождаться, иначе следующий получит 404 на ровном месте.
+ */
+export async function waitForContentService(token: string, timeoutMs = 20_000): Promise<void> {
+  const deadline = Date.now() + timeoutMs;
+
+  while (Date.now() < deadline) {
+    const response = await fetch(
+      `${env.baseUrl}/api/admin/v1/projects/${env.projectKey}/content/categories`,
+      {
+        headers: { Authorization: `Bearer ${token}`, Accept: "application/json" },
+        cache: "no-store",
+      },
+    );
+
+    if (response.status === 200) return;
+
+    // 404 — снимок интроспекции ещё старый; остальное к ожиданию не относится
+    if (response.status !== 404) {
+      throw new Error(`Проверка content вернула ${response.status}: ${await response.text()}`);
+    }
+
+    await new Promise((resolve) => setTimeout(resolve, 200));
+  }
+
+  throw new Error("Сервис content не вернулся в строй: маршруты всё ещё отвечают 404.");
+}
+
+/**
  * Выполнить действие при выключенном сервисе и вернуть его в исходное состояние.
  *
  * Восстановление идёт в `finally`: упавшая проверка не должна оставлять проект
