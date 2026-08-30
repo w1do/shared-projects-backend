@@ -102,9 +102,7 @@ export const CONSOLE_TEXTS = {
   "console.project.create.failed": "Не удалось создать проект.",
   "console.project.description-empty": "Описание проекта не заполнено",
   "console.project.copy-id": "Скопировать идентификатор",
-  "console.project.edit": "Изменить",
   "console.project.save": "Сохранить",
-  "console.project.cancel": "Отмена",
   "console.project.saved": "Изменения сохранены",
   "console.project.build": "Собрать проект по AI",
   "console.project.build-description":
@@ -304,9 +302,6 @@ export const CONSOLE_TEXTS = {
   // Блог: формы создания и редактирования
   "console.blogs.back": "Назад к блогу",
   "console.blogs.autofill": "Автозаполнение",
-  "console.blogs.autofill-mock-only":
-    "Автозаполнение доступно только в режиме демо-шаблона.",
-  "console.blogs.autofill-done": "Форма заполнена примером статьи.",
   "console.blogs.loading-article": "Загружаем статью…",
   "console.blogs.not-found-title": "Статья не найдена",
   "console.blogs.not-found-description": "Статья «{slug}» не найдена в блоге.",
@@ -421,7 +416,6 @@ export const CONSOLE_TEXTS = {
   "console.categories.add": "Добавить категорию",
   "console.categories.add-subtitle":
     "Создайте новый узел таксономии: задайте иерархию, оформление и SEO.",
-  "console.categories.autofill": "Автозаполнение",
   "console.categories.save": "Сохранить категорию",
   "console.categories.saving": "Сохраняем…",
   "console.categories.saving-ellipsis": "Сохраняем…",
@@ -532,10 +526,6 @@ export const CONSOLE_TEXTS = {
   "console.categories.preview.subtitle":
     "Так карточка категории будет выглядеть на витрине.",
   "console.categories.preview.name-placeholder": "Название категории",
-  "console.categories.autofill-mock-only":
-    "Автозаполнение доступно только в режиме демо-шаблона.",
-  "console.categories.autofill-applied":
-    "Форма заполнена примером категории (Night Repair Rituals).",
 
   // Категории: редактирование и уведомления
   "console.categories.edit.title": "Редактирование категории: {name}",
@@ -567,10 +557,6 @@ export const CONSOLE_TEXTS = {
     "Укажите корректный HEX-код цвета.",
   "console.categories.validation.display-order-min":
     "Порядок отображения — минимум 1.",
-  "console.categories.validation.revenue-min":
-    "Выручка должна быть положительным числом.",
-  "console.categories.validation.growth-number":
-    "Рост год к году должен быть числом.",
 
   // Клиенты: заголовок раздела, панель и экспорт
   "console.customers.title": "Клиенты",
@@ -664,8 +650,6 @@ export const CONSOLE_TEXTS = {
   "console.team.invite-action": "Пригласить участника",
   "console.team.card.you": "Это вы",
   "console.team.card.actions": "Действия с участником",
-  "console.team.card.deactivate": "Отключить доступ",
-  "console.team.card.activate": "Включить доступ",
   "console.team.card.delete": "Удалить участника",
 
   // Команда: роли и статусы участников
@@ -687,13 +671,6 @@ export const CONSOLE_TEXTS = {
   "console.team.invite.role-placeholder": "Выберите роль",
   "console.team.invite.submit": "Отправить приглашение",
 
-  // Команда: отключение доступа
-  "console.team.deactivate.title": "Отключить участника",
-  "console.team.deactivate.question": "Отключить доступ участнику «{name}»?",
-  "console.team.deactivate.consequences":
-    "Участник не сможет входить в консоль и работать с проектом, пока доступ не включат снова.",
-  "console.team.deactivate.confirm": "Подтвердить",
-
   // Команда: удаление участника
   "console.team.delete.title": "Удалить участника",
   "console.team.delete.question": "Удалить участника «{name}»?",
@@ -706,8 +683,6 @@ export const CONSOLE_TEXTS = {
     "Не удалось загрузить участников проекта.",
   "console.team.toast.invited": "Участник {name} приглашён с ролью «{role}».",
   "console.team.toast.deleted": "Участник {name} удалён.",
-  "console.team.toast.status-active": "Доступ участнику {name} включён.",
-  "console.team.toast.status-inactive": "Доступ участнику {name} отключён.",
   "console.team.toast.role-updated":
     "Участнику {name} назначена роль «{role}».",
 
@@ -733,15 +708,8 @@ export const CONSOLE_TEXTS = {
   "console.login.failed-with-status": "Не удалось войти (ошибка {status}).",
   "console.login.unexpected-response":
     "Не удалось войти: неожиданный ответ платформы.",
-  "console.login.account-deactivated": "Учётная запись отключена.",
 
   // Возможности разделов: чего нет в платформе
-  "console.capabilities.campaigns-no-backend":
-    "API кампаний в платформе нет. Раздел работает на демо-данных.",
-  "console.capabilities.settings-partial":
-    "Платформа хранит только данные проекта. Витринные разделы (уведомления, безопасность) аналога не имеют и остаются на демо-значениях.",
-  "console.capabilities.homepage-mock-only":
-    "Контент главной страницы — только демо. В API-режиме платформа отдаёт статические страницы без LANDING.",
   "console.settings.no-platform-counterpart":
     "У этого раздела нет аналога в платформе (витринные уведомления/безопасность). Значения остаются демонстрационными.",
 
@@ -757,8 +725,6 @@ export const CONSOLE_TEXTS = {
     "Профиль проекта, платежи, доступ команды и безопасность в одном месте.",
   "console.settings.tab.general": "Основное",
   "console.settings.tab.payments": "Платежи",
-  "console.settings.tab.notifications": "Уведомления",
-  "console.settings.tab.security": "Безопасность",
   "console.settings.tab.languages": "Языки",
   "console.settings.saving": "Сохраняем…",
   "console.settings.save": "Сохранить изменения",
@@ -841,33 +807,6 @@ export const CONSOLE_TEXTS = {
     "Не удалось сохранить настройки провайдера.",
   "console.settings.payments.provider.load-failed":
     "Не удалось загрузить настройки провайдера.",
-
-  // Настройки: уведомления
-  "console.settings.notifications.title": "Уведомления",
-  "console.settings.notifications.description":
-    "Какие рабочие события команда получает по email и push.",
-  "console.settings.notifications.email": "Email",
-  "console.settings.notifications.push": "Push",
-  "console.settings.notifications.saved": "Настройка уведомлений обновлена.",
-  "console.settings.notifications.save-failed":
-    "Не удалось сохранить настройки уведомлений.",
-
-  // Настройки: безопасность
-  "console.settings.security.title": "Безопасность",
-  "console.settings.security.description":
-    "Усиленные требования ко входу и оповещения для защиты рабочего пространства.",
-  "console.settings.security.two-factor": "Двухфакторная аутентификация",
-  "console.settings.security.two-factor-description":
-    "Требовать код подтверждения в дополнение к паролю.",
-  "console.settings.security.login-alerts": "Оповещения о входе",
-  "console.settings.security.login-alerts-description":
-    "Присылать владельцу письмо при входе с нового устройства.",
-  "console.settings.security.session-timeout": "Тайм-аут сессии",
-  "console.settings.security.saved": "Настройки безопасности сохранены.",
-  "console.settings.security.validation.timeout-invalid":
-    "Выберите тайм-аут сессии.",
-  "console.settings.security.validation.timeout-unknown":
-    "Выберите допустимый тайм-аут сессии.",
 
   // Настройки: значения списков
   "console.settings.option.timeout-15": "15 минут",
@@ -1073,7 +1012,6 @@ export const CONSOLE_TEXTS = {
   "console.plans.toast.archive-failed": "Не удалось отправить план в архив",
 
   // Лицензирование: раздел консоли
-  "console.licensing.title": "Лицензирование",
   "console.licensing.description":
     "Организации-покупатели, планы поставки и лицензионные ключи проекта.",
   "console.licensing.read-only":
