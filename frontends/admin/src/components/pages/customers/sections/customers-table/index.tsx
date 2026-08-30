@@ -5,6 +5,7 @@ import { DataGrid } from "@/components/ui/data-display/data-grid";
 import { listStateMessage } from "@/lib/admin/data-source/list-state";
 import { DataTableFooter } from "@/components/shared/data-table/DataTableFooter";
 import type { DetailedCustomer } from "@/lib/admin/types/customers";
+import type { PaginationState } from "@/hooks/admin/pagination";
 import { getCustomerColumns } from "../customer-columns";
 import { useConsoleText } from "@/lib/admin/use-console-text";
 
@@ -19,14 +20,7 @@ interface CustomersTableProps {
   onToggleAll: () => void;
   sortConfig: { field: string; order: "asc" | "desc" } | null;
   onSort: (field: string) => void;
-  currentPage: number;
-  totalPages: number;
-  itemsPerPage: number;
-  startItem: number;
-  endItem: number;
-  totalItems: number;
-  onPageChange: (page: number) => void;
-  onItemsPerPageChange: (value: number) => void;
+  pagination: PaginationState<DetailedCustomer>;
   onToggleBlocked: (customer: DetailedCustomer) => void;
   onDeleteCustomer: (customer: DetailedCustomer) => void;
 }
@@ -43,14 +37,7 @@ export function CustomersTable({
   onToggleAll,
   sortConfig,
   onSort,
-  currentPage,
-  totalPages,
-  itemsPerPage,
-  startItem,
-  endItem,
-  totalItems,
-  onPageChange,
-  onItemsPerPageChange,
+  pagination,
 }: CustomersTableProps) {
   const t = useConsoleText();
   // Колонка лояльности показывается, только когда данные её несут: живой
@@ -107,15 +94,8 @@ export function CustomersTable({
       />
 
       <DataTableFooter
-        currentPage={currentPage}
-        endItem={endItem}
+        pagination={pagination}
         itemLabel={t("console.customers.footer-unit")}
-        itemsPerPage={itemsPerPage}
-        onItemsPerPageChange={onItemsPerPageChange}
-        onPageChange={onPageChange}
-        startItem={startItem}
-        totalItems={totalItems}
-        totalPages={totalPages}
       />
     </div>
   );

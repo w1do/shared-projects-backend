@@ -61,18 +61,10 @@ export function CustomersPanel({
     toggleAll,
     allSelected,
     clearSelection,
-    currentPage,
-    setCurrentPage,
-    totalPages,
-    paginatedData: paginatedCustomers,
-    visibleData: visible,
-    startItem,
-    endItem,
-    itemsPerPage,
-    setItemsPerPage,
+    pagination,
   } = useDataTable<DetailedCustomer, TierFilter, SortField>({
     data: preFiltered,
-    itemsPerPage: 8,
+    pageSize: 8,
     initialSort: { field: "joinedAt", order: "desc" },
     initialStatus: "all",
     filterFn: (c, q, s) => {
@@ -152,7 +144,7 @@ export function CustomersPanel({
       />
 
       <CustomersTable
-        customers={paginatedCustomers}
+        customers={pagination.items}
         isLoading={isLoading}
         onCustomerClick={onCustomerClick}
         onToggleBlocked={onToggleBlocked}
@@ -163,14 +155,7 @@ export function CustomersPanel({
         onToggleAll={toggleAll}
         sortConfig={sortConfig}
         onSort={(field) => handleSort(field as SortField)}
-        currentPage={currentPage}
-        totalPages={totalPages}
-        itemsPerPage={itemsPerPage}
-        startItem={startItem}
-        endItem={endItem}
-        totalItems={visible.length}
-        onPageChange={setCurrentPage}
-        onItemsPerPageChange={setItemsPerPage}
+        pagination={pagination}
       />
     </div>
   );

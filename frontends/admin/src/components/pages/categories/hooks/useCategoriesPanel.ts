@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { usePagination } from "@/hooks/admin/pagination";
 import type { Category } from "@/lib/admin/types/catalog";
 
 type ViewMode = "grid" | "table";
@@ -79,9 +80,6 @@ export function useCategoriesPanel({ categories, onDeleteClick }: UseCategoriesP
   const [viewMode, setViewMode] = useState<ViewMode>("table");
   const [sortConfig, setSortConfig] = useState<SortConfig>(null);
   const [selectedRowIds, setSelectedRowIds] = useState<Set<string>>(new Set());
-  const [itemsPerPage, setItemsPerPageState] = useState(8);
-  const [currentPage, setCurrentPage] = useState(1);
-
   const isFiltering = searchTerm !== "" || filterStatus !== "all";
 
   const displayedCategories = useMemo(() => {
@@ -92,20 +90,7 @@ export function useCategoriesPanel({ categories, onDeleteClick }: UseCategoriesP
     return isFiltering ? filtered : sortByDefaultOrder(filtered);
   }, [categories, searchTerm, filterStatus, sortConfig, isFiltering]);
 
-  const totalItems = displayedCategories.length;
-  const totalPages = Math.ceil(totalItems / itemsPerPage);
-
-  const paginatedCategories = useMemo(() => {
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    return displayedCategories.slice(startIndex, startIndex + itemsPerPage);
-  }, [displayedCategories, currentPage, itemsPerPage]);
-
-  const startItem = totalItems > 0 ? (currentPage - 1) * itemsPerPage + 1 : 0;
-  const endItem = Math.min(currentPage * itemsPerPage, totalItems);
-
-  useEffect(() => {
-    setCurrentPage((page) => Math.min(page, Math.max(totalPages, 1)));
-  }, [totalPages]);
+  const pagination = usePagination(displayedCategories);
 
   useEffect(() => {
     setSelectedRowIds((current) => {
@@ -119,21 +104,6 @@ export function useCategoriesPanel({ categories, onDeleteClick }: UseCategoriesP
     setSortConfig((current) => getNextSortConfig(current, field));
   };
 
-  const handleSearchTermChange = (value: string) => {
-    setSearchTerm(value);
-    setCurrentPage(1);
-  };
-
-  const handleFilterStatusChange = (value: string) => {
-    setFilterStatus(value);
-    setCurrentPage(1);
-  };
-
-  const handleItemsPerPageChange = (value: number) => {
-    setItemsPerPageState(value);
-    setCurrentPage(1);
-  };
-
   const clearSelection = () => setSelectedRowIds(new Set());
 
   const handleBulkDelete = () => {
@@ -145,9 +115,9 @@ export function useCategoriesPanel({ categories, onDeleteClick }: UseCategoriesP
 
   return {
     searchTerm,
-    setSearchTerm: handleSearchTermChange,
+    setSearchTerm,
     filterStatus,
-    setFilterStatus: handleFilterStatusChange,
+    setFilterStatus,
     viewMode,
     setViewMode,
     sortConfig,
@@ -156,15 +126,7 @@ export function useCategoriesPanel({ categories, onDeleteClick }: UseCategoriesP
     setSelectedRowIds,
     clearSelection,
     handleBulkDelete,
-    paginatedCategories,
+    pagination,
     displayedCategories,
-    totalItems,
-    totalPages,
-    currentPage,
-    setCurrentPage,
-    itemsPerPage,
-    setItemsPerPage: handleItemsPerPageChange,
-    startItem,
-    endItem,
   };
 }

@@ -158,7 +158,7 @@ export function CategoriesPanel({
         />
       ) : panel.viewMode === "table" ? (
         <DataGrid
-          rows={panel.paginatedCategories}
+          rows={panel.pagination.items}
           columns={columns}
           sortConfig={panel.sortConfig}
           onSort={panel.handleSort}
@@ -171,9 +171,9 @@ export function CategoriesPanel({
             </div>
           }
         />
-      ) : panel.paginatedCategories.length > 0 ? (
+      ) : panel.pagination.items.length > 0 ? (
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {panel.paginatedCategories.map((category) => (
+          {panel.pagination.items.map((category) => (
             <CategoryCard
               key={category.id}
               category={category}
@@ -192,15 +192,8 @@ export function CategoriesPanel({
       {/* Дерево показывается целиком: пагинация разрезала бы родителя и потомков. */}
       {!treeMode && (
         <DataTableFooter
-          currentPage={panel.currentPage}
-          endItem={panel.endItem}
+          pagination={panel.pagination}
           itemLabel={t("console.categories.footer-unit")}
-          itemsPerPage={panel.itemsPerPage}
-          onItemsPerPageChange={panel.setItemsPerPage}
-          onPageChange={panel.setCurrentPage}
-          startItem={panel.startItem}
-          totalItems={panel.totalItems}
-          totalPages={panel.totalPages}
         />
       )}
     </div>

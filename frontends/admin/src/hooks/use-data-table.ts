@@ -1,8 +1,10 @@
 import * as React from "react";
 
+import { usePagination } from "@/hooks/admin/pagination";
+
 export interface UseDataTableProps<T, S = string, F extends keyof T = keyof T> {
   data: T[];
-  itemsPerPage?: number;
+  pageSize?: number;
   initialSort: { field: F; order: "asc" | "desc" };
   initialStatus?: S;
   filterFn: (item: T, query: string, status: S) => boolean;
@@ -11,7 +13,7 @@ export interface UseDataTableProps<T, S = string, F extends keyof T = keyof T> {
 
 export function useDataTable<T extends { id: string }, S = string, F extends keyof T = keyof T>({
   data,
-  itemsPerPage = 8,
+  pageSize = 8,
   initialSort,
   initialStatus = "All" as unknown as S,
   filterFn,
@@ -23,35 +25,13 @@ export function useDataTable<T extends { id: string }, S = string, F extends key
     initialSort,
   );
   const [selectedIds, setSelectedIds] = React.useState<Set<string>>(new Set());
-  const [itemsPerPageState, setItemsPerPageState] = React.useState(itemsPerPage);
-  const [currentPage, setCurrentPage] = React.useState(1);
-
-  const handleQueryChange = (val: string) => {
-    setQuery(val);
-    setCurrentPage(1);
-  };
-
-  const handleStatusChange = (val: S) => {
-    setStatus(val);
-    setCurrentPage(1);
-  };
-
-  const handleItemsPerPageChange = (val: number) => {
-    setItemsPerPageState(val);
-    setCurrentPage(1);
-  };
 
   const visible = React.useMemo(() => {
     const filtered = data.filter((item) => filterFn(item, query, status));
     return sortFn(filtered, sortConfig);
   }, [data, status, query, sortConfig, filterFn, sortFn]);
 
-  // Paginated Data
-  const totalPages = Math.ceil(visible.length / itemsPerPageState);
-  const paginatedData = React.useMemo(() => {
-    const start = (currentPage - 1) * itemsPerPageState;
-    return visible.slice(start, start + itemsPerPageState);
-  }, [visible, currentPage, itemsPerPageState]);
+  const pagination = usePagination(visible, pageSize);
 
   const handleSort = (field: F) => {
     setSortConfig((prev) => {
@@ -81,7 +61,7 @@ export function useDataTable<T extends { id: string }, S = string, F extends key
     });
   };
 
-  const visibleIds = paginatedData.map((item) => item.id);
+  const visibleIds = pagination.items.map((item) => item.id);
   const allSelected = visibleIds.length > 0 && visibleIds.every((id) => selectedIds.has(id));
 
   const toggleAll = () => {
@@ -98,20 +78,16 @@ export function useDataTable<T extends { id: string }, S = string, F extends key
   const resetFilters = () => {
     setQuery("");
     setStatus(initialStatus);
-    setCurrentPage(1);
   };
 
   const clearSelection = () => setSelectedIds(new Set());
 
-  const startItem = visible.length > 0 ? (currentPage - 1) * itemsPerPageState + 1 : 0;
-  const endItem = Math.min(currentPage * itemsPerPageState, visible.length);
-
   return {
     query,
-    setQuery: handleQueryChange,
+    setQuery,
     status,
-    onStatusChange: handleStatusChange, // Rename for synchronization (or keep setStatus)
-    setStatus: handleStatusChange,
+    onStatusChange: setStatus, // Rename for synchronization (or keep setStatus)
+    setStatus,
     sortConfig,
     handleSort,
     selectedIds,
@@ -119,15 +95,8 @@ export function useDataTable<T extends { id: string }, S = string, F extends key
     toggleAll,
     allSelected,
     clearSelection,
-    currentPage,
-    setCurrentPage,
-    totalPages,
-    paginatedData,
+    pagination,
     visibleData: visible,
-    startItem,
-    endItem,
     resetFilters,
-    itemsPerPage: itemsPerPageState,
-    setItemsPerPage: handleItemsPerPageChange,
   };
 }
