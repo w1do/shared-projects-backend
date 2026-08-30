@@ -10,6 +10,10 @@ return [
         'admin' => ['*'],
         'editor' => ['content.*'],
         'analyst' => ['analytics.*'],
+        'billing' => ['pay.*'],
+        // Права лицензирования объявлены PayManifest как pay.licensing.* —
+        // префикс права не обязан совпадать с ключом манифеста.
+        'licensing' => ['pay.licensing.*'],
         'viewer' => ['*.view'],
     ],
 

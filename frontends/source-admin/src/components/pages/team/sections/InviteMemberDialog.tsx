@@ -13,31 +13,32 @@ import {
 import { Button } from "@/components/ui/inputs/button";
 import { Input } from "@/components/ui/inputs/input";
 import { Select } from "@/components/ui/inputs/select";
+import type { RoleOption } from "@/lib/admin/types/team";
 import { useConsoleText } from "@/lib/admin/use-console-text";
 
 interface InviteMemberDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  onAdd: (name: string, email: string, role: "admin" | "manager" | "staff") => void;
-  currentUserRole: string;
+  onAdd: (name: string, email: string, role: string) => void;
+  roleOptions: RoleOption[];
 }
 
 export function InviteMemberDialog({
   isOpen,
   onClose,
   onAdd,
-  currentUserRole,
+  roleOptions,
 }: InviteMemberDialogProps) {
   const t = useConsoleText();
   const [name, setName] = React.useState("");
   const [email, setEmail] = React.useState("");
-  const [role, setRole] = React.useState<"admin" | "manager" | "staff">("staff");
+  const [role, setRole] = React.useState("");
 
   React.useEffect(() => {
     if (isOpen) {
       setName("");
       setEmail("");
-      setRole("staff");
+      setRole("");
     }
   }, [isOpen]);
 
@@ -51,21 +52,14 @@ export function InviteMemberDialog({
       toast.error(t("console.team.validation.email-format"));
       return;
     }
+    if (!role) {
+      toast.error(t("console.team.validation.role-required"));
+      return;
+    }
 
     onAdd(name.trim(), email.trim().toLowerCase(), role);
     onClose();
   };
-
-  const roleOptions = React.useMemo(() => {
-    if (currentUserRole === "manager") {
-      return [{ value: "staff", label: t("console.team.role.staff") }];
-    }
-    return [
-      { value: "admin", label: t("console.team.role.admin") },
-      { value: "manager", label: t("console.team.role.manager") },
-      { value: "staff", label: t("console.team.role.staff") },
-    ];
-  }, [currentUserRole, t]);
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
@@ -98,7 +92,7 @@ export function InviteMemberDialog({
           <Select
             label={t("console.team.invite.role-label")}
             value={role}
-            onChange={(e) => setRole(e.target.value as "admin" | "manager" | "staff")}
+            onChange={(e) => setRole(e.target.value)}
             options={roleOptions}
             placeholder={t("console.team.invite.role-placeholder")}
           />

@@ -5,14 +5,14 @@ import { Button } from "@/components/ui/inputs/button";
 import { useConsoleText } from "@/lib/admin/use-console-text";
 
 interface TeamHeaderProps {
-  currentUserRole: string;
+  canInvite: boolean;
   onInviteClick: () => void;
 }
 
 /**
  * Team page header component. Shows page title, description, and "Invite teammate" button for authorized roles.
  */
-export function TeamHeader({ currentUserRole, onInviteClick }: TeamHeaderProps) {
+export function TeamHeader({ canInvite, onInviteClick }: TeamHeaderProps) {
   const t = useConsoleText();
 
   return (
@@ -23,7 +23,7 @@ export function TeamHeader({ currentUserRole, onInviteClick }: TeamHeaderProps) 
         </h1>
         <p className="text-body text-muted-foreground mt-1">{t("console.team.subtitle")}</p>
       </div>
-      {currentUserRole !== "staff" && (
+      {canInvite && (
         <Button variant="contained" shape="circle" startIcon={<UserPlus />} onClick={onInviteClick}>
           {t("console.team.invite-action")}
         </Button>

@@ -91,24 +91,7 @@ export function listMembers() {
   return adminApiGet<PlatformMember[]>(`${base}/members`);
 }
 
-/**
- * Роль вёрстки → роль проекта в платформе.
- *
- * `cms-auth.php` заводит на проект роли `owner, admin, editor, analyst, viewer`;
- * вёрстка оперирует тройкой `admin/manager/staff`. Без сопоставления платформа
- * отвечает «Unknown role for this project».
- */
-const PLATFORM_ROLE: Record<string, string> = {
-  admin: "admin",
-  manager: "editor",
-  staff: "viewer",
-};
-
-export function toPlatformRole(role: string): string {
-  return PLATFORM_ROLE[role.toLowerCase()] ?? role;
-}
-
-/** Роль проекта → роль вёрстки. Обратное сопоставление для списков и селектов. */
+/** Роль проекта → подпись роли в разделе настроек (тройка вёрстки склада). */
 export function toConsoleRole(roles: string[]): "admin" | "manager" | "staff" {
   const role = roles[0]?.toLowerCase() ?? "";
   if (role === "owner" || role === "admin") return "admin";
@@ -123,14 +106,14 @@ export function inviteMember(body: {
 }) {
   return adminApiSend<{ id: number; role: string }>(`${base}/members`, {
     method: "POST",
-    body: { ...body, role: toPlatformRole(body.role) },
+    body,
   });
 }
 
 export function assignMemberRole(memberId: number | string, role: string) {
   return adminApiSend<void>(`${base}/members/${memberId}/role`, {
     method: "PUT",
-    body: { role: toPlatformRole(role) },
+    body: { role },
   });
 }
 

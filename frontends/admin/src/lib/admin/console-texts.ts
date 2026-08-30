@@ -652,12 +652,87 @@ export const CONSOLE_TEXTS = {
   "console.team.card.actions": "Действия с участником",
   "console.team.card.delete": "Удалить участника",
 
-  // Команда: роли и статусы участников
+  // Команда: вкладки раздела
+  "console.team.tab.members": "Участники",
+  "console.team.tab.roles": "Роли",
+
+  // Команда: системные роли проекта и статусы участников
+  "console.team.role.owner": "Владелец",
   "console.team.role.admin": "Администратор",
-  "console.team.role.manager": "Менеджер",
-  "console.team.role.staff": "Оператор",
+  "console.team.role.editor": "Редактор",
+  "console.team.role.analyst": "Аналитик",
+  "console.team.role.billing": "Оплата",
+  "console.team.role.licensing": "Лицензирование",
+  "console.team.role.viewer": "Наблюдатель",
   "console.team.status.active": "Активен",
   "console.team.status.inactive": "Отключён",
+
+  // Команда: вкладка «Роли»
+  "console.team.roles.title": "Роли проекта",
+  "console.team.roles.subtitle":
+    "Набор прав, который получает участник вместе с ролью.",
+  "console.team.roles.create-action": "Создать роль",
+  "console.team.roles.system-badge": "Системная",
+  "console.team.roles.permissions-count": "Прав: {count}",
+  "console.team.roles.empty": "Ролей пока нет.",
+  "console.team.roles.no-permissions": "Прав не выбрано.",
+  "console.team.roles.card.actions": "Действия с ролью",
+  "console.team.roles.card.edit": "Изменить состав прав",
+  "console.team.roles.card.delete": "Удалить роль",
+  "console.team.roles.load-failed": "Не удалось загрузить роли проекта.",
+  "console.team.roles.created": "Роль «{name}» создана.",
+  "console.team.roles.updated": "Состав прав роли «{name}» сохранён.",
+  "console.team.roles.deleted": "Роль «{name}» удалена.",
+
+  // Команда: диалог роли
+  "console.team.role-dialog.create-title": "Новая роль",
+  "console.team.role-dialog.edit-title": "Роль «{name}»",
+  "console.team.role-dialog.description":
+    "Отметьте права, которые открывает роль. Права выключенных сервисов проекту недоступны.",
+  "console.team.role-dialog.name-label": "Название роли",
+  "console.team.role-dialog.name-placeholder": "например, moderator",
+  "console.team.role-dialog.name-required": "Укажите название роли.",
+  "console.team.role-dialog.empty-catalog": "Каталог прав проекта пуст.",
+  "console.team.role-dialog.submit": "Сохранить роль",
+
+  // Команда: удаление роли
+  "console.team.role-delete.title": "Удалить роль",
+  "console.team.role-delete.question": "Удалить роль «{name}»?",
+  "console.team.role-delete.irreversible":
+    "Участники этой роли потеряют её права сразу после удаления.",
+  "console.team.role-delete.confirm": "Подтвердить удаление",
+
+  // Команда: сервисы платформы в каталоге прав
+  "console.team.roles.service.auth": "Доступ",
+  "console.team.roles.service.content": "Контент",
+  "console.team.roles.service.analytics": "Аналитика",
+  "console.team.roles.service.pay": "Оплата",
+
+  // Команда: группы каталога прав
+  "console.team.roles.group.audit": "Журнал действий",
+  "console.team.roles.group.keys": "API-ключи",
+  "console.team.roles.group.members": "Участники",
+  "console.team.roles.group.projects": "Проект",
+  "console.team.roles.group.roles": "Роли",
+  "console.team.roles.group.services": "Сервисы",
+  "console.team.roles.group.settings": "Настройки",
+  "console.team.roles.group.users": "Пользователи сайта",
+  "console.team.roles.group.categories": "Категории",
+  "console.team.roles.group.instructs": "Инструкции",
+  "console.team.roles.group.media": "Медиа",
+  "console.team.roles.group.pages": "Страницы",
+  "console.team.roles.group.posts": "Посты",
+  "console.team.roles.group.research": "Ресёрч",
+  "console.team.roles.group.seo": "SEO",
+  "console.team.roles.group.tasks": "Фоновые задачи",
+  "console.team.roles.group.topics": "Темы",
+  "console.team.roles.group.translations": "Переводы",
+  "console.team.roles.group.history": "История пользователей",
+  "console.team.roles.group.reports": "Отчёты",
+  "console.team.roles.group.licensing": "Лицензирование",
+  "console.team.roles.group.payments": "Платежи",
+  "console.team.roles.group.plans": "Тарифные планы",
+  "console.team.roles.group.subscriptions": "Подписки",
 
   // Команда: приглашение участника
   "console.team.invite.title": "Пригласить участника",

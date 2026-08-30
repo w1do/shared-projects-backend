@@ -42,6 +42,11 @@ final class AuthRuleViolation extends ValidationException
         return self::withMessages(['name' => ['This role name is reserved.']]);
     }
 
+    public static function roleNameTaken(): self
+    {
+        return self::withMessages(['name' => ['This role name is already used in the project.']]);
+    }
+
     public static function unknownService(): self
     {
         return self::withMessages(['service' => ['Unknown service.']]);

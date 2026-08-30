@@ -1,0 +1,92 @@
+{
+    "status": 200,
+    "content_type": "application/json",
+    "body": {
+        "data": [
+            {
+                "key": "auth.audit.view",
+                "label": "Просмотр аудита",
+                "group": "audit",
+                "service": "auth"
+            },
+            {
+                "key": "auth.keys.manage",
+                "label": "Управление API-ключами",
+                "group": "keys",
+                "service": "auth"
+            },
+            {
+                "key": "auth.keys.view",
+                "label": "Просмотр API-ключей",
+                "group": "keys",
+                "service": "auth"
+            },
+            {
+                "key": "auth.members.manage",
+                "label": "Управление участниками",
+                "group": "members",
+                "service": "auth"
+            },
+            {
+                "key": "auth.members.view",
+                "label": "Просмотр участников",
+                "group": "members",
+                "service": "auth"
+            },
+            {
+                "key": "auth.projects.manage",
+                "label": "Управление проектом",
+                "group": "projects",
+                "service": "auth"
+            },
+            {
+                "key": "auth.projects.view",
+                "label": "Просмотр проекта",
+                "group": "projects",
+                "service": "auth"
+            },
+            {
+                "key": "auth.roles.manage",
+                "label": "Управление ролями",
+                "group": "roles",
+                "service": "auth"
+            },
+            {
+                "key": "auth.roles.view",
+                "label": "Просмотр ролей",
+                "group": "roles",
+                "service": "auth"
+            },
+            {
+                "key": "auth.services.manage",
+                "label": "Включение сервисов",
+                "group": "services",
+                "service": "auth"
+            },
+            {
+                "key": "auth.settings.manage",
+                "label": "Управление настройками",
+                "group": "settings",
+                "service": "auth"
+            },
+            {
+                "key": "auth.settings.view",
+                "label": "Просмотр настроек",
+                "group": "settings",
+                "service": "auth"
+            },
+            {
+                "key": "auth.users.manage",
+                "label": "Управление пользователями",
+                "group": "users",
+                "service": "auth"
+            },
+            {
+                "key": "auth.users.view",
+                "label": "Просмотр пользователей",
+                "group": "users",
+                "service": "auth"
+            }
+        ]
+    }
+}

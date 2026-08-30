@@ -6,20 +6,23 @@ import { Avatar } from "@/components/ui/data-display/avatar";
 import { Badge } from "@/components/ui/data-display/badge";
 import { Card } from "@/components/ui/data-display/card";
 import { IconButton } from "@/components/ui/inputs/icon-button";
+import { Select } from "@/components/ui/inputs/select";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/overlay/dropdown-menu";
-import type { TeamUser } from "@/lib/admin/types/team";
+import type { RoleOption, TeamUser } from "@/lib/admin/types/team";
+import { roleLabel } from "@/lib/admin/role-labels";
 import { useConsoleText } from "@/lib/admin/use-console-text";
 
 interface TeamMemberCardProps {
   user: TeamUser;
   isSelf: boolean;
   allowed: boolean;
-  currentUserRole: string;
+  roleOptions: RoleOption[];
+  onAssignRole: (user: TeamUser, role: string) => void;
   onDelete: (user: TeamUser) => void;
 }
 
@@ -27,11 +30,14 @@ export function TeamMemberCard({
   user,
   isSelf,
   allowed,
-  currentUserRole,
+  roleOptions,
+  onAssignRole,
   onDelete,
 }: TeamMemberCardProps) {
   const t = useConsoleText();
   const isActive = user.status === "active";
+  const roleName =
+    roleOptions.find((option) => option.value === user.role)?.label || roleLabel(user.role);
 
   return (
     <Card className="flex items-center gap-4 p-4 bg-card border border-border/40 rounded-3xl relative shadow-subtle hover:shadow-subtle-2 transition-shadow">
@@ -53,15 +59,19 @@ export function TeamMemberCard({
           {user.email}
         </span>
         <div className="flex items-center gap-2 mt-2">
-          <Badge
-            variant="soft"
-            color={
-              user.role === "admin" ? "primary" : user.role === "manager" ? "warning" : "neutral"
-            }
-            size="sm"
-          >
-            {t(`console.team.role.${user.role}`)}
-          </Badge>
+          {allowed && roleOptions.length > 0 ? (
+            <Select
+              className="h-8 max-w-44"
+              value={user.role}
+              onChange={(e) => onAssignRole(user, e.target.value)}
+              options={roleOptions}
+              placeholder={t("console.team.invite.role-placeholder")}
+            />
+          ) : (
+            <Badge variant="soft" color="primary" size="sm">
+              {roleName}
+            </Badge>
+          )}
           <Badge variant="soft" color={isActive ? "success" : "error"} size="sm">
             {t(`console.team.status.${user.status}`)}
           </Badge>

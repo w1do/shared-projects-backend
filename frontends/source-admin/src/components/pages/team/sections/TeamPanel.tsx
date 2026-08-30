@@ -1,12 +1,14 @@
 "use client";
 
-import type { TeamUser } from "@/lib/admin/types/team";
+import type { RoleOption, TeamUser } from "@/lib/admin/types/team";
 import { TeamMemberCard } from "./TeamMemberCard";
 
 interface TeamPanelProps {
   users: TeamUser[];
   currentUser: TeamUser | null;
   canManage: (target: TeamUser) => boolean;
+  roleOptions: RoleOption[];
+  onAssignRole: (target: TeamUser, role: string) => void;
   onDelete: (target: TeamUser) => void;
 }
 
@@ -17,6 +19,8 @@ export function TeamPanel({
   users,
   currentUser,
   canManage,
+  roleOptions,
+  onAssignRole,
   onDelete,
 }: TeamPanelProps) {
   return (
@@ -27,7 +31,8 @@ export function TeamPanel({
           user={user}
           isSelf={currentUser?.id === user.id}
           allowed={canManage(user)}
-          currentUserRole={currentUser?.role || "staff"}
+          roleOptions={roleOptions}
+          onAssignRole={onAssignRole}
           onDelete={onDelete}
         />
       ))}

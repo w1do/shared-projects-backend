@@ -72,6 +72,9 @@ fi
 if [ "${ADMIN_SEED:-0}" = "1" ]; then
     php artisan operator:seed || true
     php artisan project:seed || true
+    # Каталог прав и системные роли по уже опубликованным манифестам: без него
+    # у проекта нет ролей сервисов, появившихся с последнего выката
+    php artisan permissions:sync || true
 fi
 
 exec "$@"

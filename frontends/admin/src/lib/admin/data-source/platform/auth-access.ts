@@ -7,7 +7,17 @@ const base = "/api/admin/v1/projects/{project}";
 export type PlatformRole = {
   id: number | string;
   name: string;
+  /** Системная роль раскрывается шаблоном платформы: только просмотр. */
+  system?: boolean;
   permissions?: string[];
+};
+
+/** Право каталога проекта: источник чекбоксов в диалоге роли. */
+export type PlatformPermission = {
+  key: string;
+  label: string;
+  group: string | null;
+  service: string;
 };
 
 export type PlatformApiKey = {
@@ -31,6 +41,29 @@ export type PlatformSettingValue = { key: string; value: unknown };
 
 export function listRoles() {
   return adminApiGet<PlatformRole[]>(`${base}/roles`);
+}
+
+/** Права, доступные проекту: права выключенных сервисов платформа не отдаёт. */
+export function listPermissions() {
+  return adminApiGet<PlatformPermission[]>(`${base}/permissions`);
+}
+
+export function createRole(body: { name: string; permissions: string[] }) {
+  return adminApiSend<PlatformRole>(`${base}/roles`, { method: "POST", body });
+}
+
+export function updateRolePermissions(
+  id: number | string,
+  permissions: string[],
+) {
+  return adminApiSend<PlatformRole>(`${base}/roles/${id}`, {
+    method: "PUT",
+    body: { permissions },
+  });
+}
+
+export function deleteRole(id: number | string) {
+  return adminApiSend<void>(`${base}/roles/${id}`, { method: "DELETE" });
 }
 
 export function listApiKeys() {

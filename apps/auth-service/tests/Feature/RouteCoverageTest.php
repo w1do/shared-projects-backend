@@ -50,6 +50,7 @@ function authRouteCoverageCoveredPairs(): array
         'POST api/admin/v1/projects/{project}/members',              // auth/AdminContractTest.php
         'DELETE api/admin/v1/projects/{project}/members/{member}',   // auth/AdminMemberContractTest.php
         'PUT api/admin/v1/projects/{project}/members/{member}/role', // auth/AdminMemberContractTest.php
+        'GET api/admin/v1/projects/{project}/permissions',           // auth/AdminPermissionContractTest.php
         'GET api/admin/v1/projects/{project}/roles',                 // auth/AdminContractTest.php, auth/AdminRoleContractTest.php
         'POST api/admin/v1/projects/{project}/roles',                // auth/AdminContractTest.php, auth/AdminRoleContractTest.php
         'DELETE api/admin/v1/projects/{project}/roles/{role}',       // auth/AdminContractTest.php, auth/AdminRoleContractTest.php

@@ -59,6 +59,18 @@
             },
             {
                 "id": "<int>",
+                "name": "billing",
+                "system": true,
+                "permissions": []
+            },
+            {
+                "id": "<int>",
+                "name": "licensing",
+                "system": true,
+                "permissions": []
+            },
+            {
+                "id": "<int>",
                 "name": "viewer",
                 "system": true,
                 "permissions": [

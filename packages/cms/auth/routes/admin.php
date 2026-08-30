@@ -30,6 +30,8 @@ Route::prefix('api/admin/v1')->group(function () {
             Route::put('members/{member}/role', [Admin\MemberController::class, 'assignRole'])->middleware(RequirePermission::class.':auth.members.manage');
             Route::delete('members/{member}', [Admin\MemberController::class, 'destroy'])->middleware(RequirePermission::class.':auth.members.manage');
 
+            Route::get('permissions', [Admin\PermissionController::class, 'index'])->middleware(RequirePermission::class.':auth.roles.view');
+
             Route::get('roles', [Admin\RoleController::class, 'index'])->middleware(RequirePermission::class.':auth.roles.view');
             Route::post('roles', [Admin\RoleController::class, 'store'])->middleware(RequirePermission::class.':auth.roles.manage');
             Route::put('roles/{role}', [Admin\RoleController::class, 'update'])->middleware(RequirePermission::class.':auth.roles.manage');

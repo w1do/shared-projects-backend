@@ -7,6 +7,7 @@ namespace Cms\Auth\Infrastructure\Providers;
 use Cms\Auth\Console\PublishManifestConsoleCommand;
 use Cms\Auth\Console\SeedOperatorConsoleCommand;
 use Cms\Auth\Console\SeedProjectConsoleCommand;
+use Cms\Auth\Console\SyncPermissionsConsoleCommand;
 use Cms\Auth\Domain\Models\Admin;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
@@ -30,6 +31,7 @@ final class AuthServiceProvider extends ServiceProvider
                 PublishManifestConsoleCommand::class,
                 SeedOperatorConsoleCommand::class,
                 SeedProjectConsoleCommand::class,
+                SyncPermissionsConsoleCommand::class,
             ]);
         }
 

@@ -4,19 +4,21 @@ import * as React from "react";
 import { toast } from "sonner";
 import type { TeamUser } from "@/lib/admin/types/team";
 import * as platformAuth from "@/lib/admin/data-source/platform/auth";
-import { t } from "@/lib/admin/console-texts";
-
-/** Человекочитаемое название роли участника для уведомлений. */
-function roleLabel(role: TeamUser["role"]): string {
-  return t(`console.team.role.${role}`);
-}
+import {
+  canManageMembers,
+  canViewRoles,
+  canManageRoles,
+} from "@/lib/admin/data-source/platform/team-access";
+import { getProjectKey } from "@/lib/admin/data-source/session";
+import { roleLabel } from "@/lib/admin/role-labels";
+import { t, tf } from "@/lib/admin/console-texts";
 
 function memberToUser(member: platformAuth.PlatformMember): TeamUser {
   return {
     id: String(member.id),
     email: member.email,
     name: member.name,
-    role: platformAuth.toConsoleRole(member.roles),
+    role: member.roles[0] ?? "",
     position: member.roles[0] ?? "Operator",
     phone: "",
     status: "active",
@@ -26,10 +28,14 @@ function memberToUser(member: platformAuth.PlatformMember): TeamUser {
 /**
  * Состояние раздела «Команда»: участники проекта из auth-service,
  * приглашение, назначение роли и удаление участника.
+ *
+ * Роль участника — имя роли проекта: и системной, и кастомной. Что оператору
+ * позволено, решают права из `bootstrap`, а не название его собственной роли.
  */
 export function useTeamPage() {
   const [users, setUsers] = React.useState<TeamUser[]>([]);
   const [currentUser, setCurrentUser] = React.useState<TeamUser | null>(null);
+  const [permissions, setPermissions] = React.useState<string[]>([]);
   const [isInviteOpen, setIsInviteOpen] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(true);
   const [deleteTarget, setDeleteTarget] = React.useState<TeamUser | null>(null);
@@ -44,9 +50,14 @@ export function useTeamPage() {
       }
     }
 
-    platformAuth
-      .listMembers()
-      .then((members) => setUsers(members.map(memberToUser)))
+    Promise.all([
+      platformAuth.listMembers(),
+      platformAuth.getBootstrap(getProjectKey()),
+    ])
+      .then(([members, bootstrap]) => {
+        setUsers(members.map(memberToUser));
+        setPermissions(bootstrap.permissions ?? []);
+      })
       .catch(() => toast.error(t("console.team.toast.load-failed")))
       .finally(() => setIsLoading(false));
   }, []);
@@ -57,15 +68,13 @@ export function useTeamPage() {
     setUsers(members.map(memberToUser));
   };
 
-  const handleAddMember = (name: string, email: string, role: TeamUser["role"]) => {
+  const handleAddMember = (name: string, email: string, role: string) => {
     platformAuth
       .inviteMember({ email, name, role })
       .then(reloadMembers)
       .then(() =>
         toast.success(
-          t("console.team.toast.invited")
-            .replace("{name}", name)
-            .replace("{role}", roleLabel(role)),
+          tf("console.team.toast.invited", { name, role: roleLabel(role) }),
         ),
       )
       .catch((error: Error) => toast.error(error.message));
@@ -82,30 +91,26 @@ export function useTeamPage() {
     platformAuth
       .removeMember(target.id)
       .then(reloadMembers)
-      .then(() => toast.success(t("console.team.toast.deleted").replace("{name}", target.name)))
+      .then(() => toast.success(tf("console.team.toast.deleted", { name: target.name })))
       .catch((error: Error) => toast.error(error.message));
     setDeleteTarget(null);
   };
 
-  /** Может ли текущий оператор управлять участником. */
-  const canManage = (target: TeamUser) => {
-    if (!currentUser) return false;
-    if (currentUser.id === target.id) return false;
-    if (currentUser.role === "admin") return true;
-    if (currentUser.role === "manager") return target.role === "staff";
-    return false;
-  };
+  /** Может ли текущий оператор управлять участником: право проекта, но не собой. */
+  const canManage = (target: TeamUser) =>
+    canManageMembers(permissions) && currentUser?.id !== target.id;
 
   /** Назначение роли участнику проекта (auth-service). */
-  const handleAssignRole = (target: TeamUser, role: TeamUser["role"]) => {
+  const handleAssignRole = (target: TeamUser, role: string) => {
     platformAuth
       .assignMemberRole(target.id, role)
       .then(reloadMembers)
       .then(() =>
         toast.success(
-          t("console.team.toast.role-updated")
-            .replace("{name}", target.name)
-            .replace("{role}", roleLabel(role)),
+          tf("console.team.toast.role-updated", {
+            name: target.name,
+            role: roleLabel(role),
+          }),
         ),
       )
       .catch((error: Error) => toast.error(error.message));
@@ -124,5 +129,8 @@ export function useTeamPage() {
     handleDeleteMember,
     handleConfirmDelete,
     canManage,
+    canInvite: canManageMembers(permissions),
+    canViewRoles: canViewRoles(permissions),
+    canManageRoles: canManageRoles(permissions),
   };
 }
