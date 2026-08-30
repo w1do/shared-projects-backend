@@ -92,9 +92,13 @@ CI (`.github/workflows/pull-request.yml`): тесты 4 сервисов → swa
 ./tools/cms up|down|restart [service]    # управление стеком
 ./tools/cms migrate [service]            # миграции
 ./tools/cms seed-demo [project]          # демо-контент в проект
+./tools/cms seed-load [проектов]         # нагруженный стенд: 20 проектов с данными всех сервисов
 ./tools/cms artisan <service> <args…>    # artisan внутри контейнера
 ./tools/smoke.sh                         # сквозной прогон всех сервисов через gateway
 ```
+
+Нагруженный стенд (объёмы, время прогона, возврат к чистому состоянию) —
+[`docs/dev-load-stand.md`](docs/dev-load-stand.md).
 
 ## Архитектура и планирование
 

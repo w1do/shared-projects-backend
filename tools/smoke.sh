@@ -91,8 +91,7 @@ curl -fsS -X POST "$BASE/api/v1/pay/subscriptions/$SUB_ID/cancel" -H "X-Api-Key:
 curl -fsS -X POST "$BASE/api/v1/pay/subscriptions/$SUB_ID/resume" -H "X-Api-Key: $SK" -H "X-User-Token: $USER_TOKEN" | jqr "['data']['status']"
 
 echo "== licensing: issue → activate → refresh → updates/check"
-curl -fsS -X PUT "$BASE/api/admin/v1/projects/demo/services/licensing" -H "$AUTH" \
-    -H 'Content-Type: application/json' -d '{"enabled":true}' >/dev/null
+# licensing отдельно не включается: модуль открывается вместе с pay (ServiceName::gate)
 ORG_ID=$(curl -fsS -X POST "$BASE/api/admin/v1/projects/demo/pay/licensing/organizations" -H "$AUTH" \
     -H 'Content-Type: application/json' \
     -d "{\"name\":\"Smoke Org $RUN\",\"contact_first_name\":\"Ivan\",\"contact_last_name\":\"Petrov\",\"email\":\"org-$RUN@example.com\"}" \

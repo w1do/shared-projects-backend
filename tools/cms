@@ -8,6 +8,7 @@
 #   ./tools/cms api                           собрать единый swagger из всех сервисов
 #   ./tools/cms e2e [--headed] [args...]      сценарии панели (Playwright) против поднятого стека
 #   ./tools/cms seed-demo [project]           демо-контент в проект (по умолчанию demo)
+#   ./tools/cms seed-load [проектов]          нагруженный стенд: 20 проектов с данными всех сервисов (0 — только очистка)
 #   ./tools/cms deploy [версия]               выкатить: пересобрать и поднять сервисы вместе с воркерами
 #   ./tools/cms version                       версия кода в каждом контейнере платформы
 #   ./tools/cms image:build [тег]             собрать backend-образы четырёх сервисов для реестра
@@ -181,6 +182,54 @@ echo \$p ? \$p->id : '';" 2>/dev/null | tr -d '\r\n ')
         echo "==> seed-demo: проект ${key} (${pid})"
         $COMPOSE exec -T -e "DEMO_PROJECT_ID=$pid" -w /var/www/apps/content-service content-service \
             php artisan db:seed --class="Database\Seeders\DemoContentSeeder" --force
+        ;;
+    seed-load)
+        # Нагруженный стенд. auth-сеялка — источник истины по составу проектов:
+        # она печатает LOAD_PROJECT_IDS (свои прежние и новые проекты), остальные
+        # сеялки удаляют данные всех перечисленных и засеивают первые LOAD_PROJECTS.
+        count="${1:-20}"
+        app_env=$($COMPOSE exec -T -w /var/www/apps/auth-service auth-service \
+            php artisan tinker --execute="echo app()->environment();" 2>/dev/null | tr -d '\r\n ')
+        if [ "$app_env" = "production" ]; then
+            echo "seed-load не запускается в production: окружение auth-service — production." >&2
+            exit 1
+        fi
+
+        work=$(mktemp -d)
+        trap 'rm -rf "$work"' EXIT
+        summary="$work/summary"
+        : >"$summary"
+        started=$(date +%s)
+
+        run_load_seeder() {
+            local service="$1"; shift
+            local step
+            step=$(date +%s)
+            echo "==> seed-load: $service"
+            $COMPOSE exec -T "$@" -w "/var/www/apps/$service" "$service" \
+                php artisan db:seed --class="Database\Seeders\LoadSeeder" --force \
+                | tee "$work/$service.out" | sed '/^LOAD_/d'
+            printf '%s\t%ss\t%s\n' "$service" "$(( $(date +%s) - step ))" \
+                "$(sed -n 's/^LOAD_STATS=[^:]*: //p' "$work/$service.out" | tail -n1)" >>"$summary"
+        }
+
+        run_load_seeder auth-service -e "LOAD_PROJECTS=$count"
+        ids=$(sed -n 's/^LOAD_PROJECT_IDS=//p' "$work/auth-service.out" | tail -n1 | tr -d '\r')
+
+        for s in content-service pay-service analytics-service; do
+            run_load_seeder "$s" -e "LOAD_PROJECT_IDS=$ids" -e "LOAD_PROJECTS=$count"
+        done
+
+        echo ""
+        echo "==> сводка seed-load (проектов: $count)"
+        awk -F'\t' '{ printf "  %-18s %6s  %s\n", $1, $2, $3 }' "$summary"
+        echo "  всего: $(( $(date +%s) - started ))s"
+
+        skipped=$(cat "$work"/*.out | sed -n 's/^LOAD_SKIP=/    - /p')
+        if [ -n "$skipped" ]; then
+            echo "  пропущено:"
+            echo "$skipped"
+        fi
         ;;
     e2e)
         # Сценарии идут против стека, поднятого `up`: панель внутри контейнера
