@@ -121,6 +121,55 @@
             },
             {
                 "id": "<int>",
+                "title": "SEO-поля города",
+                "category": "city_seo",
+                "category_label": "SEO города",
+                "rule": "Заполни SEO-поля страницы города под тематику проекта: заголовок до 60 символов, описание до 160 символов, ключевые слова через запятую и поля для соцсетей — заголовок и описание Open Graph, тип карточки Twitter (summary или summary_large_image). Название города склоняй по-русски и упоминай его в заголовке и описании. Пиши про тематику проекта в этом городе, не выдумывай адресов, цен и телефонов.",
+                "schema": {
+                    "type": "object",
+                    "properties": {
+                        "title": {
+                            "type": "string",
+                            "maxLength": 60
+                        },
+                        "description": {
+                            "type": "string",
+                            "maxLength": 160
+                        },
+                        "keywords": {
+                            "type": "string"
+                        },
+                        "og_title": {
+                            "type": "string",
+                            "maxLength": 60
+                        },
+                        "og_description": {
+                            "type": "string",
+                            "maxLength": 160
+                        },
+                        "twitter_card": {
+                            "type": "string",
+                            "enum": [
+                                "summary",
+                                "summary_large_image"
+                            ]
+                        }
+                    },
+                    "required": [
+                        "title",
+                        "description",
+                        "keywords",
+                        "og_title",
+                        "og_description",
+                        "twitter_card"
+                    ]
+                },
+                "published": true,
+                "is_system": true,
+                "updated_at": "<string>"
+            },
+            {
+                "id": "<int>",
                 "title": "Текст поста по теме",
                 "category": "post_body",
                 "category_label": "Текст поста",

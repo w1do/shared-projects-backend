@@ -18,6 +18,11 @@ return [
             'image/avif' => 'avif',
         ],
     ],
+    // Справочник городов: по умолчанию поставляемая копия, источник переопределяется
+    // переменной окружения или аргументом `city:sync`.
+    'city_directory_path' => env('CONTENT_CITY_DIRECTORY', __DIR__.'/../resources/geo/russia-cities.json'),
+    // Стартовый набор городов проекта: крупнейшие по населению.
+    'city_starter_size' => (int) env('CONTENT_CITY_STARTER_SIZE', 10),
     'robots' => [
         'disallow' => ['/api/', '/admin/'],
     ],

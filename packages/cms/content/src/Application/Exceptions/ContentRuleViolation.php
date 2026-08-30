@@ -59,6 +59,11 @@ final class ContentRuleViolation extends ValidationException
         return self::withMessages(['url' => ['The linked file is not a supported image or exceeds the size limit.']]);
     }
 
+    public static function cityDirectoryUnreadable(string $source): self
+    {
+        return self::withMessages(['source' => ["Справочник городов не прочитан: {$source}."]]);
+    }
+
     public static function remoteAddressNotAllowed(): self
     {
         return self::withMessages(['url' => ['The given link does not point to a public address.']]);

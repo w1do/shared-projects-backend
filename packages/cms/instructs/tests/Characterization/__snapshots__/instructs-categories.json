@@ -26,6 +26,10 @@
             {
                 "value": "category_seo",
                 "label": "SEO категории"
+            },
+            {
+                "value": "city_seo",
+                "label": "SEO города"
             }
         ]
     }

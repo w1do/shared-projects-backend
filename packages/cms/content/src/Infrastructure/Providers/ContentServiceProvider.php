@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Cms\Content\Infrastructure\Providers;
 
+use Cms\Content\Console\CitySyncCommand;
 use Cms\Content\Console\PublishManifestCommand;
+use Cms\Content\Domain\Contracts\CityDirectorySource;
 use Cms\Content\Domain\Contracts\ContentCache;
 use Cms\Content\Domain\Contracts\HostResolver;
 use Cms\Content\Domain\Contracts\RemoteFileFetcher;
@@ -13,6 +15,7 @@ use Cms\Content\Infrastructure\Http\DnsHostResolver;
 use Cms\Content\Infrastructure\Http\GuardedRemoteFileFetcher;
 use Cms\Content\Infrastructure\Jobs\PublishScheduledJob;
 use Cms\Content\Infrastructure\Persistence\CategoryTranslatableSubjectRepository;
+use Cms\Content\Infrastructure\Persistence\JsonCityDirectorySource;
 use Cms\Content\Infrastructure\Persistence\VersionedContentCache;
 use Cms\Localization\Infrastructure\Persistence\TranslatableSubjectRegistry;
 use Illuminate\Console\Scheduling\Schedule;
@@ -30,6 +33,9 @@ final class ContentServiceProvider extends ServiceProvider
         // Кэш публичных ответов — за портом: Application знает только контракт.
         $this->app->singleton(ContentCache::class, VersionedContentCache::class);
 
+        // Источник справочника городов — за портом: копия, файл или адрес.
+        $this->app->singleton(CityDirectorySource::class, JsonCityDirectorySource::class);
+
         // Скачивание по внешней ссылке — за портом: в тестах подменяется целиком.
         $this->app->singleton(HostResolver::class, DnsHostResolver::class);
         $this->app->singleton(RemoteFileFetcher::class, GuardedRemoteFileFetcher::class);
@@ -45,7 +51,7 @@ final class ContentServiceProvider extends ServiceProvider
         $this->loadRoutesFrom(__DIR__.'/../../../routes/public.php');
 
         if ($this->app->runningInConsole()) {
-            $this->commands([PublishManifestCommand::class]);
+            $this->commands([PublishManifestCommand::class, CitySyncCommand::class]);
         }
 
         // Отложенная публикация — раз в минуту

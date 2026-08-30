@@ -16,7 +16,7 @@ final class RebuildSeoRequest extends FormRequest
     {
         return [
             'entities' => ['sometimes', 'array', 'max:500'],
-            'entities.*.type' => ['required', 'string', Rule::enum(SeoableType::class)],
+            'entities.*.type' => ['required', 'string', Rule::in(SeoableType::catalogValues())],
             'entities.*.id' => ['required', 'integer', 'min:1'],
         ];
     }

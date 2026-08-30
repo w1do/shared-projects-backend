@@ -16,7 +16,7 @@ final class ListSeoCatalogRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'type' => ['sometimes', 'string', Rule::enum(SeoableType::class)],
+            'type' => ['sometimes', 'string', Rule::in(SeoableType::catalogValues())],
             'sort' => ['sometimes', 'string', Rule::in(['type', 'title', 'updated_at'])],
             'direction' => ['sometimes', 'string', Rule::in(['asc', 'desc'])],
             'per_page' => ['sometimes', 'integer', 'min:1', 'max:100'],

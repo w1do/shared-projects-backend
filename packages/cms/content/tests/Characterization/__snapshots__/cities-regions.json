@@ -1,0 +1,13 @@
+{
+    "status": 200,
+    "content_type": "application/json",
+    "body": {
+        "data": [
+            {
+                "id": "<int>",
+                "name": "Республика Татарстан",
+                "federal_district": "Приволжский"
+            }
+        ]
+    }
+}

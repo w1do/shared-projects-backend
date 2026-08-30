@@ -15,6 +15,7 @@ const LIVE = [
   "research",
   "instructs",
   "seo",
+  "cities",
   "payments",
   "subscriptions",
   "plans",

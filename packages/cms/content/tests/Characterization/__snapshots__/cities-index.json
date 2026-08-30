@@ -1,0 +1,35 @@
+{
+    "status": 200,
+    "content_type": "application/json",
+    "body": {
+        "data": [
+            {
+                "id": "<int>",
+                "name": "Казань",
+                "slug": "kazan",
+                "region_id": "<int>",
+                "region_name": "Республика Татарстан",
+                "federal_district": "Приволжский",
+                "population": 1257341,
+                "enabled": true,
+                "has_seo": false
+            },
+            {
+                "id": "<int>",
+                "name": "Набережные Челны",
+                "slug": "naberezhnye-chelny",
+                "region_id": "<int>",
+                "region_name": "Республика Татарстан",
+                "federal_district": "Приволжский",
+                "population": 533839,
+                "enabled": true,
+                "has_seo": false
+            }
+        ],
+        "meta": {
+            "per_page": 25,
+            "next_cursor": null,
+            "prev_cursor": null
+        }
+    }
+}

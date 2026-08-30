@@ -6,12 +6,15 @@ namespace Cms\Content\Presentation\Http\Api\V1\Controllers\Site;
 
 use Cms\Content\Application\DTOs\Page\PageDTO;
 use Cms\Content\Application\DTOs\Post\PostDTO;
+use Cms\Content\Application\Queries\FindPublicCityQuery;
 use Cms\Content\Application\Queries\FindPublishedPageQuery;
 use Cms\Content\Application\Queries\FindPublishedPostQuery;
 use Cms\Content\Application\Queries\PublicCategoriesQuery;
+use Cms\Content\Application\Queries\PublicCitiesQuery;
 use Cms\Content\Application\Queries\PublicPostsQuery;
 use Cms\Content\Presentation\Http\Api\V1\Requests\Post\PublicPostsRequest;
 use Cms\Content\Presentation\Http\Api\V1\Resources\Category\CategoryResource;
+use Cms\Content\Presentation\Http\Api\V1\Resources\City\PublicCityResource;
 use Cms\Content\Presentation\Http\Api\V1\Resources\Page\PageResource;
 use Cms\Content\Presentation\Http\Api\V1\Resources\Post\PostResource;
 use Illuminate\Http\JsonResponse;
@@ -71,5 +74,17 @@ final class PublicContentController
     public function categories(Request $request, PublicCategoriesQuery $query): JsonResponse
     {
         return CategoryResource::collection($query->handle())->toResponse($request);
+    }
+
+    #[OA\Get(path: '/api/v1/content/cities', operationId: 'content_cities_api_v1_content_cities', tags: ['content'], summary: 'GET /api/v1/content/cities', security: [['apiKey' => []]], responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated')])]
+    public function cities(Request $request, PublicCitiesQuery $query): JsonResponse
+    {
+        return PublicCityResource::collection($query->handle())->toResponse($request);
+    }
+
+    #[OA\Get(path: '/api/v1/content/cities/{slug}', operationId: 'content_city_api_v1_content_cities_slug', tags: ['content'], summary: 'GET /api/v1/content/cities/{slug}', security: [['apiKey' => []]], parameters: [new OA\Parameter(name: 'slug', in: 'path', required: true, schema: new OA\Schema(type: 'string'))], responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 404, description: 'Not found')])]
+    public function city(Request $request, string $slug, FindPublicCityQuery $query): JsonResponse
+    {
+        return (new PublicCityResource($query->handle($slug)))->toResponse($request);
     }
 }

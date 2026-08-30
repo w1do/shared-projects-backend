@@ -1,0 +1,17 @@
+{
+    "status": 200,
+    "content_type": "application/json",
+    "body": {
+        "data": {
+            "id": "<int>",
+            "name": "Казань",
+            "slug": "kazan",
+            "region_name": "Республика Татарстан",
+            "federal_district": "Приволжский",
+            "population": 1257341,
+            "latitude": "55.7963000",
+            "longitude": "49.1088000",
+            "seo": null
+        }
+    }
+}

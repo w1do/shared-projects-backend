@@ -82,7 +82,7 @@ final class SchemaPresetCatalog
                 'key' => 'seo',
                 'title' => 'SEO-поля материала',
                 'entity' => 'seo',
-                'categories' => [InstructCategory::PostSeo],
+                'categories' => [InstructCategory::PostSeo, InstructCategory::CitySeo],
                 'fields' => [
                     ['name' => 'title', 'type' => 'string', 'required' => true, 'description' => 'SEO-заголовок, до 60 символов'],
                     ['name' => 'description', 'type' => 'string', 'required' => true, 'description' => 'SEO-описание, до 160 символов'],

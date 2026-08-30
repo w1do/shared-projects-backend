@@ -57,6 +57,28 @@ export const adminQueryKeys = {
         filters?.direction ?? "",
       ] as const,
   },
+  cities: {
+    all: ["admin", "cities"] as const,
+    list: (filters?: {
+      search?: string;
+      regionId?: number;
+      enabled?: boolean;
+      sort?: string;
+      direction?: string;
+    }) =>
+      [
+        "admin",
+        "cities",
+        "list",
+        filters?.search ?? "",
+        filters?.regionId ?? "",
+        filters?.enabled ?? "",
+        filters?.sort ?? "",
+        filters?.direction ?? "",
+      ] as const,
+    regions: () => ["admin", "cities", "regions"] as const,
+    seo: (id: number) => ["admin", "cities", "seo", id] as const,
+  },
   pay: {
     all: ["admin", "pay"] as const,
     access: () => ["admin", "pay", "access"] as const,

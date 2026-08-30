@@ -6,6 +6,7 @@ namespace Cms\Content\Application\Queries;
 
 use Cms\Content\Domain\Enums\SeoableType;
 use Cms\Content\Domain\Models\Category;
+use Cms\Content\Domain\Models\City;
 use Cms\Content\Domain\Models\Page;
 use Cms\Content\Domain\Models\Post;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -20,7 +21,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
  */
 final class FindSeoableQuery
 {
-    public function handle(string $type, int $id): Post|Page|Category
+    public function handle(string $type, int $id): Post|Page|Category|City
     {
         $seoable = SeoableType::tryFrom($type);
 

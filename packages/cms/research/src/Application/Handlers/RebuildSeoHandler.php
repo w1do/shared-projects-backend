@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Cms\Research\Application\Handlers;
 
 use Cms\Content\Application\Commands\UpsertSeoCommand;
-use Cms\Content\Application\DTOs\Seo\UpsertSeoDTO;
 use Cms\Content\Application\Handlers\UpsertSeoHandler;
 use Cms\Content\Domain\Enums\SeoableType;
 use Cms\Content\Domain\Models\Category;
@@ -15,6 +14,7 @@ use Cms\Instructs\Application\Actions\ResolveInstructAction;
 use Cms\Instructs\Domain\Enums\InstructCategory;
 use Cms\Research\Application\Actions\ComposeCategorySeoAction;
 use Cms\Research\Application\Actions\ComposePostSeoAction;
+use Cms\Research\Application\Actions\KeepOperatorSeoFieldsAction;
 use Cms\Research\Application\Commands\RebuildSeoCommand;
 use Cms\Research\Application\DTOs\Seo\SeoRebuildResultDTO;
 use Cms\Shared\BackgroundTasks\TaskProgress;
@@ -29,14 +29,12 @@ use Throwable;
  */
 final readonly class RebuildSeoHandler
 {
-    /** Поля, которые задаёт оператор, а не модель. */
-    private const OPERATOR_FIELDS = ['canonical', 'robots', 'og_image', 'json_ld'];
-
     public function __construct(
         private ResolveInstructAction $instructs,
         private ComposePostSeoAction $postSeo,
         private ComposeCategorySeoAction $categorySeo,
         private UpsertSeoHandler $seo,
+        private KeepOperatorSeoFieldsAction $operatorFields,
         private TaskProgress $progress,
     ) {}
 
@@ -68,24 +66,7 @@ final readonly class RebuildSeoHandler
             ? $this->categorySeo->handle($this->instructs->handle(InstructCategory::CategorySeo), $entity)
             : $this->postSeo->handle($this->instructs->handle(InstructCategory::PostSeo), $entity, $entity->title);
 
-        $this->seo->handle(new UpsertSeoCommand($entity, $this->keepingOperatorFields($entity, $fresh)));
-    }
-
-    private function keepingOperatorFields(Post|Page|Category $entity, UpsertSeoDTO $fresh): UpsertSeoDTO
-    {
-        $stored = $entity->seo;
-
-        if ($stored === null) {
-            return $fresh;
-        }
-
-        $payload = $fresh->toArray();
-
-        foreach (self::OPERATOR_FIELDS as $field) {
-            $payload[$field] = $stored->{$field};
-        }
-
-        return UpsertSeoDTO::from($payload);
+        $this->seo->handle(new UpsertSeoCommand($entity, $this->operatorFields->handle($entity->seo, $fresh)));
     }
 
     /** @return list<Post|Page|Category> */
@@ -111,6 +92,7 @@ final readonly class RebuildSeoHandler
                 SeoableType::Post => Post::query()->with('seo')->find($entity['id']),
                 SeoableType::Page => Page::query()->with('seo')->find($entity['id']),
                 SeoableType::Category => Category::query()->with('seo')->find($entity['id']),
+                SeoableType::City => null,
             };
 
             if ($record !== null) {

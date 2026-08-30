@@ -11,6 +11,7 @@ use Illuminate\Database\Query\Builder;
 use Illuminate\Database\Query\JoinClause;
 use Illuminate\Pagination\CursorPaginator;
 use Illuminate\Support\Facades\DB;
+use InvalidArgumentException;
 
 /**
  * Каталог SEO проекта: по строке на сущность контента, включая сущности без
@@ -55,7 +56,7 @@ final class ListProjectSeoQuery
 
     private function union(?SeoableType $type): Builder
     {
-        $types = $type === null ? SeoableType::cases() : [$type];
+        $types = $type === null ? SeoableType::catalogTypes() : [$type];
 
         $union = $this->rows($types[0]);
 
@@ -72,6 +73,7 @@ final class ListProjectSeoQuery
             SeoableType::Post => ['posts', 'title'],
             SeoableType::Page => ['pages', 'title'],
             SeoableType::Category => ['categories', 'name'],
+            SeoableType::City => throw new InvalidArgumentException('Города в каталоге SEO не участвуют.'),
         };
 
         $model = $type->modelClass();

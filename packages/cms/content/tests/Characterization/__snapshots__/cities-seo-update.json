@@ -1,0 +1,22 @@
+{
+    "status": 200,
+    "content_type": "application/json",
+    "body": {
+        "data": {
+            "title": "Доставка бензина в Казани",
+            "description": "Круглосуточная доставка топлива",
+            "keywords": "бензин, Казань",
+            "canonical": "https://site.test/kazan",
+            "robots": "index,follow",
+            "og_title": "Бензин в Казани",
+            "og_description": "Доставка за час",
+            "og_image": "https://site.test/og.png",
+            "twitter_card": "summary_large_image",
+            "json_ld": {
+                "@context": "https://schema.org",
+                "@type": "City",
+                "name": "Казань"
+            }
+        }
+    }
+}

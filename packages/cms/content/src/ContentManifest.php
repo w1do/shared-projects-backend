@@ -11,7 +11,7 @@ use Cms\Contracts\Manifest\SettingDefinition;
 
 final class ContentManifest
 {
-    public const VERSION = '0.3.0';
+    public const VERSION = '0.4.0';
 
     public static function build(): ServiceManifest
     {
@@ -27,6 +27,8 @@ final class ContentManifest
                 new PermissionDefinition('content.categories.view', 'Просмотр категорий', 'categories'),
                 new PermissionDefinition('content.categories.manage', 'Управление категориями', 'categories'),
                 new PermissionDefinition('content.seo.manage', 'Управление SEO', 'seo'),
+                new PermissionDefinition('content.cities.view', 'Просмотр городов', 'cities'),
+                new PermissionDefinition('content.cities.manage', 'Управление городами', 'cities'),
                 new PermissionDefinition('content.media.view', 'Просмотр медиа', 'media'),
                 new PermissionDefinition('content.translations.view', 'Просмотр переводов', 'translations'),
                 new PermissionDefinition('content.translations.manage', 'Управление переводами', 'translations'),
@@ -46,6 +48,7 @@ final class ContentManifest
                 new NavigationItem('content.media', 'nav.content.media', '/content/media', 'content.media.view', 'image', 23),
                 new NavigationItem('content.research', 'nav.content.research', '/content/research', 'content.research.view', 'search', 24),
                 new NavigationItem('content.instructs', 'nav.content.instructs', '/content/instructs', 'content.instructs.view', 'list-checks', 25),
+                new NavigationItem('content.cities', 'nav.content.cities', '/content/cities', 'content.cities.view', 'map-pin', 26),
             ],
             settings: [
                 new SettingDefinition('site_url', 'string', 'URL сайта проекта', null, ['url']),

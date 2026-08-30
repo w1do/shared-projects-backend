@@ -13,6 +13,7 @@ enum InstructCategory: string
     case PostBody = 'post_body';
     case PostSeo = 'post_seo';
     case CategorySeo = 'category_seo';
+    case CitySeo = 'city_seo';
 
     public function label(): string
     {
@@ -23,6 +24,7 @@ enum InstructCategory: string
             self::PostBody => 'Текст поста',
             self::PostSeo => 'SEO поста',
             self::CategorySeo => 'SEO категории',
+            self::CitySeo => 'SEO города',
         };
     }
 

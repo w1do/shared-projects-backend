@@ -38,6 +38,7 @@ export const CONSOLE_TEXTS = {
   "console.nav.research": "Ресёрч",
   "console.nav.instructs": "Инструкции",
   "console.nav.seo": "SEO",
+  "console.nav.cities": "Города",
   "console.nav.payments": "Транзакции оплат",
   "console.nav.subscriptions": "Подписки",
   "console.nav.plans": "Тарифные планы",
@@ -63,6 +64,7 @@ export const CONSOLE_TEXTS = {
   "console.tasks.kind.project_buildout": "Сборка проекта",
   "console.tasks.kind.media_import": "Импорт медиа",
   "console.tasks.kind.seo_rebuild": "Пересборка SEO",
+  "console.tasks.kind.city_seo_adaptation": "Адаптация SEO городов",
   "console.tasks.stage.preparing": "Подготовка темы",
   "console.tasks.stage.ai_request": "Запрос к ИИ",
   "console.tasks.stage.assembling": "Сборка блоков",
@@ -1005,6 +1007,61 @@ export const CONSOLE_TEXTS = {
   "console.seo.rebuild.failed": "Пересборка SEO не удалась",
   "console.seo.rebuild.start-failed": "Не удалось запустить пересборку SEO",
 
+  // Города проекта: состав справочника, SEO города и AI-адаптация
+  "console.cities.description":
+    "Города справочника платформы: какие включены в проекте, их SEO и адаптация под тематику.",
+  "console.cities.empty": "Городов пока нет. Справочник наполняется командой city:sync.",
+  "console.cities.load-more": "Показать ещё",
+  "console.cities.filter.search": "Поиск по названию",
+  "console.cities.filter.region": "Регион",
+  "console.cities.filter.all": "Все",
+  "console.cities.filter.state": "Включённость",
+  "console.cities.filter.enabled": "Только включённые",
+  "console.cities.filter.disabled": "Только выключенные",
+  "console.cities.filter.sort": "Сортировка",
+  "console.cities.filter.direction": "Порядок",
+  "console.cities.sort.population": "По населению",
+  "console.cities.sort.name": "По названию",
+  "console.cities.direction.asc": "По возрастанию",
+  "console.cities.direction.desc": "По убыванию",
+  "console.cities.table.name": "Город",
+  "console.cities.table.region": "Регион",
+  "console.cities.table.population": "Население",
+  "console.cities.table.enabled": "Включён",
+  "console.cities.table.seo": "SEO",
+  "console.cities.seo.filled": "Заполнено",
+  "console.cities.seo.empty": "Не заполнено",
+  "console.cities.toggle.failed": "Не удалось изменить состав городов",
+  "console.cities.bulk.enable-all": "Включить все",
+  "console.cities.bulk.enable-all-title": "Включить все города справочника?",
+  "console.cities.bulk.enable-all-description":
+    "Все города справочника станут включёнными в этом проекте.",
+  "console.cities.bulk.reset": "Вернуться к 10 крупнейшим",
+  "console.cities.bulk.reset-title": "Вернуться к 10 крупнейшим городам?",
+  "console.cities.bulk.reset-description":
+    "Включёнными останутся 10 крупнейших по населению, остальные будут выключены.",
+  "console.cities.bulk.done": "Включённых городов: {count}",
+  "console.cities.bulk.failed": "Не удалось выполнить массовое действие",
+  "console.cities.seo.title": "SEO города",
+  "console.cities.seo.hint":
+    "Поля страницы города для этого проекта. У другого проекта тот же город описан по-своему.",
+  "console.cities.seo.saved": "SEO города сохранено",
+  "console.cities.seo.save-failed": "Не удалось сохранить SEO города",
+  "console.cities.seo.read-only": "Нет права на изменение: SEO открыто на просмотр.",
+  "console.cities.adapt.action": "AI: адаптировать под проект",
+  "console.cities.adapt.title": "Адаптация SEO городов",
+  "console.cities.adapt.description":
+    "Платформа заполнит SEO включённых городов под указанную тематику.",
+  "console.cities.adapt.topic": "Тематика",
+  "console.cities.adapt.topic-required": "Укажите тематику: у проекта она не задана.",
+  "console.cities.adapt.affected": "Затрагиваются включённые города: {count}",
+  "console.cities.adapt.submit": "Запустить",
+  "console.cities.adapt.started": "Адаптация SEO городов запущена",
+  "console.cities.adapt.running": "Идёт адаптация SEO городов",
+  "console.cities.adapt.finished": "Адаптация SEO городов завершена",
+  "console.cities.adapt.failed": "Адаптация SEO городов не удалась",
+  "console.cities.adapt.start-failed": "Не удалось запустить адаптацию SEO городов",
+
   // Оплата: транзакции
   "console.payments.description":
     "Платежи проекта: подтверждение счетов и возвраты.",
@@ -1302,6 +1359,8 @@ export const CONSOLE_TEXTS = {
     "Настройки проекта: профиль, сервисы, локализация и доступ.",
   "console.meta.seo-description":
     "SEO-поля контента проекта: просмотр, правка и пересборка по AI.",
+  "console.meta.cities-description":
+    "Города проекта: состав, SEO города и адаптация SEO по AI.",
   "console.meta.payments-description":
     "Транзакции оплат проекта: подтверждение и возвраты.",
   "console.meta.subscriptions-description":

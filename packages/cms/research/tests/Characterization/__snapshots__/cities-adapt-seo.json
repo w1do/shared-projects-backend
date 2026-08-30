@@ -1,0 +1,18 @@
+{
+    "status": 202,
+    "content_type": "application/json",
+    "body": {
+        "data": {
+            "id": "<int>",
+            "kind": "city_seo_adaptation",
+            "state": "queued",
+            "stage": null,
+            "subject_type": "project",
+            "subject_id": "<string>",
+            "failure_reason": null,
+            "queued_at": "<string>",
+            "started_at": null,
+            "finished_at": null
+        }
+    }
+}

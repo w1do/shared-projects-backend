@@ -26,6 +26,7 @@ const VISIBLE = [
   "Ресёрч",
   "Инструкции",
   "SEO",
+  "Города",
   "Транзакции оплат",
   "Подписки",
   "Тарифные планы",
@@ -39,7 +40,14 @@ const VISIBLE = [
 ];
 
 /** Группа «Контент» целиком: она появляется и исчезает вместе с сервисом. */
-const CONTENT_GROUP = ["Блог", "Категории", "Ресёрч", "Инструкции", "SEO"];
+const CONTENT_GROUP = [
+  "Блог",
+  "Категории",
+  "Ресёрч",
+  "Инструкции",
+  "SEO",
+  "Города",
+];
 
 /** Группа «Оплата» целиком, включая разделы лицензирования. */
 const PAY_GROUP = [
@@ -90,12 +98,16 @@ function sidebarItems(page: Page) {
  * (`count()`, затем `nth(i)`) ловил уже отсоединённые узлы: после гидрации
  * сайдбар перерисовывается снимком разделов, до него меню на миг полное.
  */
-async function navGroupSummary(page: Page): Promise<Array<{ label: string; links: number }>> {
+async function navGroupSummary(
+  page: Page,
+): Promise<Array<{ label: string; links: number }>> {
   return navGroups(page)
     .filter({ has: page.locator('[data-sidebar="group-label"]') })
     .evaluateAll((groups) =>
       groups.map((group) => ({
-        label: (group.querySelector('[data-sidebar="group-label"]')?.textContent ?? "").trim(),
+        label: (
+          group.querySelector('[data-sidebar="group-label"]')?.textContent ?? ""
+        ).trim(),
         links: group.querySelectorAll('a[href^="/admin"]').length,
       })),
     );
@@ -103,12 +115,16 @@ async function navGroupSummary(page: Page): Promise<Array<{ label: string; links
 
 /** Названия пунктов меню — для сравнения состава целиком. */
 async function sidebarTitles(page: Page): Promise<string[]> {
-  const titles = (await sidebarItems(page).allInnerTexts()).map((t) => t.trim()).filter(Boolean);
+  const titles = (await sidebarItems(page).allInnerTexts())
+    .map((t) => t.trim())
+    .filter(Boolean);
   return [...new Set(titles)];
 }
 
 test.describe("состав меню", () => {
-  test("супер-администратор видит только разделы с поддержкой платформы", async ({ page }) => {
+  test("супер-администратор видит только разделы с поддержкой платформы", async ({
+    page,
+  }) => {
     await page.goto("/admin");
 
     const items = sidebarItems(page);
@@ -131,21 +147,30 @@ test.describe("состав меню", () => {
     await page.goto("/admin");
     // Сначала дожидаемся устоявшегося состава: до применения снимка разделов
     // меню полное, и пустых групп в нём не бывает — проверять было бы нечего.
-    await expect.poll(() => sidebarTitles(page), { timeout: 10_000 }).toEqual(VISIBLE);
+    await expect
+      .poll(() => sidebarTitles(page), { timeout: 10_000 })
+      .toEqual(VISIBLE);
 
     const groups = await navGroupSummary(page);
     expect(groups.length, "группы навигации найдены").toBeGreaterThan(0);
 
     for (const { label, links } of groups) {
-      expect(links, `группа «${label}» не отображается пустой`).toBeGreaterThan(0);
+      expect(links, `группа «${label}» не отображается пустой`).toBeGreaterThan(
+        0,
+      );
     }
   });
 
-  test("быстрые действия удалённых разделов не предлагаются", async ({ page }) => {
+  test("быстрые действия удалённых разделов не предлагаются", async ({
+    page,
+  }) => {
     await page.goto("/admin");
     await expect(sidebarItems(page).first()).toBeVisible();
 
-    const body = await page.locator('[data-sidebar="sidebar"]').first().innerText();
+    const body = await page
+      .locator('[data-sidebar="sidebar"]')
+      .first()
+      .innerText();
 
     for (const action of [
       "Добавить товар",
@@ -154,13 +179,17 @@ test.describe("состав меню", () => {
       "Создать коллекцию",
       "Запустить кампанию",
     ]) {
-      expect(body, `действие «${action}» не предлагается`).not.toContain(action);
+      expect(body, `действие «${action}» не предлагается`).not.toContain(
+        action,
+      );
     }
   });
 });
 
 test.describe("доступ к маршрутам", () => {
-  test("адрес удалённого раздела отвечает как несуществующий", async ({ page }) => {
+  test("адрес удалённого раздела отвечает как несуществующий", async ({
+    page,
+  }) => {
     const response = await page.goto("/admin/products");
 
     expect(response?.status()).toBe(404);
@@ -185,16 +214,24 @@ test.describe("реакция на состав сервисов проекта"
       // именно повторный вход, а не перезагрузка страницы.
       // storageState задаётся явно пустым: контекст не должен унаследовать
       // сохранённый вход, иначе `/login` сразу уводит на `/admin`.
-      const context = await browser.newContext({ baseURL: env.baseUrl, storageState: undefined });
+      const context = await browser.newContext({
+        baseURL: env.baseUrl,
+        storageState: undefined,
+      });
       const page = await context.newPage();
 
       try {
         await signIn(page);
 
-        const titles = (await sidebarItems(page).allInnerTexts()).map((t) => t.trim());
+        const titles = (await sidebarItems(page).allInnerTexts()).map((t) =>
+          t.trim(),
+        );
 
         for (const section of CONTENT_GROUP) {
-          expect(titles, `${section} ушёл вместе с сервисом content`).not.toContain(section);
+          expect(
+            titles,
+            `${section} ушёл вместе с сервисом content`,
+          ).not.toContain(section);
         }
         expect(titles, "разделы ядра остались").toContain("Настройки");
 
@@ -242,17 +279,26 @@ test.describe("переключение сервисов из консоли", (
 
       // Выключение отражается в меню сразу — без перезагрузки и повторного входа.
       await toggle.click();
-      await expect.poll(() => sidebarTitles(page), { timeout: 10_000 }).toEqual(WITHOUT_CONTENT);
+      await expect
+        .poll(() => sidebarTitles(page), { timeout: 10_000 })
+        .toEqual(WITHOUT_CONTENT);
 
       // Состояние сохранено платформой: после перезагрузки галочка выключена.
       await page.reload();
       await page.getByRole("tab", { name: /Сервисы|Services/ }).click();
-      await expect(serviceSwitch(page, "content")).toHaveAttribute("data-state", "unchecked");
-      await expect.poll(() => sidebarTitles(page), { timeout: 10_000 }).toEqual(WITHOUT_CONTENT);
+      await expect(serviceSwitch(page, "content")).toHaveAttribute(
+        "data-state",
+        "unchecked",
+      );
+      await expect
+        .poll(() => sidebarTitles(page), { timeout: 10_000 })
+        .toEqual(WITHOUT_CONTENT);
 
       // Включение возвращает разделы так же сразу.
       await serviceSwitch(page, "content").click();
-      await expect.poll(() => sidebarTitles(page), { timeout: 10_000 }).toEqual(VISIBLE);
+      await expect
+        .poll(() => sidebarTitles(page), { timeout: 10_000 })
+        .toEqual(VISIBLE);
     } finally {
       // Страховка: упавший сценарий не должен оставить проект без content.
       await setService(token, "content", true);
@@ -283,7 +329,9 @@ test.describe("переключение сервисов из консоли", (
       await expect(toggle).toHaveAttribute("data-state", "checked");
 
       await toggle.click();
-      await expect.poll(() => sidebarTitles(page), { timeout: 10_000 }).toEqual(WITHOUT_PAY);
+      await expect
+        .poll(() => sidebarTitles(page), { timeout: 10_000 })
+        .toEqual(WITHOUT_PAY);
 
       // Прямой адрес раздела лицензирования закрыт вместе с оплатой.
       await page.goto("/admin/licenses");
@@ -291,7 +339,9 @@ test.describe("переключение сервисов из консоли", (
 
       await openServicesTab(page);
       await serviceSwitch(page, "pay").click();
-      await expect.poll(() => sidebarTitles(page), { timeout: 10_000 }).toEqual(VISIBLE);
+      await expect
+        .poll(() => sidebarTitles(page), { timeout: 10_000 })
+        .toEqual(VISIBLE);
     } finally {
       await setService(token, "pay", true);
       // Тот же кэш интроспекции, что и у content: без ожидания следующий

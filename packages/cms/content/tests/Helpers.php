@@ -33,6 +33,7 @@ function actingAsContentOperator(string $projectId = 'proj-1', array $permission
     'content.pages.view', 'content.pages.manage',
     'content.categories.view', 'content.categories.manage',
     'content.seo.manage', 'content.media.view', 'content.media.manage',
+    'content.cities.view', 'content.cities.manage',
 ], array $services = ['content'], array $locales = ['en', 'ru']): array
 {
     $token = new IntrospectionResult(

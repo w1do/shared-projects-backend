@@ -14,11 +14,12 @@ final class UpsertSeoHandler
     {
         /** @var SeoMeta $seo */
         $seo = $command->model->seo()->firstOrNew([]);
-        $seo->project_id = $command->model->project_id;
+        // Справочный город проекту не принадлежит: project_id проставит контекст.
+        $seo->project_id ??= $command->model->getAttribute('project_id');
         $seo->fill($command->data->toArray());
         $seo->save();
 
-        RegenerateSitemapJob::dispatch($command->model->project_id);
+        RegenerateSitemapJob::dispatch($seo->project_id);
 
         return $seo;
     }

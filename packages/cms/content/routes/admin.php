@@ -34,6 +34,15 @@ Route::prefix('api/admin/v1/projects/{project}/content')->group(function () use 
     Route::get('pages/{page}/revisions', [Admin\PageController::class, 'revisions'])->middleware($authorize('content.pages.view'));
     Route::post('pages/{page}/revisions/{revision}/restore', [Admin\PageController::class, 'restore'])->middleware($authorize('content.pages.manage'));
 
+    Route::get('cities', [Admin\CityController::class, 'index'])->middleware($authorize('content.cities.view'));
+    Route::get('cities/regions', [Admin\CityController::class, 'regions'])->middleware($authorize('content.cities.view'));
+    Route::post('cities/enable-all', [Admin\CityController::class, 'enableAll'])->middleware($authorize('content.cities.manage'));
+    Route::post('cities/reset', [Admin\CityController::class, 'reset'])->middleware($authorize('content.cities.manage'));
+    Route::put('cities/{city}', [Admin\CityController::class, 'update'])->whereNumber('city')->middleware($authorize('content.cities.manage'));
+    // SEO города — часть управления городами, а не отдельная поверхность (Decision Д8).
+    Route::get('cities/{city}/seo', [Admin\CityController::class, 'showSeo'])->whereNumber('city')->middleware($authorize('content.cities.view'));
+    Route::put('cities/{city}/seo', [Admin\CityController::class, 'updateSeo'])->whereNumber('city')->middleware($authorize('content.cities.manage'));
+
     Route::get('seo', [Admin\SeoCatalogController::class, 'index'])->middleware($authorize('content.seo.manage'));
     Route::get('seo/{type}/{id}', [Admin\SeoController::class, 'show'])->middleware($authorize('content.seo.manage'));
     Route::put('seo/{type}/{id}', [Admin\SeoController::class, 'update'])->middleware($authorize('content.seo.manage'));

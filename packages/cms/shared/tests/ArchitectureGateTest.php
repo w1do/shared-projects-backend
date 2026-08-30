@@ -213,3 +213,46 @@ test('arch: no empty stub directories inside packages', function () {
 
     expect($violations)->toBe([]);
 });
+
+test('arch: business tables carry project_id, non-tenant tables are listed exceptions', function () {
+    $root = cmsPackagesRoot();
+
+    // Таблицы вне tenant-изоляции — осознанные исключения, а не пропуск.
+    // Справочник регионов и городов общий на платформу (Decision Д1 change
+    // content-cities-and-regions): проектное состояние живёт в project_cities.
+    $exceptions = [
+        'regions' => 'справочник платформы: регион одинаков во всех проектах',
+        'cities' => 'справочник платформы: город одинаков во всех проектах',
+        'admins' => 'операторы платформы, а не данные проекта',
+        'projects' => 'сами проекты',
+        'permissions' => 'каталог прав платформы',
+        'role_has_permissions' => 'связка каталога прав',
+        'personal_access_tokens' => 'токены оператора платформы',
+        'service_manifests' => 'манифесты сервисов платформы',
+        'category_post' => 'связка проектных таблиц',
+        'taggables' => 'связка проектных таблиц',
+        'feature_plan' => 'связка платформенных таблиц тарифов',
+        'payment_webhook_events' => 'сырые уведомления провайдера до разбора',
+        'license_installations' => 'установки лицензии на стороне клиента',
+    ];
+
+    $violations = [];
+
+    foreach (modulePackages() as $pkg) {
+        foreach (glob("{$root}/{$pkg}/database/migrations/*.php") ?: [] as $path) {
+            $source = (string) file_get_contents($path);
+            $blocks = preg_split("/Schema::create\('([^']+)'/", $source, -1, PREG_SPLIT_DELIM_CAPTURE);
+
+            for ($i = 1; $i < count($blocks); $i += 2) {
+                $table = $blocks[$i];
+                $body = explode('Schema::', $blocks[$i + 1])[0];
+
+                if (! str_contains($body, 'project_id') && ! array_key_exists($table, $exceptions)) {
+                    $violations[] = "таблица без project_id и без объявленного исключения: {$table} ({$path})";
+                }
+            }
+        }
+    }
+
+    expect($violations)->toBe([]);
+});

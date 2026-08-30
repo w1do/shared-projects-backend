@@ -56,6 +56,14 @@ function contentRouteCoverageCoveredPairs(): array
         'DELETE api/admin/v1/projects/{project}/content/posts/{post}/revisions/{revision}',       // content/PostContractTest.php
         'POST api/admin/v1/projects/{project}/content/posts/{post}/status',                       // content/PostContractTest.php, content/PublicContractTest.php
         'GET api/admin/v1/projects/{project}/content/tasks',                                       // content/TaskContractTest.php
+        'GET api/admin/v1/projects/{project}/content/cities',                                    // content/CityContractTest.php
+        'GET api/admin/v1/projects/{project}/content/cities/regions',                            // content/CityContractTest.php
+        'POST api/admin/v1/projects/{project}/content/cities/enable-all',                        // content/CityContractTest.php
+        'POST api/admin/v1/projects/{project}/content/cities/reset',                             // content/CityContractTest.php
+        'PUT api/admin/v1/projects/{project}/content/cities/{city}',                             // content/CityContractTest.php
+        'GET api/admin/v1/projects/{project}/content/cities/{city}/seo',                         // content/CityContractTest.php
+        'PUT api/admin/v1/projects/{project}/content/cities/{city}/seo',                         // content/CityContractTest.php
+        'POST api/admin/v1/projects/{project}/content/cities/adapt-seo',                         // research/ResearchContractTest.php
         'GET api/admin/v1/projects/{project}/content/seo',                                        // content/SeoContractTest.php
         'POST api/admin/v1/projects/{project}/content/seo/rebuild',                                // research/ResearchContractTest.php
         'GET api/admin/v1/projects/{project}/content/seo/{type}/{id}',                            // content/SeoContractTest.php
@@ -87,6 +95,8 @@ function contentRouteCoverageCoveredPairs(): array
         'GET api/admin/v1/projects/{project}/content/buildout',                                           // research/ResearchContractTest.php
         'POST api/admin/v1/projects/{project}/content/buildout',                                          // research/ResearchContractTest.php
         'GET api/v1/content/categories',                                                          // content/PublicContractTest.php
+        'GET api/v1/content/cities',                                                              // content/CityContractTest.php
+        'GET api/v1/content/cities/{slug}',                                                       // content/CityContractTest.php
         'GET api/v1/content/pages/{slug}',                                                        // content/PublicContractTest.php
         'GET api/v1/content/posts',                                                               // content/PublicContractTest.php
         'GET api/v1/content/posts/{slug}',                                                        // content/PublicContractTest.php

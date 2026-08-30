@@ -93,7 +93,7 @@ test('presets name the instruct categories they apply to', function () {
         );
     }
 
-    expect($byKey['seo'])->toBe([InstructCategory::PostSeo->value])
+    expect($byKey['seo'])->toBe([InstructCategory::PostSeo->value, InstructCategory::CitySeo->value])
         ->and($byKey['post'])->toBe([InstructCategory::PostBody->value])
         ->and($byKey['categories'])->toBe([
             InstructCategory::CategoryTree->value,
@@ -144,7 +144,7 @@ test('schema presets endpoint returns the catalog', function () {
 
     expect(array_column($response->json('data'), 'key'))->toBe(['categories', 'post', 'seo']);
 
-    $response->assertJsonPath('data.2.categories', [InstructCategory::PostSeo->value]);
+    $response->assertJsonPath('data.2.categories', [InstructCategory::PostSeo->value, InstructCategory::CitySeo->value]);
 });
 
 test('schema presets are the same for every project', function () {

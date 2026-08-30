@@ -18,6 +18,7 @@ export const CONSOLE_SECTION_KEYS = [
   "research",
   "instructs",
   "seo",
+  "cities",
   "payments",
   "subscriptions",
   "plans",
@@ -50,6 +51,7 @@ export const SECTION_REQUIREMENTS: Record<ConsoleSectionKey, SectionRequirement>
   instructs: { service: "content", permission: "content.instructs.view" },
   // У SEO нет отдельного права просмотра: платформа объявляет только manage.
   seo: { service: "content", permission: "content.seo.manage" },
+  cities: { service: "content", permission: "content.cities.view" },
   payments: { service: "pay", permission: "pay.payments.view" },
   subscriptions: { service: "pay", permission: "pay.subscriptions.view" },
   plans: { service: "pay", permission: "pay.plans.view" },

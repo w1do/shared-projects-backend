@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Cms\Research\Presentation\Http\Api\V1\Controllers\CitySeoAdaptationController;
 use Cms\Research\Presentation\Http\Api\V1\Controllers\ImageSearchController;
 use Cms\Research\Presentation\Http\Api\V1\Controllers\PostGenerationController;
 use Cms\Research\Presentation\Http\Api\V1\Controllers\PostRebuildController;
@@ -32,6 +33,9 @@ Route::prefix('api/admin/v1/projects/{project}')->group(function () use ($author
         Route::post('posts/{post}/rebuild', [PostRebuildController::class, 'store'])->whereNumber('post')->middleware($authorize('content.posts.manage'));
 
         Route::post('seo/rebuild', [SeoRebuildController::class, 'store'])->middleware($authorize('content.seo.manage'));
+
+        // SEO городов адаптируется под тематику проекта — правом раздела городов.
+        Route::post('cities/adapt-seo', [CitySeoAdaptationController::class, 'store'])->middleware($authorize('content.cities.manage'));
 
         // Подбор изображения живёт рядом с интеграцией поисковой службы,
         // а закрыт правом на медиа: импорт найденного идёт в медиатеку проекта.

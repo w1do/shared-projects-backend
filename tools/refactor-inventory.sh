@@ -94,6 +94,25 @@ report "$(grep -rn 'setPermissionsTeamId' packages/cms/*/src --include=*.php 2>/
     "setPermissionsTeamId вне общего резолвера прав"
 report "$(grep -rn 'use Cms\\Content\\Domain\\Models' packages/cms/localization/src --include=*.php 2>/dev/null | wc -l | tr -d ' ')" 0 \
     "импорты моделей content внутри localization (нарушение границ)"
+# Tenant-изоляция: бизнес-таблица обязана нести project_id. Исключения —
+# справочник платформы (regions, cities), платформенные таблицы и связки;
+# их состав с причинами закреплён гейтом packages/cms/shared/tests/ArchitectureGateTest.php.
+TENANT_EXCEPTIONS='^(regions|cities|admins|projects|permissions|role_has_permissions|personal_access_tokens|service_manifests|category_post|taggables|feature_plan|payment_webhook_events|license_installations)$'
+tables_without_project=$(awk '
+    FNR == 1 { if (table != "" && !has) print table; table = ""; has = 0 }
+    /Schema::create\(/ {
+        if (table != "" && !has) print table
+        match($0, /Schema::create\(.[^\x27]+./)
+        table = substr($0, RSTART + 16, RLENGTH - 17)
+        has = 0
+        next
+    }
+    /project_id/ { has = 1 }
+    END { if (table != "" && !has) print table }
+' packages/cms/*/database/migrations/*.php 2>/dev/null | grep -Ev "$TENANT_EXCEPTIONS" | wc -l | tr -d ' ')
+report "$tables_without_project" 0 \
+    "таблицы без project_id вне объявленных исключений"
+
 # Policies вводятся точечно (Decision 5): только там, где есть per-record проверки.
 report "$(for m in auth pay; do [ -d "packages/cms/$m/src/Domain/Policies" ] || echo x; done | wc -l | tr -d ' ')" 0 \
     "пакеты с per-record проверками (auth, pay) без Domain/Policies/"

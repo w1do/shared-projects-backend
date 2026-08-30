@@ -34,6 +34,9 @@ $COMPOSE exec -T -w /var/www/apps/pay-service pay-service php artisan manifest:p
 # licensing живёт в pay-service; сигнатура отдельная — manifest:publish занят PayManifest
 $COMPOSE exec -T -w /var/www/apps/pay-service pay-service php artisan manifest:publish-licensing
 
+echo "== sync cities directory"
+$COMPOSE exec -T -w /var/www/apps/content-service content-service php artisan city:sync
+
 echo "== sync permissions"
 $COMPOSE exec -T -w /var/www/apps/auth-service auth-service php artisan permissions:sync
 

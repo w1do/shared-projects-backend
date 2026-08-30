@@ -357,6 +357,30 @@ test('contract: seo rebuild rejected without the seo permission', function () {
     ResponseSnapshot::assertMatches($response, 'seo-rebuild-403');
 });
 
+test('contract: city seo adaptation start', function () {
+    seedResearchContractFixtures();
+
+    $response = $this->postJson(
+        '/api/admin/v1/projects/proj-1/content/cities/adapt-seo',
+        ['topic' => 'доставка бензина'],
+        researchContractHeaders(array_merge(RESEARCH_CONTRACT_PERMS, ['content.cities.manage'])),
+    );
+
+    ResponseSnapshot::assertMatches($response, 'cities-adapt-seo');
+});
+
+test('contract: city seo adaptation rejected without a topic', function () {
+    seedResearchContractFixtures();
+
+    $response = $this->postJson(
+        '/api/admin/v1/projects/proj-1/content/cities/adapt-seo',
+        [],
+        researchContractHeaders(array_merge(RESEARCH_CONTRACT_PERMS, ['content.cities.manage'])),
+    );
+
+    ResponseSnapshot::assertMatches($response, 'cities-adapt-seo-422');
+});
+
 test('contract: project topics index', function () {
     seedResearchContractFixtures();
 

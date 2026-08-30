@@ -14,6 +14,7 @@ import {
   Package,
   RefreshCw,
   Globe,
+  MapPin,
 } from "lucide-react";
 
 import { t } from "@/lib/admin/console-texts";
@@ -71,6 +72,12 @@ export const sections = [
         url: "/admin/seo",
         icon: Globe,
         section: "seo",
+      },
+      {
+        title: t("console.nav.cities"),
+        url: "/admin/cities",
+        icon: MapPin,
+        section: "cities",
       },
     ],
   },

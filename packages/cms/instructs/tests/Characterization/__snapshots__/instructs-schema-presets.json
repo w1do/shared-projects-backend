@@ -102,7 +102,8 @@
                 "title": "SEO-поля материала",
                 "entity": "seo",
                 "categories": [
-                    "post_seo"
+                    "post_seo",
+                    "city_seo"
                 ],
                 "fields": [
                     {

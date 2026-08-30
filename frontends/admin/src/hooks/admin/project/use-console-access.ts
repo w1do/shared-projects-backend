@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getBootstrap } from "@/lib/admin/data-source/platform/auth";
 import {
   canGeneratePosts,
+  canManageCities,
   canManageInstructs,
   canManageMedia,
   canManageProject,
@@ -20,6 +21,7 @@ export type ConsoleAccess = {
   canManageInstructs: boolean;
   canGeneratePosts: boolean;
   canManageMedia: boolean;
+  canManageCities: boolean;
   /** Признак супер-админа платформы: он заводит новые проекты. */
   isSuperAdmin: boolean;
 };
@@ -39,6 +41,7 @@ export function useConsoleAccessQuery() {
         canManageInstructs: canManageInstructs(permissions),
         canGeneratePosts: canGeneratePosts(permissions),
         canManageMedia: canManageMedia(permissions),
+        canManageCities: canManageCities(permissions),
         isSuperAdmin: bootstrap.user?.is_super_admin === true,
       };
     },

@@ -14,4 +14,5 @@ enum BackgroundTaskKind: string
     case ProjectBuildout = 'project_buildout';
     case MediaImport = 'media_import';
     case SeoRebuild = 'seo_rebuild';
+    case CitySeoAdaptation = 'city_seo_adaptation';
 }

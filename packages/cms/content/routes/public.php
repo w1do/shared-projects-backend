@@ -13,6 +13,8 @@ Route::prefix('api/v1/content')->middleware($public)->group(function () {
     Route::get('posts/{slug}', [PublicContentController::class, 'post']);
     Route::get('pages/{slug}', [PublicContentController::class, 'page']);
     Route::get('categories', [PublicContentController::class, 'categories']);
+    Route::get('cities', [PublicContentController::class, 'cities']);
+    Route::get('cities/{slug}', [PublicContentController::class, 'city']);
 });
 
 Route::middleware($public)->group(function () {
