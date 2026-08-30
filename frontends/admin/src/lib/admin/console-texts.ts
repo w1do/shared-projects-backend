@@ -348,6 +348,18 @@ export const CONSOLE_TEXTS = {
 
   "console.blogs.form.featured": "Закрепить сверху раздела",
 
+  // Блог: пересборка поста через AI (режим api)
+  "console.blogs.rebuild.title": "Пересборка через AI",
+  "console.blogs.rebuild.description":
+    "Заголовок, содержимое и SEO будут написаны заново по материалам базы знаний. Адрес, категории, теги, изображения и статус останутся прежними.",
+  "console.blogs.rebuild.action": "Пересобрать через AI",
+  "console.blogs.rebuild.confirm-title": "Пересобрать пост через AI?",
+  "console.blogs.rebuild.confirm": "Пересобрать",
+  "console.blogs.rebuild.cancel": "Отмена",
+  "console.blogs.rebuild.started": "Пересборка запущена.",
+  "console.blogs.rebuild.start-failed": "Не удалось запустить пересборку.",
+  "console.blogs.rebuild.finished": "Пост пересобран.",
+
   // Блог: статус-машина поста и ревизии (режим api)
   "console.blogs.lifecycle.title": "Статус поста",
   "console.blogs.lifecycle.publish": "Опубликовать",

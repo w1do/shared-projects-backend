@@ -17,6 +17,7 @@ import {
   BlogFormBody,
 } from "@/components/pages/blogs/sections/blog-form";
 import { PostLifecycleCard } from "./PostLifecycleCard";
+import { PostRebuildCard } from "./PostRebuildCard";
 
 interface EditBlogFormProps {
   slug: string;
@@ -41,8 +42,12 @@ export function EditBlogForm({ slug, initialArticle = null }: EditBlogFormProps)
   });
 
   // Страница клиентская: статья приходит после первого рендера, и один только
-  // defaultValues оставил бы форму пустой. Перезаполняем по смене идентичности.
-  const articleKey = article?.id ?? "";
+  // defaultValues оставил бы форму пустой. Ключ собран из содержимого поста:
+  // после пересборки через AI форма показывает новый текст, а не тот, с
+  // которым её открыли.
+  const articleKey = article
+    ? [article.id, article.title, ...(article.blocks ?? []).map((block) => block.markdown)].join("\u0000")
+    : "";
   const { reset } = methods;
   React.useEffect(() => {
     if (!article) return;
@@ -108,7 +113,14 @@ export function EditBlogForm({ slug, initialArticle = null }: EditBlogFormProps)
             isSubmitting={isSubmitting}
           />
 
-          <BlogFormBody sidebarExtra={<PostLifecycleCard article={article} />} />
+          <BlogFormBody
+            sidebarExtra={
+              <>
+                <PostLifecycleCard article={article} />
+                <PostRebuildCard articleId={article.id} />
+              </>
+            }
+          />
         </div>
       </form>
     </FormProvider>

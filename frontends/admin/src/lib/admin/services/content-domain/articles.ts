@@ -74,6 +74,11 @@ export async function restoreArticleRevision(id: string, revisionId: string): Pr
   await adminMutations.restoreArticleRevision(id, revisionId);
 }
 
+/** Запуск пересборки поста через AI: работа уходит в очередь платформы. */
+export async function rebuildArticle(id: string): Promise<void> {
+  await adminMutations.rebuildArticle(id);
+}
+
 /** Удаление версии из истории поста: сам пост не меняется. */
 export async function deleteArticleRevision(id: string, revisionId: string): Promise<void> {
   await adminMutations.deleteArticleRevision(id, revisionId);

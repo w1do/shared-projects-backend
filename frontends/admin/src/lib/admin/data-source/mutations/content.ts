@@ -89,6 +89,7 @@ export const contentMutations = {
   listArticleRevisions: (id: string) => platformContent.listPostRevisions(Number(id)),
   deleteArticleRevision: (id: string, revisionId: string) =>
     platformContent.deletePostRevision(Number(id), Number(revisionId)),
+  rebuildArticle: (id: string) => platformContent.rebuildPost(Number(id)),
   createPromotion: (body: {
     code: string;
     title: string;

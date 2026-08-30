@@ -6,6 +6,7 @@ import {
   adminApiSend,
   adminApiUpload,
 } from "../api-client";
+import type { PlatformTask } from "./tasks";
 import type {
   PlatformCategory,
   PlatformImageResult,
@@ -84,6 +85,13 @@ export function restorePostRevision(id: number, revisionId: number) {
       method: "POST",
     },
   );
+}
+
+/** Пересборка текста поста через AI: платформа отвечает задачей реестра. */
+export function rebuildPost(id: number) {
+  return adminApiSend<PlatformTask>(`${base}/posts/${id}/rebuild`, {
+    method: "POST",
+  });
 }
 
 export function deletePostRevision(id: number, revisionId: number) {
