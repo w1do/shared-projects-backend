@@ -123,4 +123,4 @@ export function emptySchemaField(index: number): SchemaField {
   };
 }
 
-export { jsonSchemaToFields } from "./schema-reader";
+export { jsonSchemaToFields } from "./schema-reader.ts";

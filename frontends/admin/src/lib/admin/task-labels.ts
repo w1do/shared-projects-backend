@@ -1,5 +1,5 @@
-import { t, type ConsoleTextKey } from "@/lib/admin/console-texts";
-import type { PlatformTask } from "@/lib/admin/data-source/platform/tasks";
+import { t, type ConsoleTextKey } from "./console-texts.ts";
+import type { PlatformTask } from "./data-source/platform/tasks.ts";
 
 /**
  * Подписи фоновой задачи для оператора. Ключи платформы (вид работы, этап,

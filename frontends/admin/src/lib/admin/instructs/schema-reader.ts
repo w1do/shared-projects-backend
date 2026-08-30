@@ -13,7 +13,7 @@ import {
   type ScalarFieldType,
   type SchemaField,
   type SchemaFieldsResult,
-} from "./schema-fields";
+} from "./schema-fields.ts";
 
 /** Узел JSON Schema → поле; `null` означает «редактор это не представляет». */
 function nodeToField(
