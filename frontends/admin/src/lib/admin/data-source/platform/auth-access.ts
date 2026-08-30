@@ -77,17 +77,31 @@ export function putServiceSettings(
 }
 
 /** Настройки сайта проекта: язык и валюты по умолчанию (auth-service). */
+/** Допустимые значения настроек: платформа отдаёт их вместе со значениями. */
+export type PlatformSiteSettingsOptions = {
+  project_types: string[];
+  timezones: string[];
+  currencies: string[];
+  locales: string[];
+};
+
 export type PlatformSiteSettings = {
+  project_type: string;
+  timezone: string;
   language: string;
   currency_default: string;
   currencies: string[];
+  options: PlatformSiteSettingsOptions;
 };
+
+/** Тело записи: перечни допустимых значений платформа не принимает. */
+export type PlatformSiteSettingsInput = Omit<PlatformSiteSettings, "options">;
 
 export function getSiteSettings() {
   return adminApiGet<PlatformSiteSettings>(`${base}/site-settings`);
 }
 
-export function putSiteSettings(body: PlatformSiteSettings) {
+export function putSiteSettings(body: PlatformSiteSettingsInput) {
   return adminApiSend<PlatformSiteSettings>(`${base}/site-settings`, {
     method: "PUT",
     body,

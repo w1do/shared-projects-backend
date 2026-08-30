@@ -16,7 +16,11 @@ export interface PageView<T> {
  * Страница, которую можно показать: пересобранный список читается с начала,
  * а страница за пределами списка приводится к последней существующей.
  */
-export function nextPage(page: number, listChanged: boolean, totalPages: number): number {
+export function nextPage(
+  page: number,
+  listChanged: boolean,
+  totalPages: number,
+): number {
   if (listChanged) return 1;
 
   return Math.min(Math.max(page, 1), totalPages);

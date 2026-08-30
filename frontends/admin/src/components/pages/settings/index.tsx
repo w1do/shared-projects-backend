@@ -10,7 +10,6 @@ import { useConsoleText } from "@/lib/admin/use-console-text";
 import { cn } from "@/lib/utils";
 
 import { GeneralSection } from "./sections/GeneralSection";
-import { SiteLanguageSection } from "./sections/SiteLanguageSection";
 import { PaymentsSection } from "./sections/PaymentsSection";
 import { LanguagesSection } from "./sections/LanguagesSection";
 import { ServicesSection } from "./sections/ServicesSection";
@@ -29,11 +28,10 @@ export default function SettingsPage({
 } = {}) {
   const t = useConsoleText();
   const hasSeed = initialSettings !== undefined;
-  const { data, isPending } = useStoreSettingsQuery({
+  const { isPending } = useStoreSettingsQuery({
     initialData: hasSeed ? initialSettings : undefined,
   });
 
-  const settings = data ?? initialSettings;
   const showSkeleton = hasSeed ? false : isPending;
 
   return (
@@ -86,10 +84,7 @@ export default function SettingsPage({
             </TabsList>
 
             <TabsContent value="general">
-              <div className="flex flex-col gap-8">
-                {settings && <GeneralSection initial={settings.general} />}
-                <SiteLanguageSection />
-              </div>
+              <GeneralSection />
             </TabsContent>
             <TabsContent value="payments">
               <PaymentsSection />

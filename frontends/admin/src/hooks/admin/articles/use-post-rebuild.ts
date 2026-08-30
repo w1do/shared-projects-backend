@@ -31,7 +31,9 @@ export function usePostRebuild(articleId: string) {
   React.useEffect(() => {
     // Задача закончилась — пост перечитывается, и форма показывает новый текст.
     if (wasRunning.current && !runningTask) {
-      void queryClient.invalidateQueries({ queryKey: adminQueryKeys.articles.all });
+      void queryClient.invalidateQueries({
+        queryKey: adminQueryKeys.articles.all,
+      });
       toast.success(t("console.blogs.rebuild.finished"));
     }
     wasRunning.current = runningTask !== undefined;
@@ -41,7 +43,9 @@ export function usePostRebuild(articleId: string) {
     mutationFn: () => rebuildArticle(articleId),
     onSuccess: async () => {
       toast.success(t("console.blogs.rebuild.started"));
-      await queryClient.invalidateQueries({ queryKey: adminQueryKeys.tasks.all });
+      await queryClient.invalidateQueries({
+        queryKey: adminQueryKeys.tasks.all,
+      });
     },
     onError: (error: Error) =>
       toast.error(error.message || t("console.blogs.rebuild.start-failed")),

@@ -13,7 +13,10 @@ export interface PaginationState<T> extends PageView<T> {
  * Пагинация списка раздела: страница, размер страницы и срез данных.
  * Раздел подключает её одной строкой и передаёт результат в `DataTableFooter`.
  */
-export function usePagination<T>(items: T[], initialPageSize = 8): PaginationState<T> {
+export function usePagination<T>(
+  items: T[],
+  initialPageSize = 8,
+): PaginationState<T> {
   const [page, setPage] = React.useState(1);
   const [pageSize, setPageSizeState] = React.useState(initialPageSize);
 

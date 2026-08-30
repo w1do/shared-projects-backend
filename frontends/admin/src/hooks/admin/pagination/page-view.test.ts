@@ -3,7 +3,8 @@ import { test } from "node:test";
 
 import { nextPage, pageView } from "./page-view.ts";
 
-const items = (count: number) => Array.from({ length: count }, (_, index) => index + 1);
+const items = (count: number) =>
+  Array.from({ length: count }, (_, index) => index + 1);
 
 test("смена фильтра возвращает оператора на первую страницу", () => {
   assert.equal(nextPage(3, true, 5), 1);

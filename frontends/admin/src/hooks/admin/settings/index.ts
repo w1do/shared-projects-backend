@@ -1,5 +1,4 @@
 export { useStoreSettingsQuery } from "./use-settings-query";
-export { useSaveSettingsSectionMutation } from "./use-settings-mutations";
 export {
   useProjectServicesQuery,
   useToggleServiceMutation,
@@ -16,6 +15,7 @@ export {
   useProjectListQuery,
 } from "./use-payment-providers";
 export {
+  useSaveGeneralSettingsMutation,
   useSiteSettingsQuery,
   useUpdateSiteSettingsMutation,
 } from "./use-site-settings";

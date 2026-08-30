@@ -754,43 +754,33 @@ export const CONSOLE_TEXTS = {
   "console.settings.save": "Сохранить изменения",
   "console.settings.save-failed": "Не удалось сохранить настройки.",
 
-  // Настройки: профиль магазина
-  "console.settings.general.title": "Профиль магазина",
-  "console.settings.general.description":
-    "Публичные данные, контакты и региональные значения по умолчанию для витрины.",
-  "console.settings.general.store-name": "Название магазина",
-  "console.settings.general.support-email": "Email поддержки",
-  "console.settings.general.phone": "Телефон",
-  "console.settings.general.currency": "Валюта",
+  // Настройки: главные настройки сайта
+  "console.settings.general.title": "Главные настройки сайта",
+  "console.settings.general.description": "Настройки сайта, управление данными",
+  "console.settings.general.site-name": "Название сайта",
+  "console.settings.general.site-description": "Описание сайта",
+  "console.settings.general.project-type": "Тип проекта",
+  "console.settings.general.project-type-blog": "Блог",
+  "console.settings.general.project-type-shop": "Интернет-магазин",
+  "console.settings.general.project-type-corporate": "Корпоративный сайт",
+  "console.settings.general.project-type-landing": "Лендинг",
   "console.settings.general.timezone": "Часовой пояс",
-  "console.settings.general.weight-unit": "Единица веса",
-  "console.settings.general.storefront-url": "Адрес витрины",
-  "console.settings.general.store-description": "Описание магазина",
-  "console.settings.general.saved": "Профиль магазина обновлён.",
-  "console.settings.general.language-title": "Язык по умолчанию",
-  "console.settings.general.language-description":
-    "Язык интерфейса и локализаций проекта по умолчанию.",
+  "console.settings.general.currencies": "Валюты",
+  "console.settings.general.currency": "Валюта по умолчанию",
   "console.settings.general.default-language": "Язык по умолчанию",
-  "console.settings.general.language-saved": "Язык по умолчанию: {locale}.",
-  "console.settings.general.validation.store-name-required":
-    "Укажите название магазина.",
-  "console.settings.general.validation.store-name-max":
-    "Название магазина — не больше 80 символов.",
-  "console.settings.general.validation.email-required":
-    "Укажите email поддержки.",
-  "console.settings.general.validation.email-invalid":
-    "Введите корректный email.",
-  "console.settings.general.validation.phone-required": "Укажите телефон.",
-  "console.settings.general.validation.phone-max":
-    "Телефон — не больше 40 символов.",
+  "console.settings.general.saved": "Настройки сайта сохранены.",
+  "console.settings.general.validation.name-required": "Укажите название сайта.",
+  "console.settings.general.validation.name-max":
+    "Название сайта — не больше 80 символов.",
   "console.settings.general.validation.description-max":
     "Описание — не больше 500 символов.",
-  "console.settings.general.validation.currency": "Выберите валюту.",
+  "console.settings.general.validation.project-type": "Выберите тип проекта.",
   "console.settings.general.validation.timezone": "Выберите часовой пояс.",
-  "console.settings.general.validation.weight-unit":
-    "Выберите единицу веса.",
-  "console.settings.general.validation.storefront-url":
-    "Введите корректный адрес витрины.",
+  "console.settings.general.validation.currencies": "Выберите хотя бы одну валюту.",
+  "console.settings.general.validation.currency": "Выберите валюту по умолчанию.",
+  "console.settings.general.validation.currency-in-list":
+    "Валюта по умолчанию должна входить в выбранные валюты.",
+  "console.settings.general.validation.language": "Выберите язык по умолчанию.",
 
   // Настройки: платежи
   "console.settings.payments.title": "Платёжная система",
@@ -870,19 +860,6 @@ export const CONSOLE_TEXTS = {
     "Выберите допустимый тайм-аут сессии.",
 
   // Настройки: значения списков
-  "console.settings.option.currency-usd": "USD — доллар США",
-  "console.settings.option.currency-eur": "EUR — евро",
-  "console.settings.option.currency-gbp": "GBP — фунт стерлингов",
-  "console.settings.option.currency-vnd": "VND — вьетнамский донг",
-  "console.settings.option.timezone-los-angeles":
-    "Тихоокеанское время — Лос-Анджелес",
-  "console.settings.option.timezone-new-york": "Восточное время — Нью-Йорк",
-  "console.settings.option.timezone-london": "GMT — Лондон",
-  "console.settings.option.timezone-paris": "CET — Париж",
-  "console.settings.option.timezone-ho-chi-minh": "ICT — Хошимин",
-  "console.settings.option.timezone-tokyo": "JST — Токио",
-  "console.settings.option.weight-kg": "Килограммы (кг)",
-  "console.settings.option.weight-lb": "Фунты (lb)",
   "console.settings.option.timeout-15": "15 минут",
   "console.settings.option.timeout-30": "30 минут",
   "console.settings.option.timeout-60": "1 час",
