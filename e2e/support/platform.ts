@@ -61,20 +61,37 @@ export async function setService(token: string, service: string, enabled: boolea
   await json(response, `Переключение сервиса ${service}`);
 }
 
+/** Маршрут, закрытый гейтом сервиса: по нему и проверяется его доступность. */
+const SERVICE_PROBE: Record<string, string> = {
+  content: "content/categories",
+  pay: "pay/plans",
+};
+
 /**
- * Ждёт, пока `content` снова отвечает этому токену.
+ * Ждёт, пока сервис снова отвечает этому токену.
  *
  * Включение сервиса auth-service разносит по остальным фоновой задачей
- * (`/internal/cache-bust`), а до неё content отвечает 404 по прежнему снимку
- * интроспекции — снимок кэшируется на 90 секунд. Сценарий, который трогал
- * сервис, обязан дождаться, иначе следующий получит 404 на ровном месте.
+ * (`/internal/cache-bust`), а до неё гейт отвечает 404 по прежнему снимку
+ * интроспекции — снимок кэшируется на 90 секунд и живёт по токену. Сценарий,
+ * который трогал сервис, обязан дождаться, иначе следующий получит 404 на
+ * ровном месте.
  */
-export async function waitForContentService(token: string, timeoutMs = 20_000): Promise<void> {
+export async function waitForService(
+  token: string,
+  service: string,
+  timeoutMs = 20_000,
+): Promise<void> {
+  const probe = SERVICE_PROBE[service];
+
+  if (!probe) {
+    throw new Error(`Для сервиса ${service} не задан проверочный маршрут.`);
+  }
+
   const deadline = Date.now() + timeoutMs;
 
   while (Date.now() < deadline) {
     const response = await fetch(
-      `${env.baseUrl}/api/admin/v1/projects/${env.projectKey}/content/categories`,
+      `${env.baseUrl}/api/admin/v1/projects/${env.projectKey}/${probe}`,
       {
         headers: { Authorization: `Bearer ${token}`, Accept: "application/json" },
         cache: "no-store",
@@ -85,13 +102,13 @@ export async function waitForContentService(token: string, timeoutMs = 20_000): 
 
     // 404 — снимок интроспекции ещё старый; остальное к ожиданию не относится
     if (response.status !== 404) {
-      throw new Error(`Проверка content вернула ${response.status}: ${await response.text()}`);
+      throw new Error(`Проверка ${service} вернула ${response.status}: ${await response.text()}`);
     }
 
     await new Promise((resolve) => setTimeout(resolve, 200));
   }
 
-  throw new Error("Сервис content не вернулся в строй: маршруты всё ещё отвечают 404.");
+  throw new Error(`Сервис ${service} не вернулся в строй: маршруты всё ещё отвечают 404.`);
 }
 
 /**

@@ -3,7 +3,7 @@ import { expect, test } from "@playwright/test";
 import {
   operatorToken,
   setService,
-  waitForContentService,
+  waitForService,
   withServiceDisabled,
 } from "../support/platform";
 import { sessionToken, signIn } from "../support/session";
@@ -247,7 +247,7 @@ test.describe("переключение сервисов из консоли", (
       // Включение доходит до content-service фоновой задачей: пока она не
       // прошла, его маршруты отвечают 404 по прежнему снимку интроспекции.
       // Ждём именно токеном браузера — снимок кэшируется по токену.
-      await waitForContentService(await sessionToken(page));
+      await waitForService(await sessionToken(page), "content");
     }
   });
 
@@ -282,6 +282,9 @@ test.describe("переключение сервисов из консоли", (
       await expect.poll(() => sidebarTitles(page), { timeout: 10_000 }).toEqual(VISIBLE);
     } finally {
       await setService(token, "pay", true);
+      // Тот же кэш интроспекции, что и у content: без ожидания следующий
+      // сценарий получит 404 на маршрутах оплаты.
+      await waitForService(await sessionToken(page), "pay");
     }
   });
 
