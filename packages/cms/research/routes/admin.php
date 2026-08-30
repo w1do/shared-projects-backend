@@ -8,6 +8,7 @@ use Cms\Research\Presentation\Http\Api\V1\Controllers\PostRebuildController;
 use Cms\Research\Presentation\Http\Api\V1\Controllers\ProjectBuildoutController;
 use Cms\Research\Presentation\Http\Api\V1\Controllers\ResearchController;
 use Cms\Research\Presentation\Http\Api\V1\Controllers\ResearchTopicController;
+use Cms\Research\Presentation\Http\Api\V1\Controllers\SeoRebuildController;
 use Cms\Shared\AuthClient\Middleware\AuthorizeOperator;
 use Cms\Shared\AuthClient\Middleware\EnsureServiceEnabled;
 use Illuminate\Support\Facades\Route;
@@ -29,6 +30,8 @@ Route::prefix('api/admin/v1/projects/{project}')->group(function () use ($author
 
         Route::post('posts/generate', [PostGenerationController::class, 'store'])->middleware($authorize('content.posts.manage'));
         Route::post('posts/{post}/rebuild', [PostRebuildController::class, 'store'])->whereNumber('post')->middleware($authorize('content.posts.manage'));
+
+        Route::post('seo/rebuild', [SeoRebuildController::class, 'store'])->middleware($authorize('content.seo.manage'));
 
         // Подбор изображения живёт рядом с интеграцией поисковой службы,
         // а закрыт правом на медиа: импорт найденного идёт в медиатеку проекта.

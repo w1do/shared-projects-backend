@@ -53,6 +53,9 @@ function fakePostAi(array $tags = ['седаны', 'обзор'], ?array $blocks
             'title' => 'Топ-10 седанов 2026',
             'description' => 'Подборка десяти седанов 2026 года',
             'keywords' => 'седаны, автомобили, 2026',
+            'og_title' => 'Топ-10 седанов',
+            'og_description' => 'Десять седанов 2026 года',
+            'twitter_card' => 'summary_large_image',
         ],
     ]);
 }

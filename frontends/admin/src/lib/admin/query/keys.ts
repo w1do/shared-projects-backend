@@ -45,6 +45,27 @@ export const adminQueryKeys = {
         filter?.subjectId ?? "",
       ] as const,
   },
+  seo: {
+    all: ["admin", "seo"] as const,
+    catalog: (filters?: { type?: string; sort?: string; direction?: string }) =>
+      [
+        "admin",
+        "seo",
+        "catalog",
+        filters?.type ?? "",
+        filters?.sort ?? "",
+        filters?.direction ?? "",
+      ] as const,
+  },
+  pay: {
+    all: ["admin", "pay"] as const,
+    access: () => ["admin", "pay", "access"] as const,
+    payments: (filters?: { status?: string }) =>
+      ["admin", "pay", "payments", filters?.status ?? ""] as const,
+    subscriptions: (filters?: { subjectType?: string }) =>
+      ["admin", "pay", "subscriptions", filters?.subjectType ?? ""] as const,
+    plans: () => ["admin", "pay", "plans"] as const,
+  },
   licensing: {
     all: ["admin", "licensing"] as const,
     organizations: (cursor?: string) =>

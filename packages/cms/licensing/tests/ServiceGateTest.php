@@ -6,9 +6,9 @@ use Cms\Licensing\Domain\Models\Organization;
 use Cms\Licensing\Domain\Models\Plan;
 use Cms\Shared\Tenant\ProjectContext;
 
-// Гейт admin-маршрутов — сервис licensing, не pay (Д3).
+// Гейт admin-маршрутов — сервис pay: отдельного переключателя у лицензирования нет.
 
-test('admin routes return 404 while licensing is disabled and data survives re-enable', function () {
+test('admin routes return 404 while pay is disabled and data survives re-enable', function () {
     $enabled = licensingOperator();
     $this->postJson(licensingUrl('organizations'), [
         'name' => 'Acme', 'contact_first_name' => 'I', 'contact_last_name' => 'P', 'email' => 'a@b.c',
@@ -16,7 +16,7 @@ test('admin routes return 404 while licensing is disabled and data survives re-e
 
     $disabled = actingAsPayOperator(
         permissions: ['pay.licensing.view', 'pay.licensing.manage'],
-        services: ['pay'],
+        services: ['content'],
     );
     $this->getJson(licensingUrl('organizations'), $disabled)->assertNotFound();
 
@@ -26,17 +26,17 @@ test('admin routes return 404 while licensing is disabled and data survives re-e
         ->assertJsonPath('data.0.name', 'Acme');
 });
 
-test('licensing routes work when pay is disabled, pay routes stay gated', function () {
+test('enabling pay opens both licensing and payment routes', function () {
     $headers = actingAsPayOperator(
         permissions: ['pay.licensing.view', 'pay.plans.view'],
-        services: ['licensing'],
+        services: ['pay'],
     );
 
     $this->getJson(licensingUrl('organizations'), $headers)->assertOk();
-    $this->getJson('/api/admin/v1/projects/proj-1/pay/plans', $headers)->assertNotFound();
+    $this->getJson('/api/admin/v1/projects/proj-1/pay/plans', $headers)->assertOk();
 });
 
-test('public activation responds normally while licensing is disabled', function () {
+test('public activation responds normally while pay is disabled', function () {
     // Лицензия выпущена штатно при включённом сервисе.
     $enabled = licensingOperator();
     app(ProjectContext::class)->set('proj-1');
@@ -50,8 +50,8 @@ test('public activation responds normally while licensing is disabled', function
     ], $enabled)->assertCreated()->json('data.key');
     app(ProjectContext::class)->clear();
 
-    // Introspector отдаёт проект без licensing — публичная активация сервисом не гейтится.
-    actingAsPayOperator(services: ['pay']);
+    // Introspector отдаёт проект без pay — публичная активация сервисом не гейтится.
+    actingAsPayOperator(services: ['content']);
 
     $response = $this->postJson('/api/v1/pay/licensing/license/activate', [
         'key' => $key,

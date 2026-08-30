@@ -7,8 +7,8 @@ import type {
 
 export type { LicensesPathFilters, LicenseStatusFilter };
 
-export type { LicensingCursorPage } from "./licensing-page";
-export { getCursorPage } from "./licensing-page";
+export type { LicensingCursorPage } from "./cursor-page";
+export { getCursorPage } from "./cursor-page";
 
 export type PlatformLicensingOrganization = {
   id: number;

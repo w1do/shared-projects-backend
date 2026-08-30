@@ -6,29 +6,11 @@ import { t } from "@/lib/admin/console-texts";
 import { adminQueryKeys } from "@/lib/admin/query/keys";
 import { projectBuildout, projectCard } from "@/lib/admin/services";
 
-/** Карточка проекта на дашборде: идентификатор, название, описание, тематика. */
+/** Проект в настройках: идентификатор, название, описание, тематика. */
 export function useProjectCardQuery() {
   return useQuery({
     queryKey: adminQueryKeys.project.card(),
     queryFn: projectCard.get,
-  });
-}
-
-export function useSaveProjectCardMutation() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: (input: { name?: string; description?: string | null }) =>
-      projectCard.save(input),
-    onSuccess: () => {
-      void queryClient.invalidateQueries({
-        queryKey: adminQueryKeys.project.all,
-      });
-      toast.success(t("console.project.saved"));
-    },
-    onError: (error: Error) => {
-      toast.error(error.message);
-    },
   });
 }
 

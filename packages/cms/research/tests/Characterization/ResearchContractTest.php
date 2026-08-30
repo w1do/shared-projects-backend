@@ -336,6 +336,27 @@ test('contract: post rebuild rejected without the posts permission', function ()
     ResponseSnapshot::assertMatches($response, 'posts-rebuild-403');
 });
 
+test('contract: seo rebuild start', function () {
+    seedResearchContractFixtures();
+    Post::factory()->create(['title' => 'Старый заголовок', 'slug' => 'staryj-zagolovok']);
+
+    $response = $this->postJson(
+        '/api/admin/v1/projects/proj-1/content/seo/rebuild',
+        [],
+        researchContractHeaders(array_merge(RESEARCH_CONTRACT_PERMS, ['content.seo.manage'])),
+    );
+
+    ResponseSnapshot::assertMatches($response, 'seo-rebuild');
+});
+
+test('contract: seo rebuild rejected without the seo permission', function () {
+    seedResearchContractFixtures();
+
+    $response = $this->postJson('/api/admin/v1/projects/proj-1/content/seo/rebuild', [], researchContractHeaders());
+
+    ResponseSnapshot::assertMatches($response, 'seo-rebuild-403');
+});
+
 test('contract: project topics index', function () {
     seedResearchContractFixtures();
 

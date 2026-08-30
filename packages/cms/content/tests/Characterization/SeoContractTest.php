@@ -170,3 +170,31 @@ test('contract: content seo forbidden', function () {
         'seo-show-403',
     );
 });
+
+test('contract: content seo catalog', function () {
+    $headers = actingAsContentOperator();
+    $categoryId = contractSeoCategory($headers);
+    $this->postJson('/api/admin/v1/projects/proj-1/content/posts', [
+        'title' => 'Hello world', 'slug' => 'hello-world',
+    ], $headers)->assertCreated();
+
+    $this->putJson("/api/admin/v1/projects/proj-1/content/seo/category/{$categoryId}", [
+        'title' => 'News — catalog',
+        'description' => 'All the news',
+        'json_ld' => ['@context' => 'https://schema.org', '@type' => 'CollectionPage'],
+    ], $headers)->assertOk();
+
+    ResponseSnapshot::assertMatches(
+        $this->getJson('/api/admin/v1/projects/proj-1/content/seo?sort=type&direction=asc', $headers),
+        'seo-catalog',
+    );
+});
+
+test('contract: content seo catalog validation error', function () {
+    $headers = actingAsContentOperator();
+
+    ResponseSnapshot::assertMatches(
+        $this->getJson('/api/admin/v1/projects/proj-1/content/seo?type=widget&sort=colour', $headers),
+        'seo-catalog-422',
+    );
+});

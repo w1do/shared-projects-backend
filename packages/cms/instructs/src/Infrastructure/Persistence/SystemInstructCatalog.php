@@ -101,17 +101,32 @@ final class SystemInstructCatalog
             [
                 'category' => InstructCategory::PostSeo,
                 'title' => 'SEO-поля поста',
-                'rule' => 'Заполни SEO-поля для готового поста: заголовок до 60 символов, описание до 160 символов и ключевые слова через запятую. Опирайся на текст поста, не выдумывай фактов.',
-                'schema' => [
-                    'type' => 'object',
-                    'properties' => [
-                        'title' => ['type' => 'string', 'maxLength' => 60],
-                        'description' => ['type' => 'string', 'maxLength' => 160],
-                        'keywords' => ['type' => 'string'],
-                    ],
-                    'required' => ['title', 'description', 'keywords'],
-                ],
+                'rule' => 'Заполни SEO-поля для готового поста: заголовок до 60 символов, описание до 160 символов, ключевые слова через запятую и поля для соцсетей — заголовок и описание Open Graph, тип карточки Twitter (summary или summary_large_image). Опирайся на текст поста, не выдумывай фактов.',
+                'schema' => self::seoProperties(),
             ],
+            [
+                'category' => InstructCategory::CategorySeo,
+                'title' => 'SEO-поля категории',
+                'rule' => 'Заполни SEO-поля для категории каталога: заголовок до 60 символов, описание до 160 символов, ключевые слова через запятую и поля для соцсетей — заголовок и описание Open Graph, тип карточки Twitter (summary или summary_large_image). Опирайся на название и описание категории, не выдумывай фактов.',
+                'schema' => self::seoProperties(),
+            ],
+        ];
+    }
+
+    /** Схема текстовых SEO-полей: адреса, robots и JSON-LD остаются за оператором. */
+    private static function seoProperties(): array
+    {
+        return [
+            'type' => 'object',
+            'properties' => [
+                'title' => ['type' => 'string', 'maxLength' => 60],
+                'description' => ['type' => 'string', 'maxLength' => 160],
+                'keywords' => ['type' => 'string'],
+                'og_title' => ['type' => 'string', 'maxLength' => 60],
+                'og_description' => ['type' => 'string', 'maxLength' => 160],
+                'twitter_card' => ['type' => 'string', 'enum' => ['summary', 'summary_large_image']],
+            ],
+            'required' => ['title', 'description', 'keywords', 'og_title', 'og_description', 'twitter_card'],
         ];
     }
 

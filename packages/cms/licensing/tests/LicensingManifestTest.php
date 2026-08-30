@@ -12,11 +12,12 @@ test('licensing manifest declares its own key and navigation, permissions stay i
     expect($manifest->key)->toBe('licensing')
         ->and($manifest->permissions)->toBeEmpty()
         ->and($manifest->settings)->toBeEmpty()
-        ->and(collect($manifest->navigation)->pluck('permission'))->toContain('pay.licensing.view');
+        ->and(collect($manifest->navigation)->pluck('permission'))->each->toBe('pay.licensing.view');
 
     // round-trip: навигация доезжает до auth-service в toArray-форме
     $restored = ServiceManifest::fromArray($manifest->toArray());
-    expect(collect($restored->navigation)->pluck('key'))->toContain('licensing');
+    expect(collect($restored->navigation)->pluck('key')->all())
+        ->toBe(['license-plans', 'licenses', 'organizations', 'releases']);
 });
 
 test('manifest:publish-licensing command publishes the licensing manifest', function () {

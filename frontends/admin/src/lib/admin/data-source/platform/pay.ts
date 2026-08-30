@@ -1,3 +1,9 @@
+/**
+ * Pay-API панели. Настройки платежей и провайдеры живут здесь, транзакции,
+ * подписки и тарифные планы — в `pay-billing.ts`; этот модуль остаётся
+ * единой точкой входа.
+ */
+
 import { adminApiGet, adminApiSend } from "../api-client";
 import {
   PAY_BASE,
@@ -88,3 +94,6 @@ export function updatePaymentProvider(
     body: input,
   });
 }
+
+export * from "./pay-types";
+export * from "./pay-billing";

@@ -10,9 +10,7 @@
         "permissions": [],
         "key_type": null,
         "scopes": [],
-        "enabled_services": [
-            "licensing"
-        ],
+        "enabled_services": [],
         "locales": [
             "ru"
         ]

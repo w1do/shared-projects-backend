@@ -8,8 +8,9 @@ use Illuminate\Support\Facades\Route;
 /*
  * Admin-маршруты licensing живут под pay-префиксом gateway (Д6):
  * /api/admin/v1/projects/{project}/pay/licensing/* — Caddyfile не меняется.
+ * Гейт — сервис pay: отдельного переключателя лицензирования нет.
  */
-$authorize = fn (string $permission) => [AuthorizeOperator::class.':'.$permission, EnsureServiceEnabled::class.':licensing'];
+$authorize = fn (string $permission) => [AuthorizeOperator::class.':'.$permission, EnsureServiceEnabled::class.':pay'];
 
 Route::prefix('api/admin/v1/projects/{project}/pay/licensing')->group(function () use ($authorize) {
     Route::get('organizations', [Admin\OrganizationController::class, 'index'])->middleware($authorize('pay.licensing.view'));

@@ -31,7 +31,7 @@ final class ServiceController
         security: [['bearerAuth' => []]],
         parameters: [
             new OA\Parameter(name: 'project', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
-            new OA\Parameter(name: 'service', in: 'path', required: true, schema: new OA\Schema(type: 'string', enum: ['content', 'analytics', 'pay', 'licensing'])),
+            new OA\Parameter(name: 'service', in: 'path', required: true, schema: new OA\Schema(type: 'string', enum: ['content', 'analytics', 'pay'])),
         ],
         requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(
             required: ['enabled'],

@@ -12,6 +12,7 @@ enum InstructCategory: string
     case PostTopics = 'post_topics';
     case PostBody = 'post_body';
     case PostSeo = 'post_seo';
+    case CategorySeo = 'category_seo';
 
     public function label(): string
     {
@@ -21,6 +22,7 @@ enum InstructCategory: string
             self::PostTopics => 'Темы постов',
             self::PostBody => 'Текст поста',
             self::PostSeo => 'SEO поста',
+            self::CategorySeo => 'SEO категории',
         };
     }
 

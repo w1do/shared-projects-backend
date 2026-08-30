@@ -13,6 +13,7 @@ use Cms\Pay\Application\Handlers\RefundPaymentHandler;
 use Cms\Pay\Application\Queries\ListPaymentsQuery;
 use Cms\Pay\Domain\Enums\PaymentStatus;
 use Cms\Pay\Domain\Models\Payment;
+use Cms\Pay\Presentation\Http\Api\V1\Requests\Payment\ListPaymentsRequest;
 use Cms\Pay\Presentation\Http\Api\V1\Requests\Payment\RefundPaymentRequest;
 use Cms\Pay\Presentation\Http\Api\V1\Resources\Payment\PaymentCursorCollection;
 use Cms\Pay\Presentation\Http\Api\V1\Resources\Payment\PaymentResource;
@@ -31,12 +32,14 @@ final class PaymentController
         parameters: [
             new OA\Parameter(name: 'project', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
             new OA\Parameter(name: 'cursor', in: 'query', required: false, schema: new OA\Schema(type: 'string')),
+            new OA\Parameter(name: 'status', in: 'query', required: false, schema: new OA\Schema(type: 'string', enum: ['created', 'pending', 'succeeded', 'failed', 'canceled', 'refunded_partial', 'refunded_full'])),
+            new OA\Parameter(name: 'per_page', in: 'query', required: false, schema: new OA\Schema(type: 'integer')),
         ],
         responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')],
     )]
-    public function index(Request $request, ListPaymentsQuery $query): JsonResponse
+    public function index(ListPaymentsRequest $request, ListPaymentsQuery $query): JsonResponse
     {
-        return (new PaymentCursorCollection($query->handle()))->toResponse($request);
+        return (new PaymentCursorCollection($query->handle($request->filter())))->toResponse($request);
     }
 
     /** Ручное подтверждение оплаты по счёту (ManualProvider). */

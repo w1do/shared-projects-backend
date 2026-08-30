@@ -16,11 +16,18 @@ enum ServiceName: string
     /**
      * Сервисы, которые включаются на проект. `auth` в список не входит:
      * без него проект не существует, выключать его нечем и незачем.
+     * `licensing` тоже: модуль открывается вместе с `pay`.
      *
      * @return list<string>
      */
     public static function toggleable(): array
     {
-        return [self::Content->value, self::Analytics->value, self::Pay->value, self::Licensing->value];
+        return [self::Content->value, self::Analytics->value, self::Pay->value];
+    }
+
+    /** Сервис, включённость которого открывает модуль. */
+    public function gate(): self
+    {
+        return $this === self::Licensing ? self::Pay : $this;
     }
 }

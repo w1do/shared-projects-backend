@@ -17,7 +17,7 @@ export function AddCategoryHeader({ isSubmitting }: AddCategoryHeaderProps) {
       description={t("console.categories.add-subtitle")}
       breadcrumbItems={[
         { label: t("console.common.breadcrumb-admin"), href: "/admin" },
-        { label: t("console.nav.group.catalog"), href: "/admin/categories" },
+        { label: t("console.nav.group.content"), href: "/admin/categories" },
         { label: t("console.nav.categories"), href: "/admin/categories" },
         { label: t("console.categories.add") },
       ]}

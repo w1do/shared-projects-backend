@@ -34,6 +34,7 @@ Route::prefix('api/admin/v1/projects/{project}/content')->group(function () use 
     Route::get('pages/{page}/revisions', [Admin\PageController::class, 'revisions'])->middleware($authorize('content.pages.view'));
     Route::post('pages/{page}/revisions/{revision}/restore', [Admin\PageController::class, 'restore'])->middleware($authorize('content.pages.manage'));
 
+    Route::get('seo', [Admin\SeoCatalogController::class, 'index'])->middleware($authorize('content.seo.manage'));
     Route::get('seo/{type}/{id}', [Admin\SeoController::class, 'show'])->middleware($authorize('content.seo.manage'));
     Route::put('seo/{type}/{id}', [Admin\SeoController::class, 'update'])->middleware($authorize('content.seo.manage'));
 

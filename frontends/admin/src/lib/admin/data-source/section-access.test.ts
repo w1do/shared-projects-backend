@@ -10,28 +10,34 @@ import {
 /** Порядок — каталожный (`CONSOLE_SECTION_KEYS`), а не алфавитный. */
 const LIVE = [
   "dashboard",
-  "categories",
-  "customers",
   "blogs",
+  "categories",
   "research",
   "instructs",
+  "seo",
+  "payments",
+  "subscriptions",
+  "plans",
+  "license-plans",
+  "licenses",
+  "organizations",
+  "releases",
+  "customers",
   "team",
   "settings",
-  "licensing",
 ];
 
 /**
  * `bootstrap.services[]` содержит только переключаемые сервисы
- * (`cms-auth.php`: content, analytics, pay, licensing). `auth` — ядро, его там нет никогда.
+ * (`cms-auth.php`: content, analytics, pay). `auth` — ядро, его там нет никогда.
  */
 const ALL_SERVICES = [
   { key: "content", enabled: true },
   { key: "analytics", enabled: true },
   { key: "pay", enabled: true },
-  { key: "licensing", enabled: true },
 ];
 
-test("в консоли ровно девять разделов и у каждого есть требование платформы", () => {
+test("у каждого раздела консоли есть требование платформы", () => {
   assert.deepEqual([...CONSOLE_SECTION_KEYS], LIVE);
   assert.deepEqual(Object.keys(SECTION_REQUIREMENTS).sort(), [...LIVE].sort());
 });
@@ -62,56 +68,83 @@ test("выключенный сервис убирает свои разделы
     permissions: ["*"],
   });
 
-  // Blogs и Categories ушли вместе с `content`; разделы `auth` остались.
+  // Вся группа «Контент» ушла вместе с сервисом; разделы `auth` остались.
   assert.deepEqual(keys, [
     "dashboard",
+    "payments",
+    "subscriptions",
+    "plans",
+    "license-plans",
+    "licenses",
+    "organizations",
+    "releases",
     "customers",
     "team",
     "settings",
-    "licensing",
   ]);
 });
 
-test("licensing виден при включённом сервисе и праве pay.licensing.view", () => {
+test("группа «Оплата» появляется целиком вместе с сервисом pay", () => {
   const keys = visibleSectionKeys({
-    services: [{ key: "licensing", enabled: true }],
-    permissions: ["pay.licensing.view"],
+    services: [{ key: "pay", enabled: true }],
+    permissions: ["*"],
   });
 
-  assert.deepEqual(keys, ["licensing"]);
+  assert.deepEqual(keys, [
+    "payments",
+    "subscriptions",
+    "plans",
+    "license-plans",
+    "licenses",
+    "organizations",
+    "releases",
+    "customers",
+    "team",
+    "settings",
+  ]);
 });
 
-test("выключенный сервис licensing скрывает раздел даже при полном доступе", () => {
+test("выключенная оплата скрывает и лицензирование: отдельного тумблера нет", () => {
   const keys = visibleSectionKeys({
     services: ALL_SERVICES.map((s) =>
-      s.key === "licensing" ? { ...s, enabled: false } : s,
+      s.key === "pay" ? { ...s, enabled: false } : s,
     ),
     permissions: ["*"],
   });
 
-  assert.ok(!keys.includes("licensing"));
+  assert.ok(!keys.includes("licenses"));
+  assert.ok(!keys.includes("payments"));
   assert.ok(keys.includes("settings"));
 });
 
-test("licensing скрыт без права view, сервис при этом включён", () => {
+test("разделы лицензирования видны по праву pay.licensing.view", () => {
   const keys = visibleSectionKeys({
-    services: ALL_SERVICES,
-    permissions: ["pay.licensing.manage", "auth.settings.view"],
+    services: [{ key: "pay", enabled: true }],
+    permissions: ["pay.licensing.view"],
   });
 
-  assert.ok(!keys.includes("licensing"));
-  assert.ok(keys.includes("settings"));
+  assert.deepEqual(keys, [
+    "license-plans",
+    "licenses",
+    "organizations",
+    "releases",
+  ]);
+});
+
+test("раздел SEO закрыт правом content.seo.manage", () => {
+  const keys = visibleSectionKeys({
+    services: [{ key: "content", enabled: true }],
+    permissions: ["content.posts.view"],
+  });
+
+  assert.ok(!keys.includes("seo"));
+  assert.ok(keys.includes("blogs"));
 });
 
 test("разделы ядра `auth` видны, хотя сервиса нет в bootstrap.services[]", () => {
   // Реальный ответ платформы для проекта demo.
   const keys = visibleSectionKeys({
-    services: [
-      { key: "content", enabled: true },
-      { key: "analytics", enabled: true },
-      { key: "pay", enabled: true },
-      { key: "licensing", enabled: true },
-    ],
+    services: ALL_SERVICES,
     permissions: ["*"],
   });
 

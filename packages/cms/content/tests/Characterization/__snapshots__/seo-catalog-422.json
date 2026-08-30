@@ -1,0 +1,19 @@
+{
+    "status": 422,
+    "content_type": "application/json",
+    "body": {
+        "error": {
+            "code": "validation_failed",
+            "message": "The given data was invalid.",
+            "details": {
+                "type": [
+                    "The selected type is invalid."
+                ],
+                "sort": [
+                    "The selected sort is invalid."
+                ]
+            },
+            "trace_id": "<string>"
+        }
+    }
+}

@@ -14,33 +14,27 @@ use Cms\Contracts\Manifest\ServiceManifest;
 
 beforeEach(fn () => syncAuthManifest());
 
-/** @return object{up: callable} миграция бэкфилла licensing */
-function licensingBackfillMigration(): object
+/** @return object{up: callable} миграция включения pay проектам с лицензированием */
+function payForLicensingMigration(): object
 {
-    return require dirname(__DIR__).'/database/migrations/2026_08_28_000000_backfill_licensing_project_service.php';
+    return require dirname(__DIR__).'/database/migrations/2026_08_30_000000_enable_pay_for_licensing_projects.php';
 }
 
-test('licensing is registered as a toggleable service', function () {
-    expect(ServiceName::toggleable())->toContain('licensing')
-        ->and(config('cms-auth.services'))->toContain('licensing');
+test('licensing is not a toggleable service', function () {
+    expect(ServiceName::toggleable())->not->toContain('licensing')
+        ->and(config('cms-auth.services'))->not->toContain('licensing')
+        ->and(ServiceName::Licensing->gate())->toBe(ServiceName::Pay);
 });
 
-test('licensing toggle is accepted by the services API', function () {
+test('licensing toggle is rejected by the services API', function () {
     $admin = Admin::factory()->create();
     createProjectFor($admin, 'lic');
-    $headers = adminHeaders($admin);
 
-    $this->putJson('/api/admin/v1/projects/lic/services/licensing', ['enabled' => false], $headers)
-        ->assertOk()
-        ->assertJsonPath('data.service', 'licensing')
-        ->assertJsonPath('data.enabled', false);
-
-    $this->putJson('/api/admin/v1/projects/lic/services/licensing', ['enabled' => true], $headers)
-        ->assertOk()
-        ->assertJsonPath('data.enabled', true);
+    $this->putJson('/api/admin/v1/projects/lic/services/licensing', ['enabled' => true], adminHeaders($admin))
+        ->assertStatus(422);
 });
 
-test('new project has licensing enabled by default and other services disabled', function () {
+test('services API lists the three toggleable services, all disabled for a new project', function () {
     $admin = Admin::factory()->create();
     createProjectFor($admin, 'fresh');
 
@@ -48,34 +42,36 @@ test('new project has licensing enabled by default and other services disabled',
         ->assertOk()
         ->json('data'))->keyBy('service');
 
-    expect($statuses['licensing']['enabled'])->toBeTrue()
+    expect($statuses->keys()->all())->toEqualCanonicalizing(['content', 'analytics', 'pay'])
         ->and($statuses['content']['enabled'])->toBeFalse()
         ->and($statuses['analytics']['enabled'])->toBeFalse()
         ->and($statuses['pay']['enabled'])->toBeFalse();
 });
 
-test('backfill migration enables licensing idempotently and keeps explicit disable', function () {
-    // Проект «до релиза» — без строки licensing вовсе.
-    $legacy = Project::factory()->create(['key' => 'legacy']);
+test('migration enables pay for projects that had licensing enabled', function () {
+    // Лицензирование включено, оплата выключена — разделы пропали бы без миграции.
+    $withLicensing = Project::factory()->create(['key' => 'lic-on']);
+    ProjectService::create(['project_id' => $withLicensing->id, 'service' => 'licensing', 'enabled' => true]);
+    ProjectService::create(['project_id' => $withLicensing->id, 'service' => 'pay', 'enabled' => false]);
 
-    // Проект с явным выключением — миграция не должна его трогать.
-    $opted = Project::factory()->create(['key' => 'opted-out']);
-    ProjectService::create(['project_id' => $opted->id, 'service' => 'licensing', 'enabled' => false]);
+    // Лицензирование выключено явно — оплату включать не за что.
+    $optedOut = Project::factory()->create(['key' => 'lic-off']);
+    ProjectService::create(['project_id' => $optedOut->id, 'service' => 'licensing', 'enabled' => false]);
 
-    licensingBackfillMigration()->up();
+    payForLicensingMigration()->up();
 
-    expect($legacy->fresh()->enabledServices())->toContain('licensing')
-        ->and($opted->fresh()->enabledServices())->not->toContain('licensing');
+    expect($withLicensing->fresh()->enabledServices())->toContain('pay')
+        ->and($optedOut->fresh()->enabledServices())->not->toContain('pay');
 
-    // Повторный прогон ничего не меняет.
+    // Строки licensing остаются на месте, повторный прогон ничего не добавляет.
     $count = ProjectService::query()->count();
-    licensingBackfillMigration()->up();
+    payForLicensingMigration()->up();
 
     expect(ProjectService::query()->count())->toBe($count)
-        ->and($opted->fresh()->enabledServices())->not->toContain('licensing');
+        ->and(ProjectService::query()->where('service', 'licensing')->count())->toBe(2);
 });
 
-test('bootstrap returns licensing navigation only while the service is enabled', function () {
+test('bootstrap returns licensing navigation only while pay is enabled', function () {
     // Права pay.licensing.* объявляет PayManifest — без него право не попадает
     // в каталог и nav-пункт отфильтровывается даже у owner ('*').
     app(PublishManifestHandler::class)->handle(new PublishManifestCommand(new ServiceManifest(
@@ -89,37 +85,26 @@ test('bootstrap returns licensing navigation only while the service is enabled',
     app(PublishManifestHandler::class)->handle(new PublishManifestCommand(new ServiceManifest(
         key: 'licensing',
         version: '0.1.0',
-        navigation: [new NavigationItem('licensing', 'nav.licensing', '/licensing', 'pay.licensing.view', 'key-round', 63)],
+        navigation: [new NavigationItem('licenses', 'nav.licenses', '/licensing/licenses', 'pay.licensing.view', 'key-round', 64)],
     )));
 
     $admin = Admin::factory()->create();
     createProjectFor($admin, 'boot');
     $headers = adminHeaders($admin);
 
-    // licensing включён по умолчанию — bootstrap отдаёт сервис с навигацией
+    // pay выключен — навигации лицензирования в bootstrap нет
+    $before = collect($this->getJson('/api/admin/v1/bootstrap?project=boot', $headers)->assertOk()->json('data.services'));
+    expect($before->pluck('key'))->not->toContain('licensing');
+
+    $this->putJson('/api/admin/v1/projects/boot/services/pay', ['enabled' => true], $headers)->assertOk();
+
     $services = collect($this->getJson('/api/admin/v1/bootstrap?project=boot', $headers)->assertOk()->json('data.services'));
     $licensing = $services->firstWhere('key', 'licensing');
     expect($licensing)->not->toBeNull()
-        ->and(collect($licensing['navigation'])->pluck('key'))->toContain('licensing');
+        ->and(collect($licensing['navigation'])->pluck('key'))->toContain('licenses');
 
-    $this->putJson('/api/admin/v1/projects/boot/services/licensing', ['enabled' => false], $headers)->assertOk();
+    $this->putJson('/api/admin/v1/projects/boot/services/pay', ['enabled' => false], $headers)->assertOk();
 
     $after = collect($this->getJson('/api/admin/v1/bootstrap?project=boot', $headers)->assertOk()->json('data.services'));
     expect($after->pluck('key'))->not->toContain('licensing');
-});
-
-test('explicit disable of licensing persists and is not re-enabled automatically', function () {
-    $admin = Admin::factory()->create();
-    createProjectFor($admin, 'off');
-    $headers = adminHeaders($admin);
-
-    $this->putJson('/api/admin/v1/projects/off/services/licensing', ['enabled' => false], $headers)->assertOk();
-
-    // Бэкфилл-миграция (повторный деплой) выключение не перезаписывает.
-    licensingBackfillMigration()->up();
-
-    $statuses = collect($this->getJson('/api/admin/v1/projects/off/services', $headers)->assertOk()->json('data'))
-        ->keyBy('service');
-
-    expect($statuses['licensing']['enabled'])->toBeFalse();
 });

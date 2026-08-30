@@ -18,7 +18,7 @@ export function EditCategoryHeader({ categoryName, isSubmitting }: EditCategoryH
       description={t("console.categories.edit.subtitle")}
       breadcrumbItems={[
         { label: t("console.common.breadcrumb-admin"), href: "/admin" },
-        { label: t("console.nav.group.catalog"), href: "/admin/products" },
+        { label: t("console.nav.group.content"), href: "/admin/categories" },
         { label: t("console.nav.categories"), href: "/admin/categories" },
         {
           label: categoryName

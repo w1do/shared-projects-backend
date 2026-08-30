@@ -61,6 +61,20 @@ final class EloquentTaskProgress implements TaskProgress
         });
     }
 
+    public function partial(int $taskId, Throwable $error): void
+    {
+        Log::warning('Фоновая задача завершена частично', [
+            'task_id' => $taskId,
+            'exception' => $error::class,
+            'message' => $error->getMessage(),
+        ]);
+
+        $this->transition($taskId, BackgroundTaskState::Succeeded, function (BackgroundTask $task) use ($error): void {
+            $task->finished_at = now();
+            $task->failure_reason = FailureReason::of($error);
+        });
+    }
+
     public function fail(int $taskId, Throwable $error): void
     {
         Log::error('Фоновая задача отклонена', [

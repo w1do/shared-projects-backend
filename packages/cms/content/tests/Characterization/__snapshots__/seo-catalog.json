@@ -1,0 +1,54 @@
+{
+    "status": 200,
+    "content_type": "application/json",
+    "body": {
+        "data": [
+            {
+                "type": "category",
+                "entity_id": "<int>",
+                "entity_title": "News",
+                "filled": true,
+                "updated_at": "<string>",
+                "seo": {
+                    "title": "News — catalog",
+                    "description": "All the news",
+                    "keywords": null,
+                    "canonical": null,
+                    "robots": null,
+                    "og_title": null,
+                    "og_description": null,
+                    "og_image": null,
+                    "twitter_card": null,
+                    "json_ld": {
+                        "@context": "https://schema.org",
+                        "@type": "CollectionPage"
+                    }
+                }
+            },
+            {
+                "type": "post",
+                "entity_id": "<int>",
+                "entity_title": "Hello world",
+                "filled": false,
+                "updated_at": "<string>",
+                "seo": {
+                    "title": null,
+                    "description": null,
+                    "keywords": null,
+                    "canonical": null,
+                    "robots": null,
+                    "og_title": null,
+                    "og_description": null,
+                    "og_image": null,
+                    "twitter_card": null,
+                    "json_ld": null
+                }
+            }
+        ],
+        "meta": {
+            "per_page": 25,
+            "next_cursor": null,
+            "prev_cursor": null
+        }
+    }
+}

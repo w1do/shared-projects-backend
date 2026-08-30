@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Cms\Auth\Application\Queries;
 
 use Cms\Auth\Application\DTOs\Bootstrap\ServiceNavigationDTO;
+use Cms\Auth\Domain\Enums\ServiceName;
 use Cms\Auth\Domain\Models\ServiceManifestRecord;
 use Cms\Auth\Domain\ValueObjects\PermissionSet;
 use Cms\Contracts\Manifest\NavigationItem;
@@ -32,7 +33,7 @@ final class ServiceNavigationQuery
             $manifest = ServiceManifest::fromArray((array) $record->manifest);
 
             // Выключенный сервис в bootstrap не показываем вообще
-            if (! in_array($manifest->key, $enabledServices, true)) {
+            if (! in_array($this->gateOf($manifest->key), $enabledServices, true)) {
                 continue;
             }
 
@@ -46,6 +47,12 @@ final class ServiceNavigationQuery
         }
 
         return $services;
+    }
+
+    /** Ключ сервиса, включённость которого открывает модуль: `licensing` живёт под `pay`. */
+    private function gateOf(string $key): string
+    {
+        return ServiceName::tryFrom($key)?->gate()->value ?? $key;
     }
 
     /** @return list<array<string, mixed>> */

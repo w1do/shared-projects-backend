@@ -18,17 +18,38 @@ import { env } from "../support/env";
  */
 
 /** Разделы, доступные супер-администратору проекта demo. */
-/** Порядок каталожный: Обзор → Каталог → Продажи → Рабочее пространство. */
+/** Порядок каталожный: Обзор → Контент → Оплата → Рабочее пространство. */
 const VISIBLE = [
   "Дашборд",
-  "Категории",
-  "Клиенты",
-  "Лицензирование",
   "Блог",
+  "Категории",
   "Ресёрч",
   "Инструкции",
+  "SEO",
+  "Транзакции оплат",
+  "Подписки",
+  "Тарифные планы",
+  "Тарифные планы лицензий",
+  "Лицензии",
+  "Организации",
+  "Релизы",
+  "Клиенты",
   "Команда",
   "Настройки",
+];
+
+/** Группа «Контент» целиком: она появляется и исчезает вместе с сервисом. */
+const CONTENT_GROUP = ["Блог", "Категории", "Ресёрч", "Инструкции", "SEO"];
+
+/** Группа «Оплата» целиком, включая разделы лицензирования. */
+const PAY_GROUP = [
+  "Транзакции оплат",
+  "Подписки",
+  "Тарифные планы",
+  "Тарифные планы лицензий",
+  "Лицензии",
+  "Организации",
+  "Релизы",
 ];
 
 /** Разделы склада вёрстки без сервиса платформы — их в консоли нет. */
@@ -142,7 +163,7 @@ test.describe("доступ к маршрутам", () => {
 });
 
 test.describe("реакция на состав сервисов проекта", () => {
-  test("выключение content убирает Блог и Категории после повторного входа", async ({
+  test("выключение content убирает всю группу «Контент» после повторного входа", async ({
     browser,
   }) => {
     const token = await operatorToken();
@@ -160,8 +181,9 @@ test.describe("реакция на состав сервисов проекта"
 
         const titles = (await sidebarItems(page).allInnerTexts()).map((t) => t.trim());
 
-        expect(titles, "Блог ушёл вместе с сервисом content").not.toContain("Блог");
-        expect(titles, "Категории ушли вместе с сервисом content").not.toContain("Категории");
+        for (const section of CONTENT_GROUP) {
+          expect(titles, `${section} ушёл вместе с сервисом content`).not.toContain(section);
+        }
         expect(titles, "разделы ядра остались").toContain("Настройки");
 
         await page.goto("/admin/blogs");
@@ -193,8 +215,8 @@ test.describe("переключение сервисов из консоли", (
     const token = await operatorToken();
     const WITHOUT_CONTENT = [
       "Дашборд",
+      ...PAY_GROUP,
       "Клиенты",
-      "Лицензирование",
       "Команда",
       "Настройки",
     ];
@@ -227,6 +249,49 @@ test.describe("переключение сервисов из консоли", (
       // Ждём именно токеном браузера — снимок кэшируется по токену.
       await waitForContentService(await sessionToken(page));
     }
+  });
+
+  test("выключение pay убирает группу «Оплата» целиком, включая лицензирование", async ({
+    page,
+  }) => {
+    const token = await operatorToken();
+    const WITHOUT_PAY = [
+      "Дашборд",
+      ...CONTENT_GROUP,
+      "Клиенты",
+      "Команда",
+      "Настройки",
+    ];
+
+    try {
+      await openServicesTab(page);
+
+      const toggle = serviceSwitch(page, "pay");
+      await expect(toggle).toBeEnabled();
+      await expect(toggle).toHaveAttribute("data-state", "checked");
+
+      await toggle.click();
+      await expect.poll(() => sidebarTitles(page), { timeout: 10_000 }).toEqual(WITHOUT_PAY);
+
+      // Прямой адрес раздела лицензирования закрыт вместе с оплатой.
+      await page.goto("/admin/licenses");
+      await expect(page).toHaveURL(/\/admin\/unauthorized$/);
+
+      await openServicesTab(page);
+      await serviceSwitch(page, "pay").click();
+      await expect.poll(() => sidebarTitles(page), { timeout: 10_000 }).toEqual(VISIBLE);
+    } finally {
+      await setService(token, "pay", true);
+    }
+  });
+
+  test("отдельного переключателя лицензирования нет", async ({ page }) => {
+    await openServicesTab(page);
+
+    await expect(serviceSwitch(page, "pay")).toBeVisible();
+    await expect(
+      page.locator('[data-testid=services-section] [data-service="licensing"]'),
+    ).toHaveCount(0);
   });
 
   test("ядровой сервис auth не предлагается к выключению", async ({ page }) => {

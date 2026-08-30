@@ -31,6 +31,12 @@ interface TaskProgress
     /** Работа завершена; предмет задачи остаётся тем, с которым её приняли. */
     public function succeed(int $taskId): void;
 
+    /**
+     * Работа завершена, но часть предметов обработать не удалось: состояние
+     * конечное, причина уходит оператору тем же полем, что и при отказе.
+     */
+    public function partial(int $taskId, Throwable $error): void;
+
     /** Задача отклонена: наружу уходит причина, технический след — только в лог. */
     public function fail(int $taskId, Throwable $error): void;
 }

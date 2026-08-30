@@ -43,7 +43,7 @@ export default function CustomersPage({ initialCustomers }: CustomersPageProps =
         description={t("console.customers.subtitle")}
         breadcrumbItems={[
           { label: t("console.common.breadcrumb-admin"), href: "/admin" },
-          { label: t("console.nav.group.commerce"), href: "/admin/orders" },
+          { label: t("console.nav.group.workspace"), href: "/admin/customers" },
           { label: t("console.customers.title") },
         ]}
         actions={

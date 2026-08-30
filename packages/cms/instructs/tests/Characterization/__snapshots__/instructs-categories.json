@@ -22,6 +22,10 @@
             {
                 "value": "post_seo",
                 "label": "SEO поста"
+            },
+            {
+                "value": "category_seo",
+                "label": "SEO категории"
             }
         ]
     }

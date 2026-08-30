@@ -27,8 +27,8 @@ export const CONSOLE_TEXTS = {
 
   // Навигация: группы, пункты меню, быстрые действия
   "console.nav.group.overview": "Обзор",
-  "console.nav.group.catalog": "Каталог",
-  "console.nav.group.commerce": "Продажи",
+  "console.nav.group.content": "Контент",
+  "console.nav.group.payments": "Оплата",
   "console.nav.group.workspace": "Рабочее пространство",
   "console.nav.quick-actions": "Быстрые действия",
   "console.nav.dashboard": "Дашборд",
@@ -37,9 +37,16 @@ export const CONSOLE_TEXTS = {
   "console.nav.blogs": "Блог",
   "console.nav.research": "Ресёрч",
   "console.nav.instructs": "Инструкции",
+  "console.nav.seo": "SEO",
+  "console.nav.payments": "Транзакции оплат",
+  "console.nav.subscriptions": "Подписки",
+  "console.nav.plans": "Тарифные планы",
+  "console.nav.license-plans": "Тарифные планы лицензий",
+  "console.nav.licenses": "Лицензии",
+  "console.nav.organizations": "Организации",
+  "console.nav.releases": "Релизы",
   "console.nav.team": "Команда",
   "console.nav.settings": "Настройки",
-  "console.nav.licensing": "Лицензирование",
   // Фоновые задачи проекта: индикатор в панели и состояние по месту
   "console.tasks.title": "Фоновые задачи",
   "console.tasks.subtitle": "Что платформа делает прямо сейчас и чем закончились последние работы.",
@@ -55,6 +62,7 @@ export const CONSOLE_TEXTS = {
   "console.tasks.kind.research_indexing": "Индексация исследования",
   "console.tasks.kind.project_buildout": "Сборка проекта",
   "console.tasks.kind.media_import": "Импорт медиа",
+  "console.tasks.kind.seo_rebuild": "Пересборка SEO",
   "console.tasks.stage.preparing": "Подготовка темы",
   "console.tasks.stage.ai_request": "Запрос к ИИ",
   "console.tasks.stage.assembling": "Сборка блоков",
@@ -99,6 +107,8 @@ export const CONSOLE_TEXTS = {
   "console.project.cancel": "Отмена",
   "console.project.saved": "Изменения сохранены",
   "console.project.build": "Собрать проект по AI",
+  "console.project.build-description":
+    "AI заполнит описание проекта и соберёт дерево категорий по тематике.",
   "console.project.build-topic-placeholder": "например: автомобили",
   "console.project.build-running": "Сборка идёт…",
   "console.project.build-done": "Сборка завершена",
@@ -935,6 +945,133 @@ export const CONSOLE_TEXTS = {
     "У вас нет права управления сервисами — состояние доступно только для просмотра.",
   "console.settings.services.empty": "Переключаемых сервисов нет.",
 
+  // Контент: раздел SEO
+  "console.seo.description":
+    "SEO-поля постов, страниц и категорий проекта в одной таблице.",
+  "console.seo.empty": "Записей пока нет.",
+  "console.seo.load-more": "Показать ещё",
+  "console.seo.filter.type": "Тип сущности",
+  "console.seo.filter.all": "Все",
+  "console.seo.filter.sort": "Сортировка",
+  "console.seo.filter.direction": "Порядок",
+  "console.seo.sort.type": "По типу",
+  "console.seo.sort.title": "По названию",
+  "console.seo.sort.updated_at": "По дате изменения",
+  "console.seo.direction.asc": "По возрастанию",
+  "console.seo.direction.desc": "По убыванию",
+  "console.seo.type.post": "Пост",
+  "console.seo.type.page": "Страница",
+  "console.seo.type.category": "Категория",
+  "console.seo.table.entity": "Сущность",
+  "console.seo.table.type": "Тип",
+  "console.seo.table.title": "Заголовок",
+  "console.seo.table.description": "Описание",
+  "console.seo.table.keywords": "Ключевые слова",
+  "console.seo.table.canonical": "Канонический адрес",
+  "console.seo.table.robots": "Индексация (robots)",
+  "console.seo.table.og-title": "OG заголовок",
+  "console.seo.table.og-description": "OG описание",
+  "console.seo.table.og-image": "OG картинка",
+  "console.seo.table.twitter-card": "Карточка Twitter",
+  "console.seo.table.json-ld": "JSON-LD",
+  "console.seo.table.state": "Состояние",
+  "console.seo.state.filled": "Заполнено",
+  "console.seo.state.empty": "Не заполнено",
+  "console.seo.json-ld.present": "Задан",
+  "console.seo.form.hint":
+    "Канонический адрес, robots, картинку и JSON-LD задаёт оператор: AI их не трогает.",
+  "console.seo.form.json-invalid": "JSON-LD должен быть объектом JSON",
+  "console.seo.toast.saved": "SEO сохранено",
+  "console.seo.toast.save-failed": "Не удалось сохранить SEO",
+  "console.seo.rebuild.selected": "Пересобрать выбранные",
+  "console.seo.rebuild.all": "Пересобрать всё по AI",
+  "console.seo.rebuild.running": "Идёт пересборка SEO по AI",
+  "console.seo.rebuild.started": "Пересборка SEO запущена",
+  "console.seo.rebuild.finished": "Пересборка SEO завершена",
+  "console.seo.rebuild.failed": "Пересборка SEO не удалась",
+  "console.seo.rebuild.start-failed": "Не удалось запустить пересборку SEO",
+
+  // Оплата: транзакции
+  "console.payments.description":
+    "Платежи проекта: подтверждение счетов и возвраты.",
+  "console.payments.empty": "Платежей пока нет.",
+  "console.payments.load-more": "Показать ещё",
+  "console.payments.filter.status": "Статус",
+  "console.payments.filter.all": "Все",
+  "console.payments.table.payer": "Плательщик",
+  "console.payments.table.amount": "Сумма",
+  "console.payments.table.refunded": "Возвращено",
+  "console.payments.table.status": "Статус",
+  "console.payments.table.provider": "Провайдер",
+  "console.payments.table.created": "Создан",
+  "console.payments.status.created": "Создан",
+  "console.payments.status.pending": "Ожидает оплаты",
+  "console.payments.status.succeeded": "Оплачен",
+  "console.payments.status.failed": "Отклонён",
+  "console.payments.status.canceled": "Отменён",
+  "console.payments.status.refunded_partial": "Возвращён частично",
+  "console.payments.status.refunded_full": "Возвращён полностью",
+  "console.payments.confirm": "Подтвердить оплату",
+  "console.payments.refund": "Вернуть",
+  "console.payments.refund-hint":
+    "Пустая сумма означает полный возврат платежа.",
+  "console.payments.refund-amount": "Сумма возврата",
+  "console.payments.toast.confirmed": "Оплата подтверждена",
+  "console.payments.toast.confirm-failed": "Не удалось подтвердить оплату",
+  "console.payments.toast.refunded": "Возврат оформлен",
+  "console.payments.toast.refund-failed": "Не удалось оформить возврат",
+
+  // Оплата: подписки
+  "console.subscriptions.description":
+    "Подписки проекта: на тарифные планы и на планы лицензий.",
+  "console.subscriptions.empty": "Подписок пока нет.",
+  "console.subscriptions.load-more": "Показать ещё",
+  "console.subscriptions.filter.subject": "Предмет подписки",
+  "console.subscriptions.filter.all": "Все",
+  "console.subscriptions.subject.plan": "Тарифный план",
+  "console.subscriptions.subject.license-plan": "Тарифный план лицензий",
+  "console.subscriptions.table.subscriber": "Подписчик",
+  "console.subscriptions.table.subject": "Предмет",
+  "console.subscriptions.table.subject-type": "Тип предмета",
+  "console.subscriptions.table.status": "Статус",
+  "console.subscriptions.table.period-ends": "Период до",
+  "console.subscriptions.action.cancel": "Отменить подписку",
+  "console.subscriptions.action.resume": "Возобновить подписку",
+  "console.subscriptions.action.pause": "Приостановить подписку",
+  "console.subscriptions.action.delete": "Удалить подписку",
+  "console.subscriptions.toast.changed": "Подписка обновлена",
+  "console.subscriptions.toast.change-failed": "Не удалось изменить подписку",
+
+  // Оплата: тарифные планы подписок
+  "console.plans.description":
+    "Тарифные планы подписок проекта: цена периода и состав возможностей.",
+  "console.plans.empty": "Тарифных планов пока нет.",
+  "console.plans.load-more": "Показать ещё",
+  "console.plans.add": "Добавить план",
+  "console.plans.archive": "В архив",
+  "console.plans.table.code": "Код",
+  "console.plans.table.name": "Название",
+  "console.plans.table.price": "Цена",
+  "console.plans.table.interval": "Период",
+  "console.plans.table.state": "Состояние",
+  "console.plans.state.active": "Действует",
+  "console.plans.state.archived": "В архиве",
+  "console.plans.interval.day": "День",
+  "console.plans.interval.month": "Месяц",
+  "console.plans.interval.year": "Год",
+  "console.plans.form.create-title": "Новый тарифный план",
+  "console.plans.form.edit-title": "Редактирование тарифного плана",
+  "console.plans.form.code": "Код",
+  "console.plans.form.name": "Название",
+  "console.plans.form.price-minor": "Цена (в минорных единицах)",
+  "console.plans.form.currency": "Валюта",
+  "console.plans.form.interval": "Период",
+  "console.plans.toast.created": "Тарифный план создан",
+  "console.plans.toast.updated": "Тарифный план обновлён",
+  "console.plans.toast.save-failed": "Не удалось сохранить тарифный план",
+  "console.plans.toast.archived": "Тарифный план отправлен в архив",
+  "console.plans.toast.archive-failed": "Не удалось отправить план в архив",
+
   // Лицензирование: раздел консоли
   "console.licensing.title": "Лицензирование",
   "console.licensing.description":
@@ -942,10 +1079,14 @@ export const CONSOLE_TEXTS = {
   "console.licensing.read-only":
     "Права ограничены просмотром: изменяющие действия недоступны.",
   "console.licensing.load-more": "Показать ещё",
-  "console.licensing.tabs.organizations": "Организации",
-  "console.licensing.tabs.plans": "Планы",
-  "console.licensing.tabs.licenses": "Лицензии",
-  "console.licensing.tabs.releases": "Релизы",
+  "console.licensing.organizations.description":
+    "Организации-покупатели: анкета, контакты и сфера деятельности.",
+  "console.licensing.plans.description":
+    "Планы поставки: состав возможностей и цена подписки на лицензию.",
+  "console.licensing.licenses.description":
+    "Лицензионные ключи проекта: выпуск, продление, отзыв и установки.",
+  "console.licensing.releases.description":
+    "Каталог релизов продукта: версии, доступные лицензиям проекта.",
 
   // Лицензирование: организации
   "console.licensing.organizations.add": "Добавить организацию",
@@ -1146,8 +1287,22 @@ export const CONSOLE_TEXTS = {
   "console.meta.team-description": "Операторы консоли: роли и доступ.",
   "console.meta.settings-description":
     "Настройки проекта: профиль, сервисы, локализация и доступ.",
-  "console.meta.licensing-description":
-    "Лицензирование: организации, планы поставки и лицензионные ключи.",
+  "console.meta.seo-description":
+    "SEO-поля контента проекта: просмотр, правка и пересборка по AI.",
+  "console.meta.payments-description":
+    "Транзакции оплат проекта: подтверждение и возвраты.",
+  "console.meta.subscriptions-description":
+    "Подписки проекта: на тарифные планы и планы лицензий.",
+  "console.meta.plans-description":
+    "Тарифные планы подписок: цена периода и возможности.",
+  "console.meta.organizations-description":
+    "Организации-покупатели лицензий: анкеты и контакты.",
+  "console.meta.license-plans-description":
+    "Тарифные планы лицензий: состав возможностей и цена.",
+  "console.meta.licenses-description":
+    "Лицензионные ключи проекта: выпуск, продление и отзыв.",
+  "console.meta.releases-description":
+    "Каталог релизов продукта: версии для лицензий проекта.",
 } as const;
 
 export type ConsoleTextKey = keyof typeof CONSOLE_TEXTS;

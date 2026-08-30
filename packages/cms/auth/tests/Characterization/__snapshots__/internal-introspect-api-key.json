@@ -13,7 +13,6 @@
             "collect"
         ],
         "enabled_services": [
-            "licensing",
             "content"
         ],
         "locales": [

@@ -31,7 +31,7 @@ export function CategoriesHeader({ categories }: CategoriesHeaderProps) {
       description={t("console.categories.subtitle")}
       breadcrumbItems={[
         { label: t("console.common.breadcrumb-admin"), href: "/admin" },
-        { label: t("console.nav.group.catalog"), href: "/admin/products" },
+        { label: t("console.nav.group.content"), href: "/admin/categories" },
         { label: t("console.nav.categories") },
       ]}
       actions={

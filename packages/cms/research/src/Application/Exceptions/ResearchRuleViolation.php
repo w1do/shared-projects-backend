@@ -71,6 +71,11 @@ final class ResearchRuleViolation extends ValidationException
         ]);
     }
 
+    public static function seoRebuildAlreadyRunning(): self
+    {
+        return self::withMessages(['entities' => ['SEO rebuild is already running for this project.']]);
+    }
+
     public static function imageSearchUnavailable(): self
     {
         return self::withMessages(['query' => ['The image search service is unavailable or rejected the request.']]);

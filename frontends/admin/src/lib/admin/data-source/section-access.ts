@@ -13,14 +13,21 @@
 /** Все ключи разделов консоли — совпадают с сегментами маршрутов `app/admin/<key>`. */
 export const CONSOLE_SECTION_KEYS = [
   "dashboard",
-  "categories",
-  "customers",
   "blogs",
+  "categories",
   "research",
   "instructs",
+  "seo",
+  "payments",
+  "subscriptions",
+  "plans",
+  "license-plans",
+  "licenses",
+  "organizations",
+  "releases",
+  "customers",
   "team",
   "settings",
-  "licensing",
 ] as const;
 
 export type ConsoleSectionKey = (typeof CONSOLE_SECTION_KEYS)[number];
@@ -38,14 +45,22 @@ export type SectionRequirement = { service: string; permission: string };
 export const SECTION_REQUIREMENTS: Record<ConsoleSectionKey, SectionRequirement> = {
   dashboard: { service: "analytics", permission: "analytics.reports.view" },
   blogs: { service: "content", permission: "content.posts.view" },
+  categories: { service: "content", permission: "content.categories.view" },
   research: { service: "content", permission: "content.research.view" },
   instructs: { service: "content", permission: "content.instructs.view" },
-  categories: { service: "content", permission: "content.categories.view" },
+  // У SEO нет отдельного права просмотра: платформа объявляет только manage.
+  seo: { service: "content", permission: "content.seo.manage" },
+  payments: { service: "pay", permission: "pay.payments.view" },
+  subscriptions: { service: "pay", permission: "pay.subscriptions.view" },
+  plans: { service: "pay", permission: "pay.plans.view" },
+  // Лицензирование включается вместе с оплатой; право — из группы licensing PayManifest'а.
+  "license-plans": { service: "pay", permission: "pay.licensing.view" },
+  licenses: { service: "pay", permission: "pay.licensing.view" },
+  organizations: { service: "pay", permission: "pay.licensing.view" },
+  releases: { service: "pay", permission: "pay.licensing.view" },
   customers: { service: "auth", permission: "auth.users.view" },
   team: { service: "auth", permission: "auth.members.view" },
   settings: { service: "auth", permission: "auth.settings.view" },
-  // Право — из группы licensing PayManifest'а, сервис — собственный ключ licensing.
-  licensing: { service: "licensing", permission: "pay.licensing.view" },
 };
 
 /**

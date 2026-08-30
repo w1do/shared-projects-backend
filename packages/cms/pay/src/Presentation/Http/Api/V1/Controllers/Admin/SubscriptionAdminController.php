@@ -16,6 +16,7 @@ use Cms\Pay\Application\Queries\ListSubscriptionsQuery;
 use Cms\Pay\Domain\Enums\SubscriptionAction;
 use Cms\Pay\Domain\Models\Subscription;
 use Cms\Pay\Presentation\Http\Api\V1\Requests\Subscription\AdminSubscribeRequest;
+use Cms\Pay\Presentation\Http\Api\V1\Requests\Subscription\ListSubscriptionsRequest;
 use Cms\Pay\Presentation\Http\Api\V1\Resources\Subscription\SubscriptionCheckoutResource;
 use Cms\Pay\Presentation\Http\Api\V1\Resources\Subscription\SubscriptionCursorCollection;
 use Cms\Pay\Presentation\Http\Api\V1\Resources\Subscription\SubscriptionResource;
@@ -74,12 +75,14 @@ final class SubscriptionAdminController
         parameters: [
             new OA\Parameter(name: 'project', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
             new OA\Parameter(name: 'cursor', in: 'query', required: false, schema: new OA\Schema(type: 'string')),
+            new OA\Parameter(name: 'subject_type', in: 'query', required: false, schema: new OA\Schema(type: 'string')),
+            new OA\Parameter(name: 'per_page', in: 'query', required: false, schema: new OA\Schema(type: 'integer')),
         ],
         responses: [new OA\Response(response: 200, description: 'OK'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 422, description: 'Validation error')],
     )]
-    public function index(Request $request, ListSubscriptionsQuery $query): JsonResponse
+    public function index(ListSubscriptionsRequest $request, ListSubscriptionsQuery $query): JsonResponse
     {
-        return (new SubscriptionCursorCollection($query->handle()))->toResponse($request);
+        return (new SubscriptionCursorCollection($query->handle($request->filter())))->toResponse($request);
     }
 
     /** action ∈ cancel | resume | pause | delete */
