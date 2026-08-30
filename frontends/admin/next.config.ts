@@ -5,7 +5,8 @@ import type { NextConfig } from "next";
  * на обложку поста. Адрес читается тем же ключом, что и API консоли.
  */
 function platformImagePattern() {
-  const base = process.env.NEXT_PUBLIC_ADMIN_API_BASE_URL ?? "http://localhost:8080";
+  // Пустая переменная в контейнере значит «адрес по умолчанию», а не пустой URL
+  const base = process.env.NEXT_PUBLIC_ADMIN_API_BASE_URL || "http://localhost:8080";
   const url = new URL(base);
 
   return {
