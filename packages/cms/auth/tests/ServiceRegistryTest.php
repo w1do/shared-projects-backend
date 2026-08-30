@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 use Cms\Auth\Application\Commands\PublishManifestCommand;
 use Cms\Auth\Application\Handlers\PublishManifestHandler;
+use Cms\Auth\Domain\Enums\ActorType;
+use Cms\Auth\Domain\Enums\AuditAction;
 use Cms\Auth\Domain\Enums\ServiceName;
 use Cms\Auth\Domain\Models\Admin;
+use Cms\Auth\Domain\Models\AuditLog;
 use Cms\Auth\Domain\Models\Project;
 use Cms\Auth\Domain\Models\ProjectService;
 use Cms\Contracts\Manifest\NavigationItem;
@@ -48,19 +51,39 @@ test('services API lists the three toggleable services, all disabled for a new p
         ->and($statuses['pay']['enabled'])->toBeFalse();
 });
 
-test('migration enables pay for projects that had licensing enabled', function () {
-    // Лицензирование включено, оплата выключена — разделы пропали бы без миграции.
-    $withLicensing = Project::factory()->create(['key' => 'lic-on']);
-    ProjectService::create(['project_id' => $withLicensing->id, 'service' => 'licensing', 'enabled' => true]);
-    ProjectService::create(['project_id' => $withLicensing->id, 'service' => 'pay', 'enabled' => false]);
+/** След включения сервиса оператором: бэкфилл такой записи не оставляет. */
+function auditServiceEnabled(string $projectId, string $service): void
+{
+    AuditLog::create([
+        'project_id' => $projectId,
+        'actor_type' => ActorType::Admin->value,
+        'actor_id' => '1',
+        'action' => AuditAction::ServiceEnabled->value,
+        'subject' => "service:{$service}",
+        'created_at' => now(),
+    ]);
+}
+
+test('migration enables pay only where an operator enabled licensing', function () {
+    // Лицензирование включил оператор, оплата выключена — разделы пропали бы без миграции.
+    $enabledByOperator = Project::factory()->create(['key' => 'lic-on']);
+    ProjectService::create(['project_id' => $enabledByOperator->id, 'service' => 'licensing', 'enabled' => true]);
+    ProjectService::create(['project_id' => $enabledByOperator->id, 'service' => 'pay', 'enabled' => false]);
+    auditServiceEnabled($enabledByOperator->id, 'licensing');
+
+    // Лицензирование проставил бэкфилл: следа оператора нет — оплату не включаем.
+    $backfilled = Project::factory()->create(['key' => 'lic-backfill']);
+    ProjectService::create(['project_id' => $backfilled->id, 'service' => 'licensing', 'enabled' => true]);
 
     // Лицензирование выключено явно — оплату включать не за что.
     $optedOut = Project::factory()->create(['key' => 'lic-off']);
     ProjectService::create(['project_id' => $optedOut->id, 'service' => 'licensing', 'enabled' => false]);
+    auditServiceEnabled($optedOut->id, 'licensing');
 
     payForLicensingMigration()->up();
 
-    expect($withLicensing->fresh()->enabledServices())->toContain('pay')
+    expect($enabledByOperator->fresh()->enabledServices())->toContain('pay')
+        ->and($backfilled->fresh()->enabledServices())->not->toContain('pay')
         ->and($optedOut->fresh()->enabledServices())->not->toContain('pay');
 
     // Строки licensing остаются на месте, повторный прогон ничего не добавляет.
@@ -68,7 +91,7 @@ test('migration enables pay for projects that had licensing enabled', function (
     payForLicensingMigration()->up();
 
     expect(ProjectService::query()->count())->toBe($count)
-        ->and(ProjectService::query()->where('service', 'licensing')->count())->toBe(2);
+        ->and(ProjectService::query()->where('service', 'licensing')->count())->toBe(3);
 });
 
 test('bootstrap returns licensing navigation only while pay is enabled', function () {
