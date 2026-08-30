@@ -49,7 +49,6 @@ export const siteConfig = {
     editorialAuthor: "Aetheria Editorial",
     signInTitle: "Sign in to Ætheria",
     showcaseTitle: "Ætheria Studio",
-    membersPromo: "Ætheria members spend 2.4× more during seasonal drops.",
     stubEyebrow: "Ætheria · Admin",
   },
 } as const;

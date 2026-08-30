@@ -11,7 +11,6 @@ import {
   SidebarGroupContent,
   SidebarGroupLabel,
   SidebarHeader,
-  SidebarFooter,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -25,7 +24,6 @@ import { useVisibleNavigation } from "@/lib/admin/data-source/use-visible-naviga
 import { useConsoleText } from "@/lib/admin/use-console-text";
 import { siteConfig } from "@/lib/site-config";
 import { useAdminModals } from "./modals";
-import { SidebarCampaignBanner } from "./components/SidebarCampaignBanner";
 
 export function AdminSidebar() {
   const pathname = usePathname();
@@ -184,9 +182,6 @@ export function AdminSidebar() {
           </SidebarGroup>
         ))}
       </SidebarContent>
-      <SidebarFooter className="p-4 group-data-[collapsible=icon]:p-2">
-        {currentUserRole !== "staff" && <SidebarCampaignBanner />}
-      </SidebarFooter>
       <SidebarRail />
     </Sidebar>
   );
