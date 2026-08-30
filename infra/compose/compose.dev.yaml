@@ -33,6 +33,12 @@ services:
   pay-worker:
     volumes: *src-mount
 
+  # Тесты analytics идут с хоста (`./tools/cms test`) и ходят в Redis по
+  # 127.0.0.1:6379 — как в CI, где redis поднят сервисом job'а. Только петля.
+  redis:
+    ports:
+      - "127.0.0.1:6379:6379"
+
   docs:
     volumes:
       - ../../openapi/openapi.json:/spec/openapi.json:ro
