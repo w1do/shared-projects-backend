@@ -41,10 +41,12 @@ test('contract: site settings show defaults', function () {
 
 test('contract: site settings update persists values', function () {
     $admin = Admin::factory()->create(['email' => 'op@example.com', 'name' => 'Operator']);
-    $project = createProjectFor($admin, 'site-a');
+    $project = createProjectFor($admin, 'site-a', ['ru', 'en']);
     $headers = adminHeaders($admin);
 
     $updated = $this->putJson("/api/admin/v1/projects/{$project->key}/site-settings", [
+        'project_type' => 'shop',
+        'timezone' => 'Asia/Yekaterinburg',
         'language' => 'en',
         'currency_default' => 'USD',
         'currencies' => ['USD', 'RUB'],
@@ -62,6 +64,8 @@ test('contract: site settings update rejects default currency outside the list',
     $project = createProjectFor($admin, 'site-a');
 
     $response = $this->putJson("/api/admin/v1/projects/{$project->key}/site-settings", [
+        'project_type' => 'blog',
+        'timezone' => 'Europe/Moscow',
         'language' => 'ru',
         'currency_default' => 'USD',
         'currencies' => ['RUB'],
@@ -76,10 +80,42 @@ test('contract: site settings update without manage permission is 403', function
     $viewer = siteSettingContractViewer($project, 'viewer@example.com');
 
     $response = $this->putJson("/api/admin/v1/projects/{$project->key}/site-settings", [
+        'project_type' => 'blog',
+        'timezone' => 'Europe/Moscow',
         'language' => 'ru',
         'currency_default' => 'RUB',
         'currencies' => ['RUB', 'USD'],
     ], adminHeaders($viewer));
 
     ResponseSnapshot::assertMatches($response, 'site-settings-update-403');
+});
+
+test('contract: site settings update rejects unknown project type and timezone', function () {
+    $admin = Admin::factory()->create(['email' => 'op@example.com', 'name' => 'Operator']);
+    $project = createProjectFor($admin, 'site-a');
+
+    $response = $this->putJson("/api/admin/v1/projects/{$project->key}/site-settings", [
+        'project_type' => 'marketplace',
+        'timezone' => 'America/Los_Angeles',
+        'language' => 'ru',
+        'currency_default' => 'RUB',
+        'currencies' => ['RUB'],
+    ], adminHeaders($admin));
+
+    ResponseSnapshot::assertMatches($response, 'site-settings-update-422-type-timezone');
+});
+
+test('contract: site settings update rejects a language outside the project locales', function () {
+    $admin = Admin::factory()->create(['email' => 'op@example.com', 'name' => 'Operator']);
+    $project = createProjectFor($admin, 'site-a');
+
+    $response = $this->putJson("/api/admin/v1/projects/{$project->key}/site-settings", [
+        'project_type' => 'blog',
+        'timezone' => 'Europe/Moscow',
+        'language' => 'en',
+        'currency_default' => 'RUB',
+        'currencies' => ['RUB'],
+    ], adminHeaders($admin));
+
+    ResponseSnapshot::assertMatches($response, 'site-settings-update-422-language');
 });

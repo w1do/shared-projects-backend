@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Cms\Auth\Application\Queries;
 
-use Cms\Auth\Application\DTOs\SiteSettings\SiteSettingsDTO;
+use Cms\Auth\Application\DTOs\SiteSettings\SiteSettingsViewDTO;
 use Cms\Auth\Domain\Settings\SiteSettings;
 use Cms\Shared\Settings\ProjectSettingsProvisioner;
 
@@ -13,13 +13,14 @@ final class GetSiteSettingsQuery
 {
     public function __construct(
         private readonly ProjectSettingsProvisioner $provisioner,
+        private readonly ProjectLocalesQuery $locales,
         private readonly SiteSettings $settings,
     ) {}
 
-    public function handle(): SiteSettingsDTO
+    public function handle(): SiteSettingsViewDTO
     {
         $this->provisioner->ensure(SiteSettings::group(), SiteSettings::defaults());
 
-        return SiteSettingsDTO::fromSettings($this->settings);
+        return SiteSettingsViewDTO::fromSettings($this->settings, $this->locales->handle());
     }
 }

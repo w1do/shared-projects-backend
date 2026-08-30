@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Cms\Auth\Presentation\Http\Api\V1\Resources\SiteSettings;
 
-use Cms\Auth\Application\DTOs\SiteSettings\SiteSettingsDTO;
+use Cms\Auth\Application\DTOs\SiteSettings\SiteSettingsViewDTO;
 use Cms\Shared\Http\Resources\ApiResource;
 use Illuminate\Http\Request;
 
-/** @property SiteSettingsDTO $resource */
+/** @property SiteSettingsViewDTO $resource */
 final class SiteSettingsResource extends ApiResource
 {
     /** @return array<string, mixed> */

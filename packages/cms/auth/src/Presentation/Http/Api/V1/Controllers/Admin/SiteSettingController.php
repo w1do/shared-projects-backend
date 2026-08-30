@@ -32,9 +32,11 @@ final class SiteSettingController
             new OA\Parameter(name: 'project', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
         ],
         requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(
-            required: ['language', 'currency_default', 'currencies'],
+            required: ['project_type', 'timezone', 'language', 'currency_default', 'currencies'],
             properties: [
-                new OA\Property(property: 'language', type: 'string'),
+                new OA\Property(property: 'project_type', type: 'string', enum: ['blog', 'shop', 'corporate', 'landing']),
+                new OA\Property(property: 'timezone', type: 'string', description: 'Идентификатор часового пояса России'),
+                new OA\Property(property: 'language', type: 'string', description: 'Одна из локалей проекта'),
                 new OA\Property(property: 'currency_default', type: 'string', minLength: 3, maxLength: 3),
                 new OA\Property(property: 'currencies', type: 'array', minItems: 1, items: new OA\Items(type: 'string', enum: ['RUB', 'USD'])),
             ],

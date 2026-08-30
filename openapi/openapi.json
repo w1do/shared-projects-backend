@@ -7173,12 +7173,28 @@
                         "application/json": {
                             "schema": {
                                 "required": [
+                                    "project_type",
+                                    "timezone",
                                     "language",
                                     "currency_default",
                                     "currencies"
                                 ],
                                 "properties": {
+                                    "project_type": {
+                                        "type": "string",
+                                        "enum": [
+                                            "blog",
+                                            "shop",
+                                            "corporate",
+                                            "landing"
+                                        ]
+                                    },
+                                    "timezone": {
+                                        "description": "Идентификатор часового пояса России",
+                                        "type": "string"
+                                    },
                                     "language": {
+                                        "description": "Одна из локалей проекта",
                                         "type": "string"
                                     },
                                     "currency_default": {

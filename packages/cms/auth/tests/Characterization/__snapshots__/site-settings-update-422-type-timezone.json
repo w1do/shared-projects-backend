@@ -1,0 +1,19 @@
+{
+    "status": 422,
+    "content_type": "application/json",
+    "body": {
+        "error": {
+            "code": "validation_failed",
+            "message": "The given data was invalid.",
+            "details": {
+                "project_type": [
+                    "The selected project type is invalid."
+                ],
+                "timezone": [
+                    "The selected timezone is invalid."
+                ]
+            },
+            "trace_id": "<string>"
+        }
+    }
+}

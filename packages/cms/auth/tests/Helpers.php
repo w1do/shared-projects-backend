@@ -18,10 +18,12 @@ function syncAuthManifest(): void
 }
 
 /** Создаёт проект от имени оператора через команду (owner + системные роли). */
-function createProjectFor(Admin $admin, string $key = 'site-a'): Project
+function createProjectFor(Admin $admin, string $key = 'site-a', ?array $locales = null): Project
 {
+    $payload = ['key' => $key, 'name' => strtoupper($key)] + ($locales === null ? [] : ['locales' => $locales]);
+
     return app(CreateProjectHandler::class)->handle(new CreateProjectCommand(
-        CreateProjectDTO::from(['key' => $key, 'name' => strtoupper($key)]),
+        CreateProjectDTO::from($payload),
         $admin,
     ));
 }
