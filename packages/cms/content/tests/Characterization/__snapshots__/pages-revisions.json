@@ -5,6 +5,8 @@
         "data": [
             {
                 "id": "<int>",
+                "number": 2,
+                "title": "About us",
                 "snapshot": {
                     "title": "About us",
                     "slug": "about-us",
@@ -17,6 +19,8 @@
             },
             {
                 "id": "<int>",
+                "number": 1,
+                "title": "About us",
                 "snapshot": {
                     "title": "About us",
                     "slug": "about-us",

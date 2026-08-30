@@ -67,6 +67,8 @@ export type PlatformImageResult = {
 
 export type PlatformRevision = {
   id: number;
+  number: number;
+  title?: string | null;
   created_at?: string | null;
   author_id?: string | null;
 };

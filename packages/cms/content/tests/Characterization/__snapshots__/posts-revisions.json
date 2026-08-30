@@ -5,6 +5,8 @@
         "data": [
             {
                 "id": "<int>",
+                "number": 2,
+                "title": "Hello world",
                 "snapshot": {
                     "title": "Hello world",
                     "slug": "hello-world",
@@ -24,6 +26,8 @@
             },
             {
                 "id": "<int>",
+                "number": 1,
+                "title": "Hello world",
                 "snapshot": {
                     "title": "Hello world",
                     "slug": "hello-world",

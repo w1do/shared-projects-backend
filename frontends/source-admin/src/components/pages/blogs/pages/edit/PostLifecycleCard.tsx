@@ -5,12 +5,25 @@ import { toast } from "sonner";
 import { Card } from "@/components/ui/data-display/card";
 import { Badge } from "@/components/ui/data-display/badge";
 import { Button } from "@/components/ui/inputs/button";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/overlay/alert-dialog";
 import type { Article } from "@/lib/admin/types/magazine";
+import type { ArticleRevision } from "@/lib/admin/services";
 import { tf, type ConsoleTextKey } from "@/lib/admin/console-texts";
 import { useConsoleText } from "@/lib/admin/use-console-text";
 import {
   useArticleRevisionsQuery,
   useChangeArticleStatusMutation,
+  useDeleteArticleRevisionMutation,
   useRestoreArticleRevisionMutation,
 } from "@/hooks/admin/articles";
 import { articleStatusLabel, formatArticleDate } from "@/components/pages/blogs/utils";
@@ -39,11 +52,97 @@ const STATUS_COLOR: Record<string, "success" | "warning" | "neutral"> = {
   archived: "neutral",
 };
 
+/** Подпись версии: «Версия N · заголовок · дата». */
+function revisionLabel(revision: ArticleRevision) {
+  return [
+    tf("console.blogs.lifecycle.revision-label", { number: revision.number }),
+    revision.title,
+    revision.createdAt ? formatArticleDate(revision.createdAt) : "",
+  ]
+    .filter(Boolean)
+    .join(" · ");
+}
+
+function RevisionRow({ articleId, revision }: { articleId: string; revision: ArticleRevision }) {
+  const t = useConsoleText();
+  const restore = useRestoreArticleRevisionMutation();
+  const remove = useDeleteArticleRevisionMutation();
+
+  const restoreRevision = () =>
+    restore.mutate(
+      { id: articleId, revisionId: revision.id },
+      {
+        onSuccess: () =>
+          toast.success(
+            tf("console.blogs.lifecycle.revision-restored", { number: revision.number }),
+          ),
+        onError: (error: Error) =>
+          toast.error(error.message || t("console.blogs.lifecycle.restore-failed")),
+      },
+    );
+
+  const deleteRevision = () =>
+    remove.mutate(
+      { id: articleId, revisionId: revision.id },
+      {
+        onSuccess: () =>
+          toast.success(
+            tf("console.blogs.lifecycle.revision-deleted", { number: revision.number }),
+          ),
+        onError: (error: Error) =>
+          toast.error(error.message || t("console.blogs.lifecycle.revision-delete-failed")),
+      },
+    );
+
+  return (
+    <div className="flex items-center justify-between gap-2" data-testid="post-revision">
+      <span className="text-caption text-muted-foreground-lighter min-w-0 truncate">
+        {revisionLabel(revision)}
+      </span>
+      <div className="flex shrink-0 items-center gap-1">
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          disabled={restore.isPending}
+          onClick={restoreRevision}
+        >
+          {t("console.blogs.lifecycle.restore")}
+        </Button>
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <Button type="button" variant="ghost" size="sm" disabled={remove.isPending}>
+              {t("console.blogs.lifecycle.revision-delete")}
+            </Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>
+                {tf("console.blogs.lifecycle.revision-delete-title", { number: revision.number })}
+              </AlertDialogTitle>
+              <AlertDialogDescription>
+                {t("console.blogs.lifecycle.revision-delete-description")}
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>
+                {t("console.blogs.lifecycle.revision-delete-cancel")}
+              </AlertDialogCancel>
+              <AlertDialogAction onClick={deleteRevision}>
+                {t("console.blogs.lifecycle.revision-delete-confirm")}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      </div>
+    </div>
+  );
+}
+
 export function PostLifecycleCard({ article }: { article: Article }) {
   const t = useConsoleText();
   const status = article.status;
   const changeStatus = useChangeArticleStatusMutation();
-  const restore = useRestoreArticleRevisionMutation();
   const { data: revisions = [] } = useArticleRevisionsQuery(article.id);
 
   if (!status) return null; // демо-данные вёрстки статуса не несут
@@ -103,35 +202,7 @@ export function PostLifecycleCard({ article }: { article: Article }) {
           </span>
           <div className="flex max-h-48 flex-col gap-1 overflow-y-auto">
             {revisions.map((revision) => (
-              <div key={revision.id} className="flex items-center justify-between gap-2">
-                <span className="text-caption text-muted-foreground-lighter">
-                  #{revision.id}
-                  {revision.createdAt ? ` · ${formatArticleDate(revision.createdAt)}` : ""}
-                </span>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  disabled={restore.isPending}
-                  onClick={() =>
-                    restore.mutate(
-                      { id: article.id, revisionId: revision.id },
-                      {
-                        onSuccess: () =>
-                          toast.success(
-                            tf("console.blogs.lifecycle.revision-restored", { id: revision.id }),
-                          ),
-                        onError: (error: Error) =>
-                          toast.error(
-                            error.message || t("console.blogs.lifecycle.restore-failed"),
-                          ),
-                      },
-                    )
-                  }
-                >
-                  {t("console.blogs.lifecycle.restore")}
-                </Button>
-              </div>
+              <RevisionRow key={revision.id} articleId={article.id} revision={revision} />
             ))}
           </div>
         </div>

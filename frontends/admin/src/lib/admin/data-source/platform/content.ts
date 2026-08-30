@@ -86,6 +86,12 @@ export function restorePostRevision(id: number, revisionId: number) {
   );
 }
 
+export function deletePostRevision(id: number, revisionId: number) {
+  return adminApiSend<null>(`${base}/posts/${id}/revisions/${revisionId}`, {
+    method: "DELETE",
+  });
+}
+
 export function listCategories() {
   return adminApiGet<PlatformCategory[]>(`${base}/categories`);
 }

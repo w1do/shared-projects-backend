@@ -12,6 +12,8 @@ use Illuminate\Support\Carbon;
 /**
  * @property int $id
  * @property string $project_id
+ * @property string $revisable_type
+ * @property int $revisable_id
  * @property array<string, mixed> $snapshot
  * @property ?string $author_id
  * @property ?Carbon $created_at

@@ -354,8 +354,17 @@ export const CONSOLE_TEXTS = {
     "Не удалось выполнить действие «{action}».",
   "console.blogs.lifecycle.revisions": "Ревизии",
   "console.blogs.lifecycle.restore": "Восстановить",
-  "console.blogs.lifecycle.revision-restored": "Ревизия #{id} восстановлена.",
-  "console.blogs.lifecycle.restore-failed": "Не удалось восстановить ревизию.",
+  "console.blogs.lifecycle.revision-restored": "Версия {number} восстановлена.",
+  "console.blogs.lifecycle.restore-failed": "Не удалось восстановить версию.",
+  "console.blogs.lifecycle.revision-label": "Версия {number}",
+  "console.blogs.lifecycle.revision-delete": "Удалить",
+  "console.blogs.lifecycle.revision-delete-title": "Удалить версию {number}?",
+  "console.blogs.lifecycle.revision-delete-description":
+    "Версия исчезнет из истории поста. Сам пост не изменится.",
+  "console.blogs.lifecycle.revision-delete-confirm": "Удалить версию",
+  "console.blogs.lifecycle.revision-delete-cancel": "Отмена",
+  "console.blogs.lifecycle.revision-deleted": "Версия {number} удалена.",
+  "console.blogs.lifecycle.revision-delete-failed": "Не удалось удалить версию.",
 
   // Блог: валидация формы статьи
   "console.blogs.validation.title-min":

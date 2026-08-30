@@ -6,11 +6,13 @@ namespace Cms\Content\Presentation\Http\Api\V1\Controllers\Admin;
 
 use Cms\Content\Application\Commands\ChangeStatusCommand;
 use Cms\Content\Application\Commands\DeletePostCommand;
+use Cms\Content\Application\Commands\DeleteRevisionCommand;
 use Cms\Content\Application\Commands\RestoreRevisionCommand;
 use Cms\Content\Application\Commands\UpsertPostCommand;
 use Cms\Content\Application\DTOs\Post\PostDTO;
 use Cms\Content\Application\Handlers\ChangeStatusHandler;
 use Cms\Content\Application\Handlers\DeletePostHandler;
+use Cms\Content\Application\Handlers\DeleteRevisionHandler;
 use Cms\Content\Application\Handlers\RestoreRevisionHandler;
 use Cms\Content\Application\Handlers\UpsertPostHandler;
 use Cms\Content\Application\Queries\ListPostsQuery;
@@ -214,6 +216,26 @@ final class PostController
         $restored = $command->handle(new RestoreRevisionCommand($post, $revision, $this->introspection->actorId($request)));
 
         return (new PostResource(PostDTO::fromModel($restored)))->toResponse($request);
+    }
+
+    #[OA\Delete(
+        path: '/api/admin/v1/projects/{project}/content/posts/{post}/revisions/{revision}',
+        operationId: 'content_destroyRevision_api_admin_v1_projects_project_content_posts_post_revisions_revision',
+        tags: ['content'],
+        summary: 'DELETE /api/admin/v1/projects/{project}/content/posts/{post}/revisions/{revision}',
+        security: [['bearerAuth' => []]],
+        parameters: [
+            new OA\Parameter(name: 'project', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+            new OA\Parameter(name: 'post', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
+            new OA\Parameter(name: 'revision', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
+        ],
+        responses: [new OA\Response(response: 204, description: 'No content'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 404, description: 'Not found'), new OA\Response(response: 422, description: 'Validation error')],
+    )]
+    public function destroyRevision(string $project, int $postId, int $revisionId, DeleteRevisionHandler $command): JsonResponse
+    {
+        $command->handle(new DeleteRevisionCommand(Post::query()->findOrFail($postId), $revisionId));
+
+        return ApiResponse::noContent();
     }
 
     #[OA\Delete(path: '/api/admin/v1/projects/{project}/content/posts/{post}', operationId: 'content_destroy_api_admin_v1_projects_project_content_posts_post', tags: ['content'], summary: 'DELETE /api/admin/v1/projects/{project}/content/posts/{post}', security: [['bearerAuth' => []]], parameters: [new OA\Parameter(name: 'project', in: 'path', required: true, schema: new OA\Schema(type: 'string')), new OA\Parameter(name: 'post', in: 'path', required: true, schema: new OA\Schema(type: 'integer'))], responses: [new OA\Response(response: 204, description: 'No content'), new OA\Response(response: 401, description: 'Unauthenticated'), new OA\Response(response: 404, description: 'Not found')])]

@@ -7,6 +7,7 @@ export {
 export {
   useArticleRevisionsQuery,
   useChangeArticleStatusMutation,
+  useDeleteArticleRevisionMutation,
   useRestoreArticleRevisionMutation,
 } from "./use-article-mutations";
 export { useBlogsPage } from "./use-blogs-page";

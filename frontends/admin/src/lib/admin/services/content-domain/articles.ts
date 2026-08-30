@@ -52,16 +52,28 @@ export async function changeArticleStatus(id: string, status: string): Promise<v
   await adminMutations.changeArticleStatus(id, status);
 }
 
-export type ArticleRevision = { id: string; createdAt: string | null };
+export type ArticleRevision = {
+  id: string;
+  number: number;
+  title: string;
+  createdAt: string | null;
+};
 
 export async function listArticleRevisions(id: string): Promise<ArticleRevision[]> {
   const revisions = await adminMutations.listArticleRevisions(id);
   return revisions.map((revision) => ({
     id: String(revision.id),
+    number: revision.number,
+    title: revision.title ?? "",
     createdAt: revision.created_at ?? null,
   }));
 }
 
 export async function restoreArticleRevision(id: string, revisionId: string): Promise<void> {
   await adminMutations.restoreArticleRevision(id, revisionId);
+}
+
+/** Удаление версии из истории поста: сам пост не меняется. */
+export async function deleteArticleRevision(id: string, revisionId: string): Promise<void> {
+  await adminMutations.deleteArticleRevision(id, revisionId);
 }

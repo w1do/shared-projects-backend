@@ -7,6 +7,7 @@ import {
   changeArticleStatus,
   createArticle,
   deleteArticle,
+  deleteArticleRevision,
   listArticleRevisions,
   restoreArticleRevision,
   updateArticle,
@@ -79,6 +80,15 @@ export function useRestoreArticleRevisionMutation() {
   return useMutation({
     mutationFn: ({ id, revisionId }: { id: string; revisionId: string }) =>
       restoreArticleRevision(id, revisionId),
+    onSettled: () => invalidate(queryClient),
+  });
+}
+
+export function useDeleteArticleRevisionMutation() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, revisionId }: { id: string; revisionId: string }) =>
+      deleteArticleRevision(id, revisionId),
     onSettled: () => invalidate(queryClient),
   });
 }

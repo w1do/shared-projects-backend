@@ -39,6 +39,11 @@ final class ContentRuleViolation extends ValidationException
         return self::withMessages(['slug' => ['Slug is already in use.']]);
     }
 
+    public static function revisionNotOfPost(): self
+    {
+        return self::withMessages(['revision' => ['The revision does not belong to this post.']]);
+    }
+
     public static function categoryMovedUnderOwnDescendant(): self
     {
         return self::withMessages(['parent_id' => ['Cannot move a node under its own descendant.']]);

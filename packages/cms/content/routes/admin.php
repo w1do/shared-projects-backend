@@ -25,6 +25,7 @@ Route::prefix('api/admin/v1/projects/{project}/content')->group(function () use 
     Route::post('posts/{post}/status', [Admin\PostController::class, 'changeStatus'])->middleware($authorize('content.posts.publish'));
     Route::get('posts/{post}/revisions', [Admin\PostController::class, 'revisions'])->middleware($authorize('content.posts.view'));
     Route::post('posts/{post}/revisions/{revision}/restore', [Admin\PostController::class, 'restore'])->middleware($authorize('content.posts.manage'));
+    Route::delete('posts/{post}/revisions/{revision}', [Admin\PostController::class, 'destroyRevision'])->middleware($authorize('content.posts.manage'));
 
     Route::get('pages', [Admin\PageController::class, 'index'])->middleware($authorize('content.pages.view'));
     Route::post('pages', [Admin\PageController::class, 'store'])->middleware($authorize('content.pages.manage'));
