@@ -2861,6 +2861,49 @@
                 ]
             }
         },
+        "/api/admin/v1/projects/{project}/content/posts/{post}/rebuild": {
+            "post": {
+                "tags": [
+                    "content"
+                ],
+                "summary": "POST /api/admin/v1/projects/{project}/content/posts/{post}/rebuild",
+                "operationId": "content_rebuild_api_admin_v1_projects_project_content_posts_post_rebuild",
+                "parameters": [
+                    {
+                        "name": "project",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "post",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "202": {
+                        "description": "Accepted"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "404": {
+                        "description": "Not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/api/admin/v1/projects/{project}/content/posts/{post}/revisions": {
             "get": {
                 "tags": [

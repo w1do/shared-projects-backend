@@ -4,12 +4,9 @@ declare(strict_types=1);
 
 namespace Cms\Research\Application\Handlers;
 
-use Cms\Ai\Application\Contracts\AiOperations;
-use Cms\Ai\Application\DTOs\RunInstruct\RunInstructRequestDTO;
 use Cms\Content\Application\Commands\UpsertPostCommand;
 use Cms\Content\Application\Commands\UpsertSeoCommand;
 use Cms\Content\Application\DTOs\Post\UpsertPostDTO;
-use Cms\Content\Application\DTOs\Seo\UpsertSeoDTO;
 use Cms\Content\Application\Handlers\UpsertPostHandler;
 use Cms\Content\Application\Handlers\UpsertSeoHandler;
 use Cms\Content\Domain\Models\Category;
@@ -17,7 +14,10 @@ use Cms\Content\Domain\Models\Post;
 use Cms\Instructs\Application\Actions\RecordInstructUsageAction;
 use Cms\Instructs\Application\Actions\ResolveInstructAction;
 use Cms\Instructs\Domain\Enums\InstructCategory;
+use Cms\Research\Application\Actions\ComposePostDraftAction;
+use Cms\Research\Application\Actions\ComposePostSeoAction;
 use Cms\Research\Application\Commands\GeneratePostCommand;
+use Cms\Research\Application\DTOs\PostDraft\PostDraftDTO;
 use Cms\Research\Application\Exceptions\ResearchRuleViolation;
 use Cms\Research\Application\Queries\SearchKnowledgeQuery;
 use Cms\Research\Domain\Enums\TopicStatus;
@@ -37,9 +37,10 @@ use Illuminate\Support\Str;
 final readonly class GeneratePostFromTopicHandler
 {
     public function __construct(
-        private AiOperations $ai,
         private ResolveInstructAction $instructs,
         private RecordInstructUsageAction $usages,
+        private ComposePostDraftAction $draft,
+        private ComposePostSeoAction $draftSeo,
         private SearchKnowledgeQuery $knowledge,
         private UpsertPostHandler $posts,
         private UpsertSeoHandler $seo,
@@ -68,33 +69,22 @@ final readonly class GeneratePostFromTopicHandler
         $bodyInstruct = $this->instructs->handle(InstructCategory::PostBody);
 
         $this->stage($command, 'ai_request');
-        $draft = $this->ai->runInstruct(new RunInstructRequestDTO(
-            rule: $bodyInstruct->rule,
-            schema: $bodyInstruct->schema,
-            input: [
-                'topic' => $topic->title,
-                'rationale' => $topic->rationale,
-                'materials' => $materials,
-                'locale' => $this->translator->getLocale(),
-            ],
-        ))->output;
-
-        $this->stage($command, 'assembling');
-        $blocks = $this->blocks($draft);
+        $draft = $this->draft->handle($bodyInstruct, $topic->title, $topic->rationale, $materials);
 
         $this->stage($command, 'saving');
         $post = $this->posts->handle(new UpsertPostCommand(
             UpsertPostDTO::from([
-                'title' => $this->text($draft, 'title') ?? $topic->title,
+                'title' => $draft->title ?? $topic->title,
                 'slug' => $this->slug($draft, $topic),
-                'blocks' => $blocks,
+                'blocks' => $draft->blocks,
                 'categories' => [$this->categoryId($topic)],
-                'tags' => $this->tags($draft),
+                'tags' => $draft->tags,
             ]),
             authorId: $command->authorId,
         ));
 
-        $this->fillSeo($post, $draft, $topic);
+        $seoInstruct = $this->instructs->handle(InstructCategory::PostSeo);
+        $this->seo->handle(new UpsertSeoCommand($post, $this->draftSeo->handle($seoInstruct, $post, $topic->title)));
 
         $topic->forceFill(['status' => TopicStatus::Used, 'post_id' => $post->getKey()])->save();
 
@@ -171,108 +161,14 @@ final readonly class GeneratePostFromTopicHandler
         return (int) $category->getKey();
     }
 
-    /** @param array<string, mixed> $draft */
-    private function fillSeo(Post $post, array $draft, ResearchTopic $topic): void
+    private function slug(PostDraftDTO $draft, ResearchTopic $topic): string
     {
-        $seoInstruct = $this->instructs->handle(InstructCategory::PostSeo);
-
-        $seo = $this->ai->runInstruct(new RunInstructRequestDTO(
-            rule: $seoInstruct->rule,
-            schema: $seoInstruct->schema,
-            input: [
-                'title' => $post->title,
-                'body' => $post->body,
-                'topic' => $topic->title,
-            ],
-        ))->output;
-
-        $this->seo->handle(new UpsertSeoCommand($post, UpsertSeoDTO::from([
-            'title' => $this->text($seo, 'title') ?? $post->title,
-            'description' => $this->text($seo, 'description'),
-            'keywords' => $this->text($seo, 'keywords'),
-        ])));
-    }
-
-    /**
-     * Содержимое поста блоками: ответ короче предела по числу блоков или по
-     * объёму текста отклоняется, а не превращается в пост из одного абзаца.
-     *
-     * @param  array<string, mixed>  $draft
-     * @return list<array{title: string, markdown: string}>
-     */
-    private function blocks(array $draft): array
-    {
-        $raw = $draft['blocks'] ?? [];
-        $blocks = [];
-
-        foreach (is_array($raw) ? $raw : [] as $block) {
-            if (! is_array($block)) {
-                continue;
-            }
-
-            $markdown = trim((string) ($block['markdown'] ?? ''));
-
-            if ($markdown === '') {
-                continue;
-            }
-
-            $blocks[] = ['title' => trim((string) ($block['title'] ?? '')), 'markdown' => $markdown];
-        }
-
-        $minBlocks = (int) $this->config->get('cms-research.post_min_blocks', 10);
-
-        if (count($blocks) < $minBlocks) {
-            throw ResearchRuleViolation::postBlocksTooFew($minBlocks, count($blocks));
-        }
-
-        // Десять блоков по строчке — не пост: объём проверяется отдельно
-        $length = array_sum(array_map(static fn (array $block): int => mb_strlen($block['markdown']), $blocks));
-        $minLength = (int) $this->config->get('cms-research.post_min_length', 8000);
-
-        if ($length < $minLength) {
-            throw ResearchRuleViolation::postTooShort($minLength, $length);
-        }
-
-        return $blocks;
-    }
-
-    /**
-     * @param  array<string, mixed>  $draft
-     * @return list<string>
-     */
-    private function tags(array $draft): array
-    {
-        $tags = $draft['tags'] ?? [];
-
-        if (! is_array($tags)) {
-            return [];
-        }
-
-        return array_values(array_unique(array_filter(
-            array_map(static fn (mixed $tag): string => is_string($tag) ? trim($tag) : '', $tags),
-            static fn (string $tag): bool => $tag !== '',
-        )));
-    }
-
-    /** @param array<string, mixed> $draft */
-    private function slug(array $draft, ResearchTopic $topic): string
-    {
-        $slug = $this->text($draft, 'slug');
-
-        if ($slug !== null && Str::slug($slug) !== '') {
-            return Str::slug($slug);
+        if ($draft->slug !== null && Str::slug($draft->slug) !== '') {
+            return Str::slug($draft->slug);
         }
 
         $fromTitle = Str::slug($topic->title);
 
         return $fromTitle !== '' ? $fromTitle : 'topic-'.$topic->getKey();
-    }
-
-    /** @param array<string, mixed> $source */
-    private function text(array $source, string $key): ?string
-    {
-        $value = $source[$key] ?? null;
-
-        return is_string($value) && trim($value) !== '' ? $value : null;
     }
 }

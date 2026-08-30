@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Cms\Research\Presentation\Http\Api\V1\Controllers\ImageSearchController;
 use Cms\Research\Presentation\Http\Api\V1\Controllers\PostGenerationController;
+use Cms\Research\Presentation\Http\Api\V1\Controllers\PostRebuildController;
 use Cms\Research\Presentation\Http\Api\V1\Controllers\ProjectBuildoutController;
 use Cms\Research\Presentation\Http\Api\V1\Controllers\ResearchController;
 use Cms\Research\Presentation\Http\Api\V1\Controllers\ResearchTopicController;
@@ -27,6 +28,7 @@ Route::prefix('api/admin/v1/projects/{project}')->group(function () use ($author
         Route::post('topics/{topic}/reject', [ResearchTopicController::class, 'reject'])->whereNumber('topic')->middleware($authorize('content.topics.manage'));
 
         Route::post('posts/generate', [PostGenerationController::class, 'store'])->middleware($authorize('content.posts.manage'));
+        Route::post('posts/{post}/rebuild', [PostRebuildController::class, 'store'])->whereNumber('post')->middleware($authorize('content.posts.manage'));
 
         // Подбор изображения живёт рядом с интеграцией поисковой службы,
         // а закрыт правом на медиа: импорт найденного идёт в медиатеку проекта.

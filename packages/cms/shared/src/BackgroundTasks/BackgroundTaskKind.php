@@ -8,6 +8,7 @@ namespace Cms\Shared\BackgroundTasks;
 enum BackgroundTaskKind: string
 {
     case PostGeneration = 'post_generation';
+    case PostRebuild = 'post_rebuild';
     case Research = 'research';
     case ResearchIndexing = 'research_indexing';
     case ProjectBuildout = 'project_buildout';

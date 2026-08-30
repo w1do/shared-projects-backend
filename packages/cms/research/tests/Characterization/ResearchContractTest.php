@@ -6,6 +6,7 @@ use Cms\Ai\Infrastructure\Agents\StructuredAgent;
 use Cms\Instructs\Infrastructure\Persistence\SystemInstructSeeder;
 use Cms\Research\Application\Exceptions\ResearchRuleViolation;
 use Cms\Research\Domain\Contracts\SerpSearchClient;
+use Cms\Content\Domain\Models\Post;
 use Cms\Research\Domain\Models\Research;
 use Cms\Research\Domain\Models\ResearchSource;
 use Cms\Research\Domain\Models\ResearchTopic;
@@ -307,6 +308,32 @@ test('contract: post generation for a used topic', function () {
     );
 
     ResponseSnapshot::assertMatches($response, 'posts-generate-422-used');
+});
+
+test('contract: post rebuild start', function () {
+    seedResearchContractFixtures();
+    $post = Post::factory()->create(['title' => 'Старый заголовок', 'slug' => 'staryj-zagolovok']);
+
+    $response = $this->postJson(
+        "/api/admin/v1/projects/proj-1/content/posts/{$post->getKey()}/rebuild",
+        [],
+        researchContractHeaders(array_merge(RESEARCH_CONTRACT_PERMS, ['content.posts.manage'])),
+    );
+
+    ResponseSnapshot::assertMatches($response, 'posts-rebuild');
+});
+
+test('contract: post rebuild rejected without the posts permission', function () {
+    seedResearchContractFixtures();
+    $post = Post::factory()->create(['title' => 'Старый заголовок', 'slug' => 'staryj-zagolovok']);
+
+    $response = $this->postJson(
+        "/api/admin/v1/projects/proj-1/content/posts/{$post->getKey()}/rebuild",
+        [],
+        researchContractHeaders(),
+    );
+
+    ResponseSnapshot::assertMatches($response, 'posts-rebuild-403');
 });
 
 test('contract: project topics index', function () {

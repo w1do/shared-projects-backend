@@ -80,6 +80,7 @@ function contentRouteCoverageCoveredPairs(): array
         'GET api/admin/v1/projects/{project}/content/topics',                                     // research/ResearchContractTest.php
         'POST api/admin/v1/projects/{project}/content/topics/{topic}/reject',                     // research/ResearchContractTest.php
         'POST api/admin/v1/projects/{project}/content/posts/generate',                            // research/ResearchContractTest.php
+        'POST api/admin/v1/projects/{project}/content/posts/{post}/rebuild',                    // research/ResearchContractTest.php
         'GET api/admin/v1/projects/{project}/content/images/search',                              // research/ResearchContractTest.php
         'GET api/admin/v1/projects/{project}/content/buildout',                                           // research/ResearchContractTest.php
         'POST api/admin/v1/projects/{project}/content/buildout',                                          // research/ResearchContractTest.php
