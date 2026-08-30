@@ -344,6 +344,8 @@ export const CONSOLE_TEXTS = {
   "console.blogs.form.category.wellness": "Здоровье",
   "console.blogs.form.category.trends": "Тренды",
 
+  "console.blogs.form.featured": "Закрепить сверху раздела",
+
   // Блог: статус-машина поста и ревизии (режим api)
   "console.blogs.lifecycle.title": "Статус поста",
   "console.blogs.lifecycle.publish": "Опубликовать",

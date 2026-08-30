@@ -47,6 +47,7 @@ export function postToArticle(
     bannerMediaId: post.banner?.id ?? null,
     status: post.status.toUpperCase() as ApiArticle["status"],
     categoryIds: (post.categories ?? []).map(String),
+    isFeatured: post.is_featured,
     contentBlocks: post.body ? [{ type: "paragraph", content: post.body }] : [],
     blocks: (post.blocks ?? []).map((block) => ({
       id: block.id,

@@ -29,6 +29,7 @@ final class UpsertPostRequest extends FormRequest
             'categories' => ['sometimes', 'array'],
             'categories.*' => ['integer'],
             'is_index' => ['sometimes', 'boolean'],
+            'is_featured' => ['sometimes', 'boolean'],
             'tags' => ['sometimes', 'array'],
             'tags.*' => ['string', 'max:64'],
             'cover_media_id' => ['sometimes', 'nullable', 'integer'],

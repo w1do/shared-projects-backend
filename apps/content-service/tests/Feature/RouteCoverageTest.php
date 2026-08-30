@@ -53,6 +53,7 @@ function contentRouteCoverageCoveredPairs(): array
         'DELETE api/admin/v1/projects/{project}/content/posts/{post}',                            // content/PostContractTest.php
         'GET api/admin/v1/projects/{project}/content/posts/{post}/revisions',                     // content/PostContractTest.php
         'POST api/admin/v1/projects/{project}/content/posts/{post}/revisions/{revision}/restore', // content/PostContractTest.php
+        'DELETE api/admin/v1/projects/{project}/content/posts/{post}/revisions/{revision}',       // content/PostContractTest.php
         'POST api/admin/v1/projects/{project}/content/posts/{post}/status',                       // content/PostContractTest.php, content/PublicContractTest.php
         'GET api/admin/v1/projects/{project}/content/tasks',                                       // content/TaskContractTest.php
         'GET api/admin/v1/projects/{project}/content/seo/{type}/{id}',                            // content/SeoContractTest.php

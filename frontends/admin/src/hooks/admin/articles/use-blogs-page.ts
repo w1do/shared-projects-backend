@@ -24,8 +24,11 @@ export function useBlogsPage(options: Options = {}) {
   const deleteMutation = useDeleteArticleMutation();
   const [previewArticle, setPreviewArticle] = useState<Article | null>(null);
 
-  const featured = useMemo(() => articles[0] ?? null, [articles]);
-  const rest = useMemo(() => articles.slice(1), [articles]);
+  const featured = useMemo(() => articles.find((article) => article.isFeatured) ?? null, [articles]);
+  const rest = useMemo(
+    () => articles.filter((article) => article.id !== featured?.id),
+    [articles, featured],
+  );
 
   const openPreview = (article: Article) => setPreviewArticle(article);
   const closePreview = () => setPreviewArticle(null);

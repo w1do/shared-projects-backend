@@ -45,6 +45,7 @@ const POST_WITH_BLOCKS = {
   locale: "ru",
   status: "draft" as const,
   is_index: true,
+  is_featured: false,
   categories: [3],
   blocks: [
     { id: "01BLOCKONE", title: "Седаны", markdown: "Текст про седаны." },

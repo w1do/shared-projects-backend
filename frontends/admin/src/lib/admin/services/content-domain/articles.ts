@@ -18,6 +18,7 @@ function toArticleBody(data: BlogFormValues) {
     thumbnail: data.thumbnail,
     coverMediaId: data.coverMediaId ?? null,
     bannerMediaId: data.bannerMediaId ?? null,
+    isFeatured: data.isFeatured,
     blocks: data.contentBlocks.map((block) => ({
       ...(block.id ? { id: block.id } : {}),
       title: block.title ?? "",

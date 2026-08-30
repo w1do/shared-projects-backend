@@ -398,6 +398,55 @@ test('contract: content posts restore revision not found', function () {
     );
 });
 
+test('contract: content posts delete revision', function () {
+    $headers = actingAsContentOperator();
+
+    $post = $this->postJson('/api/admin/v1/projects/proj-1/content/posts', [
+        'title' => 'Hello world', 'slug' => 'hello-world', 'blocks' => [['title' => '', 'markdown' => 'v1']], 'locale' => 'ru',
+    ], $headers)->json('data');
+
+    $this->putJson("/api/admin/v1/projects/proj-1/content/posts/{$post['id']}", [
+        'title' => 'Hello world v2', 'slug' => 'hello-world', 'blocks' => [['title' => '', 'markdown' => 'v2']], 'locale' => 'ru',
+    ], $headers);
+
+    $revisions = $this->getJson("/api/admin/v1/projects/proj-1/content/posts/{$post['id']}/revisions", $headers)
+        ->json('data');
+    $first = end($revisions);
+
+    ResponseSnapshot::assertMatches(
+        $this->deleteJson(
+            "/api/admin/v1/projects/proj-1/content/posts/{$post['id']}/revisions/{$first['id']}",
+            [],
+            $headers,
+        ),
+        'posts-revision-destroy',
+    );
+});
+
+test('contract: content posts delete revision of another post', function () {
+    $headers = actingAsContentOperator();
+
+    $post = $this->postJson('/api/admin/v1/projects/proj-1/content/posts', [
+        'title' => 'Hello world', 'slug' => 'hello-world',
+    ], $headers)->json('data');
+
+    $other = $this->postJson('/api/admin/v1/projects/proj-1/content/posts', [
+        'title' => 'Other post', 'slug' => 'other-post',
+    ], $headers)->json('data');
+
+    $foreign = $this->getJson("/api/admin/v1/projects/proj-1/content/posts/{$other['id']}/revisions", $headers)
+        ->json('data')[0];
+
+    ResponseSnapshot::assertMatches(
+        $this->deleteJson(
+            "/api/admin/v1/projects/proj-1/content/posts/{$post['id']}/revisions/{$foreign['id']}",
+            [],
+            $headers,
+        ),
+        'posts-revision-destroy-422',
+    );
+});
+
 test('contract: content posts unauthenticated', function () {
     actingAsContentOperator();
 

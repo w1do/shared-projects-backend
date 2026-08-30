@@ -31,6 +31,7 @@ use Spatie\Tags\HasTags;
  * @property ?Carbon $scheduled_at
  * @property ?Carbon $published_at
  * @property bool $is_index
+ * @property bool $is_featured
  * @property ?string $author_id
  * @property ?int $cover_media_id
  * @property ?int $banner_media_id
@@ -47,11 +48,11 @@ class Post extends Model
 
     protected $fillable = [
         'project_id', 'title', 'slug', 'body', 'locale', 'translation_group',
-        'status', 'scheduled_at', 'published_at', 'is_index', 'author_id',
+        'status', 'scheduled_at', 'published_at', 'is_index', 'is_featured', 'author_id',
         'cover_media_id', 'banner_media_id', 'blocks',
     ];
 
-    protected $attributes = ['is_index' => true, 'status' => 'draft', 'locale' => 'ru'];
+    protected $attributes = ['is_index' => true, 'is_featured' => false, 'status' => 'draft', 'locale' => 'ru'];
 
     protected function casts(): array
     {
@@ -60,6 +61,7 @@ class Post extends Model
             'scheduled_at' => 'datetime',
             'published_at' => 'datetime',
             'is_index' => 'bool',
+            'is_featured' => 'bool',
             'blocks' => 'array',
         ];
     }

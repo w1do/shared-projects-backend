@@ -78,6 +78,7 @@ final class PostController
                 new OA\Property(property: 'translation_group', type: 'string', maxLength: 64, nullable: true),
                 new OA\Property(property: 'categories', type: 'array', items: new OA\Items(type: 'integer')),
                 new OA\Property(property: 'is_index', type: 'boolean'),
+                new OA\Property(property: 'is_featured', type: 'boolean', description: 'Закреплённый пост в проекте один: закрепление снимает признак с прежнего'),
                 new OA\Property(property: 'cover_media_id', type: 'integer', nullable: true),
                 new OA\Property(property: 'banner_media_id', type: 'integer', nullable: true),
                 new OA\Property(property: 'blocks', type: 'array', items: new OA\Items(
@@ -131,6 +132,7 @@ final class PostController
                 new OA\Property(property: 'translation_group', type: 'string', maxLength: 64, nullable: true),
                 new OA\Property(property: 'categories', type: 'array', items: new OA\Items(type: 'integer')),
                 new OA\Property(property: 'is_index', type: 'boolean'),
+                new OA\Property(property: 'is_featured', type: 'boolean', description: 'Закреплённый пост в проекте один: закрепление снимает признак с прежнего'),
                 new OA\Property(property: 'cover_media_id', type: 'integer', nullable: true),
                 new OA\Property(property: 'banner_media_id', type: 'integer', nullable: true),
                 new OA\Property(property: 'blocks', type: 'array', items: new OA\Items(

@@ -38,6 +38,8 @@ export type PlatformPost = {
   scheduled_at?: string | null;
   published_at?: string | null;
   is_index: boolean;
+  /** Закреплённый пост проекта: он в проекте один. */
+  is_featured: boolean;
   categories?: number[];
   seo?: PlatformSeo | null;
   blocks?: PlatformPostBlock[];

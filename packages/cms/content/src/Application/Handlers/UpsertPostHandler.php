@@ -44,6 +44,9 @@ final class UpsertPostHandler
             if (! $command->data->is_index instanceof Optional) {
                 $post->is_index = $command->data->is_index;
             }
+            if (! $command->data->is_featured instanceof Optional) {
+                $post->is_featured = $command->data->is_featured;
+            }
             // Непереданное поле не трогает прежнее изображение, переданный null — снимает его
             if (! $command->data->cover_media_id instanceof Optional) {
                 $post->cover_media_id = $command->data->cover_media_id;
@@ -56,6 +59,10 @@ final class UpsertPostHandler
             // Уникальность слага в пределах проекта и локали — доменный инвариант
             if ($this->slugTaken->handle($post)) {
                 throw ContentRuleViolation::slugTaken();
+            }
+
+            if ($post->is_featured) {
+                $this->unpinOthers($post);
             }
 
             $post->save();
@@ -75,6 +82,18 @@ final class UpsertPostHandler
 
             return $post->fresh(['categories', 'tags', 'cover', 'banner']) ?? $post;
         });
+    }
+
+    /** Закреплённый пост в проекте один: прежний теряет признак в той же транзакции. */
+    private function unpinOthers(Post $post): void
+    {
+        $others = Post::query()->where('is_featured', true);
+
+        if ($post->exists) {
+            $others->whereKeyNot($post->getKey());
+        }
+
+        $others->update(['is_featured' => false]);
     }
 
     /**

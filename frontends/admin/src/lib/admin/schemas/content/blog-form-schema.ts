@@ -41,6 +41,8 @@ export const blogFormSchema = z.object({
   coverMediaId: z.number().nullable().optional(),
   bannerMediaId: z.number().nullable().optional(),
   layoutStyle: z.enum(["minimalist", "editorial", "botanical"]),
+  /** Закрепление поста сверху раздела: закреплённый пост в проекте один. */
+  isFeatured: z.boolean().default(false),
   // Пост без блоков допустим: содержимое можно дописать позже
   contentBlocks: z.array(blogContentBlockSchema).default([]),
 });

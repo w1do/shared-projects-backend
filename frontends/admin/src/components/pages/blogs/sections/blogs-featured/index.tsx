@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { Clock, ArrowUpRight, Pencil, Trash2 } from "lucide-react";
+import { Clock, ArrowUpRight, ImageOff, Pencil, Trash2 } from "lucide-react";
 import { Avatar } from "@/components/ui/data-display/avatar";
 import { Badge } from "@/components/ui/data-display/badge";
 import { Button } from "@/components/ui/inputs/button";
@@ -23,14 +23,25 @@ export function BlogsFeatured({ article, onOpen, onEdit, onDelete }: BlogsFeatur
   return (
     <div className="grid overflow-hidden rounded-3xl border border-border/60 bg-background shadow-subtle-3 lg:grid-cols-2">
       <div className="aspect-video relative overflow-hidden lg:h-full">
-        <Image
-          src={article.banner}
-          alt={article.title}
-          fill
-          sizes="(max-width: 1024px) 100vw, 50vw"
-          className="object-cover"
-          priority
-        />
+        {/* Обложка приходит из медиатеки проекта; её отсутствие — единая заглушка. */}
+        {article.banner ? (
+          <Image
+            src={article.banner}
+            alt={article.title}
+            fill
+            sizes="(max-width: 1024px) 100vw, 50vw"
+            className="object-cover"
+            priority
+          />
+        ) : (
+          <div
+            className="flex h-full w-full flex-col items-center justify-center gap-2 bg-muted/50 text-muted-foreground-lighter"
+            data-testid="featured-cover-placeholder"
+          >
+            <ImageOff className="size-6" />
+            <span className="text-caption">{t("console.images.placeholder")}</span>
+          </div>
+        )}
       </div>
 
       <div className="flex flex-col justify-between gap-6 p-8">

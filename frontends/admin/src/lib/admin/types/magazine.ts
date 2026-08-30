@@ -64,6 +64,8 @@ export interface Article {
   status?: "draft" | "scheduled" | "published" | "archived";
   /** Категории проекта, к которым привязан пост. */
   categoryIds?: string[];
+  /** Закреплённый пост: в проекте он один и показывается карточкой над списком. */
+  isFeatured?: boolean;
   slug: string;
   title: string;
   subtitle: string;

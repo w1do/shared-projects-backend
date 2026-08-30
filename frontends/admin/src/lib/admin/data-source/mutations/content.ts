@@ -29,6 +29,8 @@ type ArticleBody = {
   bannerMediaId?: number | null;
   /** Содержимое блоками: платформа собирает из них единый текст поста. */
   blocks: Array<{ id?: string; title: string; markdown: string }>;
+  /** Закрепление поста сверху: платформа снимает признак с прежнего. */
+  isFeatured?: boolean;
 };
 
 /** Блоки вёрстки → тело поста платформы (посты хранят единый текст). */
@@ -43,6 +45,7 @@ function toPostBody(body: ArticleBody, options: { withSlug?: boolean } = {}) {
     // Ключ уходит всегда: `null` — осознанное снятие изображения поста
     cover_media_id: body.coverMediaId ?? null,
     banner_media_id: body.bannerMediaId ?? null,
+    is_featured: body.isFeatured ?? false,
   };
 }
 

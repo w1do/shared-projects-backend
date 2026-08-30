@@ -14,6 +14,7 @@
                 "scheduled_at": null,
                 "published_at": "<string>",
                 "is_index": true,
+                "is_featured": false,
                 "blocks": [
                     {
                         "id": "<string>",

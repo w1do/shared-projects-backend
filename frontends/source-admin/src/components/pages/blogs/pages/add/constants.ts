@@ -28,6 +28,7 @@ export const blogFormDefaults: BlogFormValues = {
   banner: "",
   thumbnail: "",
   layoutStyle: "editorial",
+  isFeatured: false,
   contentBlocks: [],
 };
 
@@ -78,6 +79,7 @@ export function articleToFormValues(article: Article): BlogFormValues {
     coverMediaId: article.coverMediaId ?? null,
     bannerMediaId: article.bannerMediaId ?? null,
     layoutStyle: (article.layoutStyle as BlogFormValues["layoutStyle"]) ?? "editorial",
+    isFeatured: article.isFeatured ?? false,
     contentBlocks: toFormBlocks(article),
   };
 }

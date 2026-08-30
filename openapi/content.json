@@ -1020,6 +1020,10 @@
                                     "is_index": {
                                         "type": "boolean"
                                     },
+                                    "is_featured": {
+                                        "description": "Закреплённый пост в проекте один: закрепление снимает признак с прежнего",
+                                        "type": "boolean"
+                                    },
                                     "cover_media_id": {
                                         "type": "integer",
                                         "nullable": true
@@ -1180,6 +1184,10 @@
                                         }
                                     },
                                     "is_index": {
+                                        "type": "boolean"
+                                    },
+                                    "is_featured": {
+                                        "description": "Закреплённый пост в проекте один: закрепление снимает признак с прежнего",
                                         "type": "boolean"
                                     },
                                     "cover_media_id": {

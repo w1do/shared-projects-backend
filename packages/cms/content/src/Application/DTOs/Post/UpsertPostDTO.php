@@ -22,6 +22,7 @@ final class UpsertPostDTO extends Data
         public string|Optional|null $translation_group,
         public array|Optional $categories,
         public bool|Optional $is_index,
+        public bool|Optional $is_featured = new Optional,
         public array|Optional $tags = new Optional,
         public int|Optional|null $cover_media_id = new Optional,
         public int|Optional|null $banner_media_id = new Optional,

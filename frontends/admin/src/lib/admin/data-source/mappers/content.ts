@@ -28,6 +28,7 @@ export function mapArticle(article: ApiArticle): Article {
     id: article.id,
     status: article.status.toLowerCase() as Article["status"],
     categoryIds: article.categoryIds ?? [],
+    isFeatured: article.isFeatured ?? false,
     slug: article.slug,
     title: article.title,
     subtitle: article.subtitle ?? "",
