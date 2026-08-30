@@ -126,6 +126,7 @@ services:
       AUTO_MIGRATE: "1"
       MANIFEST_PUBLISH: "1"
       ADMIN_SEED: "1"
+      PERMISSIONS_SYNC: "1"
       ADMIN_EMAIL: ${ADMIN_EMAIL:-root@example.com}
       ADMIN_PASSWORD: ${ADMIN_PASSWORD:-secret-123}
       INITIAL_PROJECT_KEY: ${INITIAL_PROJECT_KEY:-main}
@@ -149,6 +150,7 @@ services:
       MANIFEST_PUBLISH: "1"
       INSTRUCTS_SEED: "1"
       KNOWLEDGE_PROVISION: "1"
+      LOCALIZE_SYNC: "1"
     depends_on: &content-deps
       postgres:
         condition: service_healthy
@@ -194,7 +196,9 @@ services:
   analytics-worker:
     <<: *php-service
     build: *analytics-build
-    command: ["php", "artisan", "queue:work", "--queue=exports,default", "--sleep=2", "--tries=2", "--timeout=120"]
+    # analytics — очередь расписания (дневные роллапы, чистка сырых событий):
+    # без неё задачи планировщика копятся в Redis и не выполняются никогда
+    command: ["php", "artisan", "queue:work", "--queue=exports,analytics,default", "--sleep=2", "--tries=2", "--timeout=120"]
     environment: *analytics-env
     depends_on: &analytics-deps
       postgres:

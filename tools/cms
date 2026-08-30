@@ -78,7 +78,7 @@ case "$cmd" in
         "$ROOT/tools/smoke.sh"
         "$0" seed-demo
         echo ""
-        echo "Готово: http://localhost:8080/login  (root@example.com / secret-123)"
+        echo "Готово: http://localhost:8080/login  (${ADMIN_EMAIL:-root@example.com} / ${ADMIN_PASSWORD:-secret-123})"
         echo "AI-переводы: положите OPENAI_API_KEY=... в infra/compose/.env"
         ;;
     up)       $COMPOSE up -d --build "${@}" ;;
