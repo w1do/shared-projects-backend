@@ -15,7 +15,7 @@ function seedTasksForContract(string $projectId = 'proj-1'): void
 
     $done = $progress->queue(BackgroundTaskKind::PostGeneration, 'topic', '7', 'operator-1');
     $progress->start($done, 'preparing');
-    $progress->succeed($done, '42');
+    $progress->succeed($done);
 
     $running = $progress->queue(BackgroundTaskKind::Research, 'research', '3', 'operator-1');
     $progress->start($running, 'searching');

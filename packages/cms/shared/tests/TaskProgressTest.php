@@ -33,12 +33,12 @@ test('ход задачи пишется через порт и читается
 
     $progress->start($taskId, 'preparing');
     $progress->stage($taskId, 'ai_request');
-    $progress->succeed($taskId, '77');
+    $progress->succeed($taskId);
 
     $task->refresh();
     expect($task->state)->toBe(BackgroundTaskState::Succeeded)
         ->and($task->stage)->toBe('ai_request')
-        ->and($task->subject_id)->toBe('77')
+        ->and($task->subject_id)->toBe('42')
         ->and($task->started_at)->not->toBeNull()
         ->and($task->finished_at)->not->toBeNull();
 });
@@ -133,4 +133,12 @@ test('заброшенная задача закрывается отказом,
         ->and($closed->failure_reason)->not->toBeNull()
         ->and($closed->finished_at)->not->toBeNull()
         ->and(BackgroundTask::query()->findOrFail($fresh)->state)->toBe(BackgroundTaskState::Queued);
+});
+
+test('предметом задачи может быть длинная ссылка, а не только ключ записи', function () {
+    $url = 'https://images.test/'.str_repeat('a', 2000).'.jpg';
+
+    $taskId = app(TaskProgress::class)->queue(BackgroundTaskKind::MediaImport, 'url', $url);
+
+    expect(BackgroundTask::query()->findOrFail($taskId)->subject_id)->toBe($url);
 });

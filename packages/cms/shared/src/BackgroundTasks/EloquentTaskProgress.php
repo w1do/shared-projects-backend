@@ -54,13 +54,10 @@ final class EloquentTaskProgress implements TaskProgress
         $task->save();
     }
 
-    public function succeed(int $taskId, ?string $subjectId = null): void
+    public function succeed(int $taskId): void
     {
-        $this->transition($taskId, BackgroundTaskState::Succeeded, function (BackgroundTask $task) use ($subjectId): void {
+        $this->transition($taskId, BackgroundTaskState::Succeeded, function (BackgroundTask $task): void {
             $task->finished_at = now();
-            if ($subjectId !== null) {
-                $task->subject_id = $subjectId;
-            }
         });
     }
 

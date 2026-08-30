@@ -28,8 +28,8 @@ interface TaskProgress
     /** Обработчик перешёл к следующему этапу работы. */
     public function stage(int $taskId, string $stage): void;
 
-    /** Работа завершена; `$subjectId` заполняется, когда предмет создан самой задачей. */
-    public function succeed(int $taskId, ?string $subjectId = null): void;
+    /** Работа завершена; предмет задачи остаётся тем, с которым её приняли. */
+    public function succeed(int $taskId): void;
 
     /** Задача отклонена: наружу уходит причина, технический след — только в лог. */
     public function fail(int $taskId, Throwable $error): void;

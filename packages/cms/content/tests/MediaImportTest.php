@@ -167,7 +167,7 @@ test('импорт по ссылке виден в реестре фоновых
 
     expect($task->kind)->toBe(BackgroundTaskKind::MediaImport)
         ->and($task->state)->toBe(BackgroundTaskState::Succeeded)
-        ->and($task->subject_id)->toBe((string) $media->id)
+        ->and($task->subject_id)->toBe('https://images.test/photo.png')
         ->and($task->finished_at)->not->toBeNull();
 });
 

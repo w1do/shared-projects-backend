@@ -37,7 +37,7 @@ final class ImportMediaHandler
             throw $error;
         }
 
-        $this->progress->succeed($taskId, (string) $media->id);
+        $this->progress->succeed($taskId);
 
         return $media;
     }

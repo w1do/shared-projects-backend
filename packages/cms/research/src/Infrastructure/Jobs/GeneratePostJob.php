@@ -67,7 +67,7 @@ final class GeneratePostJob implements ShouldQueue
             $post = $handler->handle(new GeneratePostCommand($this->topicId, $this->authorId, $this->taskId));
 
             if ($this->taskId !== null) {
-                $progress->succeed($this->taskId, (string) $post->getKey());
+                $progress->succeed($this->taskId);
             }
         } finally {
             $previous === null ? $context->clear() : $context->set($previous);
